@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
-## [0.6.3] - 2025-10-01
+## [0.6.4] - 2025-10-01
 
 ### Improved
 
@@ -37,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Kept Google Gemini:** 1.5 Pro (2M), 1.5 Flash (1M)
   - **Removed outdated models:** GPT-3.5 (4K), GPT-4 (8K)
   - All context window sizes verified from official sources (Anthropic, OpenAI, Google)
+
+## [0.6.3] - 2025-10-01
+
+### Improved
+
+- **Smarter token usage insights** - Context-aware recommendations based on actual AI limits
 
 ### Why This Update?
 
