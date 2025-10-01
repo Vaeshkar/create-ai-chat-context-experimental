@@ -16,6 +16,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.8.0] - 2025-10-01
+
+### Added
+
+- **Comprehensive Documentation** - Major documentation overhaul
+  - **COMMANDS.md** - Complete command reference (600+ lines)
+    - Detailed syntax, options, and examples for all 16 commands
+    - Common workflows (daily, weekly, new project setup)
+    - Tips & best practices
+  - **CONFIGURATION.md** - Detailed configuration guide (350+ lines)
+    - Step-by-step configuration instructions
+    - All available options explained
+    - Troubleshooting section
+    - Examples for every use case
+
+### Improved
+
+- **README.md** - Better documentation structure
+  - Added "Full Documentation" section with links to COMMANDS.md and CONFIGURATION.md
+  - Clearer organization of documentation resources
+  - Separated core docs from project-specific docs
+
+### Documentation
+
+- Every command now has:
+  - Clear syntax explanation
+  - All options documented
+  - Multiple examples
+  - "When to use" guidance
+  - Expected output samples
+- Configuration guide includes:
+  - Visual examples of before/after
+  - Complete model list with context windows
+  - Troubleshooting for common issues
+  - Per-project vs global config explanation
+
 ## [0.7.1] - 2025-10-01
 
 ### Documentation

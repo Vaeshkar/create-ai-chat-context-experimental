@@ -33,9 +33,9 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.8.0** - 📚 Comprehensive documentation (COMMANDS.md + CONFIGURATION.md)
 - **v0.7.1** - 📖 Enhanced documentation for configuration system
 - **v0.7.0** - ⚙️ Configuration system + simplified token report
-- **v0.6.5** - 🐛 Fixed conversation entry counting for date-first format
 - **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
 - **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
 - **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
@@ -116,7 +116,15 @@ npx aic config get preferredModel
 
 ## Full Documentation
 
-After running `init`, see these files for complete documentation:
+### Core Documentation
+
+- **[COMMANDS.md](COMMANDS.md)** - Complete command reference with examples
+- **[CONFIGURATION.md](CONFIGURATION.md)** - Detailed configuration guide
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and updates
+
+### After Running `init`
+
+These files are created in your project:
 
 - **`.ai/README.md`** - Overview of the knowledge base system
 - **`.ai/SETUP_GUIDE.md`** - Comprehensive setup and usage guide
