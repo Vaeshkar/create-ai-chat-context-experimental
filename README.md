@@ -331,34 +331,48 @@ For detailed guidance, see `.ai/TOKEN_MANAGEMENT.md` after running `init`.
 - Easier to maintain and evolve
 - Clear decision trail
 
-## ✨ New in v0.4.0
+## ✨ New in v0.5.0
 
-### 🤖 AI Tool Integrations
+### 🔍 Search & Insights
 
-Zero-effort context loading in your favorite AI tools!
+Find information instantly and see what you have!
 
 ```bash
-# GitHub Copilot integration
-npx create-ai-chat-context copilot
+# Search across all knowledge base files
+npx create-ai-chat-context search "authentication"
 
-# Claude Projects export
-npx create-ai-chat-context claude-project
+# Show statistics and insights
+npx create-ai-chat-context stats
 
-# Cursor integration (from v0.2.0)
-npx create-ai-chat-context cursor
+# Export knowledge base
+npx create-ai-chat-context export --format markdown
+
+# Update with latest templates
+npx create-ai-chat-context update
 ```
 
 **What this does:**
 
-- **GitHub Copilot:** Creates `.github/copilot-instructions.md` that auto-loads context in every Copilot chat
-- **Claude Projects:** Exports all knowledge base files into one document for Claude Projects
-- **Cursor:** Generates `.cursorrules` file for automatic context loading
+- **Search:** Find information across all `.ai/` files instantly
+- **Stats:** See analytics, quality score, and insights about your knowledge base
+- **Export:** Share or backup in multiple formats (markdown, json, html)
+- **Update:** Get latest template improvements without starting over
 
-**Result:** Your AI assistant has full project context from the start - no manual prompting needed!
+**Result:** Your knowledge base is searchable, measurable, and always up-to-date!
 
 ---
 
 ## 🎯 Previous Features
+
+### 🤖 AI Tool Integrations (v0.4.0)
+
+```bash
+npx create-ai-chat-context copilot        # GitHub Copilot
+npx create-ai-chat-context claude-project # Claude Projects
+npx create-ai-chat-context cursor         # Cursor AI
+```
+
+Zero-effort context loading in Cursor, Copilot, and Claude!
 
 ### 🎨 Project-Specific Templates (v0.3.0)
 

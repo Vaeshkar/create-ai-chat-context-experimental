@@ -10,11 +10,240 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned Features
 
 - Additional templates (Rust, API, Mobile)
-- `update` command to sync with latest templates
-- `search` command to find information in knowledge base
-- `export` command to share knowledge base
-- `stats` command for analytics
 - VS Code extension (optional)
+- Advanced search with filters
+- Team collaboration features
+- Analytics dashboard
+
+## [0.5.0] - 2025-10-01
+
+### 🔍 FEATURE: Search & Insights
+
+This release makes your knowledge base searchable, measurable, and maintainable with four powerful new commands.
+
+### Added
+
+- **`search` command** - Find information instantly
+
+  - Search across all `.ai/` files
+  - Highlights matching text
+  - Shows line numbers and context
+  - Case-sensitive option available
+  - Example: `npx create-ai-chat-context search "authentication"`
+
+- **`stats` command** - Analytics and insights
+
+  - Total files, lines, words, tokens
+  - Conversation entry count
+  - Last updated timestamp
+  - Most active file
+  - File breakdown with visual bars
+  - Quality score (0-100%)
+  - Actionable insights and recommendations
+  - Example: `npx create-ai-chat-context stats`
+
+- **`export` command** - Share and backup
+
+  - Export as Markdown (single file)
+  - Export as JSON (structured data)
+  - Export as HTML (viewable in browser)
+  - Includes all knowledge base files
+  - Timestamps and metadata
+  - Example: `npx create-ai-chat-context export --format markdown`
+
+- **`update` command** - Keep templates fresh
+  - Updates template files (SETUP_GUIDE, TOKEN_MANAGEMENT)
+  - Auto-detects your template type (nextjs, python, default)
+  - Creates backups before updating
+  - Interactive confirmation
+  - Preserves your custom content
+  - Example: `npx create-ai-chat-context update`
+
+### Why This Update?
+
+**Problem 1:** Users can't find information in growing knowledge bases
+**Solution:** `search` command finds anything instantly
+
+**Problem 2:** Users don't know the health/size of their KB
+**Solution:** `stats` command shows comprehensive analytics
+
+**Problem 3:** Users want to share/backup their KB
+**Solution:** `export` command creates portable formats
+
+**Problem 4:** Templates improve but users can't get updates
+**Solution:** `update` command merges latest improvements
+
+### User Experience
+
+**Before v0.5.0:**
+
+```
+User: "Where did I document the authentication decision?"
+User: [Opens architecture.md... not there]
+User: [Opens technical-decisions.md... searches manually]
+User: [Finally finds it after 2 minutes]
+```
+
+**After v0.5.0:**
+
+```
+User: npx create-ai-chat-context search "authentication"
+# Found in technical-decisions.md (line 45):
+#   - Decision: Use NextAuth.js for authentication
+User: [Found in 2 seconds!]
+```
+
+### Commands Summary
+
+```bash
+# Search for information
+npx create-ai-chat-context search "database"
+npx create-ai-chat-context search "auth" --case-sensitive
+
+# View statistics
+npx create-ai-chat-context stats
+
+# Export knowledge base
+npx create-ai-chat-context export --format markdown
+npx create-ai-chat-context export --format json -o backup.json
+npx create-ai-chat-context export --format html
+
+# Update templates
+npx create-ai-chat-context update
+npx create-ai-chat-context update --yes  # Skip confirmation
+```
+
+### Search Examples
+
+```bash
+# Find authentication mentions
+npx create-ai-chat-context search "authentication"
+
+# Find database decisions
+npx create-ai-chat-context search "database"
+
+# Find specific function names
+npx create-ai-chat-context search "getUserById"
+
+# Case-sensitive search
+npx create-ai-chat-context search "API" --case-sensitive
+```
+
+### Stats Output Example
+
+```
+📊 Knowledge Base Statistics
+
+📝 Content:
+   Total files:              8
+   Total lines:              2,450
+   Total words:              12,340
+   Estimated tokens:         ~16,450
+   Conversation entries:     23
+
+📈 Activity:
+   Last updated:             2 hours ago
+   Most active file:         conversation-log.md
+   Most active file size:    5,230 words
+
+📄 File Breakdown:
+   conversation-log.md       ████████████████████ 42.4% (5,230 words)
+   architecture.md           ████████░░░░░░░░░░░░ 18.2% (2,245 words)
+   technical-decisions.md    ██████░░░░░░░░░░░░░░ 15.1% (1,863 words)
+   ...
+
+🎯 Quality Score:
+   85% - Good
+
+💡 Insights:
+   ✅ Token usage is moderate - consider archiving old entries
+   💬 23 conversation entries - healthy amount
+```
+
+### Export Formats
+
+**Markdown:**
+
+- Single file with all content
+- Easy to read and share
+- Compatible with any markdown viewer
+
+**JSON:**
+
+- Structured data format
+- Includes metadata (size, modified date, word count)
+- Easy to process programmatically
+- Perfect for backups
+
+**HTML:**
+
+- Viewable in any browser
+- Styled and formatted
+- Printable
+- No dependencies needed
+
+### Update Behavior
+
+**What gets updated:**
+
+- ✅ SETUP_GUIDE.md (usage instructions)
+- ✅ TOKEN_MANAGEMENT.md (token guidance)
+
+**What stays untouched:**
+
+- ✅ architecture.md (your custom content)
+- ✅ technical-decisions.md (your decisions)
+- ✅ conversation-log.md (your history)
+- ✅ All other custom files
+
+**Safety:**
+
+- Creates `.backup` files before updating
+- Interactive confirmation (unless `--yes`)
+- Auto-detects your template type
+- Only updates if changes detected
+
+### Impact
+
+- ✅ Find information in seconds (not minutes)
+- ✅ See KB health at a glance
+- ✅ Easy sharing and backups
+- ✅ Stay up-to-date with template improvements
+- ✅ Better knowledge base maintenance
+- ✅ More confidence in the system
+
+### Technical Details
+
+**Search Implementation:**
+
+- Regex-based search across all files
+- Highlights matching text in yellow
+- Shows line numbers for easy navigation
+- Case-insensitive by default
+- Fast and efficient
+
+**Stats Calculation:**
+
+- Real-time file analysis
+- Token estimation using 1.33x word count
+- Quality score based on file existence and customization
+- Visual bars for file size comparison
+- Actionable insights based on thresholds
+
+**Export Formats:**
+
+- Markdown: Combines all files with headers
+- JSON: Structured with metadata
+- HTML: Simple markdown-to-HTML conversion with styling
+- All formats include timestamps
+
+**Update Logic:**
+
+- Template detection via content analysis
+- Only updates non-custom files
+- Backup creation before changes
+- Interactive confirmation
+- Preserves user customizations
 
 ## [0.4.0] - 2025-10-01
 

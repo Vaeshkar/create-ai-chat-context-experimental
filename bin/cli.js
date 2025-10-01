@@ -12,6 +12,10 @@ const { validateKnowledgeBase } = require("../src/validate");
 const { generateCursorRules } = require("../src/cursor");
 const { generateCopilotInstructions } = require("../src/copilot");
 const { generateClaudeProject } = require("../src/claude-project");
+const { searchKnowledgeBase } = require("../src/search");
+const { showStats } = require("../src/stats");
+const { exportKnowledgeBase } = require("../src/export");
+const { updateKnowledgeBase } = require("../src/update");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -154,6 +158,63 @@ program
   .action(async (options) => {
     try {
       await summarizeConversations(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("search <query>")
+  .description("Search across all knowledge base files")
+  .option("-c, --case-sensitive", "Case-sensitive search")
+  .action(async (query, options) => {
+    try {
+      await searchKnowledgeBase(query, options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("stats")
+  .description("Show knowledge base statistics and insights")
+  .action(async () => {
+    try {
+      await showStats();
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("export")
+  .description("Export knowledge base in various formats")
+  .option(
+    "-f, --format <format>",
+    "Export format (markdown, json, html)",
+    "markdown"
+  )
+  .option("-o, --output <file>", "Output file name")
+  .option("--force", "Overwrite existing file")
+  .action(async (options) => {
+    try {
+      await exportKnowledgeBase(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("update")
+  .description("Update knowledge base with latest template improvements")
+  .option("-y, --yes", "Skip confirmation prompt")
+  .action(async (options) => {
+    try {
+      await updateKnowledgeBase(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
