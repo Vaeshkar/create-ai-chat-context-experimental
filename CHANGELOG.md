@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.9.1] - 2025-10-01
+
+### Fixed
+
+- **`chat-finish` compatibility** - Now works with older conversation-log.md formats
+  - Detects and handles files without `## 📋 CHAT HISTORY` section
+  - Falls back to inserting after first `---` separator
+  - Better error message if no insertion point found
+  - Ensures backward compatibility with existing projects
+
 ## [0.9.0] - 2025-10-01
 
 ### Added

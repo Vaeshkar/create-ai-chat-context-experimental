@@ -33,8 +33,8 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.9.1** - 🔧 Fixed `chat-finish` compatibility with older conversation-log.md formats
 - **v0.9.0** - 🎬 `chat-finish` command - Automatically update all `.ai/` files at end of chat!
-- **v0.8.1** - 📋 Updated diagrams + planning for v0.9.0
 - **v0.8.0** - 📚 Comprehensive documentation (COMMANDS.md + CONFIGURATION.md)
 - **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
 - **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)

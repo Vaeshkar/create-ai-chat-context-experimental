@@ -224,13 +224,22 @@ async function updateConversationLog(aiDir, updates) {
   const logPath = path.join(aiDir, "conversation-log.md");
   let content = fs.readFileSync(logPath, "utf8");
 
-  // Find the insertion point (after "## 📋 CHAT HISTORY")
-  const insertMarker = "## 📋 CHAT HISTORY (Most Recent First)\n\n---\n\n";
-  const insertIndex = content.indexOf(insertMarker);
+  // Try to find the insertion point (after "## 📋 CHAT HISTORY")
+  let insertMarker = "## 📋 CHAT HISTORY (Most Recent First)\n\n---\n\n";
+  let insertIndex = content.indexOf(insertMarker);
+
+  // If not found, try alternative format (after first "---")
+  if (insertIndex === -1) {
+    const firstSeparator = content.indexOf("\n---\n");
+    if (firstSeparator !== -1) {
+      insertMarker = "\n---\n\n";
+      insertIndex = firstSeparator;
+    }
+  }
 
   if (insertIndex === -1) {
     throw new Error(
-      "Could not find chat history section in conversation-log.md"
+      "Could not find insertion point in conversation-log.md. Please ensure the file has a '---' separator after the header."
     );
   }
 
