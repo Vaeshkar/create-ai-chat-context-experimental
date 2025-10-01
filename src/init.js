@@ -3,6 +3,7 @@ const path = require("path");
 const chalk = require("chalk");
 const ora = require("ora");
 const { getTokenUsage } = require("./tokens");
+const { getTemplate, getTemplateDir, listTemplates } = require("./templates");
 
 async function init(options = {}) {
   const cwd = process.cwd();
@@ -10,9 +11,31 @@ async function init(options = {}) {
   const aiInstructions = path.join(cwd, ".ai-instructions");
   const newChatPrompt = path.join(cwd, "NEW_CHAT_PROMPT.md");
 
+  // Get template
+  const templateName = options.template || "default";
+  let template;
+
+  try {
+    template = getTemplate(templateName);
+  } catch (error) {
+    console.log(chalk.red(`\n❌ ${error.message}\n`));
+    console.log(chalk.bold("Available templates:\n"));
+    listTemplates().forEach((t) => {
+      console.log(`  ${chalk.cyan(t.key.padEnd(10))} - ${t.description}`);
+    });
+    console.log();
+    return;
+  }
+
   console.log(
     chalk.bold.cyan("\n🚀 Initializing AI Knowledge Base System...\n")
   );
+
+  if (templateName !== "default") {
+    console.log(
+      chalk.gray(`   Using template: ${chalk.cyan(template.name)}\n`)
+    );
+  }
 
   // Check if .ai directory already exists
   if (fs.existsSync(aiDir) && !options.force) {
@@ -30,6 +53,7 @@ async function init(options = {}) {
 
     // Copy template files
     const templatesDir = path.join(__dirname, "../templates");
+    const templateDir = getTemplateDir(templateName);
 
     spinner.start("Copying template files...");
 
@@ -46,7 +70,14 @@ async function init(options = {}) {
     ];
 
     for (const file of templateFiles) {
-      const src = path.join(templatesDir, "ai", file);
+      // Try template-specific file first, fall back to default
+      const templateSpecificSrc = path.join(templateDir, file);
+      const defaultSrc = path.join(templatesDir, "ai", file);
+
+      const src = (await fs.pathExists(templateSpecificSrc))
+        ? templateSpecificSrc
+        : defaultSrc;
+
       const dest = path.join(aiDir, file);
       await fs.copy(src, dest);
     }

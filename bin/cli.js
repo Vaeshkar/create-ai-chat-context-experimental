@@ -24,6 +24,10 @@ program
   .description("Initialize .ai/ knowledge base system in current directory")
   .option("-f, --force", "Overwrite existing files")
   .option("--no-git", "Skip Git integration")
+  .option(
+    "-t, --template <name>",
+    "Project template (default, nextjs, python, rust, api)"
+  )
   .action(async (options) => {
     try {
       await init(options);

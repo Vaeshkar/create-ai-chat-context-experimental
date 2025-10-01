@@ -331,37 +331,57 @@ For detailed guidance, see `.ai/TOKEN_MANAGEMENT.md` after running `init`.
 - Easier to maintain and evolve
 - Clear decision trail
 
-## ✨ New in v0.2.0
+## ✨ New in v0.3.0
 
-### 📝 Effortless Logging
+### 🎨 Project-Specific Templates
 
-Never forget to update your conversation log again!
+Get started faster with templates tailored to your tech stack!
+
+```bash
+# Next.js/React projects
+npx create-ai-chat-context init --template nextjs
+
+# Python projects
+npx create-ai-chat-context init --template python
+
+# Generic (default)
+npx create-ai-chat-context init
+```
+
+Each template includes:
+
+- Framework-specific architecture examples
+- Common technical decisions for that stack
+- Relevant best practices
+- Stack-specific patterns
+
+---
+
+## 🎯 Previous Features
+
+### 📝 Effortless Logging (v0.2.0)
 
 ```bash
 npx create-ai-chat-context log
 ```
 
-Interactive prompts guide you through adding entries - just answer the questions!
+Interactive prompts guide you through adding entries!
 
-### 🔍 Quality Validation
-
-Ensure your knowledge base is complete and customized:
+### 🔍 Quality Validation (v0.2.0)
 
 ```bash
 npx create-ai-chat-context validate
 ```
 
-Get a quality score and recommendations for improvement.
+Get a quality score and recommendations.
 
-### 🎯 Cursor Integration
-
-Zero-effort context loading in Cursor AI:
+### 🎯 Cursor Integration (v0.2.0)
 
 ```bash
 npx create-ai-chat-context cursor
 ```
 
-Generates `.cursorrules` file that automatically loads your project context in every Cursor chat!
+Automatic context loading in Cursor AI!
 
 ---
 
