@@ -40,6 +40,49 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
+```yaml
+---
+CHAT: 13
+DATE: 2025-10-01
+TYPE: FEAT
+TOPIC: AI-optimized summary format + duplicate entry fix
+
+WHAT:
+  - Redesigned summary command to use pipe-delimited structured data (52% token reduction)
+  - Fixed critical bug in chat-finish causing duplicate entries
+  - Added state tracking via .ai/.chat-finish-state.json
+  - Updated conversation log template to AI-optimized YAML format
+
+WHY:
+  - User insight: "Write for AI, not humans" - summaries are FOR AI parsing, not human reading
+  - Structured data (CHAT|DATE|TYPE|TOPIC|WHAT|WHY|OUTCOME) is faster to parse than prose
+  - Duplicate bug: chat-finish used "last 2 hours" with no state, processed same commits repeatedly
+  - Alternative considered: Keep human-readable format (rejected - wastes tokens)
+
+OUTCOME: SHIPPED
+
+FILES:
+  - src/summary.js: Complete redesign for pipe-delimited format
+  - src/chat-finish.js: Added state tracking, improved summary generation
+  - .ai/conversation-log.md: Updated template to YAML format, cleaned duplicates
+  - .ai/technical-decisions.md: Removed 132 lines of duplicates
+  - .ai/known-issues.md: Consolidated 130 lines of duplicates
+  - .gitignore: Added .ai/.chat-finish-state.json
+  - package.json: Version bump to 0.11.1
+  - CHANGELOG.md: Comprehensive v0.11.1 entry
+  - EXAMPLE-AI-OPTIMIZED-SUMMARY.md: Before/after comparison (NEW)
+  - .ai/AI-NEEDS-FROM-LOGS.md: What AI needs from logs (NEW)
+  - BUGFIX-v0.11.1.md: Root cause analysis (NEW)
+
+NEXT:
+  - Test summary command with real project data
+  - Consider updating chat-finish to generate YAML format entries
+  - Publish v0.11.1 to npm
+---
+```
+
+---
+
 ## 📋 Summary of Earlier Chats (AI-Optimized Format)
 
 > Range: Chat #12 - #10
@@ -649,17 +692,47 @@ Test v0.10.0 and publish to npm
 
 ---
 
-## Template for New Entries
+## Template for New Entries (AI-Optimized Format)
 
-**Copy this template and add it at the TOP of the "CHAT HISTORY" section:**
+**Add this at the TOP of the "CHAT HISTORY" section:**
+
+```yaml
+---
+CHAT: X
+DATE: YYYY-MM-DD
+TYPE: [FEAT|FIX|REFACTOR|DOCS|RELEASE|WORK]
+TOPIC: Brief description (max 60 chars)
+
+WHAT:
+  - Primary accomplishment or change
+  - Secondary accomplishment (if any)
+  - Tertiary accomplishment (if any)
+
+WHY:
+  - Rationale for main decision
+  - Alternative considered: [what was rejected and why]
+
+OUTCOME: [SHIPPED|DECIDED|RESOLVED|IN_PROGRESS|BLOCKED]
+
+FILES:
+  - path/to/file.js: What changed
+  - path/to/other.py: What changed
+
+NEXT:
+  - What should be done next
+  - Any blockers or dependencies
+---
+```
+
+**Human-Readable Alternative (if you prefer):**
 
 ```markdown
 ## Chat #X - [Date: YYYY-MM-DD] - [Brief Topic]
 
 ### What We Did
 
-- [List all accomplishments, changes, features added]
-- [Be specific and detailed]
+- [Primary accomplishment]
+- [Secondary accomplishment]
 
 ### Key Decisions
 
@@ -671,19 +744,19 @@ Test v0.10.0 and publish to npm
 
 ### Next Steps
 
-- [What should be done in the next session]
-- [Unfinished work or follow-ups]
+- [What should be done next]
 ```
 
 ---
 
-## 💡 Tips for Good Entries
+## 💡 Tips for AI-Optimized Entries
 
-- **Be specific:** "Added login API endpoint with bcrypt password hashing" not "worked on login"
-- **Include context:** Why decisions were made, what alternatives were considered
-- **Link to code:** Mention file names or functions that were changed
-- **Note blockers:** If something is waiting on external factors
-- **Update regularly:** Don't wait until the end of a long session
+- **Use YAML format for structured data** - Easier to parse than prose
+- **Be specific:** "Added bcrypt password hashing to login API" not "worked on login"
+- **Include WHY:** Rationale is more important than WHAT for future decisions
+- **Note alternatives:** What was considered and rejected helps avoid repeating mistakes
+- **Use semantic types:** FEAT, FIX, REFACTOR, DOCS, RELEASE, WORK
+- **Truncate long content:** Max 120 chars per line for token efficiency
 
 ---
 

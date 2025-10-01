@@ -436,15 +436,18 @@ async function getChatNumber(aiDir) {
 
   const content = fs.readFileSync(logPath, "utf8");
 
-  // Find all chat numbers using flexible regex
-  const matches = content.match(/^##.*Chat\s*#?(\d+)/gim);
+  // Find all chat numbers using flexible regex (supports both YAML and Markdown formats)
+  const markdownMatches = content.match(/^##.*Chat\s*#?(\d+)/gim);
+  const yamlMatches = content.match(/^CHAT:\s*(\d+)/gim);
 
-  if (!matches || matches.length === 0) {
+  const allMatches = [...(markdownMatches || []), ...(yamlMatches || [])];
+
+  if (allMatches.length === 0) {
     return 1;
   }
 
   // Extract numbers and find the highest
-  const numbers = matches.map((match) => {
+  const numbers = allMatches.map((match) => {
     const num = match.match(/(\d+)/);
     return num ? parseInt(num[1], 10) : 0;
   });
@@ -475,6 +478,25 @@ async function updateConversationLog(aiDir, updates) {
     );
   }
 
+  // Determine TYPE from commit messages
+  let type = "WORK";
+  if (updates.changes.recentCommits.length > 0) {
+    const firstCommit = updates.changes.recentCommits[0].message;
+    if (firstCommit.match(/^release:/i) || firstCommit.match(/v\d+\.\d+\.\d+/))
+      type = "RELEASE";
+    else if (firstCommit.match(/^feat:/i)) type = "FEAT";
+    else if (firstCommit.match(/^fix:/i)) type = "FIX";
+    else if (firstCommit.match(/^refactor:/i)) type = "REFACTOR";
+    else if (firstCommit.match(/^docs:/i)) type = "DOCS";
+  }
+
+  // Determine OUTCOME
+  let outcome = "DECIDED";
+  if (type === "RELEASE") outcome = "SHIPPED";
+  else if (type === "FIX" && updates.issues) outcome = "RESOLVED";
+  else if (updates.nextSteps && updates.nextSteps.includes("TODO"))
+    outcome = "IN_PROGRESS";
+
   // Clean up decisions and issues (remove conventional commit prefixes)
   const cleanDecisions = updates.decisions
     ? updates.decisions
@@ -486,7 +508,7 @@ async function updateConversationLog(aiDir, updates) {
             .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
             .trim()
         )
-        .map((d) => `- ${d.charAt(0).toUpperCase() + d.slice(1)}`)
+        .map((d) => `  - ${d.charAt(0).toUpperCase() + d.slice(1)}`)
         .join("\n")
     : "";
 
@@ -500,38 +522,63 @@ async function updateConversationLog(aiDir, updates) {
             .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
             .trim()
         )
-        .map((i) => `- ${i.charAt(0).toUpperCase() + i.slice(1)}`)
+        .map((i) => `  - ${i.charAt(0).toUpperCase() + i.slice(1)}`)
         .join("\n")
     : "";
 
-  // Generate new entry
-  const entry = `## Chat #${updates.chatNumber} - [Date: ${updates.timestamp}]${
-    updates.devHandle ? ` - ${updates.devHandle}` : ""
-  } - ${updates.mainGoal}
+  // Format WHY section (decisions + alternatives)
+  let whySection = "";
+  if (cleanDecisions) {
+    whySection = `WHY:\n${cleanDecisions}\n\n`;
+  } else if (cleanIssues) {
+    whySection = `WHY:\n${cleanIssues}\n\n`;
+  }
 
-### What We Did
+  // Format FILES section
+  let filesSection = "";
+  if (updates.changes.hasChanges) {
+    const allFiles = [
+      ...updates.changes.newFiles.map((f) => `${f}: NEW`),
+      ...updates.changes.modifiedFiles.map((f) => `${f}: Modified`),
+    ];
+    if (allFiles.length > 0) {
+      filesSection = `FILES:\n${allFiles
+        .slice(0, 10)
+        .map((f) => `  - ${f}`)
+        .join("\n")}\n${
+        allFiles.length > 10 ? `  - ... and ${allFiles.length - 10} more\n` : ""
+      }\n`;
+    }
+  }
 
-${updates.mainGoal}
+  // Format NEXT section
+  let nextSection = "";
+  if (updates.nextSteps) {
+    const nextItems = updates.nextSteps
+      .split("\n")
+      .filter((n) => n.trim())
+      .map((n) => `  - ${n.replace(/^-\s*/, "")}`)
+      .join("\n");
+    nextSection = `NEXT:\n${nextItems}\n`;
+  }
 
-${cleanDecisions ? `### Key Decisions\n\n${cleanDecisions}\n\n` : ""}${
-    cleanIssues ? `### Issues\n\n${cleanIssues}\n\n` : ""
-  }${updates.nextSteps ? `### Next Steps\n\n${updates.nextSteps}\n\n` : ""}${
-    updates.changes.hasChanges
-      ? `### Files Changed\n\n${
-          updates.changes.newFiles.length > 0
-            ? `**New files:**\n${updates.changes.newFiles
-                .map((f) => `- ${f}`)
-                .join("\n")}\n\n`
-            : ""
-        }${
-          updates.changes.modifiedFiles.length > 0
-            ? `**Modified files:**\n${updates.changes.modifiedFiles
-                .map((f) => `- ${f}`)
-                .join("\n")}\n\n`
-            : ""
-        }`
-      : ""
-  }---
+  // Generate AI-optimized YAML entry
+  const entry = `\`\`\`yaml
+---
+CHAT: ${updates.chatNumber}
+DATE: ${updates.timestamp}
+TYPE: ${type}
+TOPIC: ${updates.mainGoal.substring(0, 60)}
+
+WHAT:
+  - ${updates.mainGoal}
+
+${whySection}OUTCOME: ${outcome}
+
+${filesSection}${nextSection}---
+\`\`\`
+
+---
 
 `;
 
