@@ -18,6 +18,7 @@ const { exportKnowledgeBase } = require("../src/export");
 const { updateKnowledgeBase } = require("../src/update");
 const { installGitHooks } = require("../src/install-hooks");
 const { handleConfigCommand } = require("../src/config");
+const { handleChatFinish } = require("../src/chat-finish");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -51,6 +52,18 @@ program
   .action(async () => {
     try {
       await addLogEntry();
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("chat-finish")
+  .description("Automatically update all .ai/ files at end of chat session")
+  .action(async () => {
+    try {
+      await handleChatFinish();
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

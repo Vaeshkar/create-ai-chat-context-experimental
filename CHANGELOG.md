@@ -16,6 +16,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.9.0] - 2025-10-01
+
+### Added
+
+- **🎬 `chat-finish` command** - THE KEY FEATURE that makes the tool truly automatic!
+  - Automatically updates all `.ai/` files at end of chat session
+  - Analyzes git diff to detect code changes
+  - Asks 5 smart questions:
+    1. Developer name/handle (for team collaboration)
+    2. Main goal of chat session
+    3. Technical decisions made
+    4. Issues found/resolved
+    5. Next steps
+  - Auto-generates entries for:
+    - `conversation-log.md` - Chat summary with changes
+    - `technical-decisions.md` - Decisions with rationale
+    - `known-issues.md` - Issues found/resolved
+    - `next-steps.md` - Completed tasks and future work
+    - `architecture.md` - Updates timestamp
+  - Transforms tool from manual documentation → automatic context preservation
+  - No more lost knowledge after long chat sessions!
+
+### Impact
+
+- **Before v0.9.0:** User has 4-hour chat, then manually runs `npx aic log` and types everything
+- **After v0.9.0:** User runs `npx aic chat-finish`, answers 3 questions, all files updated automatically
+- This is what the tool was always meant to be!
+
+## [0.8.1] - 2025-10-01
+
+### Documentation
+
+- **Updated Mermaid Diagrams** - Added `chat-finish` workflow to all diagrams
+  - `docs/01_ai-knowledge-persistence.mmd` - Shows automatic update workflow
+  - `docs/02_knowledge-loss-vs-persistence.mmd` - Shows automated knowledge preservation
+  - `docs/03_ai-knowledge-base-structure.mmd` - Updated workflow steps
+- **Updated `.ai/` Knowledge Base** - Comprehensive updates from Chat #3
+  - `technical-decisions.md` - Added 5 major decisions (config system, token report, docs)
+  - `next-steps.md` - Added v0.9.0 planning, moved completed items
+  - `architecture.md` - Complete system architecture documentation
+  - `known-issues.md` - Documented 3 resolved issues
+  - `conversation-log.md` - Added v0.9.0 planning section
+
+### Planning
+
+- **v0.9.0 Roadmap** - `chat-finish` command to automatically preserve chat context
+  - Analyze git diff to detect changes
+  - Ask 2-3 smart questions (goal, decisions, next steps)
+  - Auto-generate entries for all `.ai/` files
+  - Transform tool from manual → automatic
+
 ## [0.8.0] - 2025-10-01
 
 ### Added
