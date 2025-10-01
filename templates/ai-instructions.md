@@ -63,6 +63,65 @@ Each chat session loses context when it ends. The `.ai/` directory preserves ins
 
 ---
 
+## 🚨 CRITICAL: VERIFY BEFORE YOU ADVISE
+
+**⚠️ DOCUMENTATION CAN BE STALE - ALWAYS VERIFY CURRENT STATE FIRST!**
+
+### The Problem:
+
+Documentation lag is real. Users complete work but forget to update docs. If you trust docs blindly, you'll:
+
+- ❌ Suggest work that's already done
+- ❌ Give confident but wrong answers
+- ❌ Waste user's time
+- ❌ Lose user's trust
+
+### The Solution: VERIFY FIRST, ADVISE SECOND
+
+**✅ CORRECT APPROACH:**
+
+1. **Check actual codebase FIRST** (use `ls`, `view`, `codebase-retrieval`)
+2. **Check documentation SECOND** (read `.ai/` files)
+3. **Notice discrepancies** (code says X, docs say Y)
+4. **ASK the user** before giving advice: "I see X in the code but docs say Y. Which is current?"
+
+**❌ WRONG APPROACH:**
+
+1. Read docs (says "feature in progress")
+2. Give advice based on docs
+3. User says "I already finished that last week!"
+4. User gets frustrated
+
+### Examples:
+
+**Scenario: Agent Consolidation**
+
+❌ **Wrong:**
+
+- Read docs: "Status: PLANNED - 12 agents → 4 agents"
+- Tell user: "Let's consolidate your 12 agents to 4"
+- User: "I already did that last week! We have 5 agents now!"
+
+✅ **Correct:**
+
+- Check code: `ls src/lib/agents/` → finds 5 files
+- Read docs: "Status: PLANNED - 12 agents → 4 agents"
+- Notice discrepancy
+- Ask user: "I see 5 agents in the code but docs say consolidation is planned. Is this already done?"
+- User: "Yes! Finished last week, forgot to update docs"
+- Update docs together
+
+### Rule of Thumb:
+
+**"Verify, don't please."**
+
+- ✅ It's better to ask and be accurate
+- ❌ It's worse to assume and be wrong
+
+**When in doubt, CHECK THE CODE FIRST, then compare to docs.**
+
+---
+
 ## ✅ AFTER READING:
 
 You should understand:

@@ -4,6 +4,28 @@ Roadmap and priorities for your project.
 
 ---
 
+## ✅ Recently Completed (Last 2 Weeks)
+
+<!--
+🎯 IMPORTANT: Keep this section at the TOP so AI assistants see completed work FIRST!
+
+Add completed work here with:
+- Week/date completed
+- What was done
+- Files changed (if applicable)
+- Result/Impact
+
+Example:
+### Feature Name (Week of 2025-09-23)
+- Reduced from 12 agents to 5 agents
+- Files: agent-1.ts, agent-2.ts, agent-3.ts
+- Result: Lower API costs, simpler orchestration
+-->
+
+_No recent completions yet. Items will be moved here from sections below when completed._
+
+---
+
 ## 🔥 Immediate (This Week)
 
 - [ ] [Task 1]

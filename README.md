@@ -33,9 +33,9 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.11.0** - 🚨 "Verify Before You Advise" - Prevents AI from suggesting completed work!
 - **v0.10.2** - 🎯 All commands now recommend `chat-finish` (automatic workflow)!
 - **v0.10.1** - ✨ Perfect formatting for all `.ai/` files - Clean, professional output!
-- **v0.10.0** - 🤖 Fully automatic `chat-finish` - Auto-generates summaries from git history!
 - **v0.9.1** - 🔧 Fixed `chat-finish` compatibility with older conversation-log.md formats
 - **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
 - **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)

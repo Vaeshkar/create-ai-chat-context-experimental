@@ -40,6 +40,54 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
+## Chat #11 - [Date: 2025-10-01] - @vaeshkar - Worked on new features, bug fixes, refactoring
+
+### What We Did
+
+Worked on new features, bug fixes, refactoring
+
+### Key Decisions
+
+- V0.10.2 - Replace log command recommendations with chat-finish
+- V0.10.0 - 100% automatic chat-finish with git analysis
+- V0.9.0 - chat-finish command with dev handle tracking
+- V0.9.0 - chat-finish command with dev handle tracking
+
+### Issues
+
+- Always update next-steps.md when decisions exist
+- Improve formatting for all .ai/ files - capitalize and clean prefixes
+- Improve technical-decisions and known-issues formatting
+- V0.9.1 - chat-finish compatibility with older conversation-log formats
+
+### Files Changed
+
+---
+
+## Chat #10 - [Date: 2025-10-01] - @vaeshkar - Worked on new features, bug fixes, refactoring
+
+### What We Did
+
+Worked on new features, bug fixes, refactoring
+
+### Key Decisions
+
+- V0.10.2 - Replace log command recommendations with chat-finish
+- V0.10.0 - 100% automatic chat-finish with git analysis
+- V0.9.0 - chat-finish command with dev handle tracking
+- V0.9.0 - chat-finish command with dev handle tracking
+
+### Issues
+
+- Always update next-steps.md when decisions exist
+- Improve formatting for all .ai/ files - capitalize and clean prefixes
+- Improve technical-decisions and known-issues formatting
+- V0.9.1 - chat-finish compatibility with older conversation-log formats
+
+### Files Changed
+
+---
+
 ## Chat #9 - [Date: 2025-10-01] - @vaeshkar - Worked on new features, bug fixes, refactoring
 
 ### What We Did
@@ -762,7 +810,7 @@ Test v0.10.0 and publish to npm
 
 ---
 
-**Last Updated:** 2025-10-01 (Chat #9)
+**Last Updated:** 2025-10-01 (Chat #11)
 
 ---
 

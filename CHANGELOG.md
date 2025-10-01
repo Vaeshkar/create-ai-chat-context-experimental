@@ -9,12 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned Features
 
-- **v0.11.0:** AI-powered summary (optional, requires API key)
+- **v0.12.0:** AI-powered summary (optional, requires API key)
 - Additional templates (Rust, API, Mobile)
 - VS Code extension (optional)
 - Advanced search with filters
 - Team collaboration features
 - Analytics dashboard
+
+## [0.11.0] - 2025-10-01
+
+### Added
+
+- **"Recently Completed" section in next-steps.md** - Shows completed work from last 2 weeks at the TOP
+  - Prevents AI assistants from suggesting already-completed work
+  - Includes week/date, what was done, files changed, and impact
+  - Positioned at top so AI reads completed work FIRST before "in progress" items
+- **"Verify Before You Advise" section in .ai-instructions** - Critical rules for AI assistants
+  - Documentation can be stale - always verify current state first
+  - Check actual codebase FIRST, then compare to docs
+  - Ask user when discrepancies are found
+  - Rule: "Verify, don't please" - accuracy over assumptions
+
+### Changed
+
+- **Updated all templates** (ai, nextjs, python) with new "Recently Completed" section
+- **Updated .ai-instructions** with verification rules and real-world examples
+
+### Impact
+
+**The Problem:**
+
+- User completes work (e.g., "consolidated 12 agents to 5")
+- Forgets to update docs (docs still say "12 agents → 4 agents planned")
+- AI reads docs, suggests: "Let's consolidate your 12 agents to 4"
+- User gets frustrated: "I already did that last week!"
+
+**The Solution:**
+
+- ✅ "Recently Completed" section shows finished work at TOP
+- ✅ AI verification rules: check code first, then docs
+- ✅ AI asks when discrepancies found
+- ✅ Better user experience, less frustration
+
+**This is a MAJOR improvement based on real-world user feedback!** 🎯
 
 ## [0.10.2] - 2025-10-01
 

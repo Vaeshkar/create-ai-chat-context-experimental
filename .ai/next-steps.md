@@ -50,6 +50,12 @@ Roadmap and priorities for your project.
 
 ## ✅ Completed
 
+- [x] **V0.10.2 - Replace log command recommendations with chat-finish** - 2025-10-01 (Chat #11)
+  - V0.10.0 - 100% automatic chat-finish with git analysis
+  - V0.9.0 - chat-finish command with dev handle tracking
+- [x] **V0.10.2 - Replace log command recommendations with chat-finish** - 2025-10-01 (Chat #10)
+  - V0.10.0 - 100% automatic chat-finish with git analysis
+  - V0.9.0 - chat-finish command with dev handle tracking
 - [x] **V0.10.0 - 100% automatic chat-finish with git analysis** - 2025-10-01 (Chat #9)
   - V0.9.0 - chat-finish command with dev handle tracking
   - V0.9.0 - chat-finish command with dev handle tracking

@@ -11,6 +11,42 @@ Track problems and their solutions.
 **Date Discovered:** 2025-10-01
 **Date Resolved:** 2025-10-01
 **Severity:** 🟡 Medium
+**Chat:** #11
+
+**Problem:**
+- Always update next-steps.md when decisions exist
+- Improve formatting for all .ai/ files - capitalize and clean prefixes
+- Improve technical-decisions and known-issues formatting
+- V0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
+Resolved during Chat #11. Modified 4 file(s).
+
+---
+
+### Always update next-steps.md when decisions exist
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
+**Chat:** #10
+
+**Problem:**
+- Always update next-steps.md when decisions exist
+- Improve formatting for all .ai/ files - capitalize and clean prefixes
+- Improve technical-decisions and known-issues formatting
+- V0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
+Resolved during Chat #10. 
+
+---
+
+### Always update next-steps.md when decisions exist
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
 **Chat:** #9
 
 **Problem:**
