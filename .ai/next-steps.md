@@ -6,6 +6,7 @@ Roadmap and priorities for your project.
 
 ## 🔥 Immediate (This Week)
 
+- [ ] Test v0.10.0 and publish to npm
 - [ ] Test v0.9.0 `chat-finish` command in real projects
 - [ ] Gather user feedback on `chat-finish` workflow
 - [ ] Monitor npm downloads and GitHub stars
@@ -49,6 +50,7 @@ Roadmap and priorities for your project.
 
 ## ✅ Completed
 
+- [x] Worked on new features, bug fixes, documentation, refactoring - 2025-10-01
 - [x] **`chat-finish` command - THE KEY FEATURE!** - 2025-10-01 (v0.9.0)
   - Automatically update all `.ai/` files at end of chat
   - Git diff analysis to detect changes

@@ -13,6 +13,75 @@ function question(query) {
   return new Promise((resolve) => rl.question(query, resolve));
 }
 
+function generateAutoSummary(changes) {
+  const summary = {
+    mainGoal: "",
+    decisions: "",
+    issues: "",
+    nextSteps: "",
+  };
+
+  // Generate main goal from commits and file changes
+  if (changes.recentCommits.length > 0) {
+    const commitMessages = changes.recentCommits.map((c) => c.message);
+
+    // Detect patterns in commit messages
+    const hasFeature = commitMessages.some((m) => m.match(/feat|feature|add/i));
+    const hasFix = commitMessages.some((m) => m.match(/fix|bug|resolve/i));
+    const hasDocs = commitMessages.some((m) => m.match(/doc|readme|guide/i));
+    const hasRefactor = commitMessages.some((m) =>
+      m.match(/refactor|improve|enhance/i)
+    );
+
+    const activities = [];
+    if (hasFeature) activities.push("new features");
+    if (hasFix) activities.push("bug fixes");
+    if (hasDocs) activities.push("documentation");
+    if (hasRefactor) activities.push("refactoring");
+
+    if (activities.length > 0) {
+      summary.mainGoal = `Worked on ${activities.join(", ")}`;
+    } else {
+      summary.mainGoal = commitMessages[0] || "Development work";
+    }
+
+    // Extract decisions from commit messages
+    const decisionCommits = commitMessages.filter((m) =>
+      m.match(/feat:|implement|add|create|use|switch|migrate|enhance/i)
+    );
+    if (decisionCommits.length > 0) {
+      summary.decisions = "- " + decisionCommits.join("\n- ");
+    }
+
+    // Extract issues from commit messages
+    const issueCommits = commitMessages.filter((m) =>
+      m.match(/fix:|resolve|bug|issue|problem/i)
+    );
+    if (issueCommits.length > 0) {
+      summary.issues = "- " + issueCommits.join("\n- ");
+    }
+  }
+
+  // Analyze file changes
+  const allFiles = [...changes.modifiedFiles, ...changes.newFiles];
+  const hasTests = allFiles.some((f) => f.match(/test|spec/i));
+  const hasDocs = allFiles.some((f) => f.match(/\.md$|doc/i));
+  const hasConfig = allFiles.some((f) => f.match(/config|\.json$|\.yaml$/i));
+  const hasSource = allFiles.some((f) => f.match(/\.js$|\.ts$|\.py$|\.java$/i));
+
+  const fileTypes = [];
+  if (hasSource) fileTypes.push("source code");
+  if (hasTests) fileTypes.push("tests");
+  if (hasDocs) fileTypes.push("documentation");
+  if (hasConfig) fileTypes.push("configuration");
+
+  if (fileTypes.length > 0 && !summary.mainGoal) {
+    summary.mainGoal = `Modified ${fileTypes.join(", ")}`;
+  }
+
+  return summary;
+}
+
 async function handleChatFinish(cwd = process.cwd()) {
   console.log(
     chalk.cyan("\n🎬 Chat Finish - Automatic Knowledge Base Update\n")
@@ -30,66 +99,114 @@ async function handleChatFinish(cwd = process.cwd()) {
 
   try {
     // Step 1: Analyze git changes
-    console.log(chalk.yellow("📊 Analyzing changes...\n"));
+    console.log(
+      chalk.yellow("📊 Analyzing ALL changes (committed + uncommitted)...\n")
+    );
     const changes = analyzeGitChanges(cwd);
 
     if (changes.hasChanges) {
-      console.log(chalk.green("✅ Detected changes:"));
-      console.log(chalk.gray(`   • ${changes.filesChanged} files changed`));
-      console.log(chalk.gray(`   • ${changes.newFiles.length} new files`));
-      console.log(
-        chalk.gray(`   • ${changes.modifiedFiles.length} modified files\n`)
-      );
+      console.log(chalk.green("✅ Found:\n"));
+
+      if (changes.recentCommits.length > 0) {
+        console.log(
+          chalk.cyan(
+            `   📝 ${changes.recentCommits.length} commit(s) in last 2 hours:`
+          )
+        );
+        changes.recentCommits.forEach((commit) => {
+          console.log(chalk.gray(`      ${commit.hash} - ${commit.message}`));
+        });
+        console.log();
+      }
+
+      if (changes.stagedFiles.length > 0) {
+        console.log(
+          chalk.green(`   ✓ ${changes.stagedFiles.length} staged file(s):`)
+        );
+        changes.stagedFiles
+          .slice(0, 5)
+          .forEach((f) => console.log(chalk.gray(`      ${f}`)));
+        if (changes.stagedFiles.length > 5) {
+          console.log(
+            chalk.gray(`      ... and ${changes.stagedFiles.length - 5} more`)
+          );
+        }
+        console.log();
+      }
+
+      if (changes.unstagedFiles.length > 0) {
+        console.log(
+          chalk.yellow(
+            `   ⚡ ${changes.unstagedFiles.length} unstaged file(s):`
+          )
+        );
+        changes.unstagedFiles
+          .slice(0, 5)
+          .forEach((f) => console.log(chalk.gray(`      ${f}`)));
+        if (changes.unstagedFiles.length > 5) {
+          console.log(
+            chalk.gray(`      ... and ${changes.unstagedFiles.length - 5} more`)
+          );
+        }
+        console.log();
+      }
+
+      if (changes.newFiles.length > 0) {
+        console.log(chalk.blue(`   ✨ ${changes.newFiles.length} new file(s)`));
+      }
+
+      if (changes.diffStats.additions > 0 || changes.diffStats.deletions > 0) {
+        console.log(
+          chalk.gray(
+            `   📊 ${changes.diffStats.additions} additions, ${changes.diffStats.deletions} deletions`
+          )
+        );
+      }
+
+      console.log();
     } else {
       console.log(
         chalk.yellow("ℹ️  No git changes detected (working directory clean)\n")
       );
     }
 
-    // Step 2: Ask smart questions
-    console.log(
-      chalk.cyan(
-        "📝 Please answer a few questions to update your knowledge base:\n"
-      )
-    );
+    // Step 2: Generate auto-summary
+    console.log(chalk.cyan("🤖 Auto-generating summary from git history...\n"));
+    const autoSummary = generateAutoSummary(changes);
 
+    if (autoSummary.mainGoal) {
+      console.log(chalk.green("📝 Auto-detected:\n"));
+      console.log(chalk.white(`   Main goal: ${autoSummary.mainGoal}`));
+      if (autoSummary.decisions) {
+        const decisionsPreview = autoSummary.decisions
+          .split("\n")[0]
+          .substring(0, 80);
+        console.log(chalk.white(`   Decisions: ${decisionsPreview}...`));
+      }
+      if (autoSummary.issues) {
+        const issuesPreview = autoSummary.issues
+          .split("\n")[0]
+          .substring(0, 80);
+        console.log(chalk.white(`   Issues: ${issuesPreview}...`));
+      }
+      console.log();
+    }
+
+    // Step 3: Only ask for dev handle (optional)
     const chatNumber = await getChatNumber(aiDir);
     console.log(chalk.gray(`   Chat number: ${chatNumber}\n`));
 
     const devHandle = await question(
-      chalk.white(
-        "1️⃣  Your name or handle (e.g., @username)? (or press Enter to skip)\n   "
-      )
-    );
-
-    const mainGoal = await question(
-      chalk.white("\n2️⃣  What was the main goal of this chat session?\n   ")
-    );
-    if (!mainGoal.trim()) {
-      console.log(chalk.red("\n❌ Main goal is required. Aborting."));
-      rl.close();
-      return;
-    }
-
-    const decisions = await question(
-      chalk.white(
-        "\n3️⃣  Any important technical decisions made? (or press Enter to skip)\n   "
-      )
-    );
-
-    const issues = await question(
-      chalk.white(
-        "\n4️⃣  Any issues found or resolved? (or press Enter to skip)\n   "
-      )
-    );
-
-    const nextSteps = await question(
-      chalk.white(
-        "\n5️⃣  What should be done next? (or press Enter to skip)\n   "
-      )
+      chalk.white("1️⃣  Your handle (optional, press Enter to skip): ")
     );
 
     rl.close();
+
+    // Use auto-generated summary
+    const mainGoal = autoSummary.mainGoal || "Development work";
+    const decisions = autoSummary.decisions || "";
+    const issues = autoSummary.issues || "";
+    const nextSteps = "";
 
     // Step 3: Generate updates
     console.log(chalk.cyan("\n\n🔄 Updating knowledge base files...\n"));
@@ -154,7 +271,7 @@ function analyzeGitChanges(cwd) {
     // Check if git repo exists
     execSync("git rev-parse --git-dir", { cwd, stdio: "ignore" });
 
-    // Get changed files
+    // Get all uncommitted changes
     const status = execSync("git status --porcelain", {
       cwd,
       encoding: "utf8",
@@ -163,26 +280,83 @@ function analyzeGitChanges(cwd) {
 
     const newFiles = [];
     const modifiedFiles = [];
+    const stagedFiles = [];
+    const unstagedFiles = [];
 
     lines.forEach((line) => {
-      const status = line.substring(0, 2).trim();
+      const statusCode = line.substring(0, 2);
       const file = line.substring(3).trim();
 
       // Skip .ai/ directory files
       if (file.startsWith(".ai/")) return;
 
-      if (status === "A" || status === "??") {
+      // Check if staged (first character)
+      if (statusCode[0] !== " " && statusCode[0] !== "?") {
+        stagedFiles.push(file);
+      }
+
+      // Check if unstaged (second character)
+      if (statusCode[1] !== " ") {
+        unstagedFiles.push(file);
+      }
+
+      // Categorize by type
+      if (statusCode === "??" || statusCode[0] === "A") {
         newFiles.push(file);
-      } else if (status === "M" || status === "MM") {
+      } else if (statusCode.includes("M")) {
         modifiedFiles.push(file);
       }
     });
 
+    // Get recent commits (last 2 hours)
+    let recentCommits = [];
+    try {
+      const commits = execSync(
+        'git log --since="2 hours ago" --pretty=format:"%h|%s"',
+        { cwd, encoding: "utf8" }
+      );
+      if (commits.trim()) {
+        recentCommits = commits
+          .split("\n")
+          .filter((c) => c.trim())
+          .map((c) => {
+            const [hash, message] = c.split("|");
+            return { hash, message };
+          });
+      }
+    } catch (e) {
+      // No commits in last 2 hours
+    }
+
+    // Get diff stats for uncommitted changes
+    let diffStats = { additions: 0, deletions: 0 };
+    try {
+      const diff = execSync("git diff --stat", { cwd, encoding: "utf8" });
+      const stagedDiff = execSync("git diff --staged --stat", {
+        cwd,
+        encoding: "utf8",
+      });
+      const allDiff = diff + stagedDiff;
+
+      // Parse stats (e.g., "5 files changed, 123 insertions(+), 45 deletions(-)")
+      const match = allDiff.match(/(\d+) insertion.*?(\d+) deletion/);
+      if (match) {
+        diffStats.additions = parseInt(match[1]) || 0;
+        diffStats.deletions = parseInt(match[2]) || 0;
+      }
+    } catch (e) {
+      // No diff stats available
+    }
+
     return {
-      hasChanges: lines.length > 0,
+      hasChanges: lines.length > 0 || recentCommits.length > 0,
       filesChanged: lines.length,
       newFiles,
       modifiedFiles,
+      stagedFiles,
+      unstagedFiles,
+      recentCommits,
+      diffStats,
     };
   } catch (error) {
     // Not a git repo or git not available
@@ -191,6 +365,10 @@ function analyzeGitChanges(cwd) {
       filesChanged: 0,
       newFiles: [],
       modifiedFiles: [],
+      stagedFiles: [],
+      unstagedFiles: [],
+      recentCommits: [],
+      diffStats: { additions: 0, deletions: 0 },
     };
   }
 }

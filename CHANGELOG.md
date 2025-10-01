@@ -9,12 +9,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned Features
 
+- **v0.11.0:** AI-powered summary (optional, requires API key)
 - Additional templates (Rust, API, Mobile)
 - VS Code extension (optional)
 - Advanced search with filters
 - Team collaboration features
 - Analytics dashboard
-- AI-powered summarization with API integration
+
+## [0.10.0] - 2025-10-01
+
+### Added
+
+- **🤖 100% Automatic `chat-finish`** - THE TRANSFORMATION!
+  - **Analyzes ALL git changes:**
+    - Recent commits (last 2 hours)
+    - Staged files (ready to commit)
+    - Unstaged files (working directory)
+    - New files (untracked)
+    - Diff stats (additions/deletions)
+  - **Auto-generates intelligent summaries:**
+    - Detects patterns in commit messages (feat:, fix:, docs:, refactor)
+    - Extracts decisions from commits (feat:, implement, add, create, use)
+    - Extracts issues from commits (fix:, resolve, bug, issue)
+    - Analyzes file types (source, tests, docs, config)
+  - **Zero manual input required:**
+    - Only asks for developer handle (optional, 1 question)
+    - Auto-generates: main goal, decisions, issues
+    - Automatically writes to all `.ai/` files
+    - No more typing descriptions!
+  - **Works even if you haven't committed:**
+    - Captures unstaged changes
+    - Captures staged changes
+    - Captures everything you've been working on!
+
+### Changed
+
+- **Questions reduced from 5 to 1:**
+  - Before: Had to manually type goal, decisions, issues, next steps (5 questions)
+  - After: Only asks for handle, everything else auto-generated! (1 question)
+- **Better git analysis:**
+  - Shows commits, staged, unstaged, new files separately
+  - Shows diff stats (additions/deletions)
+  - More detailed change detection
+- **Improved pattern matching:**
+  - Recognizes conventional commit format (feat:, fix:, docs:)
+  - Better extraction of decisions and issues from commit messages
+
+### Impact
+
+- **Before v0.10.0:** User types everything manually (lazy humans give poor answers)
+- **After v0.10.0:** Git history + pattern analysis = 100% automatic!
+- **This is what the tool was TRULY meant to be!** 🎉
+- **Just run `aic chat-finish`, type your handle, done!**
 
 ## [0.9.1] - 2025-10-01
 

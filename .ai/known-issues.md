@@ -6,6 +6,34 @@ Track problems and their solutions.
 
 ## ✅ Resolved Issues
 
+### Worked on new features, bug fixes, documentation
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
+
+**Problem:**
+- fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
+Resolved during Chat #5
+
+---
+
+### Worked on new features, bug fixes, documentation, refactoring
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
+
+**Problem:**
+fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
+Resolved during Chat #4
+
+---
+
 ### Conversation Entry Counting Showed Zero
 
 **Date Discovered:** 2025-10-01
