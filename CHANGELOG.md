@@ -16,6 +16,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.6.2] - 2025-10-01
+
+### Added
+
+- **Short alias `aic`** - Use `npx aic` instead of `npx create-ai-chat-context`
+  - Much shorter to type: `npx aic init`, `npx aic stats`, etc.
+  - Works with all commands
+  - Original command still works (backward compatible)
+  - No breaking changes
+
+### Changed
+
+- **README.md** - Updated all examples to use `aic` alias
+- **Key Commands section** - Now shows actual command examples with `aic`
+
+### Why This Update?
+
+**Problem:** `npx create-ai-chat-context` is too long to type repeatedly
+
+**Solution:** Added `aic` as a short alias (60% shorter!)
+
+**Impact:**
+
+- Faster to type: `npx aic stats` vs `npx create-ai-chat-context stats`
+- Better user experience for frequent commands
+- Still backward compatible with full name
+
+### Examples
+
+```bash
+# Before (still works)
+npx create-ai-chat-context init
+npx create-ai-chat-context stats
+
+# After (shorter!)
+npx aic init
+npx aic stats
+```
+
 ## [0.6.1] - 2025-10-01
 
 ### Documentation

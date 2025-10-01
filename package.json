@@ -1,10 +1,11 @@
 {
   "name": "create-ai-chat-context",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Preserve AI chat context and history across sessions - Solve knowledge loss in AI-assisted development",
   "main": "src/index.js",
   "bin": {
-    "create-ai-chat-context": "./bin/cli.js"
+    "create-ai-chat-context": "./bin/cli.js",
+    "aic": "./bin/cli.js"
   },
   "scripts": {
     "test": "echo \"No tests yet\" && exit 0",

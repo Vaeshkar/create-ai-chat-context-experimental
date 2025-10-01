@@ -33,6 +33,7 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
 - **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
 - **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
 - **v0.5.0** - 🔍 Search, stats, export, and update commands
@@ -44,7 +45,7 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ```bash
 # Initialize (auto-detects Next.js, Python, or Rust)
-npx create-ai-chat-context init
+npx aic init
 
 # Customize for your project
 vim .ai/architecture.md
@@ -58,21 +59,27 @@ git commit -m "Add AI knowledge base"
 "Read .ai-instructions first, then help me with [your task]"
 ```
 
+**💡 Tip:** Use `npx aic` instead of `npx create-ai-chat-context` for shorter commands!
+
 ## Key Commands
 
-- **`init`** - Initialize knowledge base (auto-detects project type)
-- **`log`** - Add conversation entry interactively
-- **`search "query"`** - Find information across all files
-- **`stats`** - View analytics and quality score
-- **`validate`** - Check knowledge base quality
-- **`export --format md`** - Export knowledge base
-- **`update`** - Update templates to latest version
-- **`install-hooks`** - Install Git hooks for reminders
-- **`cursor`** / **`copilot`** / **`claude-project`** - AI tool integrations
-- **`archive --keep 10`** - Archive old conversation entries
-- **`tokens`** - Check token usage
+```bash
+npx aic init                    # Initialize (auto-detects project type)
+npx aic log                     # Add conversation entry
+npx aic search "query"          # Find information
+npx aic stats                   # View analytics
+npx aic validate                # Check quality
+npx aic export --format md      # Export knowledge base
+npx aic update                  # Update templates
+npx aic install-hooks           # Install Git hooks
+npx aic cursor                  # Cursor AI integration
+npx aic copilot                 # GitHub Copilot integration
+npx aic claude-project          # Claude Projects export
+npx aic archive --keep 10       # Archive old entries
+npx aic tokens                  # Check token usage
+```
 
-Run `npx create-ai-chat-context --help` for all commands.
+Run `npx aic --help` for all commands.
 
 ## Full Documentation
 
