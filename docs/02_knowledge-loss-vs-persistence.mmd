@@ -1,0 +1,63 @@
+%% Knowledge Loss vs Knowledge Persistence
+%% Comparing the old way (knowledge loss) with the new way (.ai/ knowledge base)
+
+graph TB
+    Title1[❌ BEFORE: Knowledge Loss Problem]
+
+    Title1 --> Chat1[Chat #1:<br/>Explain architecture,<br/>make decisions]
+    Chat1 --> Lost1[💀 Knowledge Lost<br/>when chat ends]
+    Lost1 --> Chat2[Chat #2:<br/>Re-explain architecture,<br/>make more decisions]
+    Chat2 --> Lost2[💀 Knowledge Lost<br/>when chat ends]
+    Lost2 --> Chat3[Chat #3:<br/>Re-explain architecture<br/>AGAIN...]
+    Chat3 --> Lost3[💀 Knowledge Lost<br/>when chat ends]
+    Lost3 --> Dots1[...]
+    Dots1 --> Chat19[Chat #19:<br/>Re-explain architecture<br/>for the 19th time 😤]
+    Chat19 --> Lost19[💀 Knowledge Lost<br/>when chat ends]
+    Lost19 --> Result1[Result:<br/>❌ Frustration<br/>❌ Wasted time<br/>❌ Repeated explanations]
+
+    Result1 --> Divider[═══════════════════════════]
+
+    Divider --> Title2[✅ AFTER: Knowledge Persistence Solution]
+
+    Title2 --> NewChat1[Chat #1:<br/>Create .ai/ knowledge base<br/>Document decisions]
+    NewChat1 --> Finish1[Run: npx aic chat-finish<br/>Auto-updates all .ai/ files]
+    Finish1 --> Save1[💾 Knowledge Saved<br/>automatically!]
+    Save1 --> NewChat2[Chat #2:<br/>Read .ai/ files<br/>Full context instantly!]
+    NewChat2 --> Finish2[Run: npx aic chat-finish<br/>Auto-updates all .ai/ files]
+    Finish2 --> Save2[💾 Knowledge Updated<br/>automatically!]
+    Save2 --> NewChat3[Chat #3:<br/>Read .ai/ files<br/>Full context instantly!]
+    NewChat3 --> Finish3[Run: npx aic chat-finish<br/>Auto-updates all .ai/ files]
+    Finish3 --> Save3[💾 Knowledge Updated<br/>automatically!]
+    Save3 --> Dots2[...]
+    Dots2 --> NewChat19[Chat #19:<br/>Read .ai/ files<br/>Full context instantly!]
+    NewChat19 --> Finish19[Run: npx aic chat-finish<br/>Auto-updates all .ai/ files]
+    Finish19 --> Save19[💾 Knowledge Updated<br/>automatically!]
+    Save19 --> Result2[Result:<br/>✅ Efficiency<br/>✅ Continuity<br/>✅ No repetition<br/>✅ Fully automated!]
+
+    style Title1 fill:#ffe6e6,stroke:#f44336,stroke-width:4px,font-size:18px
+    style Title2 fill:#e6ffe6,stroke:#4caf50,stroke-width:4px,font-size:18px
+    style Divider fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px
+
+    style Chat1 fill:#ffcccc
+    style Chat2 fill:#ffcccc
+    style Chat3 fill:#ffcccc
+    style Chat19 fill:#ffcccc
+    style Lost1 fill:#ff9999,stroke:#d32f2f,stroke-width:2px
+    style Lost2 fill:#ff9999,stroke:#d32f2f,stroke-width:2px
+    style Lost3 fill:#ff9999,stroke:#d32f2f,stroke-width:2px
+    style Lost19 fill:#ff9999,stroke:#d32f2f,stroke-width:2px
+    style Result1 fill:#ff6666,stroke:#c62828,stroke-width:3px
+
+    style NewChat1 fill:#ccffcc
+    style NewChat2 fill:#ccffcc
+    style NewChat3 fill:#ccffcc
+    style NewChat19 fill:#ccffcc
+    style Finish1 fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style Finish2 fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style Finish3 fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style Finish19 fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style Save1 fill:#99ff99,stroke:#388e3c,stroke-width:2px
+    style Save2 fill:#99ff99,stroke:#388e3c,stroke-width:2px
+    style Save3 fill:#99ff99,stroke:#388e3c,stroke-width:2px
+    style Save19 fill:#99ff99,stroke:#388e3c,stroke-width:2px
+    style Result2 fill:#66ff66,stroke:#2e7d32,stroke-width:3px

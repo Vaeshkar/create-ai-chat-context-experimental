@@ -1,0 +1,56 @@
+%% AI Knowledge Persistence System
+%% How the .ai/ knowledge base preserves context across chat sessions
+
+graph TB
+    Start([New AI Chat Session Starts]) --> ReadInstructions[AI reads claude/ai-instructions/README.md]
+
+    ReadInstructions --> SeeCritical{Sees CRITICAL section:<br/>'Read .ai/ knowledge base FIRST'}
+
+    SeeCritical --> ReadArch[Read .ai/architecture.md<br/>System design, tech stack, agents]
+    ReadArch --> ReadLog[Read .ai/conversation-log.md<br/>Previous decisions & insights]
+    ReadLog --> ReadDecisions[Read .ai/technical-decisions.md<br/>Why we chose X over Y]
+    ReadDecisions --> ReadIssues[Read .ai/known-issues.md<br/>Problems & solutions]
+    ReadIssues --> ReadNext[Read .ai/next-steps.md<br/>Roadmap & priorities]
+
+    ReadNext --> FullContext{AI now has<br/>FULL CONTEXT}
+
+    FullContext --> Understands[✅ Understands agent orchestration<br/>✅ Knows why decisions were made<br/>✅ Sees what problems were solved<br/>✅ Knows what's planned next]
+
+    Understands --> WorkOnProject[AI works on project<br/>with full understanding]
+
+    WorkOnProject --> ChatEnds{Chat session<br/>ending?}
+
+    ChatEnds -->|Yes| RunChatFinish[Run: npx aic chat-finish]
+    ChatEnds -->|No| Continue[Continue working]
+
+    RunChatFinish --> AnalyzeChanges[Analyze git diff<br/>Detect new files/changes]
+    AnalyzeChanges --> AskQuestions[Ask 2-3 smart questions:<br/>- Main goal?<br/>- Key decisions?<br/>- Next steps?]
+    AskQuestions --> AutoUpdate[Automatically update:<br/>- conversation-log.md<br/>- technical-decisions.md<br/>- architecture.md<br/>- known-issues.md<br/>- next-steps.md]
+    AutoUpdate --> CommitChanges[Commit changes to Git]
+    CommitChanges --> Preserved[Knowledge preserved<br/>for next session! 🎉]
+
+    Continue --> ChatEnds
+
+    Preserved --> NextChat([Next AI Chat Session])
+    NextChat --> ReadInstructions
+
+    style Start fill:#e1f5ff
+    style ReadInstructions fill:#fff4e6
+    style SeeCritical fill:#ffe6e6
+    style FullContext fill:#e6ffe6
+    style Understands fill:#e6ffe6
+    style WorkOnProject fill:#f0e6ff
+    style RunChatFinish fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style AnalyzeChanges fill:#e1f5ff
+    style AskQuestions fill:#fff4e6
+    style AutoUpdate fill:#e6ffe6,stroke:#4caf50,stroke-width:3px
+    style Preserved fill:#e6ffe6
+    style NextChat fill:#e1f5ff
+
+    classDef readFile fill:#fff4e6,stroke:#ff9800,stroke-width:2px
+    classDef success fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    classDef decision fill:#ffe6e6,stroke:#f44336,stroke-width:2px
+
+    class ReadArch,ReadLog,ReadDecisions,ReadIssues,ReadNext readFile
+    class FullContext,Understands,Preserved success
+    class SeeCritical,ChatEnds decision

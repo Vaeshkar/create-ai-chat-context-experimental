@@ -1,0 +1,58 @@
+%% AI Knowledge Base Structure
+%% File organization and purpose of the .ai/ directory
+
+graph TB
+    subgraph Workflow["🔄 AI Assistant Workflow"]
+        W1[1. Start new chat] --> W2[2. Read ai-instructions/README.md]
+        W2 --> W3[3. See CRITICAL section]
+        W3 --> W4[4. Read .ai/ files]
+        W4 --> W5[5. Gain full context]
+        W5 --> W6[6. Work on project]
+        W6 --> W7[7. Run: npx aic chat-finish]
+        W7 --> W8[8. Auto-update all .ai/ files]
+        W8 --> W9[9. Commit to Git]
+        W9 --> W10[10. Knowledge preserved!]
+    end
+
+    W10 --> Root[toy-store-ai-system/]
+
+    Root --> AIDir[.ai/<br/>AI Knowledge Base]
+    Root --> UnifiedDir[toy-store-unified/]
+
+    AIDir --> README[README.md<br/>How to use this system]
+    AIDir --> Arch[architecture.md<br/>System design, tech stack,<br/>agent structure, data flow]
+    AIDir --> Log[conversation-log.md<br/>Key decisions from<br/>previous chat sessions]
+    AIDir --> Tech[technical-decisions.md<br/>Why we chose X over Y<br/>with rationale]
+    AIDir --> Issues[known-issues.md<br/>Problems encountered<br/>and solutions]
+    AIDir --> Next[next-steps.md<br/>Roadmap, priorities,<br/>what's next]
+
+    UnifiedDir --> ClaudeDir[claude/ai-instructions/]
+    ClaudeDir --> InstructREADME[README.md<br/>⚠️ CRITICAL section:<br/>'Read .ai/ knowledge base FIRST']
+
+    InstructREADME -.->|Points to| AIDir
+
+    Next --> Purpose1[📋 Purpose of Each File]
+
+    Purpose1 --> P1[architecture.md:<br/>Complete system overview<br/>for understanding design]
+    P1 --> P2[conversation-log.md:<br/>Historical decisions<br/>for context continuity]
+    P2 --> P3[technical-decisions.md:<br/>Rationale documentation<br/>for informed choices]
+    P3 --> P4[known-issues.md:<br/>Problem database<br/>for avoiding repetition]
+    P4 --> P5[next-steps.md:<br/>Roadmap tracking<br/>for prioritization]
+
+    style Workflow fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+    style Root fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    style AIDir fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style README fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style Arch fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style Log fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style Tech fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style Issues fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style Next fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style InstructREADME fill:#ffe6e6,stroke:#f44336,stroke-width:3px
+
+    style Purpose1 fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style P1 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style P2 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style P3 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style P4 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style P5 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
