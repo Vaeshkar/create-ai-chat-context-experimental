@@ -31,6 +31,15 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 `create-ai-chat-context` creates a `.ai/` knowledge base in your project that AI assistants read at the start of each chat. Result: AI gets full context immediately. No more re-explaining.
 
+## What's New
+
+- **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
+- **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
+- **v0.5.0** - 🔍 Search, stats, export, and update commands
+- **v0.4.0** - 🤖 GitHub Copilot & Claude Projects integration
+- **v0.3.0** - 🎨 Project-specific templates (Next.js, Python)
+- **v0.2.0** - 📝 Effortless logging, validation, Cursor integration
+
 ## Quick Start
 
 ```bash
@@ -73,15 +82,6 @@ After running `init`, see these files for complete documentation:
 - **`.ai/SETUP_GUIDE.md`** - Comprehensive setup and usage guide
 - **`.ai/TOKEN_MANAGEMENT.md`** - Token usage and optimization tips
 - **`NEW_CHAT_PROMPT.md`** - Quick reference for the one-liner prompt
-
-## What's New
-
-- **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
-- **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
-- **v0.5.0** - 🔍 Search, stats, export, and update commands
-- **v0.4.0** - 🤖 GitHub Copilot & Claude Projects integration
-- **v0.3.0** - 🎨 Project-specific templates (Next.js, Python)
-- **v0.2.0** - 📝 Effortless logging, validation, Cursor integration
 
 ## Links
 
