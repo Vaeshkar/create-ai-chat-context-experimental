@@ -48,18 +48,18 @@ Roadmap and priorities for your project.
 
 ---
 
-## ✅ Completed
+## ✅ Recently Completed (Last 2 Weeks)
 
-- [x] **V0.10.2 - Replace log command recommendations with chat-finish** - 2025-10-01 (Chat #11)
-  - V0.10.0 - 100% automatic chat-finish with git analysis
-  - V0.9.0 - chat-finish command with dev handle tracking
-- [x] **V0.10.2 - Replace log command recommendations with chat-finish** - 2025-10-01 (Chat #10)
-  - V0.10.0 - 100% automatic chat-finish with git analysis
-  - V0.9.0 - chat-finish command with dev handle tracking
-- [x] **V0.10.0 - 100% automatic chat-finish with git analysis** - 2025-10-01 (Chat #9)
-  - V0.9.0 - chat-finish command with dev handle tracking
-  - V0.9.0 - chat-finish command with dev handle tracking
-- [x] Worked on new features, bug fixes, documentation, refactoring - 2025-10-01
+- [x] **v0.11.0 - Verify Before You Advise** - 2025-10-01 (Chat #12)
+  - Prevents AI from suggesting work that's already completed
+  - Adds verification checks before giving recommendations
+- [x] **v0.10.2 - Replace log command recommendations with chat-finish** - 2025-10-01 (Chat #11)
+  - Updated all documentation to recommend chat-finish over manual log
+- [x] **v0.10.1 - Perfect formatting for all .ai/ files** - 2025-10-01 (Chat #10)
+  - Fixed chat-finish to always update next-steps.md when decisions exist
+- [x] **v0.10.0 - 100% automatic chat-finish with git analysis** - 2025-10-01 (Chat #7)
+  - Complete rewrite of chat-finish.js (274 lines)
+  - Removed manual questions, made fully automatic
 - [x] **`chat-finish` command - THE KEY FEATURE!** - 2025-10-01 (v0.9.0)
   - Automatically update all `.ai/` files at end of chat
   - Git diff analysis to detect changes

@@ -16,6 +16,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team collaboration features
 - Analytics dashboard
 
+## [0.11.1] - 2025-10-01
+
+### Fixed
+
+- **🐛 CRITICAL: Fixed duplicate entries in chat-finish** - Prevents duplicate entries in technical-decisions.md and known-issues.md
+  - **Root cause:** chat-finish was looking at commits from "last 2 hours" every time it ran
+  - **Problem:** Running chat-finish multiple times within 2 hours would see the SAME commits and add them again
+  - **Solution:** Track last processed commit in `.ai/.chat-finish-state.json`
+  - **Result:** Only NEW commits since last chat-finish are processed
+- **Improved auto-summary generation** - More specific descriptions instead of vague "Worked on features"
+  - Uses the most recent commit message as main goal (more specific)
+  - Only extracts decisions from `feat:` and `release:` commits
+  - Only extracts issues from `fix:` commits
+  - Removes conventional commit prefixes for cleaner display
+
+### Changed
+
+- **chat-finish now tracks state** - Stores last processed commit hash in `.ai/.chat-finish-state.json`
+- **Added `.ai/.chat-finish-state.json` to .gitignore** - This is a local state file, not shared via git
+- **🤖 AI-OPTIMIZED: Redesigned summary format for AI parsing efficiency** - 52% token reduction!
+  - **Old format:** Human-readable prose (~250 tokens for 10 chats)
+  - **New format:** Pipe-delimited structured data (~120 tokens for 10 chats)
+  - **Format:** `CHAT_NUM|DATE|TYPE|WHAT|WHY|OUTCOME`
+  - **Types:** FEAT, FIX, REFACTOR, DOCS, RELEASE, WORK
+  - **Why:** AI doesn't need natural language - structured data is faster to parse and uses fewer tokens
+  - **Human-readable:** Still understandable (like reading a CSV file)
+  - **Example:** `7|2025-10-01|RELEASE|v0.10.0|Make chat-finish automatic|Users don't want questions|SHIPPED`
+
+### Impact
+
+**Before (v0.9.0 - v0.11.0):**
+
+```
+Chat #7: Commit "feat: v0.10.0", run chat-finish → adds to technical-decisions.md
+Chat #8: Within 2 hours, run chat-finish → sees SAME commit, adds AGAIN
+Chat #9: Still within 2 hours → sees commits from #7 and #8, adds AGAIN
+Result: Duplicate entries everywhere! 😱
+```
+
+**After (v0.11.1):**
+
+```
+Chat #7: Commit "feat: v0.10.0", run chat-finish → adds to technical-decisions.md, saves commit hash
+Chat #8: Run chat-finish → checks last processed commit, only processes NEW commits
+Chat #9: Run chat-finish → only processes commits since last run
+Result: No duplicates! 🎉
+```
+
+**This was a critical bug for an npm package** - Users running chat-finish multiple times would get duplicate entries. Now fixed!
+
 ## [0.11.0] - 2025-10-01
 
 ### Added

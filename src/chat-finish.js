@@ -13,7 +13,7 @@ function question(query) {
   return new Promise((resolve) => rl.question(query, resolve));
 }
 
-function generateAutoSummary(changes) {
+function generateAutoSummary(changes, lastProcessedCommit) {
   const summary = {
     mainGoal: "",
     decisions: "",
@@ -21,62 +21,73 @@ function generateAutoSummary(changes) {
     nextSteps: "",
   };
 
-  // Generate main goal from commits and file changes
-  if (changes.recentCommits.length > 0) {
-    const commitMessages = changes.recentCommits.map((c) => c.message);
+  // Filter out commits that were already processed
+  let newCommits = changes.recentCommits;
+  if (lastProcessedCommit) {
+    const lastIndex = newCommits.findIndex(
+      (c) => c.hash === lastProcessedCommit
+    );
+    if (lastIndex !== -1) {
+      // Only keep commits BEFORE the last processed one (newer commits)
+      newCommits = newCommits.slice(0, lastIndex);
+    }
+  }
 
-    // Detect patterns in commit messages
-    const hasFeature = commitMessages.some((m) => m.match(/feat|feature|add/i));
-    const hasFix = commitMessages.some((m) => m.match(/fix|bug|resolve/i));
-    const hasDocs = commitMessages.some((m) => m.match(/doc|readme|guide/i));
-    const hasRefactor = commitMessages.some((m) =>
-      m.match(/refactor|improve|enhance/i)
+  // If no new commits, use file changes only
+  if (newCommits.length === 0 && changes.hasChanges) {
+    const allFiles = [...changes.modifiedFiles, ...changes.newFiles];
+    const hasTests = allFiles.some((f) => f.match(/test|spec/i));
+    const hasDocs = allFiles.some((f) => f.match(/\.md$|doc/i));
+    const hasConfig = allFiles.some((f) => f.match(/config|\.json$|\.yaml$/i));
+    const hasSource = allFiles.some((f) =>
+      f.match(/\.js$|\.ts$|\.py$|\.java$/i)
     );
 
-    const activities = [];
-    if (hasFeature) activities.push("new features");
-    if (hasFix) activities.push("bug fixes");
-    if (hasDocs) activities.push("documentation");
-    if (hasRefactor) activities.push("refactoring");
+    const fileTypes = [];
+    if (hasSource) fileTypes.push("source code");
+    if (hasTests) fileTypes.push("tests");
+    if (hasDocs) fileTypes.push("documentation");
+    if (hasConfig) fileTypes.push("configuration");
 
-    if (activities.length > 0) {
-      summary.mainGoal = `Worked on ${activities.join(", ")}`;
+    if (fileTypes.length > 0) {
+      summary.mainGoal = `Modified ${fileTypes.join(", ")}`;
     } else {
-      summary.mainGoal = commitMessages[0] || "Development work";
+      summary.mainGoal = "Development work";
     }
 
-    // Extract decisions from commit messages
+    return summary;
+  }
+
+  // Generate main goal from NEW commits only
+  if (newCommits.length > 0) {
+    const commitMessages = newCommits.map((c) => c.message);
+
+    // Use the FIRST (most recent) commit message as the main goal
+    // This is more specific than generic "worked on features"
+    const firstCommit = commitMessages[0];
+
+    // Clean up the commit message (remove conventional commit prefix for display)
+    summary.mainGoal = firstCommit
+      .replace(/^(feat|fix|docs|refactor|test|chore|release):\s*/i, "")
+      .trim();
+
+    // Capitalize first letter
+    summary.mainGoal =
+      summary.mainGoal.charAt(0).toUpperCase() + summary.mainGoal.slice(1);
+
+    // Extract decisions from commit messages (only feat: commits)
     const decisionCommits = commitMessages.filter((m) =>
-      m.match(/feat:|implement|add|create|use|switch|migrate|enhance/i)
+      m.match(/^feat:|^release:/i)
     );
     if (decisionCommits.length > 0) {
       summary.decisions = "- " + decisionCommits.join("\n- ");
     }
 
-    // Extract issues from commit messages
-    const issueCommits = commitMessages.filter((m) =>
-      m.match(/fix:|resolve|bug|issue|problem/i)
-    );
+    // Extract issues from commit messages (only fix: commits)
+    const issueCommits = commitMessages.filter((m) => m.match(/^fix:/i));
     if (issueCommits.length > 0) {
       summary.issues = "- " + issueCommits.join("\n- ");
     }
-  }
-
-  // Analyze file changes
-  const allFiles = [...changes.modifiedFiles, ...changes.newFiles];
-  const hasTests = allFiles.some((f) => f.match(/test|spec/i));
-  const hasDocs = allFiles.some((f) => f.match(/\.md$|doc/i));
-  const hasConfig = allFiles.some((f) => f.match(/config|\.json$|\.yaml$/i));
-  const hasSource = allFiles.some((f) => f.match(/\.js$|\.ts$|\.py$|\.java$/i));
-
-  const fileTypes = [];
-  if (hasSource) fileTypes.push("source code");
-  if (hasTests) fileTypes.push("tests");
-  if (hasDocs) fileTypes.push("documentation");
-  if (hasConfig) fileTypes.push("configuration");
-
-  if (fileTypes.length > 0 && !summary.mainGoal) {
-    summary.mainGoal = `Modified ${fileTypes.join(", ")}`;
   }
 
   return summary;
@@ -170,9 +181,17 @@ async function handleChatFinish(cwd = process.cwd()) {
       );
     }
 
-    // Step 2: Generate auto-summary
+    // Step 2: Get last processed commit to avoid duplicates
+    const lastProcessedCommit = await getLastProcessedCommit(aiDir);
+    if (lastProcessedCommit) {
+      console.log(
+        chalk.gray(`   Last processed commit: ${lastProcessedCommit}\n`)
+      );
+    }
+
+    // Step 3: Generate auto-summary (only from NEW commits)
     console.log(chalk.cyan("🤖 Auto-generating summary from git history...\n"));
-    const autoSummary = generateAutoSummary(changes);
+    const autoSummary = generateAutoSummary(changes, lastProcessedCommit);
 
     if (autoSummary.mainGoal) {
       console.log(chalk.green("📝 Auto-detected:\n"));
@@ -192,7 +211,7 @@ async function handleChatFinish(cwd = process.cwd()) {
       console.log();
     }
 
-    // Step 3: Only ask for dev handle (optional)
+    // Step 4: Only ask for dev handle (optional)
     const chatNumber = await getChatNumber(aiDir);
     console.log(chalk.gray(`   Chat number: ${chatNumber}\n`));
 
@@ -248,6 +267,15 @@ async function handleChatFinish(cwd = process.cwd()) {
     if (updates.changes.newFiles.length > 0) {
       await updateArchitecture(aiDir, updates);
       console.log(chalk.green("   ✅ Updated architecture.md"));
+    }
+
+    // Save the last processed commit to avoid duplicates next time
+    if (updates.changes.recentCommits.length > 0) {
+      const latestCommit = updates.changes.recentCommits[0].hash;
+      await saveLastProcessedCommit(aiDir, latestCommit);
+      console.log(
+        chalk.gray(`   💾 Saved state (last commit: ${latestCommit})`)
+      );
     }
 
     console.log(chalk.green("\n✨ Knowledge base updated successfully!\n"));
@@ -371,6 +399,32 @@ function analyzeGitChanges(cwd) {
       diffStats: { additions: 0, deletions: 0 },
     };
   }
+}
+
+async function getLastProcessedCommit(aiDir) {
+  const statePath = path.join(aiDir, ".chat-finish-state.json");
+
+  if (!fs.existsSync(statePath)) {
+    return null;
+  }
+
+  try {
+    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    return state.lastProcessedCommit || null;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function saveLastProcessedCommit(aiDir, commitHash) {
+  const statePath = path.join(aiDir, ".chat-finish-state.json");
+
+  const state = {
+    lastProcessedCommit: commitHash,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  fs.writeFileSync(statePath, JSON.stringify(state, null, 2), "utf8");
 }
 
 async function getChatNumber(aiDir) {

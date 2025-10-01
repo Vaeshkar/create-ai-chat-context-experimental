@@ -6,132 +6,35 @@ Track problems and their solutions.
 
 ## ✅ Resolved Issues
 
-### Always update next-steps.md when decisions exist
+### Chat-Finish Command Formatting Issues
 
 **Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
+**Date Resolved:** 2025-10-01 (v0.10.1)
 **Severity:** 🟡 Medium
-**Chat:** #11
+**Chats:** #7-11
 
 **Problem:**
-- Always update next-steps.md when decisions exist
-- Improve formatting for all .ai/ files - capitalize and clean prefixes
-- Improve technical-decisions and known-issues formatting
-- V0.9.1 - chat-finish compatibility with older conversation-log formats
+The `chat-finish` command (v0.9.0-v0.10.0) was creating duplicate and poorly formatted entries in `.ai/` files:
+
+- Duplicate entries in technical-decisions.md and known-issues.md
+- Vague descriptions like "Worked on new features, bug fixes, documentation"
+- Missing file change details in conversation log
+- Inconsistent capitalization and prefixes
 
 **Solution:**
-Resolved during Chat #11. Modified 4 file(s).
+Fixed through multiple iterations (chats #7-11):
 
----
+- Improved formatting logic in `src/chat-finish.js`
+- Added proper capitalization for entries
+- Cleaned up prefix handling (feat:, fix:, etc.)
+- Ensured next-steps.md updates when decisions exist
+- Released v0.10.1 with "Perfect formatting for all .ai/ files"
 
-### Always update next-steps.md when decisions exist
+**Prevention:**
 
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-**Chat:** #10
-
-**Problem:**
-- Always update next-steps.md when decisions exist
-- Improve formatting for all .ai/ files - capitalize and clean prefixes
-- Improve technical-decisions and known-issues formatting
-- V0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #10. 
-
----
-
-### Always update next-steps.md when decisions exist
-
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-**Chat:** #9
-
-**Problem:**
-- Always update next-steps.md when decisions exist
-- Improve formatting for all .ai/ files - capitalize and clean prefixes
-- Improve technical-decisions and known-issues formatting
-- V0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #9. 
-
----
-
-### Improve formatting for all .ai/ files - capitalize and clean prefixes
-
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-**Chat:** #8
-
-**Problem:**
-- Improve formatting for all .ai/ files - capitalize and clean prefixes
-- Improve technical-decisions and known-issues formatting
-- V0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #8. 
-
----
-
-### Improve technical-decisions and known-issues formatting
-
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-**Chat:** #7
-
-**Problem:**
-- improve technical-decisions and known-issues formatting
-- v0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #7. 
-
----
-
-### Worked on new features, bug fixes, documentation
-
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-
-**Problem:**
-- fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #6
-
----
-
-### Worked on new features, bug fixes, documentation
-
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-
-**Problem:**
-- fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #5
-
----
-
-### Worked on new features, bug fixes, documentation, refactoring
-
-**Date Discovered:** 2025-10-01
-**Date Resolved:** 2025-10-01
-**Severity:** 🟡 Medium
-
-**Problem:**
-fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
-
-**Solution:**
-Resolved during Chat #4
+- Test `chat-finish` output before committing
+- Review generated entries for quality
+- Manually clean up duplicates when they occur
 
 ---
 
