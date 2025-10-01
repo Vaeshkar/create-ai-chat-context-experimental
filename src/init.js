@@ -2,6 +2,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const chalk = require("chalk");
 const ora = require("ora");
+const { getTokenUsage } = require("./tokens");
 
 async function init(options = {}) {
   const cwd = process.cwd();
@@ -173,6 +174,28 @@ async function init(options = {}) {
     console.log(
       chalk.bold.cyan("🎉 Happy coding with persistent AI context!\n")
     );
+
+    // Check if existing conversation log is large
+    if (!options.force) {
+      const conversationLogPath = path.join(aiDir, "conversation-log.md");
+      if (fs.existsSync(conversationLogPath)) {
+        try {
+          const usage = await getTokenUsage(cwd);
+          if (usage.totalTokens > 15000) {
+            console.log(
+              chalk.yellow("⚠️  Tip: Your existing conversation log is large.")
+            );
+            console.log(
+              chalk.gray(
+                '   Run "npx create-ai-chat-context check" to see token usage.\n'
+              )
+            );
+          }
+        } catch (err) {
+          // Silently ignore errors in token check
+        }
+      }
+    }
   } catch (error) {
     spinner.fail("Failed to initialize");
     throw error;

@@ -6,6 +6,7 @@ const { init } = require("../src/init");
 const { displayTokenUsage } = require("../src/tokens");
 const { archiveConversations } = require("../src/archive");
 const { summarizeConversations } = require("../src/summary");
+const { healthCheck } = require("../src/check");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -30,8 +31,20 @@ program
   });
 
 program
+  .command("check")
+  .description("Quick health check of .ai/ knowledge base")
+  .action(async () => {
+    try {
+      await healthCheck();
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
   .command("tokens")
-  .description("Show token usage breakdown of .ai/ knowledge base")
+  .description("Show detailed token usage breakdown of .ai/ knowledge base")
   .action(async () => {
     try {
       await displayTokenUsage();

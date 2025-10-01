@@ -10,7 +10,19 @@
 Read .ai-instructions first, then help me with [your task].
 ```
 
-#### Continuing from Previous Chat (RECOMMENDED)
+#### With Health Check (RECOMMENDED)
+
+```
+Read .ai-instructions first, check token usage, then help me with [your task].
+```
+
+**What this does:**
+
+- AI reads the knowledge base
+- AI counts conversation entries and warns if high
+- You get proactive token management
+
+#### Continuing from Previous Chat
 
 ```
 Read .ai-instructions first, and help me continue where we left off with chat #[number].
@@ -46,6 +58,44 @@ Before we finish, please update the knowledge base:
 1. Update the conversation log
 2. Summarize what was documented
 3. Tell you what to say at the start of the next chat
+
+---
+
+## 📊 Token Management (Optional)
+
+### Check Token Usage Anytime
+
+```bash
+npx create-ai-chat-context check
+```
+
+**Shows:**
+
+- Current token usage
+- Number of conversation entries
+- Status (healthy/moderate/high)
+- Recommended actions if needed
+
+### When to Check
+
+- Every 10-20 chats
+- When AI responses seem slower
+- Before starting a major feature
+- If you're curious!
+
+### If Token Usage is High
+
+**Archive old conversations:**
+
+```bash
+npx create-ai-chat-context archive --keep 10
+```
+
+**Or summarize them:**
+
+```bash
+npx create-ai-chat-context summary --keep 10
+```
 
 ---
 

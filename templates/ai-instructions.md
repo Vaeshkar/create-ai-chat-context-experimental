@@ -76,6 +76,34 @@ You should understand:
 
 ---
 
+## 📊 TOKEN USAGE CHECK (RECOMMENDED)
+
+After reading the knowledge base, quickly assess if token usage might be high:
+
+1. **Count conversation entries** in `.ai/conversation-log.md`
+
+   - Look for lines starting with `## Chat #`
+   - Count how many entries exist
+
+2. **Inform the user if needed:**
+
+   - **If > 30 entries:** Tell user:
+
+     ```
+     📊 Your conversation log has [X] entries.
+     Run `npx create-ai-chat-context check` to see token usage.
+     ```
+
+   - **If > 50 entries:** Tell user:
+     ```
+     🚨 Your conversation log has [X] entries (large!).
+     Consider running: `npx create-ai-chat-context archive --keep 10`
+     ```
+
+3. **This is optional but helpful** - It prevents token usage from growing too large
+
+---
+
 ## 📝 CRITICAL: UPDATE FILES BEFORE ENDING SESSION
 
 **⚠️ BEFORE you finish helping the user, you MUST update the knowledge base:**

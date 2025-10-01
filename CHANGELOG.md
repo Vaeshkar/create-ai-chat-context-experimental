@@ -15,6 +15,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `log` command to add entries automatically
 - `update` command to sync with latest templates
 
+## [0.1.5] - 2025-10-01
+
+### 🎯 IMPROVEMENT: Proactive Token Management
+
+This release makes token management **proactive** instead of reactive. Users now get automatic warnings and health checks without extra effort.
+
+### Added
+
+- **`check` command** - Quick health check of knowledge base
+  - Shows token usage at a glance
+  - Displays conversation entry count
+  - Shows last updated date
+  - Provides color-coded status (✅ healthy / ⚠️ moderate / 🚨 high)
+  - Gives contextual recommendations
+  - Fast (< 1 second)
+  - Example: `npx create-ai-chat-context check`
+
+### Enhanced
+
+- **`.ai-instructions` template** - Added automatic token usage check
+
+  - AI now counts conversation entries after reading knowledge base
+  - Warns user if > 30 entries: "Run `check` to see token usage"
+  - Alerts user if > 50 entries: "Consider archiving"
+  - Optional but helpful - prevents token bloat
+  - No extra commands needed from user
+
+- **`init` command** - Smart warnings for existing projects
+
+  - Checks token usage after initialization
+  - Warns if existing conversation log is large (> 15,000 tokens)
+  - Suggests running `check` command
+  - Only shows when relevant
+
+- **NEW_CHAT_PROMPT.md** - Added health check workflow
+
+  - New recommended prompt: "Read .ai-instructions first, check token usage, then help me [task]"
+  - Added "Token Management" section with examples
+  - Shows when to check and what to do if usage is high
+
+- **README.md** - Updated with `check` command
+  - Added to Usage section
+  - Updated Token Management section
+  - Shows quick health check as recommended approach
+
+### Why This Update?
+
+**Problem:** Users had to manually remember to check token usage. Easy to forget until it's too late.
+
+**Solution:** Three-layer proactive approach:
+
+1. **`check` command** - Quick health check anytime
+2. **AI auto-check** - AI counts entries and warns user automatically
+3. **Smart warnings** - Contextual tips in existing commands
+
+**Result:** Users get proactive warnings without feeling nagged.
+
+### User Experience
+
+**Before v0.1.5:**
+
+```
+User: [works on project for 50 chats]
+User: [token usage hits 30,000]
+User: "Why is AI slow?"
+User: [manually runs tokens command]
+User: "Oh no, I should have archived earlier!"
+```
+
+**After v0.1.5:**
+
+```
+User: "Read .ai-instructions first, check token usage, then help me add auth"
+AI: "📊 Your conversation log has 32 entries. Run `npx create-ai-chat-context check` to see token usage."
+User: [runs check command]
+Check: "⚠️ Moderate usage. Consider archiving soon."
+User: [archives proactively before it's a problem]
+```
+
+### Commands Summary
+
+```bash
+# Quick health check (NEW!)
+npx create-ai-chat-context check
+
+# Detailed breakdown
+npx create-ai-chat-context tokens
+
+# Archive if needed
+npx create-ai-chat-context archive --keep 10
+```
+
+### Impact
+
+- ✅ Proactive warnings instead of reactive fixes
+- ✅ No extra effort from users (AI does the checking)
+- ✅ Fast health check command (< 1 second)
+- ✅ Contextual tips at natural checkpoints
+- ✅ Prevents token bloat before it's a problem
+
+**Philosophy:** Make token management **helpful, not annoying**.
+
 ## [0.1.4] - 2025-10-01
 
 ### 🚀 NEW FEATURE: Token Management Tools

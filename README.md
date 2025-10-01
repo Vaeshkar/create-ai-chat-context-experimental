@@ -265,13 +265,21 @@ Your `.ai/` knowledge base consumes tokens from the AI's context window:
 
 ### Token Management Commands
 
-Check your current token usage:
+**Quick health check (recommended):**
+
+```bash
+npx create-ai-chat-context check
+```
+
+Shows token usage, conversation count, and status at a glance.
+
+**Detailed token breakdown:**
 
 ```bash
 npx create-ai-chat-context tokens
 ```
 
-Archive old conversations (keeps recent, moves old to archive):
+**Archive old conversations (keeps recent, moves old to archive):**
 
 ```bash
 npx create-ai-chat-context archive --keep 10
@@ -356,7 +364,13 @@ npx create-ai-chat-context --help
 npx create-ai-chat-context --version
 ```
 
-### Check token usage
+### Quick health check
+
+```bash
+npx create-ai-chat-context check
+```
+
+### Check detailed token usage
 
 ```bash
 npx create-ai-chat-context tokens
