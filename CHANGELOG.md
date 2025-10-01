@@ -14,6 +14,156 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `search` command to find information in knowledge base
 - `export` command to share knowledge base
 - `stats` command for analytics
+- VS Code extension (optional)
+
+## [0.4.0] - 2025-10-01
+
+### 🤖 FEATURE: AI Tool Integrations
+
+This release adds zero-effort context loading for GitHub Copilot and Claude Projects, plus improves the existing Cursor integration.
+
+### Added
+
+- **`copilot` command** - GitHub Copilot integration
+
+  - Generates `.github/copilot-instructions.md` file
+  - Auto-loads project context in every Copilot chat
+  - No manual prompting needed
+  - Includes workflow instructions and token management tips
+  - Example: `npx create-ai-chat-context copilot`
+
+- **`claude-project` command** - Claude Projects export
+  - Combines all `.ai/` files into one document
+  - Formatted for Claude Projects knowledge base
+  - Easy copy/paste into Claude.ai
+  - Includes all architecture, decisions, and history
+  - Example: `npx create-ai-chat-context claude-project`
+
+### Enhanced
+
+- **CLI help** - Now shows all available commands including new integrations
+- **Documentation** - Updated with GitHub Copilot and Claude Projects usage
+
+### Why This Update?
+
+**Problem:** Users have to manually prompt AI tools to read their knowledge base files every time they start a new chat. This is tedious and easy to forget.
+
+**Solution:** Generate integration files that automatically load context for popular AI tools.
+
+**Result:** Zero-effort context loading. Your AI assistant has full project context from the start!
+
+### User Experience
+
+**Before v0.4.0:**
+
+```
+User: [Opens GitHub Copilot Chat]
+User: "Please read .ai-instructions and all files in .ai/ directory"
+Copilot: [Reads files]
+User: "Now help me with..."
+```
+
+**After v0.4.0:**
+
+```
+User: npx create-ai-chat-context copilot
+User: [Opens GitHub Copilot Chat]
+Copilot: [Already has full context!]
+User: "Help me with..." [Immediately productive]
+```
+
+### Supported AI Tools
+
+| Tool                | Command          | Integration File                  | Status    |
+| ------------------- | ---------------- | --------------------------------- | --------- |
+| **Cursor**          | `cursor`         | `.cursorrules`                    | ✅ v0.2.0 |
+| **GitHub Copilot**  | `copilot`        | `.github/copilot-instructions.md` | ✅ v0.4.0 |
+| **Claude Projects** | `claude-project` | `CLAUDE_PROJECT.md`               | ✅ v0.4.0 |
+| ChatGPT             | Manual           | Copy/paste `.ai-instructions`     | ✅ Works  |
+| Augment             | Manual           | Copy/paste `.ai-instructions`     | ✅ Works  |
+
+### Commands Summary
+
+```bash
+# GitHub Copilot integration
+npx create-ai-chat-context copilot
+
+# Claude Projects export
+npx create-ai-chat-context claude-project
+
+# Cursor integration (from v0.2.0)
+npx create-ai-chat-context cursor
+
+# Regenerate with --force
+npx create-ai-chat-context copilot --force
+npx create-ai-chat-context claude-project --force
+```
+
+### How to Use
+
+#### GitHub Copilot:
+
+1. Run `npx create-ai-chat-context copilot`
+2. Restart VS Code
+3. Open GitHub Copilot Chat
+4. Context is automatically loaded!
+
+#### Claude Projects:
+
+1. Run `npx create-ai-chat-context claude-project`
+2. Open Claude.ai and create a Project
+3. Go to Project Knowledge
+4. Copy/paste content of `CLAUDE_PROJECT.md`
+5. All chats in that project have context!
+
+#### Cursor:
+
+1. Run `npx create-ai-chat-context cursor`
+2. Restart Cursor
+3. Start a new chat
+4. Context is automatically loaded!
+
+### Impact
+
+- ✅ Zero-effort context loading
+- ✅ No manual prompting needed
+- ✅ Consistent context across all chats
+- ✅ Faster onboarding for new AI tools
+- ✅ Better AI suggestions from the start
+- ✅ Supports 3 major AI coding assistants
+
+### Technical Details
+
+**GitHub Copilot Integration:**
+
+- Creates `.github/copilot-instructions.md`
+- Uses GitHub Copilot's custom instructions feature
+- Automatically read at the start of every chat
+- Includes workflow, token management, and maintenance tips
+
+**Claude Projects Integration:**
+
+- Combines all `.ai/` files into single document
+- Formatted as markdown with clear sections
+- Includes timestamps and regeneration instructions
+- Easy to update when knowledge base changes
+
+**File Management:**
+
+- All generated files are added to `.gitignore`
+- Use `--force` flag to overwrite existing files
+- Files are auto-generated and can be regenerated anytime
+
+### Future Integrations
+
+Based on user demand, we plan to add:
+
+- VS Code extension (native integration)
+- JetBrains IDEs integration
+- Windsurf integration
+- Aider integration
+
+**Request an integration:** Open an issue on GitHub!
 
 ## [0.3.0] - 2025-10-01
 

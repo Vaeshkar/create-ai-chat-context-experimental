@@ -10,6 +10,8 @@ const { healthCheck } = require("../src/check");
 const { addLogEntry } = require("../src/log");
 const { validateKnowledgeBase } = require("../src/validate");
 const { generateCursorRules } = require("../src/cursor");
+const { generateCopilotInstructions } = require("../src/copilot");
+const { generateClaudeProject } = require("../src/claude-project");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -56,6 +58,32 @@ program
   .action(async (options) => {
     try {
       await generateCursorRules(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("copilot")
+  .description("Generate GitHub Copilot instructions for integration")
+  .option("-f, --force", "Overwrite existing copilot-instructions.md file")
+  .action(async (options) => {
+    try {
+      await generateCopilotInstructions(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("claude-project")
+  .description("Generate Claude Projects export")
+  .option("-f, --force", "Overwrite existing CLAUDE_PROJECT.md file")
+  .action(async (options) => {
+    try {
+      await generateClaudeProject(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

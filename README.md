@@ -331,11 +331,36 @@ For detailed guidance, see `.ai/TOKEN_MANAGEMENT.md` after running `init`.
 - Easier to maintain and evolve
 - Clear decision trail
 
-## ✨ New in v0.3.0
+## ✨ New in v0.4.0
 
-### 🎨 Project-Specific Templates
+### 🤖 AI Tool Integrations
 
-Get started faster with templates tailored to your tech stack!
+Zero-effort context loading in your favorite AI tools!
+
+```bash
+# GitHub Copilot integration
+npx create-ai-chat-context copilot
+
+# Claude Projects export
+npx create-ai-chat-context claude-project
+
+# Cursor integration (from v0.2.0)
+npx create-ai-chat-context cursor
+```
+
+**What this does:**
+
+- **GitHub Copilot:** Creates `.github/copilot-instructions.md` that auto-loads context in every Copilot chat
+- **Claude Projects:** Exports all knowledge base files into one document for Claude Projects
+- **Cursor:** Generates `.cursorrules` file for automatic context loading
+
+**Result:** Your AI assistant has full project context from the start - no manual prompting needed!
+
+---
+
+## 🎯 Previous Features
+
+### 🎨 Project-Specific Templates (v0.3.0)
 
 ```bash
 # Next.js/React projects
@@ -343,21 +368,9 @@ npx create-ai-chat-context init --template nextjs
 
 # Python projects
 npx create-ai-chat-context init --template python
-
-# Generic (default)
-npx create-ai-chat-context init
 ```
 
-Each template includes:
-
-- Framework-specific architecture examples
-- Common technical decisions for that stack
-- Relevant best practices
-- Stack-specific patterns
-
----
-
-## 🎯 Previous Features
+Framework-specific architecture and best practices!
 
 ### 📝 Effortless Logging (v0.2.0)
 
