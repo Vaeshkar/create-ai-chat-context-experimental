@@ -7,6 +7,9 @@ const { displayTokenUsage } = require("../src/tokens");
 const { archiveConversations } = require("../src/archive");
 const { summarizeConversations } = require("../src/summary");
 const { healthCheck } = require("../src/check");
+const { addLogEntry } = require("../src/log");
+const { validateKnowledgeBase } = require("../src/validate");
+const { generateCursorRules } = require("../src/cursor");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -24,6 +27,43 @@ program
   .action(async (options) => {
     try {
       await init(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("log")
+  .description("Add a conversation log entry interactively")
+  .action(async () => {
+    try {
+      await addLogEntry();
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("cursor")
+  .description("Generate .cursorrules file for Cursor AI integration")
+  .option("-f, --force", "Overwrite existing .cursorrules file")
+  .action(async (options) => {
+    try {
+      await generateCursorRules(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("validate")
+  .description("Validate knowledge base quality and completeness")
+  .action(async () => {
+    try {
+      await validateKnowledgeBase();
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

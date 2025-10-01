@@ -331,6 +331,40 @@ For detailed guidance, see `.ai/TOKEN_MANAGEMENT.md` after running `init`.
 - Easier to maintain and evolve
 - Clear decision trail
 
+## ✨ New in v0.2.0
+
+### 📝 Effortless Logging
+
+Never forget to update your conversation log again!
+
+```bash
+npx create-ai-chat-context log
+```
+
+Interactive prompts guide you through adding entries - just answer the questions!
+
+### 🔍 Quality Validation
+
+Ensure your knowledge base is complete and customized:
+
+```bash
+npx create-ai-chat-context validate
+```
+
+Get a quality score and recommendations for improvement.
+
+### 🎯 Cursor Integration
+
+Zero-effort context loading in Cursor AI:
+
+```bash
+npx create-ai-chat-context cursor
+```
+
+Generates `.cursorrules` file that automatically loads your project context in every Cursor chat!
+
+---
+
 ## Usage
 
 ### Initialize in existing project
@@ -363,6 +397,30 @@ npx create-ai-chat-context --help
 ```bash
 npx create-ai-chat-context --version
 ```
+
+### Add conversation log entry
+
+```bash
+npx create-ai-chat-context log
+```
+
+Interactive prompts guide you through adding an entry.
+
+### Validate knowledge base quality
+
+```bash
+npx create-ai-chat-context validate
+```
+
+Checks completeness and provides quality score.
+
+### Generate Cursor AI integration
+
+```bash
+npx create-ai-chat-context cursor
+```
+
+Creates `.cursorrules` file for automatic context loading in Cursor.
 
 ### Quick health check
 
