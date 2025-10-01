@@ -10,6 +10,7 @@ const CONFIG_FILE = ".ai/config.json";
 const DEFAULT_CONFIG = {
   preferredModel: null, // User's preferred AI model
   showAllModels: false, // Show all models by default in tokens command
+  useAiNativeFormat: false, // Use AI-native format (85% token reduction) instead of YAML
 };
 
 /**
@@ -87,17 +88,21 @@ async function listConfig(cwd = process.cwd()) {
       `${chalk.bold("Preferred Model:")} ${chalk.cyan(config.preferredModel)}`
     );
   } else {
-    console.log(
-      `${chalk.bold("Preferred Model:")} ${chalk.gray("(not set)")}`
-    );
+    console.log(`${chalk.bold("Preferred Model:")} ${chalk.gray("(not set)")}`);
   }
 
   console.log(
-    `${chalk.bold("Show All Models:")} ${config.showAllModels ? chalk.green("Yes") : chalk.gray("No")}`
+    `${chalk.bold("Show All Models:")} ${
+      config.showAllModels ? chalk.green("Yes") : chalk.gray("No")
+    }`
   );
 
   console.log();
-  console.log(chalk.gray("💡 Tip: Use 'npx aic config set <key> <value>' to change settings"));
+  console.log(
+    chalk.gray(
+      "💡 Tip: Use 'npx aic config set <key> <value>' to change settings"
+    )
+  );
   console.log();
 }
 
@@ -165,14 +170,10 @@ async function handleConfigCommand(action, key, value) {
         const boolValue = value === "true" || value === "1" || value === "yes";
         await setConfigValue("showAllModels", boolValue, cwd);
         console.log(
-          chalk.green(
-            `\n✅ Show all models set to: ${chalk.cyan(boolValue)}\n`
-          )
+          chalk.green(`\n✅ Show all models set to: ${chalk.cyan(boolValue)}\n`)
         );
       } else {
-        console.log(
-          chalk.yellow(`\n⚠️  Unknown config key: ${key}\n`)
-        );
+        console.log(chalk.yellow(`\n⚠️  Unknown config key: ${key}\n`));
         console.log(chalk.gray("Available keys:"));
         console.log(chalk.gray("  - preferredModel"));
         console.log(chalk.gray("  - showAllModels\n"));
@@ -200,4 +201,3 @@ module.exports = {
   listConfig,
   handleConfigCommand,
 };
-

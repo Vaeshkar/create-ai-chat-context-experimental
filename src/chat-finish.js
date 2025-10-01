@@ -3,6 +3,7 @@ const path = require("path");
 const chalk = require("chalk");
 const { execSync } = require("child_process");
 const readline = require("readline");
+const { loadConfig } = require("./config");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -436,11 +437,17 @@ async function getChatNumber(aiDir) {
 
   const content = fs.readFileSync(logPath, "utf8");
 
-  // Find all chat numbers using flexible regex (supports both YAML and Markdown formats)
+  // Find all chat numbers using flexible regex (supports YAML, Markdown, and AI-native formats)
   const markdownMatches = content.match(/^##.*Chat\s*#?(\d+)/gim);
   const yamlMatches = content.match(/^CHAT:\s*(\d+)/gim);
+  // AI-native format: C#|YYYYMMDD|...
+  const aiNativeMatches = content.match(/^(\d+)\|/gim);
 
-  const allMatches = [...(markdownMatches || []), ...(yamlMatches || [])];
+  const allMatches = [
+    ...(markdownMatches || []),
+    ...(yamlMatches || []),
+    ...(aiNativeMatches || []),
+  ];
 
   if (allMatches.length === 0) {
     return 1;
@@ -562,8 +569,43 @@ async function updateConversationLog(aiDir, updates) {
     nextSection = `NEXT:\n${nextItems}\n`;
   }
 
-  // Generate AI-optimized YAML entry
-  const entry = `\`\`\`yaml
+  // Check if AI-native format is enabled
+  const config = await loadConfig();
+  const useAiNative = config.useAiNativeFormat || false;
+
+  let entry;
+
+  if (useAiNative) {
+    // Generate AI-native format (85% token reduction!)
+    // Format: C#|YYYYMMDD|T|TOPIC|WHAT|WHY|O|FILES
+    const dateCompact = updates.timestamp.replace(/-/g, "");
+    const typeCode = type[0]; // First letter: R, F, X, D, W, M
+    const outcomeCode = outcome[0]; // First letter: S, D, R, P, B
+    const topic = updates.mainGoal.substring(0, 40);
+    const what = updates.mainGoal.substring(0, 80);
+    const why = updates.decisions ? updates.decisions.substring(0, 60) : "";
+    const files = updates.files.map((f) => f.split(":")[0].trim()).join(",");
+
+    entry =
+      updates.chatNumber +
+      "|" +
+      dateCompact +
+      "|" +
+      typeCode +
+      "|" +
+      topic +
+      "|" +
+      what +
+      "|" +
+      why +
+      "|" +
+      outcomeCode +
+      "|" +
+      files +
+      "\n\n---\n\n";
+  } else {
+    // Generate AI-optimized YAML entry
+    entry = `\`\`\`yaml
 ---
 CHAT: ${updates.chatNumber}
 DATE: ${updates.timestamp}
@@ -581,6 +623,7 @@ ${filesSection}${nextSection}---
 ---
 
 `;
+  }
 
   // Insert the new entry
   const insertPosition = insertIndex + insertMarker.length;
