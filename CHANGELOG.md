@@ -16,6 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.6.1] - 2025-10-01
+
+### Documentation
+
+- **README.md** - Completely restructured for clarity
+  - Reduced from 419 lines to 101 lines (76% shorter)
+  - New structure: Problem → Solution → Quick Start → Key Commands → Links
+  - Removed overwhelming details, points to full docs in `.ai/` files
+  - Much easier to scan and understand
+  - All detailed documentation moved to files created by `init` command
+
+### Why This Update?
+
+**Problem:** README was too long (419 lines) and overwhelming for new users
+
+**Solution:** Restructured to be concise and scannable, with links to full documentation
+
+**Impact:** Users can understand the package in 30 seconds instead of 5 minutes
+
 ## [0.6.0] - 2025-10-01
 
 ### 🎯 FEATURE: Smart Automation
