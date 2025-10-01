@@ -16,6 +16,7 @@ const { searchKnowledgeBase } = require("../src/search");
 const { showStats } = require("../src/stats");
 const { exportKnowledgeBase } = require("../src/export");
 const { updateKnowledgeBase } = require("../src/update");
+const { installGitHooks } = require("../src/install-hooks");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -215,6 +216,19 @@ program
   .action(async (options) => {
     try {
       await updateKnowledgeBase(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("install-hooks")
+  .description("Install Git hooks for knowledge base maintenance")
+  .option("-f, --force", "Overwrite existing hooks")
+  .action(async (options) => {
+    try {
+      await installGitHooks(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

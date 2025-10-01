@@ -4,6 +4,7 @@ const chalk = require("chalk");
 const ora = require("ora");
 const { getTokenUsage } = require("./tokens");
 const { getTemplate, getTemplateDir, listTemplates } = require("./templates");
+const { detectProjectType, getProjectInfo } = require("./detect");
 
 async function init(options = {}) {
   const cwd = process.cwd();
@@ -11,9 +12,24 @@ async function init(options = {}) {
   const aiInstructions = path.join(cwd, ".ai-instructions");
   const newChatPrompt = path.join(cwd, "NEW_CHAT_PROMPT.md");
 
-  // Get template
-  const templateName = options.template || "default";
+  // Get template (auto-detect if not specified)
+  let templateName = options.template;
   let template;
+  let autoDetected = false;
+
+  if (!templateName) {
+    // Auto-detect project type
+    const spinner = ora("Detecting project type...").start();
+    templateName = await detectProjectType(cwd);
+    autoDetected = true;
+
+    if (templateName !== "default") {
+      const projectInfo = await getProjectInfo(cwd);
+      spinner.succeed(`Detected ${chalk.cyan(templateName)} project`);
+    } else {
+      spinner.info("Using generic template");
+    }
+  }
 
   try {
     template = getTemplate(templateName);
@@ -32,8 +48,11 @@ async function init(options = {}) {
   );
 
   if (templateName !== "default") {
+    const detectionMsg = autoDetected ? " (auto-detected)" : "";
     console.log(
-      chalk.gray(`   Using template: ${chalk.cyan(template.name)}\n`)
+      chalk.gray(
+        `   Using template: ${chalk.cyan(template.name)}${detectionMsg}\n`
+      )
     );
   }
 

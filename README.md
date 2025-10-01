@@ -331,9 +331,34 @@ For detailed guidance, see `.ai/TOKEN_MANAGEMENT.md` after running `init`.
 - Easier to maintain and evolve
 - Clear decision trail
 
-## ✨ New in v0.5.0
+## ✨ New in v0.6.0
 
-### 🔍 Search & Insights
+### 🎯 Smart Automation
+
+Zero-config initialization and automatic reminders!
+
+```bash
+# Auto-detect project type (no --template needed!)
+npx create-ai-chat-context init
+
+# Install Git hooks for automatic reminders
+npx create-ai-chat-context install-hooks
+```
+
+**What this does:**
+
+- **Auto-detection:** Automatically detects Next.js, Python, or Rust projects and uses the right template
+- **Git hooks:** Reminds you to update conversation log when committing code
+- **Zero-config:** Just run `init` and it figures out your project type
+- **Non-blocking:** Git hooks don't prevent commits, just gentle reminders
+
+**Result:** Zero-config initialization and never forget to update your log!
+
+---
+
+## 🎯 Previous Features
+
+### 🔍 Search & Insights (v0.5.0)
 
 Find information instantly and see what you have!
 
@@ -359,10 +384,6 @@ npx create-ai-chat-context update
 - **Update:** Get latest template improvements without starting over
 
 **Result:** Your knowledge base is searchable, measurable, and always up-to-date!
-
----
-
-## 🎯 Previous Features
 
 ### 🤖 AI Tool Integrations (v0.4.0)
 
@@ -499,6 +520,86 @@ npx create-ai-chat-context summary --keep 10
 
 # Keep 15 most recent detailed
 npx create-ai-chat-context summary --keep 15
+```
+
+### Search knowledge base
+
+```bash
+# Search across all .ai/ files
+npx create-ai-chat-context search "authentication"
+
+# Case-sensitive search
+npx create-ai-chat-context search "API" --case-sensitive
+```
+
+### Show statistics
+
+```bash
+# View analytics, quality score, and insights
+npx create-ai-chat-context stats
+```
+
+### Export knowledge base
+
+```bash
+# Export as markdown
+npx create-ai-chat-context export --format markdown
+
+# Export as JSON
+npx create-ai-chat-context export --format json -o backup.json
+
+# Export as HTML
+npx create-ai-chat-context export --format html
+```
+
+### Update templates
+
+```bash
+# Update with latest template improvements
+npx create-ai-chat-context update
+
+# Skip confirmation
+npx create-ai-chat-context update --yes
+```
+
+### Install Git hooks
+
+```bash
+# Install pre-commit and post-commit hooks
+npx create-ai-chat-context install-hooks
+
+# Overwrite existing hooks
+npx create-ai-chat-context install-hooks --force
+```
+
+## All Commands
+
+Quick reference for all available commands:
+
+```bash
+# Setup & Configuration
+npx create-ai-chat-context init                    # Initialize (auto-detects project type)
+npx create-ai-chat-context init --template nextjs  # Initialize with specific template
+npx create-ai-chat-context install-hooks           # Install Git hooks for reminders
+
+# Maintenance
+npx create-ai-chat-context log                     # Add conversation entry
+npx create-ai-chat-context update                  # Update templates
+npx create-ai-chat-context archive --keep 10       # Archive old entries
+npx create-ai-chat-context summary --keep 10       # Summarize old entries
+
+# Analysis & Search
+npx create-ai-chat-context search "query"          # Search knowledge base
+npx create-ai-chat-context stats                   # Show statistics
+npx create-ai-chat-context validate                # Validate quality
+npx create-ai-chat-context check                   # Quick health check
+npx create-ai-chat-context tokens                  # Token usage breakdown
+
+# Export & Integration
+npx create-ai-chat-context export --format md      # Export knowledge base
+npx create-ai-chat-context cursor                  # Cursor AI integration
+npx create-ai-chat-context copilot                 # GitHub Copilot integration
+npx create-ai-chat-context claude-project          # Claude Projects export
 ```
 
 ## Documentation

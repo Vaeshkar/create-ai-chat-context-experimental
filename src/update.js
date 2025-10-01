@@ -3,6 +3,7 @@ const path = require("path");
 const chalk = require("chalk");
 const ora = require("ora");
 const readline = require("readline");
+const { detectTemplateFromKB } = require("./detect");
 
 /**
  * Update knowledge base with latest template improvements
@@ -21,16 +22,18 @@ async function updateKnowledgeBase(options = {}) {
   console.log(chalk.bold.cyan("\n🔄 Checking for template updates...\n"));
 
   // Detect which template is being used
-  const templateType = await detectTemplate(aiDir);
-  console.log(chalk.gray(`   Detected template: ${chalk.cyan(templateType)}\n`));
+  const templateType = await detectTemplateFromKB(aiDir);
+  console.log(
+    chalk.gray(`   Detected template: ${chalk.cyan(templateType)}\n`)
+  );
 
   const templatesDir = path.join(__dirname, "../templates");
-  const templateDir = path.join(templatesDir, templateType === "default" ? "ai" : templateType);
+  const templateDir = path.join(
+    templatesDir,
+    templateType === "default" ? "ai" : templateType
+  );
 
-  const files = [
-    "SETUP_GUIDE.md",
-    "TOKEN_MANAGEMENT.md",
-  ];
+  const files = ["SETUP_GUIDE.md", "TOKEN_MANAGEMENT.md"];
 
   const updatableFiles = [];
 
@@ -78,7 +81,11 @@ async function updateKnowledgeBase(options = {}) {
   updatableFiles.forEach((item, index) => {
     const icon = item.status === "missing" ? "➕" : "🔄";
     const statusColor = item.status === "missing" ? "yellow" : "cyan";
-    console.log(`   ${index + 1}. ${icon} ${chalk[statusColor](item.file)} - ${item.status}`);
+    console.log(
+      `   ${index + 1}. ${icon} ${chalk[statusColor](item.file)} - ${
+        item.status
+      }`
+    );
   });
   console.log();
 
@@ -122,10 +129,18 @@ async function updateKnowledgeBase(options = {}) {
     console.log(chalk.green("\n✅ Knowledge base updated!\n"));
     console.log(chalk.bold("📊 Summary:\n"));
     if (created > 0) {
-      console.log(`   ${chalk.green("➕")} Created: ${chalk.cyan(created)} file${created > 1 ? "s" : ""}`);
+      console.log(
+        `   ${chalk.green("➕")} Created: ${chalk.cyan(created)} file${
+          created > 1 ? "s" : ""
+        }`
+      );
     }
     if (updated > 0) {
-      console.log(`   ${chalk.cyan("🔄")} Updated: ${chalk.cyan(updated)} file${updated > 1 ? "s" : ""}`);
+      console.log(
+        `   ${chalk.cyan("🔄")} Updated: ${chalk.cyan(updated)} file${
+          updated > 1 ? "s" : ""
+        }`
+      );
     }
     console.log();
 
@@ -142,32 +157,6 @@ async function updateKnowledgeBase(options = {}) {
     spinner.fail("Failed to apply updates");
     throw error;
   }
-}
-
-/**
- * Detect which template is being used
- */
-async function detectTemplate(aiDir) {
-  const architecturePath = path.join(aiDir, "architecture.md");
-
-  if (!(await fs.pathExists(architecturePath))) {
-    return "default";
-  }
-
-  const content = await fs.readFile(architecturePath, "utf-8");
-
-  // Check for template-specific markers
-  if (content.includes("Next.js") || content.includes("App Router")) {
-    return "nextjs";
-  }
-  if (content.includes("FastAPI") || content.includes("Django") || content.includes("Flask")) {
-    return "python";
-  }
-  if (content.includes("Cargo") || content.includes("Rust")) {
-    return "rust";
-  }
-
-  return "default";
 }
 
 /**
@@ -190,4 +179,3 @@ function askYesNo(question) {
 module.exports = {
   updateKnowledgeBase,
 };
-

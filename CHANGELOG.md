@@ -14,6 +14,184 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Advanced search with filters
 - Team collaboration features
 - Analytics dashboard
+- AI-powered summarization with API integration
+
+## [0.6.0] - 2025-10-01
+
+### 🎯 FEATURE: Smart Automation
+
+This release completes half-finished features with intelligent auto-detection and Git hooks integration.
+
+### Added
+
+- **Auto-detection of project type** - Smart template selection
+
+  - Automatically detects Next.js projects (checks package.json for `next` or `react`)
+  - Automatically detects Python projects (checks for requirements.txt, pyproject.toml, setup.py, Pipfile, poetry.lock)
+  - Automatically detects Rust projects (checks for Cargo.toml)
+  - Falls back to generic template if no match
+  - Shows "(auto-detected)" message when template is detected
+  - Manual override still available with `--template` flag
+  - Example: `npx create-ai-chat-context init` (auto-detects!)
+
+- **Git hooks integration** - Automatic reminders
+  - `install-hooks` command installs Git hooks
+  - **pre-commit hook**: Reminds you to update conversation log before committing
+  - **post-commit hook**: Suggests logging your commit after it's done
+  - Non-blocking (doesn't prevent commits)
+  - Bypass with `git commit --no-verify`
+  - Easy uninstall: `rm .git/hooks/pre-commit .git/hooks/post-commit`
+  - Example: `npx create-ai-chat-context install-hooks`
+
+### Enhanced
+
+- **`init` command** - Now auto-detects project type
+
+  - No need to specify `--template` for common project types
+  - Detects Next.js, Python, Rust automatically
+  - Shows detection result with spinner
+  - Manual override still works: `--template nextjs`
+
+- **`update` command** - Uses improved detection
+  - Refactored to use centralized detection module
+  - More reliable template detection
+  - Consistent with init command
+
+### Why This Update?
+
+**Problem 1:** Users had to manually specify template type
+**Solution:** Auto-detection checks project files and selects the right template
+
+**Problem 2:** Users forget to update conversation log after coding
+**Solution:** Git hooks provide gentle reminders at commit time
+
+**Problem 3:** Detection logic was duplicated across commands
+**Solution:** Centralized detection module (`src/detect.js`)
+
+### User Experience
+
+**Before v0.6.0:**
+
+```bash
+User: npx create-ai-chat-context init
+# Uses generic template (not ideal for Next.js project)
+
+User: git commit -m "Add feature"
+# No reminder to update log
+# Log gets outdated
+```
+
+**After v0.6.0:**
+
+```bash
+User: npx create-ai-chat-context init
+# ✓ Detected nextjs project
+# Uses Next.js template automatically!
+
+User: git commit -m "Add feature"
+# 📝 Reminder: Update your conversation log!
+# Consider running: npx create-ai-chat-context log
+# ✅ Commit successful!
+```
+
+### Commands Summary
+
+```bash
+# Initialize with auto-detection
+npx create-ai-chat-context init
+
+# Initialize with manual template (override)
+npx create-ai-chat-context init --template python
+
+# Install Git hooks
+npx create-ai-chat-context install-hooks
+
+# Install Git hooks (overwrite existing)
+npx create-ai-chat-context install-hooks --force
+
+# Uninstall Git hooks
+rm .git/hooks/pre-commit
+rm .git/hooks/post-commit
+```
+
+### Auto-Detection Logic
+
+**Next.js/React:**
+
+- Checks `package.json` for `next` dependency
+- Checks `package.json` for `react` dependency (without `next`)
+- Uses `nextjs` template
+
+**Python:**
+
+- Checks for `requirements.txt`
+- Checks for `pyproject.toml`
+- Checks for `setup.py`
+- Checks for `Pipfile`
+- Checks for `poetry.lock`
+- Uses `python` template
+
+**Rust:**
+
+- Checks for `Cargo.toml`
+- Uses `rust` template
+
+**Default:**
+
+- Falls back to generic template if no match
+
+### Git Hooks Behavior
+
+**pre-commit hook:**
+
+1. Runs before `git commit`
+2. Checks if `.ai/conversation-log.md` was modified
+3. If not, shows reminder (but doesn't block commit)
+4. Only shows reminder if code files are being committed
+5. Suggests: `npx create-ai-chat-context log`
+
+**post-commit hook:**
+
+1. Runs after `git commit`
+2. Shows success message
+3. Reminds to update knowledge base
+4. Shows what was just committed
+5. Non-intrusive, just a helpful reminder
+
+### Impact
+
+- ✅ Zero-config initialization (auto-detects project type)
+- ✅ Never forget to update log (Git hooks remind you)
+- ✅ Better defaults for common project types
+- ✅ Consistent detection across commands
+- ✅ Non-blocking reminders (doesn't interrupt workflow)
+- ✅ Easy to bypass when needed
+
+### Technical Details
+
+**New Module: `src/detect.js`**
+
+- `detectProjectType(cwd)` - Auto-detect from project files
+- `detectTemplateFromKB(aiDir)` - Detect from existing KB (for update)
+- `getProjectInfo(cwd)` - Get project name and description
+- `isNextJsProject(cwd)` - Check for Next.js
+- `isPythonProject(cwd)` - Check for Python
+- `isRustProject(cwd)` - Check for Rust
+
+**New Module: `src/install-hooks.js`**
+
+- `installGitHooks(options)` - Install pre-commit and post-commit hooks
+- `generatePreCommitHook()` - Generate hook script
+- `generatePostCommitHook()` - Generate hook script
+- Hooks are shell scripts with color output
+- Executable permissions set automatically (0o755)
+
+**Refactoring:**
+
+- Moved detection logic from `src/update.js` to `src/detect.js`
+- Updated `src/init.js` to use auto-detection
+- Updated `src/update.js` to use centralized detection
+- Consistent detection behavior across all commands
 
 ## [0.5.0] - 2025-10-01
 
