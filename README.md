@@ -1,5 +1,8 @@
 # create-ai-chat-context
 
+![npm version](https://img.shields.io/npm/v/create-ai-chat-context)
+![GitHub tag](https://img.shields.io/github/v/tag/Vaeshkar/create-ai-chat-context)
+
 > Preserve AI chat context and history across sessions
 
 ## The Problem
