@@ -6,6 +6,23 @@ Track problems and their solutions.
 
 ## ✅ Resolved Issues
 
+### Improve formatting for all .ai/ files - capitalize and clean prefixes
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
+**Chat:** #8
+
+**Problem:**
+- Improve formatting for all .ai/ files - capitalize and clean prefixes
+- Improve technical-decisions and known-issues formatting
+- V0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
+Resolved during Chat #8. 
+
+---
+
 ### Improve technical-decisions and known-issues formatting
 
 **Date Discovered:** 2025-10-01

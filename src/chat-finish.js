@@ -238,8 +238,8 @@ async function handleChatFinish(cwd = process.cwd()) {
       console.log(chalk.green("   ✅ Updated known-issues.md"));
     }
 
-    // Update next-steps.md (if next steps mentioned)
-    if (updates.nextSteps) {
+    // Update next-steps.md (always - adds completed items)
+    if (updates.decisions || updates.nextSteps) {
       await updateNextSteps(aiDir, updates);
       console.log(chalk.green("   ✅ Updated next-steps.md"));
     }
