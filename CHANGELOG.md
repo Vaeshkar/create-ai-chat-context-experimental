@@ -15,6 +15,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `log` command to add entries automatically
 - `update` command to sync with latest templates
 
+## [0.1.2] - 2025-10-01
+
+### 🚨 CRITICAL SECURITY FIX
+
+- **REMOVED PRIVATE DATA FROM TEMPLATES** - Templates contained actual project data from toy-store-ai-system
+- **REPLACED WITH GENERIC TEMPLATES** - All templates now use placeholder text
+- **NO MORE DATA LEAKAGE** - Safe to use on any project
+
+### Fixed
+
+- `architecture.md` - Now generic template with placeholders
+- `conversation-log.md` - Now generic template with examples
+- `technical-decisions.md` - Now generic template with structure
+- `known-issues.md` - Now generic template with format
+- `next-steps.md` - Now generic template with sections
+
+### Why This Update?
+
+- **User reported:** Templates contained private project information
+- **Impact:** HIGH - Could leak sensitive data to other projects
+- **Fix:** Replaced all templates with generic placeholders
+- **Status:** SAFE - No more private data in templates
+
+**⚠️ If you installed v0.1.0 or v0.1.1, please update immediately!**
+
 ## [0.1.1] - 2025-09-30
 
 ### Added

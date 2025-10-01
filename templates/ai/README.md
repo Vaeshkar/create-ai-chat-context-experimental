@@ -1,26 +1,26 @@
-# 🚨 AI Knowledge Base - READ THIS FIRST! 🚨
+# AI Knowledge Base - READ THIS FIRST
 
-## ⚠️ STEP 0: INDEX THIS DIRECTORY FIRST ⚠️
+## STEP 0: INDEX THIS DIRECTORY FIRST
 
-**BEFORE responding to the user:**
+BEFORE responding to the user:
 
-1. **Index/read ALL files in this `.ai/` directory**
-2. **Read them in the order specified below**
-3. **Confirm you have the context before starting work**
+1. Index/read ALL files in this `.ai/` directory
+2. Read them in the order specified below
+3. Confirm you have the context before starting work
 
-**This is NOT optional. This is REQUIRED.**
+This is NOT optional. This is REQUIRED.
 
 ---
 
-## ⚠️ CRITICAL: START HERE BEFORE DOING ANYTHING ELSE ⚠️
+## CRITICAL: START HERE BEFORE DOING ANYTHING ELSE
 
-**If you're an AI assistant working on this project, STOP and read these files NOW:**
+If you're an AI assistant working on this project, STOP and read these files NOW:
 
-1. **`architecture.md`** (5 min) - System design, tech stack, agents
-2. **`conversation-log.md`** (3 min) - Previous decisions and context
-3. **`technical-decisions.md`** (5 min) - Why we chose X over Y
+1. `architecture.md` - System design, tech stack
+2. `conversation-log.md` - Previous decisions and context
+3. `technical-decisions.md` - Why we chose X over Y
 
-**DO NOT skip this. You will make uninformed decisions without this context.**
+DO NOT skip this. You will make uninformed decisions without this context.
 
 ---
 
@@ -40,27 +40,24 @@ Each AI chat session should read these files FIRST to understand:
 
 ### Core Architecture
 
-- **`architecture.md`** - System design, agent structure, data flow
-- **`agent-orchestration.md`** - How AI agents work together
-- **`learning-patterns.md`** - AI learning system insights
-
-### Technical Documentation
-
-- **`technical-decisions.md`** - Why we chose X over Y
-- **`api-integrations.md`** - External APIs, keys, SDKs
-- **`database-schema.md`** - Data models and relationships
+- `architecture.md` - System design, tech stack, data flow
+- `technical-decisions.md` - Why we chose X over Y
 
 ### Project Management
 
-- **`conversation-log.md`** - Key decisions from chat sessions
-- **`known-issues.md`** - Problems, workarounds, solutions
-- **`next-steps.md`** - Roadmap, TODOs, priorities
+- `conversation-log.md` - Key decisions from chat sessions
+- `known-issues.md` - Problems, workarounds, solutions
+- `next-steps.md` - Roadmap, TODOs, priorities
 
-### Development Guidelines
+### Optional Files (Create as needed)
 
-- **`code-style.md`** - Coding conventions and patterns
-- **`testing-strategy.md`** - How to test features
-- **`deployment.md`** - How to deploy and monitor
+- `agent-orchestration.md` - How AI agents work together
+- `learning-patterns.md` - AI learning system insights
+- `api-integrations.md` - External APIs, keys, SDKs
+- `database-schema.md` - Data models and relationships
+- `code-style.md` - Coding conventions and patterns
+- `testing-strategy.md` - How to test features
+- `deployment.md` - How to deploy and monitor
 
 ## How to Use
 
@@ -85,38 +82,27 @@ Each AI chat session should read these files FIRST to understand:
 - Use timestamps for time-sensitive information
 - Archive old decisions that are no longer relevant
 
-## Additional Reading
-
-After reading this `.ai/` knowledge base, also check:
-
-- **`../toy-store-unified/claude/ai-instructions/README.md`** - Project-specific instructions
-- **`../toy-store-unified/claude/ai-instructions/PROJECT_OVERVIEW.md`** - Detailed features
-- **`../toy-store-unified/claude/ai-instructions/DESIGN_SYSTEM.md`** - UI/UX design system
-
-These contain project-specific details, design patterns, and coding conventions.
-
 ## Benefits
 
-✅ **No knowledge loss** between chat sessions
-✅ **Faster onboarding** for new AI assistants
-✅ **Better decisions** with full context
-✅ **Reduced repetition** of explanations
-✅ **Team alignment** on architecture and patterns
+- No knowledge loss between chat sessions
+- Faster onboarding for new AI assistants
+- Better decisions with full context
+- Reduced repetition of explanations
+- Team alignment on architecture and patterns
 
 ---
 
 ## Installation
 
-To install this system on a new project, see **`SETUP_GUIDE.md`** in this directory.
-
-Quick install:
+To install this system on a new project:
 
 ```bash
-./.ai/install.sh /path/to/your-new-project
+npx create-ai-chat-context init
 ```
+
+See `SETUP_GUIDE.md` in this directory for detailed instructions.
 
 ---
 
-**Last Updated:** 2025-10-30
-**Maintained By:** Dennis (AI Orchestrator Engineer)
-**Version:** 1.0 (Production-ready ✅)
+**Last Updated:** [Date]
+**Maintained By:** [Your Name/Team]
