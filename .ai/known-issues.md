@@ -16,6 +16,20 @@ Track problems and their solutions.
 - fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
 
 **Solution:**
+Resolved during Chat #6
+
+---
+
+### Worked on new features, bug fixes, documentation
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
+
+**Problem:**
+- fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
 Resolved during Chat #5
 
 ---

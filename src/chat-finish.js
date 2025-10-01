@@ -470,42 +470,80 @@ async function updateTechnicalDecisions(aiDir, updates) {
   const decisionsPath = path.join(aiDir, "technical-decisions.md");
   let content = fs.readFileSync(decisionsPath, "utf8");
 
+  // Extract a better title from decisions
+  let title = updates.mainGoal;
+  if (updates.decisions) {
+    // Try to extract a meaningful title from the first decision
+    const firstDecision = updates.decisions.split("\n")[0].replace(/^-\s*/, "");
+    // Remove conventional commit prefix and use the message
+    const cleanTitle = firstDecision
+      .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+      .trim();
+    if (cleanTitle.length > 10 && cleanTitle.length < 100) {
+      title = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+    }
+  }
+
   // Find insertion point (before "## Template for New Decisions")
   const insertMarker = "## Template for New Decisions";
   const insertIndex = content.indexOf(insertMarker);
 
+  // Create a more detailed entry
+  const decisionsList = updates.decisions
+    ? updates.decisions
+        .split("\n")
+        .filter((d) => d.trim())
+        .map((d) =>
+          d
+            .replace(/^-\s*/, "")
+            .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+        )
+        .map((d) => `- ${d}`)
+        .join("\n")
+    : "";
+
   if (insertIndex === -1) {
     // Append at the end
-    const entry = `\n## ${updates.mainGoal}
+    const entry = `\n## ${title}
 
 **Date:** ${updates.timestamp}
 **Status:** ✅ Implemented
+**Chat:** #${updates.chatNumber}
 
 ### Decision
 
-${updates.decisions}
+${decisionsList || updates.mainGoal}
 
 ### Impact
 
-- ${updates.mainGoal}
+Implemented during Chat #${updates.chatNumber}. ${
+      updates.changes.filesChanged > 0
+        ? `Modified ${updates.changes.filesChanged} file(s).`
+        : ""
+    }
 
 ---
 
 `;
     content += entry;
   } else {
-    const entry = `## ${updates.mainGoal}
+    const entry = `## ${title}
 
 **Date:** ${updates.timestamp}
 **Status:** ✅ Implemented
+**Chat:** #${updates.chatNumber}
 
 ### Decision
 
-${updates.decisions}
+${decisionsList || updates.mainGoal}
 
 ### Impact
 
-- ${updates.mainGoal}
+Implemented during Chat #${updates.chatNumber}. ${
+      updates.changes.filesChanged > 0
+        ? `Modified ${updates.changes.filesChanged} file(s).`
+        : ""
+    }
 
 ---
 
@@ -527,22 +565,53 @@ async function updateKnownIssues(aiDir, updates) {
   const issuesPath = path.join(aiDir, "known-issues.md");
   let content = fs.readFileSync(issuesPath, "utf8");
 
+  // Extract a better title from issues
+  let title = updates.mainGoal;
+  if (updates.issues) {
+    const firstIssue = updates.issues.split("\n")[0].replace(/^-\s*/, "");
+    const cleanTitle = firstIssue
+      .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+      .trim();
+    if (cleanTitle.length > 10 && cleanTitle.length < 100) {
+      title = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+    }
+  }
+
+  // Format issues list
+  const issuesList = updates.issues
+    ? updates.issues
+        .split("\n")
+        .filter((i) => i.trim())
+        .map((i) =>
+          i
+            .replace(/^-\s*/, "")
+            .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+        )
+        .map((i) => `- ${i}`)
+        .join("\n")
+    : "";
+
   // Add to resolved issues section
   const insertMarker = "## ✅ Resolved Issues\n\n";
   const insertIndex = content.indexOf(insertMarker);
 
   if (insertIndex !== -1) {
-    const entry = `### ${updates.mainGoal}
+    const entry = `### ${title}
 
 **Date Discovered:** ${updates.timestamp}
 **Date Resolved:** ${updates.timestamp}
 **Severity:** 🟡 Medium
+**Chat:** #${updates.chatNumber}
 
 **Problem:**
-${updates.issues}
+${issuesList || updates.issues}
 
 **Solution:**
-Resolved during Chat #${updates.chatNumber}
+Resolved during Chat #${updates.chatNumber}. ${
+      updates.changes.filesChanged > 0
+        ? `Modified ${updates.changes.filesChanged} file(s).`
+        : ""
+    }
 
 ---
 

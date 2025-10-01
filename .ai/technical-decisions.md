@@ -247,6 +247,24 @@ Create separate COMMANDS.md and CONFIGURATION.md files instead of putting everyt
 ---
 
 
+## Worked on new features, bug fixes, documentation
+
+**Date:** 2025-10-01
+**Status:** ✅ Implemented
+
+### Decision
+
+- feat: v0.10.0 - 100% automatic chat-finish with git analysis
+- feat: v0.9.0 - chat-finish command with dev handle tracking
+- feat: v0.9.0 - chat-finish command with dev handle tracking
+
+### Impact
+
+- Worked on new features, bug fixes, documentation
+
+---
+
+
 ## Template for New Decisions
 
 ```markdown
