@@ -52,11 +52,19 @@ vim .ai/technical-decisions.md
 git add .ai/ .ai-instructions NEW_CHAT_PROMPT.md
 git commit -m "feat: Add .ai/ knowledge base system"
 
-# In your next AI chat, use this prompt:
+# At START of AI chat, use this prompt:
 "Read .ai-instructions first, then help me with [your task]."
+
+# At END of chat (IMPORTANT!), ask AI to update:
+"Before we finish, please update .ai/conversation-log.md with what we accomplished today."
+
+# For subsequent chats, use:
+"Read .ai-instructions first, and help me continue where we left off with chat #[number]."
 ```
 
-That's it. AI now has full context.
+That's it. AI now has full context and knows where previous chats left off.
+
+**💡 Pro Tip:** Always ask the AI to update the conversation log at the END of each chat. This ensures the next chat has full context!
 
 ## What It Creates
 
@@ -102,8 +110,22 @@ This package is universally compatible with every AI coding assistant:
 
 **ChatGPT / Claude / Augment:**
 
+First chat:
+
 ```
-Read .ai-instructions first, then help me add a new feature to the authentication system.
+Read .ai-instructions first, then help me add authentication to my app.
+```
+
+Continuing from previous chat:
+
+```
+Read .ai-instructions first, and help me continue where we left off with chat #1.
+```
+
+Or combine both:
+
+```
+Read .ai-instructions first, continue from chat #2, then help me add user profiles.
 ```
 
 **Cursor:**
@@ -143,9 +165,59 @@ Read .ai-instructions first, then help me with [your task].
 
 `.ai-instructions` → `.ai/` directory → Full context
 
-### 5. Save time per chat
+### 5. AI updates the conversation log
+
+At the end of each session, AI updates `.ai/conversation-log.md` with what was accomplished.
+
+### 6. Next chat continues seamlessly
+
+```
+Read .ai-instructions first, and help me continue where we left off with chat #1.
+```
+
+AI reads the conversation log and knows exactly where to continue.
+
+### 7. Save time per chat
 
 No more re-explaining architecture, decisions, or history.
+
+---
+
+## 🔄 Chat Continuity Example
+
+**Chat #1:**
+
+```
+You (START): "Read .ai-instructions first, then help me add authentication."
+AI: [Reads knowledge base, adds authentication]
+
+You (END): "Before we finish, update .ai/conversation-log.md with what we did."
+AI: [Updates conversation log with authentication work]
+```
+
+**Chat #2:**
+
+```
+You (START): "Read .ai-instructions first, continue from chat #1, then add user profiles."
+AI: [Reads conversation-log.md, sees auth was added, builds profiles using existing auth]
+
+You (END): "Before we finish, update the conversation log."
+AI: [Updates log with user profile work]
+```
+
+**Chat #3:**
+
+```
+You (START): "Read .ai-instructions first, continue from chat #2, then add password reset."
+AI: [Knows about auth + profiles, adds password reset feature]
+
+You (END): "Update the knowledge base before we finish."
+AI: [Updates log with password reset work]
+```
+
+**Result:** Each chat builds on previous work. No context loss. No re-explaining.
+
+**🔑 Key:** Always ask AI to update the conversation log at the END of each chat!
 
 ## Benefits
 

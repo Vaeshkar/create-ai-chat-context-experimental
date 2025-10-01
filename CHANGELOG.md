@@ -15,6 +15,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `log` command to add entries automatically
 - `update` command to sync with latest templates
 
+## [0.1.3] - 2025-10-01
+
+### 🎯 MAJOR IMPROVEMENT: Chat Continuity & Better Instructions
+
+This release significantly improves how AI assistants maintain context across chat sessions.
+
+### Enhanced
+
+- **`.ai-instructions` template** - Completely rewritten to be generic and universal
+
+  - Removed project-specific content (was referencing "toy-store-unified")
+  - Added MANDATORY workflow section (START → DURING → END)
+  - Added CRITICAL reminders to update files before ending session
+  - Provided exact template for updating conversation-log.md
+  - Multiple warnings emphasizing importance of updates
+
+- **`conversation-log.md` template** - Much clearer instructions for AI assistants
+
+  - Added explicit instructions at the top for when to read/update
+  - Provided detailed template with concrete examples
+  - Added tips for writing good entries
+  - Added reminder section with step-by-step update process
+
+- **`NEW_CHAT_PROMPT.md`** - New recommended prompts for chat continuity
+
+  - Added: "Read .ai-instructions first, and help me continue where we left off with chat #[number]"
+  - Added: "Read .ai-instructions first, continue from chat #[number], then help me [task]"
+  - Marked continuity prompts as RECOMMENDED and BEST
+  - Added complete workflow example showing Chat #1 → #2 → #3
+
+- **`README.md`** - Better documentation of chat continuity feature
+  - Added continuity prompts to Quick Start section
+  - Updated Usage Examples with first chat vs. continuing chat
+  - Added new section: "🔄 Chat Continuity Example"
+  - Shows concrete example of how Chat #1 → #2 → #3 flow works
+
+### Why This Update?
+
+**Problem:** The original `.ai-instructions` template was copied from a specific project and contained:
+
+- References to "toy-store-unified" project
+- Specific tech stack (Next.js, TypeScript, PostgreSQL)
+- Mentions of "19+ chat sessions" and specific decisions
+- This confused AI assistants when used in new projects
+
+**Solution:**
+
+- Made all templates truly generic and universal
+- Added explicit workflow instructions for AI assistants
+- Emphasized the importance of updating conversation-log.md
+- Provided recommended prompts that make continuity explicit
+
+**Result:**
+
+- AI assistants now understand they MUST update files at end of session
+- Users can explicitly tell AI to continue from previous chat
+- Much better context preservation across sessions
+- Clear examples of how Chat #1 → #2 → #3 should work
+
+### Recommended Prompts
+
+**First chat:**
+
+```
+Read .ai-instructions first, then help me with [your task].
+```
+
+**Continuing from previous chat (RECOMMENDED):**
+
+```
+Read .ai-instructions first, and help me continue where we left off with chat #[number].
+```
+
+**Best option (most explicit):**
+
+```
+Read .ai-instructions first, continue from chat #[number], then help me [specific task].
+```
+
+### Impact
+
+- ✅ Better chat continuity across sessions
+- ✅ AI assistants know exactly what to do
+- ✅ Explicit reminders to update knowledge base
+- ✅ Clear workflow: START → DURING → END
+- ✅ Users can reference specific previous chats
+- ✅ No more confusion from project-specific templates
+
+**⚠️ If you installed v0.1.0, v0.1.1, or v0.1.2, consider re-running `init --force` to get the improved templates!**
+
 ## [0.1.2] - 2025-10-01
 
 ### 🚨 CRITICAL SECURITY FIX

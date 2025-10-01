@@ -1,86 +1,204 @@
 # 🚨 CRITICAL INSTRUCTIONS FOR AI ASSISTANTS 🚨
 
-## ⚠️ STEP 0: INDEX PROJECT FILES FIRST ⚠️
-
-**BEFORE responding to the user, you MUST:**
-
-1. **Index/read this file** (`.ai-instructions`) - You're reading it now ✓
-2. **Index/read the `.ai/` directory** - All files in that folder
-3. **Read the required files below** - In the specified order
-
-**DO NOT skip the indexing step. DO NOT start working without context.**
-
----
-
 ## ⚠️ READ THIS FIRST - BEFORE DOING ANYTHING ELSE ⚠️
 
 **STOP! Before you start working on this project, you MUST read the knowledge base.**
+
+This project uses a `.ai/` knowledge base system to preserve context across chat sessions.
 
 ---
 
 ## 📚 REQUIRED READING (IN THIS ORDER):
 
-### 1. **`.ai/architecture.md`** (5 minutes)
+### 1. **`.ai/README.md`** (2 minutes)
+
+- Overview of the knowledge base system
+- How to use and maintain these files
+- Purpose and structure
+
+### 2. **`.ai/architecture.md`** (5 minutes)
 
 - Complete system architecture
-- Tech stack (Next.js, TypeScript, PostgreSQL, OpenAI)
-- Agent structure (12 → 4 consolidation)
-- Data flow and performance requirements
-
-### 2. **`.ai/conversation-log.md`** (3 minutes)
-
-- Key decisions from previous chat sessions
-- What was accomplished in Chat #19
-- Historical context and rationale
+- Tech stack and dependencies
+- Component structure
+- Data flow and integrations
 
 ### 3. **`.ai/technical-decisions.md`** (5 minutes)
 
 - Why we chose X over Y
-- All-in-one Next.js app (not microservices)
-- Hybrid data strategy (JSON → Database)
-- No TypeScript `any` types (strictly enforced)
-- SessionID-based tracking (GDPR compliance)
+- Key architectural decisions
+- Trade-offs and rationale
+- Coding standards and conventions
+
+### 4. **`.ai/conversation-log.md`** (3 minutes)
+
+- Key decisions from previous chat sessions
+- What was accomplished and when
+- Historical context and evolution
+
+### 5. **`.ai/known-issues.md`** (3 minutes)
+
+- Current problems and their solutions
+- Workarounds and limitations
+- Things to avoid
+
+### 6. **`.ai/next-steps.md`** (2 minutes)
+
+- Planned features and improvements
+- Current priorities
+- Roadmap and future direction
 
 ---
 
 ## 🎯 WHY THIS MATTERS:
 
-**19+ chat sessions have built this project.**
-
-Each chat loses context when it ends. The `.ai/` directory preserves institutional knowledge so you don't have to:
+Each chat session loses context when it ends. The `.ai/` directory preserves institutional knowledge so you don't have to:
 
 - ❌ Ask the user to explain the architecture
 - ❌ Make decisions that contradict previous choices
 - ❌ Solve problems that were already solved
 - ❌ Waste time re-learning the project
 
-**Reading these files will save 30+ minutes of explanation.**
+**Reading these files will save significant time and provide full context.**
 
 ---
 
 ## ✅ AFTER READING:
 
-You should know:
+You should understand:
 
-- ✅ The agent orchestration system (OrchestratorV2, UnifiedSearchAgent, etc.)
+- ✅ The project architecture and structure
 - ✅ Why certain technical choices were made
 - ✅ What problems have been solved
 - ✅ What's planned next
-- ✅ The user's identity as "AI Orchestrator Engineer"
-- ✅ GDPR compliance requirements
-- ✅ Performance targets (2-4 seconds response time)
+- ✅ Current issues and their workarounds
+- ✅ Coding standards and conventions
 
 ---
 
-## 📝 WHEN YOU MAKE DECISIONS:
+## 📝 CRITICAL: UPDATE FILES BEFORE ENDING SESSION
 
-**Update the knowledge base:**
+**⚠️ BEFORE you finish helping the user, you MUST update the knowledge base:**
 
-- Add key insights to `.ai/conversation-log.md`
-- Document solved problems in `.ai/known-issues.md`
-- Update roadmap in `.ai/next-steps.md`
+### 1. **ALWAYS Update `.ai/conversation-log.md`:**
 
-**This preserves knowledge for the next AI assistant.**
+Add a new entry at the TOP of the file (most recent first):
+
+```markdown
+## Chat #X - [Today's Date] - [Brief Topic]
+
+### What We Did
+
+- [List all accomplishments, changes, features added]
+- [Be specific: "Added login feature" not "worked on auth"]
+
+### Key Decisions
+
+- **[Decision]:** [Why we chose this approach]
+
+### Problems Solved
+
+- **[Problem]:** [Solution we implemented]
+
+### Next Steps
+
+- [What should be done in the next session]
+- [Unfinished work or follow-ups]
+```
+
+**This is NOT optional. The next AI session depends on this!**
+
+### 2. **Update `.ai/technical-decisions.md` (if applicable):**
+
+- New architectural decisions
+- Technology choices and rationale
+- Updated coding standards or patterns
+
+### 3. **Document in `.ai/known-issues.md` (if applicable):**
+
+- New problems discovered
+- Solutions or workarounds found
+- Issues that were resolved (mark as RESOLVED)
+
+### 4. **Adjust `.ai/next-steps.md` (if applicable):**
+
+- Mark completed tasks as DONE
+- Add new priorities or features
+- Update roadmap based on progress
+
+---
+
+## 🔄 SESSION WORKFLOW (MANDATORY):
+
+### **START of Session:**
+
+1. ✅ Read `.ai-instructions` (you're doing this now)
+2. ✅ Read ALL files in `.ai/` directory
+3. ✅ Check `.ai/conversation-log.md` to see what the previous chat accomplished
+4. ✅ Check `.ai/next-steps.md` to see what needs to be done
+
+### **DURING Session:**
+
+- Make informed decisions based on the knowledge base
+- Follow established patterns and conventions
+- Ask user for clarification if something contradicts the docs
+
+### **END of Session (CRITICAL):**
+
+**⚠️ IMPORTANT: The user must explicitly ask you to update the files!**
+
+When the user says something like:
+
+- "Before we finish, update the conversation log"
+- "Please update .ai/conversation-log.md with what we did"
+- "Update the knowledge base before we end"
+
+Then you MUST:
+
+1. 🚨 **Update `.ai/conversation-log.md`** with this session's work
+
+   - Add entry at the TOP of the file
+   - Use the template format provided in that file
+   - Be specific about what was accomplished
+
+2. 🚨 **Update other `.ai/` files** if you made important decisions
+
+   - `.ai/technical-decisions.md` - New architectural choices
+   - `.ai/known-issues.md` - Problems solved or discovered
+   - `.ai/next-steps.md` - Updated priorities
+
+3. 🚨 **Confirm updates** by telling the user:
+   - "I've updated the knowledge base for the next session"
+   - "Summary of what I documented: [brief summary]"
+   - "Next time, start with: 'Read .ai-instructions first, continue from chat #X, then [next task]'"
+
+**If you don't update the files, the next AI session will have NO IDEA what you did!**
+
+---
+
+## 💡 RECOMMENDED USER WORKFLOW:
+
+### **For Users (Human):**
+
+**At START of chat:**
+
+```
+Read .ai-instructions first, then help me [your task].
+```
+
+**At END of chat (IMPORTANT!):**
+
+```
+Before we finish, please update .ai/conversation-log.md with what we accomplished today.
+```
+
+**At START of next chat:**
+
+```
+Read .ai-instructions first, continue from chat #[number], then help me [next task].
+```
+
+This ensures continuity across sessions!
 
 ---
 
@@ -97,45 +215,42 @@ If you start working without reading the `.ai/` files:
 
 ---
 
-## 📂 Additional Instructions (ALSO IMPORTANT):
+## 🔄 WORKFLOW:
 
-After reading the `.ai/` knowledge base, also read these for detailed context:
-
-### **Project-Specific Instructions:**
-
-1. **`toy-store-unified/claude/ai-instructions/README.md`**
-
-   - Project-specific AI instructions
-   - How to work with this codebase
-   - Important conventions and patterns
-
-2. **`toy-store-unified/claude/ai-instructions/PROJECT_OVERVIEW.md`**
-
-   - Detailed project overview
-   - Feature descriptions
-   - System capabilities
-   - Business context
-
-3. **`toy-store-unified/claude/ai-instructions/DESIGN_SYSTEM.md`**
-   - UI/UX design system
-   - Component patterns
-   - Styling conventions
-   - User preferences (colors, spacing, etc.)
-
-**These files contain:**
-
-- ✅ How to write code for this project
-- ✅ Design patterns and conventions
-- ✅ UI/UX preferences (Dennis's specific preferences!)
-- ✅ Component structure and styling
-- ✅ Business logic and features
-
-**Reading order:**
-
-1. First: `.ai/` knowledge base (architecture, decisions, issues)
-2. Then: `claude/ai-instructions/` (project details, design system)
+1. **Start of session:** Read all `.ai/` files to get context
+2. **During work:** Make informed decisions based on the knowledge base
+3. **End of session:** Update relevant `.ai/` files with new information
+4. **Next session:** The next AI (or you) will have full context
 
 ---
 
-**Last Updated:** 2025-09-30
-**Maintained By:** Dennis (AI Orchestrator Engineer)
+## 📂 FILE STRUCTURE:
+
+```
+.ai/
+├── README.md                 # Overview of the system
+├── architecture.md           # System architecture
+├── technical-decisions.md    # Why we chose X over Y
+├── conversation-log.md       # Session history
+├── known-issues.md          # Problems and solutions
+└── next-steps.md            # Roadmap and priorities
+```
+
+---
+
+**Last Updated:** [Update this date when you modify the knowledge base]
+**Maintained By:** [Project maintainer name]
+
+---
+
+## 💡 TIPS FOR AI ASSISTANTS:
+
+- **Be thorough:** Read all files, don't skim
+- **Be consistent:** Follow established patterns and decisions
+- **Be helpful:** Update the knowledge base for future sessions
+- **Be respectful:** Don't contradict previous decisions without good reason
+- **Ask questions:** If something is unclear, ask the user to clarify and update the docs
+
+---
+
+**Now that you've read this, proceed to read the `.ai/` directory files in the order listed above.**
