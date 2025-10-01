@@ -40,192 +40,32 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
-```yaml
----
-CHAT: 13
-DATE: 2025-10-01
-TYPE: FEAT
-TOPIC: AI-optimized summary format + duplicate entry fix
-
-WHAT:
-  - Redesigned summary command to use pipe-delimited structured data (52% token reduction)
-  - Fixed critical bug in chat-finish causing duplicate entries
-  - Added state tracking via .ai/.chat-finish-state.json
-  - Updated conversation log template to AI-optimized YAML format
-
-WHY:
-  - User insight: "Write for AI, not humans" - summaries are FOR AI parsing, not human reading
-  - Structured data (CHAT|DATE|TYPE|TOPIC|WHAT|WHY|OUTCOME) is faster to parse than prose
-  - Duplicate bug: chat-finish used "last 2 hours" with no state, processed same commits repeatedly
-  - Alternative considered: Keep human-readable format (rejected - wastes tokens)
-
-OUTCOME: SHIPPED
-
-FILES:
-  - src/summary.js: Complete redesign for pipe-delimited format
-  - src/chat-finish.js: Added state tracking, improved summary generation
-  - .ai/conversation-log.md: Updated template to YAML format, cleaned duplicates
-  - .ai/technical-decisions.md: Removed 132 lines of duplicates
-  - .ai/known-issues.md: Consolidated 130 lines of duplicates
-  - .gitignore: Added .ai/.chat-finish-state.json
-  - package.json: Version bump to 0.11.1
-  - CHANGELOG.md: Comprehensive v0.11.1 entry
-  - EXAMPLE-AI-OPTIMIZED-SUMMARY.md: Before/after comparison (NEW)
-  - .ai/AI-NEEDS-FROM-LOGS.md: What AI needs from logs (NEW)
-  - BUGFIX-v0.11.1.md: Root cause analysis (NEW)
-
-NEXT:
-  - Test summary command with real project data
-  - Consider updating chat-finish to generate YAML format entries
-  - Publish v0.11.1 to npm
----
-```
-
----
-
 ## 📋 Summary of Earlier Chats (AI-Optimized Format)
 
-> Range: Chat #12 - #10
+> Range: Chat #9 - #5
 > Format: CHAT_NUM|DATE|TYPE|TOPIC|WHAT|WHY|OUTCOME
 > Types: FEAT=feature, FIX=bugfix, REFACTOR=refactor, DOCS=documentation, RELEASE=version
 > Purpose: Structured data for AI parsing - optimized for token efficiency
 
 ```
-12|2025-10-01|RELEASE|v0.11.0: Verify Before Please|Prevents AI from suggesting work that's already completed||SHIPPED
-11|2025-10-01|RELEASE|v0.10.2: Replace log with chat-finish|Deprecate manual log command in favor of automatic chat-finish||SHIPPED
-10|2025-10-01|FIX|v0.10.1: Perfect timing|chat-finish wasn't updating next-steps.md when decisions were made||RESOLVED
+9|2025-10-01|REFACTOR|Formatting improvements|Fixed chat-finish to always update next-steps.md when decisions exist||
+8|2025-10-01|FIX|Capitalization and prefix cleanup|Cleaned up prefix handling (feat:, fix:, etc.)||
+7|2025-10-01|WORK|work|**Make chat-finish 100% automatic instead of interactive**||DECIDED
+6|2025-10-01|FEAT|Worked on new features, bug fixes, documentation|feat: v0.10.0 - 100% automatic chat-finish with git analysis||RESOLVED
+5|2025-10-01|FEAT|Worked on new features, bug fixes, documentation|feat: v0.9.0 - chat-finish command with dev handle tracking||RESOLVED
 ```
 
 ---
 
-## Chat #9 - [Date: 2025-10-01] - @vaeshkar - Formatting improvements
-
-### What We Did
-
-- Fixed chat-finish to always update next-steps.md when decisions exist
-- Improved formatting logic in src/chat-finish.js
-
-### Files Changed
-
-- src/chat-finish.js - Updated logic
-- .ai/conversation-log.md - Updated
-- .ai/known-issues.md - Updated
-- .ai/technical-decisions.md - Updated
-
----
-
-## Chat #8 - [Date: 2025-10-01] - @vaeshkar - Capitalization and prefix cleanup
-
-### What We Did
-
-- Improved formatting for all .ai/ files
-- Added proper capitalization for entries
-- Cleaned up prefix handling (feat:, fix:, etc.)
-
-### Files Changed
-
-- src/chat-finish.js - Enhanced formatting logic (83 lines added)
-- .ai/conversation-log.md - Updated
-- .ai/known-issues.md - Updated
-- .ai/technical-decisions.md - Updated
-
----
-
-## Chat #7 - [Date: 2025-10-01] - @vaeshkar - v0.10.0: 100% Automatic chat-finish
-
-### What We Did
-
-- **Released v0.10.0** - 100% automatic chat-finish with git analysis
-  - Completely rewrote src/chat-finish.js (274 lines, major refactor)
-  - Added automatic git diff analysis
-  - Removed manual questions, made it fully automatic
-  - Analyzes changed files and generates smart summaries
-  - Updates all .ai/ files automatically
-
-### Key Decisions
-
-- **Make chat-finish 100% automatic instead of interactive**
-  - Rationale: Users don't want to answer questions after 4-hour sessions
-  - Alternative considered: Keep interactive questions (rejected - too manual)
-  - Decision: Use git diff analysis to automatically detect what happened
-
-### Files Changed
-
-- src/chat-finish.js - Complete rewrite (274 lines, +220 insertions, -52 deletions)
-- .ai/conversation-log.md - Updated
-- .ai/known-issues.md - Updated
-- .ai/next-steps.md - Updated
-- .ai/technical-decisions.md - Updated
-- CHANGELOG.md - Added v0.10.0 entry
-- README.md - Updated version
-- package.json - Version bump to 0.10.0
-
----
-
-## Chat #6 - [Date: 2025-10-01] - @vaeshkar - Worked on new features, bug fixes, documentation
-
-### What We Did
-
-Worked on new features, bug fixes, documentation
-
-### Key Decisions
-
-- feat: v0.10.0 - 100% automatic chat-finish with git analysis
-- feat: v0.9.0 - chat-finish command with dev handle tracking
-- feat: v0.9.0 - chat-finish command with dev handle tracking
-
-### Issues
-
-- fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
-
-### Files Changed
-
----
-
-## Chat #5 - [Date: 2025-10-01] - @vaeshkar - Worked on new features, bug fixes, documentation
-
-### What We Did
-
-Worked on new features, bug fixes, documentation
-
-### Key Decisions
-
-- feat: v0.9.0 - chat-finish command with dev handle tracking
-- feat: v0.9.0 - chat-finish command with dev handle tracking
-
-### Issues
-
-- fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
-
-### Files Changed
-
-**Modified files:**
-
-- CHANGELOG.md
-- README.md
-- package.json
-- src/chat-finish.js
-
----
-
 ## Chat #4 - [Date: 2025-10-01] - @vaeshkar - Worked on new features, bug fixes, documentation, refactoring
-
 ### What We Did
-
 Worked on new features, bug fixes, documentation, refactoring
-
 ### Issues
-
 fix: v0.9.1 - chat-finish compatibility with older conversation-log formats
-
 ### Next Steps
-
 Test v0.10.0 and publish to npm
-
 ### Files Changed
-
 **Modified files:**
-
 - CHANGELOG.md
 - README.md
 - package.json
@@ -234,9 +74,7 @@ Test v0.10.0 and publish to npm
 ---
 
 ## Chat #3 - [Date: 2025-10-01] - v0.7.0, v0.7.1, v0.8.0, v0.8.1 & v0.9.0: Configuration + Documentation + chat-finish
-
 ### What We Did
-
 - **Released v0.7.0** - Major feature release with configuration system
   - **New `config` command** for managing user preferences
     - `npx aic config` - List all configuration
@@ -258,9 +96,7 @@ Test v0.10.0 and publish to npm
   - ✅ `npx aic tokens` - Shows 4 models with ⭐ star on preferred
   - ✅ `npx aic tokens --all` - Shows all 16 models with ⭐ star on preferred
   - ✅ Tested in `toy-store-ai-system` project
-
 ### Key Decisions
-
 - **Configuration file location: `.ai/config.json`**
   - **Rationale:** Keeps config with knowledge base, not global
   - **Alternative considered:** Global config in `~/.aic/config.json` (rejected - per-project is better)
@@ -276,9 +112,7 @@ Test v0.10.0 and publish to npm
 - **Popular models: GPT-5, GPT-4o, Claude Sonnet 4.5, Gemini 1.5 Pro**
   - **Rationale:** These are the most commonly used models as of October 2025
   - **Decision:** Hardcoded for now, could be made configurable later
-
 ### Problems Solved
-
 - **Problem:** Token report showed 16 models, overwhelming for most users
   - **Root cause:** Tried to be comprehensive, but most users only care about 1-2 models
   - **Solution:** Default to 4 popular models, add `--all` flag for full list
@@ -287,9 +121,7 @@ Test v0.10.0 and publish to npm
   - **Root cause:** No configuration system existed
   - **Solution:** Created `src/config.js` with full config management
   - **Result:** Users can now set preferences and see them highlighted
-
 ### Files Changed
-
 - **New file:** `src/config.js` - Configuration management system
   - `loadConfig()` - Load config from `.ai/config.json`
   - `saveConfig()` - Save config to `.ai/config.json`
@@ -310,9 +142,7 @@ Test v0.10.0 and publish to npm
 - **Updated:** `package.json` - Version bump to 0.7.0
 - **Updated:** `CHANGELOG.md` - Added v0.7.0 entry
 - **Updated:** `README.md` - Added v0.7.0 to "What's New" and updated command list
-
 ### Next Steps
-
 - **Immediate:** Publish v0.7.0 to npm
   ```bash
   git add .
@@ -327,23 +157,17 @@ Test v0.10.0 and publish to npm
   - Make "popular models" list configurable
   - Add config validation
   - Add config reset command
-
 ### Testing Completed
-
 - ✅ Config command works: `npx aic config`
 - ✅ Set preferred model: `npx aic config set preferredModel "Claude Sonnet 4.5"`
 - ✅ Tokens shows 4 models with star: `npx aic tokens`
 - ✅ Tokens --all shows 16 models with star: `npx aic tokens --all`
 - ✅ Config stored in `.ai/config.json`
 - ✅ Tested in `toy-store-ai-system` project
-
 ### User Feedback
-
 - User: "Yeah lets push this v0.70 so we have an even number." 😄
 - Result: Shipped v0.7.0 with major new features!
-
 ### v0.7.1 - Documentation Update (Same Chat)
-
 - **User noticed:** "we didn't update the commands no?"
 - **What we added:** Detailed Configuration section in README.md
   - Examples of setting preferred model
@@ -355,9 +179,7 @@ Test v0.10.0 and publish to npm
   - `package.json` - Version bump to 0.7.1
   - `CHANGELOG.md` - Added v0.7.1 documentation entry
 - **Result:** Users now have clear documentation on how to use the config system!
-
 ### v0.8.0 - Comprehensive Documentation (Same Chat)
-
 - **User feedback:** "For the next version we need a full dokumentation. this is to sketchy."
 - **Problem:** Documentation was too brief and scattered
   - Config command syntax was confusing: `config [action] [key] [value]`
@@ -391,9 +213,7 @@ Test v0.10.0 and publish to npm
   - Workflows for different scenarios
   - No more "sketchy" documentation! 😄
 - **Result:** Users now have professional-grade documentation!
-
 ### v0.9.0 Planning - `chat-finish` Command (Same Chat)
-
 - **User insight:** "So,before we finish we need to update that aic log into an aic chatFinish or something like that. Not manually. How can we do this?"
 - **The Core Problem Identified:**
   - Current tool is just a **manual documentation system**
@@ -430,9 +250,7 @@ Test v0.10.0 and publish to npm
   - Create smart question prompts
   - Auto-generate markdown entries
   - Test with real chat sessions
-
 ### v0.9.0 Implementation - `chat-finish` Command (Same Chat)
-
 - **User decision:** "lets do the chat-finish now and release v0.9.0"
 - **Implementation completed:**
   - **Created `src/chat-finish.js`** (300+ lines)
@@ -481,9 +299,7 @@ Test v0.10.0 and publish to npm
   - **Updated:** `package.json` - v0.9.0
   - **Updated:** `CHANGELOG.md` - v0.9.0 entry
 - **Ready to publish v0.9.0!** 🚀
-
 ### v0.9.0 Enhancement - Added Developer Handle (Same Chat)
-
 - **User suggestion:** "should we add in the questions: - dev handle so we know who wrote this?"
 - **Why this is important:**
   - ✅ Tracks who worked on what
@@ -503,9 +319,7 @@ Test v0.10.0 and publish to npm
 ---
 
 ## Chat #2 - [Date: 2025-10-01] - v0.6.5 Bug Fix: Conversation Entry Counting
-
 ### What We Did
-
 - **Released v0.6.5** - Bug fix for conversation entry counting
   - **Problem discovered:** User's `toy-store-ai-system` project showed "0 conversation entries" despite having 24+ chats
   - **Root cause:** Regex in `src/stats.js` only matched format `## Chat #X`, but user's format was `## 2025-09-30 - Chat #19: Topic`
@@ -522,9 +336,7 @@ Test v0.10.0 and publish to npm
   - `package.json` - Version bumped from 0.6.4 to 0.6.5
   - `CHANGELOG.md` - Added v0.6.5 bug fix entry
   - `README.md` - Added v0.6.5 to "What's New"
-
 ### Key Decisions
-
 - **More flexible regex over strict format enforcement**
   - **Rationale:** Users have different conversation log formats, tool should adapt
   - **Alternative considered:** Force users to reformat their logs (bad UX)
@@ -533,23 +345,17 @@ Test v0.10.0 and publish to npm
   - **Rationale:** This is a bug that affects core functionality (stats command)
   - **Impact:** Users with date-first format couldn't see conversation counts
   - **Decision:** Ship immediately as patch version
-
 ### Problems Solved
-
 - **Problem:** Stats command showed "0 conversation entries" for date-first format
   - **Root cause:** Regex `/^## Chat #\d+/gm` required "Chat #" at start of line
   - **Solution:** Changed to `/^##.*Chat\s*#?\d+/gim` to match "Chat #X" anywhere in heading
   - **Result:** Now works with all common conversation log formats
-
 ### Files Changed
-
 - `src/stats.js` - Updated conversation entry counting regex (line 74)
 - `package.json` - Version bump to 0.6.5
 - `CHANGELOG.md` - Added v0.6.5 bug fix entry
 - `README.md` - Updated "What's New"
-
 ### Next Steps
-
 - **Immediate:** Publish v0.6.5 to npm
   ```bash
   git add .
@@ -563,9 +369,7 @@ Test v0.10.0 and publish to npm
   - Add user model preference
   - Simplify token report
   - More actionable insights
-
 ### Testing Completed
-
 - ✅ Tested with date-first format: `## 2025-09-30 - Chat #19: Topic`
 - ✅ Tested with original format: `## Chat #1 - Topic`
 - ✅ Verified in user's `toy-store-ai-system` project (7 entries detected)
@@ -574,9 +378,7 @@ Test v0.10.0 and publish to npm
 ---
 
 ## Chat #1 - [Date: 2025-10-01] - v0.6.4 Release: Smarter Insights + Latest AI Models
-
 ### What We Did
-
 - **Released v0.6.4** with two major improvements:
   1. **Smarter token usage insights** in `src/stats.js`
      - Now considers both token count AND conversation entry count
@@ -597,9 +399,7 @@ Test v0.10.0 and publish to npm
   - `CHANGELOG.md` - Comprehensive v0.6.4 entry with before/after examples
   - `README.md` - Added v0.6.4 to "What's New" section
   - `package.json` - Version bumped from 0.6.3 to 0.6.4
-
 ### Key Decisions
-
 - **Manual model updates over auto-fetch:** Decided to keep model list hardcoded in `src/tokens.js` rather than implementing auto-fetch from external API
   - **Rationale:** AI models update every 3-6 months, not frequently enough to justify added complexity
   - **Alternatives considered:**
@@ -615,9 +415,7 @@ Test v0.10.0 and publish to npm
   - 30K = Comfortable for most modern models
   - 100K = Approaching limits even for large context models
   - These thresholds are more realistic than previous arbitrary values
-
 ### Problems Solved
-
 - **Problem:** User had only 1 conversation entry but received misleading warning "consider archiving old entries" because token count was ~5,463 (in moderate range)
   - **Root cause:** Stats command only checked token count, not conversation entry count
   - **Solution:** Updated logic to check both metrics before suggesting actions
@@ -630,17 +428,13 @@ Test v0.10.0 and publish to npm
   - **Root cause:** Unclear how often models change and whether auto-fetch was worth complexity
   - **Solution:** Analyzed AI model release history (major updates every 3-6 months)
   - **Result:** Decided manual updates are sufficient, will revisit simplification in v0.7.0
-
 ### Files Changed
-
 - `src/stats.js` - Updated token usage insights logic (lines 146-231)
 - `src/tokens.js` - Updated context window model list (lines 172-194)
 - `CHANGELOG.md` - Added comprehensive v0.6.4 entry
 - `README.md` - Updated "What's New" section
 - `package.json` - Version bump to 0.6.4
-
 ### Next Steps
-
 - **Immediate:** Publish v0.6.4 to npm
   ```bash
   git add .
@@ -657,9 +451,7 @@ Test v0.10.0 and publish to npm
   - Provide more actionable insights: "You can fit ~30 more conversations"
   - Keep manual model updates (skip auto-fetch complexity)
 - **Maintenance:** Update model list every 3-6 months when major AI models release
-
 ### Testing Completed
-
 - ✅ `node bin/cli.js stats` - Shows smart insights with correct recommendations
 - ✅ `node bin/cli.js tokens` - Displays all 16 updated models correctly
 - ✅ Verified no IDE errors or warnings in modified files
@@ -667,25 +459,17 @@ Test v0.10.0 and publish to npm
 ---
 
 ## Chat #0 - [Date: YYYY-MM-DD] - [Brief Topic]
-
 ### What We Did
-
 - [Be specific: "Implemented user authentication with JWT tokens"]
 - [Not vague: "Worked on auth"]
 - [List all significant changes, features, or refactors]
-
 ### Key Decisions
-
 - **[Decision]:** [Why we chose this approach over alternatives]
 - **Example:** "Used JWT instead of sessions because we need stateless API"
-
 ### Problems Solved
-
 - **[Problem]:** [Solution we implemented]
 - **Example:** "CORS errors on login - Fixed by adding credentials: 'include' to fetch"
-
 ### Next Steps
-
 - [What should be done in the next session]
 - [Unfinished work or follow-ups]
 - [Known issues that need attention]

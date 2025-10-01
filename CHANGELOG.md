@@ -43,6 +43,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Why:** AI doesn't need natural language - structured data is faster to parse and uses fewer tokens
   - **Human-readable:** Still understandable (like reading a CSV file)
   - **Example:** `7|2025-10-01|RELEASE|v0.10.0|Make chat-finish automatic|Users don't want questions|SHIPPED`
+- **🤖 AI-OPTIMIZED: Conversation log entries now use YAML format** - 47% token reduction per entry!
+  - **Old format:** Markdown prose with sections (~150 tokens per entry)
+  - **New format:** YAML structured data (~80 tokens per entry)
+  - **Format:** `CHAT/DATE/TYPE/TOPIC/WHAT/WHY/OUTCOME/FILES/NEXT`
+  - **Why:** YAML is structured data that AI can parse instantly without natural language processing
+  - **Backward compatible:** Supports both YAML and markdown formats
+  - **chat-finish automatically generates YAML entries**
+  - **Example:**
+    ```yaml
+    ---
+    CHAT: 7
+    DATE: 2025-10-01
+    TYPE: RELEASE
+    TOPIC: v0.10.0: 100% Automatic chat-finish
+    WHAT:
+      - Rewrote chat-finish for automatic operation
+    WHY:
+      - Users don't want to answer questions after 4-hour sessions
+    OUTCOME: SHIPPED
+    FILES:
+      - src/chat-finish.js: Complete rewrite
+    ---
+    ```
 
 ### Impact
 

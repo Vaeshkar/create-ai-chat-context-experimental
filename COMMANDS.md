@@ -126,9 +126,73 @@ npx aic init --no-git
 
 ---
 
+### chat-finish
+
+**⭐ RECOMMENDED:** Automatically update all `.ai/` files at the end of a chat session.
+
+**Syntax:**
+
+```bash
+npx aic chat-finish
+```
+
+**What it does:**
+
+1. Analyzes git changes since last run
+2. Detects new/modified files
+3. Extracts commit messages
+4. Auto-generates entries for:
+   - `conversation-log.md` - Chat summary (YAML format)
+   - `technical-decisions.md` - Decisions with rationale
+   - `known-issues.md` - Issues found/resolved
+   - `next-steps.md` - Completed tasks and future work
+   - `architecture.md` - Updates timestamp
+
+**Output format (YAML):**
+
+```yaml
+---
+CHAT: 5
+DATE: 2025-10-01
+TYPE: FEAT
+TOPIC: Implement user authentication
+
+WHAT:
+  - Added JWT auth with bcrypt password hashing
+
+WHY:
+  - JWT for stateless API, bcrypt for secure password storage
+
+OUTCOME: SHIPPED
+
+FILES:
+  - src/auth.js: JWT authentication logic
+  - src/routes/login.js: Login/logout endpoints
+
+NEXT:
+  - Add password reset flow
+  - Implement 2FA
+---
+```
+
+**When to use:**
+
+- ✅ **After every AI chat session** (recommended!)
+- After making significant code changes
+- Before committing major features
+
+**Why use this instead of `log`:**
+
+- Automatic: No manual typing required
+- Consistent: Uses git history for accuracy
+- Complete: Updates ALL `.ai/` files at once
+- Efficient: Saves time and ensures nothing is missed
+
+---
+
 ### log
 
-Add a conversation log entry interactively.
+Add a conversation log entry interactively (manual alternative to `chat-finish`).
 
 **Syntax:**
 
@@ -160,7 +224,7 @@ Next steps: Add password reset flow, implement 2FA
 ✅ Entry added to .ai/conversation-log.md
 ```
 
-**Output format:**
+**Output format (Markdown):**
 
 ```markdown
 ## Chat #5 - Implement user authentication
@@ -180,9 +244,11 @@ Next steps: Add password reset flow, implement 2FA
 
 **When to use:**
 
-- After completing a chat session with AI
-- To document important decisions
-- To maintain conversation history
+- When you prefer manual entry over automatic
+- When you haven't committed code yet
+- For quick notes without git analysis
+
+**Note:** `chat-finish` is recommended over `log` for most use cases.
 
 ---
 

@@ -167,30 +167,39 @@ After reading the knowledge base, quickly assess if token usage might be high:
 
 **⚠️ BEFORE you finish helping the user, you MUST update the knowledge base:**
 
-### 1. **ALWAYS Update `.ai/conversation-log.md`:**
+### 1. **RECOMMENDED: Use `chat-finish` command:**
 
-Add a new entry at the TOP of the file (most recent first):
+```bash
+npx aic chat-finish
+```
 
-```markdown
-## Chat #X - [Today's Date] - [Brief Topic]
+This automatically updates ALL `.ai/` files based on git changes.
 
-### What We Did
+### 2. **OR Manually Update `.ai/conversation-log.md`:**
 
-- [List all accomplishments, changes, features added]
-- [Be specific: "Added login feature" not "worked on auth"]
+Add a new entry at the TOP of the file (most recent first) using YAML format:
 
-### Key Decisions
+```yaml
+---
+CHAT: X
+DATE: YYYY-MM-DD
+TYPE: [FEAT|FIX|REFACTOR|DOCS|RELEASE|WORK]
+TOPIC: Brief description
 
-- **[Decision]:** [Why we chose this approach]
+WHAT:
+  - Primary accomplishment
 
-### Problems Solved
+WHY:
+  - Rationale for main decision
 
-- **[Problem]:** [Solution we implemented]
+OUTCOME: [SHIPPED|DECIDED|RESOLVED|IN_PROGRESS|BLOCKED]
 
-### Next Steps
+FILES:
+  - path/to/file.js: What changed
 
-- [What should be done in the next session]
-- [Unfinished work or follow-ups]
+NEXT:
+  - What should be done next
+---
 ```
 
 **This is NOT optional. The next AI session depends on this!**

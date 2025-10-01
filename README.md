@@ -33,6 +33,7 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.11.1** - 🤖 AI-Optimized Format - YAML entries + pipe-delimited summaries (52% token reduction!)
 - **v0.11.0** - 🚨 "Verify Before You Advise" - Prevents AI from suggesting completed work!
 - **v0.10.2** - 🎯 All commands now recommend `chat-finish` (automatic workflow)!
 - **v0.10.1** - ✨ Perfect formatting for all `.ai/` files - Clean, professional output!

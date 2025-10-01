@@ -66,17 +66,47 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
-## Template for New Entries
+## Template for New Entries (AI-Optimized Format)
 
-**Copy this template and add it at the TOP of the "CHAT HISTORY" section:**
+**Add this at the TOP of the "CHAT HISTORY" section:**
+
+```yaml
+---
+CHAT: X
+DATE: YYYY-MM-DD
+TYPE: [FEAT|FIX|REFACTOR|DOCS|RELEASE|WORK]
+TOPIC: Brief description (max 60 chars)
+
+WHAT:
+  - Primary accomplishment or change
+  - Secondary accomplishment (if any)
+  - Tertiary accomplishment (if any)
+
+WHY:
+  - Rationale for main decision
+  - Alternative considered: [what was rejected and why]
+
+OUTCOME: [SHIPPED|DECIDED|RESOLVED|IN_PROGRESS|BLOCKED]
+
+FILES:
+  - path/to/file.js: What changed
+  - path/to/other.py: What changed
+
+NEXT:
+  - What should be done next
+  - Any blockers or dependencies
+---
+```
+
+**Human-Readable Alternative (if you prefer):**
 
 ```markdown
 ## Chat #X - [Date: YYYY-MM-DD] - [Brief Topic]
 
 ### What We Did
 
-- [List all accomplishments, changes, features added]
-- [Be specific and detailed]
+- [Primary accomplishment]
+- [Secondary accomplishment]
 
 ### Key Decisions
 
@@ -88,19 +118,19 @@ Track key decisions and progress from AI chat sessions.
 
 ### Next Steps
 
-- [What should be done in the next session]
-- [Unfinished work or follow-ups]
+- [What should be done next]
 ```
 
 ---
 
-## 💡 Tips for Good Entries
+## 💡 Tips for AI-Optimized Entries
 
-- **Be specific:** "Added login API endpoint with bcrypt password hashing" not "worked on login"
-- **Include context:** Why decisions were made, what alternatives were considered
-- **Link to code:** Mention file names or functions that were changed
-- **Note blockers:** If something is waiting on external factors
-- **Update regularly:** Don't wait until the end of a long session
+- **Use YAML format for structured data** - Easier to parse than prose
+- **Be specific:** "Added bcrypt password hashing to login API" not "worked on login"
+- **Include WHY:** Rationale is more important than WHAT for future decisions
+- **Note alternatives:** What was considered and rejected helps avoid repeating mistakes
+- **Use semantic types:** FEAT, FIX, REFACTOR, DOCS, RELEASE, WORK
+- **Truncate long content:** Max 120 chars per line for token efficiency
 
 ---
 
@@ -112,8 +142,8 @@ Track key decisions and progress from AI chat sessions.
 
 **Before ending your session, you MUST:**
 
-1. Add a new entry at the TOP of the "CHAT HISTORY" section
-2. Fill in all sections (What We Did, Key Decisions, Problems Solved, Next Steps)
+1. Run `npx aic chat-finish` to automatically update all .ai/ files
+2. OR manually add a YAML entry at the TOP of the "CHAT HISTORY" section
 3. Update the "Last Updated" date at the bottom
 4. Tell the user: "I've updated the conversation log for the next session"
 
