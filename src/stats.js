@@ -67,7 +67,11 @@ async function showStats() {
 
     // Count conversation entries
     if (file === "conversation-log.md") {
-      const chatMatches = content.match(/^## Chat #\d+/gm);
+      // Support multiple formats:
+      // - ## Chat #1 - Topic
+      // - ## 2025-09-30 - Chat #19: Topic
+      // - ## Chat 1 - Topic (without #)
+      const chatMatches = content.match(/^##.*Chat\s*#?\d+/gim);
       conversationEntries = chatMatches ? chatMatches.length : 0;
     }
 

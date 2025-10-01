@@ -33,6 +33,7 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.6.5** - 🐛 Fixed conversation entry counting for date-first format
 - **v0.6.4** - 🧠 Smarter insights + latest AI models (GPT-5, Claude 4.5)
 - **v0.6.3** - 🧠 Smarter insights (context-aware token recommendations)
 - **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)

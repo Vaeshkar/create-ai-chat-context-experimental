@@ -40,6 +40,85 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
+## Chat #2 - [Date: 2025-10-01] - v0.6.5 Bug Fix: Conversation Entry Counting
+
+### What We Did
+
+- **Released v0.6.5** - Bug fix for conversation entry counting
+
+  - **Problem discovered:** User's `toy-store-ai-system` project showed "0 conversation entries" despite having 24+ chats
+  - **Root cause:** Regex in `src/stats.js` only matched format `## Chat #X`, but user's format was `## 2025-09-30 - Chat #19: Topic`
+  - **Solution:** Updated regex from `/^## Chat #\d+/gm` to `/^##.*Chat\s*#?\d+/gim`
+  - **Result:** Now correctly detects conversation entries in multiple formats:
+    - ✅ `## Chat #19 - Topic` (original format)
+    - ✅ `## 2025-09-30 - Chat #19: Topic` (date-first format)
+    - ✅ `## Chat 19 - Topic` (without # symbol)
+
+- **Testing approach:** Used `npm link` to test locally before publishing
+
+  - Linked local package to `toy-store-ai-system` project
+  - Verified it correctly counted 7 conversation entries (was 0 before)
+  - User confirmed: "Testing in production!" 🚀
+
+- **Updated documentation:**
+  - `package.json` - Version bumped from 0.6.4 to 0.6.5
+  - `CHANGELOG.md` - Added v0.6.5 bug fix entry
+  - `README.md` - Added v0.6.5 to "What's New"
+
+### Key Decisions
+
+- **More flexible regex over strict format enforcement**
+
+  - **Rationale:** Users have different conversation log formats, tool should adapt
+  - **Alternative considered:** Force users to reformat their logs (bad UX)
+  - **Decision:** Support multiple formats with flexible regex
+
+- **Quick patch release (v0.6.5) instead of waiting for v0.7.0**
+  - **Rationale:** This is a bug that affects core functionality (stats command)
+  - **Impact:** Users with date-first format couldn't see conversation counts
+  - **Decision:** Ship immediately as patch version
+
+### Problems Solved
+
+- **Problem:** Stats command showed "0 conversation entries" for date-first format
+  - **Root cause:** Regex `/^## Chat #\d+/gm` required "Chat #" at start of line
+  - **Solution:** Changed to `/^##.*Chat\s*#?\d+/gim` to match "Chat #X" anywhere in heading
+  - **Result:** Now works with all common conversation log formats
+
+### Files Changed
+
+- `src/stats.js` - Updated conversation entry counting regex (line 74)
+- `package.json` - Version bump to 0.6.5
+- `CHANGELOG.md` - Added v0.6.5 bug fix entry
+- `README.md` - Updated "What's New"
+
+### Next Steps
+
+- **Immediate:** Publish v0.6.5 to npm
+
+  ```bash
+  git add .
+  git commit -m "fix: v0.6.5 - Support date-first format in conversation entry counting"
+  git push origin main
+  npm publish
+  git tag v0.6.5
+  git push origin v0.6.5
+  ```
+
+- **Future (v0.7.0):** Still planned from Chat #1
+  - Add user model preference
+  - Simplify token report
+  - More actionable insights
+
+### Testing Completed
+
+- ✅ Tested with date-first format: `## 2025-09-30 - Chat #19: Topic`
+- ✅ Tested with original format: `## Chat #1 - Topic`
+- ✅ Verified in user's `toy-store-ai-system` project (7 entries detected)
+- ✅ Used `npm link` for local testing before publishing
+
+---
+
 ## Chat #1 - [Date: 2025-10-01] - v0.6.4 Release: Smarter Insights + Latest AI Models
 
 ### What We Did
@@ -213,7 +292,7 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
-**Last Updated:** 2025-10-01
+**Last Updated:** 2025-10-01 (Chat #2 - v0.6.5)
 
 ---
 

@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.6.5] - 2025-10-01
+
+### Fixed
+
+- **Conversation entry counting** - Now correctly detects conversation entries in multiple formats
+  - Fixed regex to support date-first format: `## 2025-09-30 - Chat #19: Topic`
+  - Still supports original format: `## Chat #19 - Topic`
+  - Also supports format without #: `## Chat 19 - Topic`
+  - Previously showed "0 entries" for date-first format, now correctly counts all entries
+
 ## [0.6.4] - 2025-10-01
 
 ### Improved
