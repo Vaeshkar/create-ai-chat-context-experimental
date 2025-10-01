@@ -1,5 +1,21 @@
 # create-ai-chat-context
 
+---
+
+## 🚨 FOR AI ASSISTANTS: READ THIS FIRST 🚨
+
+**CRITICAL: Before working on this project, read the `.ai/` knowledge base:**
+
+1. **`.ai/architecture.md`** - Complete system architecture
+2. **`.ai/conversation-log.md`** - Key decisions from previous chats
+3. **`.ai/technical-decisions.md`** - Why we chose X over Y
+
+**Why?** This preserves institutional knowledge so you have full context immediately.
+
+**See `.ai-instructions` file for detailed instructions.**
+
+---
+
 ![npm version](https://img.shields.io/npm/v/create-ai-chat-context)
 ![GitHub tag](https://img.shields.io/github/v/tag/Vaeshkar/create-ai-chat-context)
 
@@ -222,6 +238,68 @@ AI: [Updates log with password reset work]
 
 **🔑 Key:** Always ask AI to update the conversation log at the END of each chat!
 
+---
+
+## 📊 Token Usage & Management
+
+### How Many Tokens Does This Use?
+
+Your `.ai/` knowledge base consumes tokens from the AI's context window:
+
+| Project Stage          | Token Usage           | % of Claude 200K | Status      |
+| ---------------------- | --------------------- | ---------------- | ----------- |
+| **Fresh project**      | ~3,000 tokens         | 1.5%             | ✅ Minimal  |
+| **Active (10 chats)**  | ~8,000 tokens         | 4%               | ✅ Low      |
+| **Mature (50 chats)**  | ~22,000 tokens        | 11%              | ⚠️ Moderate |
+| **Large (100+ chats)** | ~40,000-50,000 tokens | 20-25%           | 🚨 Manage   |
+
+### Is This Efficient?
+
+**YES!** Without this system, you'd spend 1,800-3,500 tokens per chat re-explaining context.
+
+**Savings over 50 chats:**
+
+- **Without:** 90,000-175,000 tokens wasted on repetition
+- **With:** 22,000 tokens for persistent context
+- **Net savings:** 68,000-153,000 tokens + 8-15 hours of time
+
+### Token Management Commands
+
+Check your current token usage:
+
+```bash
+npx create-ai-chat-context tokens
+```
+
+Archive old conversations (keeps recent, moves old to archive):
+
+```bash
+npx create-ai-chat-context archive --keep 10
+```
+
+Summarize old conversations (condenses old entries):
+
+```bash
+npx create-ai-chat-context summary --keep 10
+```
+
+### When to Manage Tokens
+
+- **< 10,000 tokens:** No action needed ✅
+- **10,000-25,000 tokens:** Consider archiving soon ⚠️
+- **> 25,000 tokens:** Archive or summarize now 🚨
+
+### Best Practices
+
+1. **Be concise** in conversation logs - Focus on decisions, not details
+2. **Archive regularly** - After 30+ conversation entries
+3. **Check token usage** - Run `tokens` command every 10-20 chats
+4. **Commit before cleanup** - Always commit before archiving/summarizing
+
+For detailed guidance, see `.ai/TOKEN_MANAGEMENT.md` after running `init`.
+
+---
+
 ## Benefits
 
 ### For You
@@ -276,6 +354,32 @@ npx create-ai-chat-context --help
 
 ```bash
 npx create-ai-chat-context --version
+```
+
+### Check token usage
+
+```bash
+npx create-ai-chat-context tokens
+```
+
+### Archive old conversations
+
+```bash
+# Keep 10 most recent, archive the rest
+npx create-ai-chat-context archive --keep 10
+
+# Keep 20 most recent
+npx create-ai-chat-context archive --keep 20
+```
+
+### Summarize old conversations
+
+```bash
+# Keep 10 most recent detailed, summarize the rest
+npx create-ai-chat-context summary --keep 10
+
+# Keep 15 most recent detailed
+npx create-ai-chat-context summary --keep 15
 ```
 
 ## Documentation

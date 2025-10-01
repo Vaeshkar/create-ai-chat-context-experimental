@@ -3,6 +3,9 @@
 const { Command } = require("commander");
 const chalk = require("chalk");
 const { init } = require("../src/init");
+const { displayTokenUsage } = require("../src/tokens");
+const { archiveConversations } = require("../src/archive");
+const { summarizeConversations } = require("../src/summary");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -20,6 +23,52 @@ program
   .action(async (options) => {
     try {
       await init(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("tokens")
+  .description("Show token usage breakdown of .ai/ knowledge base")
+  .action(async () => {
+    try {
+      await displayTokenUsage();
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("archive")
+  .description("Archive old conversation log entries to reduce token usage")
+  .option(
+    "-k, --keep <number>",
+    "Number of recent chats to keep detailed",
+    "10"
+  )
+  .action(async (options) => {
+    try {
+      await archiveConversations(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("summary")
+  .description("Summarize old conversation log entries to reduce token usage")
+  .option(
+    "-k, --keep <number>",
+    "Number of recent chats to keep detailed",
+    "10"
+  )
+  .action(async (options) => {
+    try {
+      await summarizeConversations(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
