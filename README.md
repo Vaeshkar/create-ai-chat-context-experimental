@@ -33,9 +33,9 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.7.1** - 📖 Enhanced documentation for configuration system
 - **v0.7.0** - ⚙️ Configuration system + simplified token report
 - **v0.6.5** - 🐛 Fixed conversation entry counting for date-first format
-- **v0.6.4** - 🧠 Smarter insights + latest AI models (GPT-5, Claude 4.5)
 - **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
 - **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
 - **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
@@ -85,6 +85,34 @@ npx aic tokens --all            # Check token usage (all 16 models)
 ```
 
 Run `npx aic --help` for all commands.
+
+## Configuration
+
+Set your preferences to customize the tool for your workflow:
+
+```bash
+# View current configuration
+npx aic config
+
+# Set your preferred AI model (gets highlighted with ⭐ in token reports)
+npx aic config set preferredModel "Claude Sonnet 4.5"
+npx aic config set preferredModel "GPT-5"
+npx aic config set preferredModel "Gemini 1.5 Pro"
+
+# Always show all models in token reports (default: top 4)
+npx aic config set showAllModels true
+
+# Get a specific config value
+npx aic config get preferredModel
+```
+
+**Available Models:**
+
+- OpenAI: GPT-5, GPT-5 mini, GPT-5 nano, GPT-4o, GPT-4 Turbo, o1-preview, o1-mini
+- Anthropic: Claude Sonnet 4.5, Claude Opus 4.1, Claude Sonnet 4, Claude Opus 4, Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus
+- Google: Gemini 1.5 Pro, Gemini 1.5 Flash
+
+**Configuration is stored per-project** in `.ai/config.json`, so you can use different models for different projects.
 
 ## Full Documentation
 

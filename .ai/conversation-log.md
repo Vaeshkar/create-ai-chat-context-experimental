@@ -40,7 +40,7 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
-## Chat #3 - [Date: 2025-10-01] - v0.7.0 Feature: Configuration System + Simplified Token Report
+## Chat #3 - [Date: 2025-10-01] - v0.7.0 & v0.7.1: Configuration System + Documentation
 
 ### What We Did
 
@@ -170,6 +170,24 @@ Track key decisions and progress from AI chat sessions.
 
 - User: "Yeah lets push this v0.70 so we have an even number." 😄
 - Result: Shipped v0.7.0 with major new features!
+
+### v0.7.1 - Documentation Update (Same Chat)
+
+- **User noticed:** "we didn't update the commands no?"
+- **What we added:** Detailed Configuration section in README.md
+
+  - Examples of setting preferred model
+  - List of all 16 available AI models
+  - Explanation of per-project configuration
+  - Clear usage examples with `npx aic config set preferredModel "Claude Sonnet 4.5"`
+
+- **Files changed:**
+
+  - `README.md` - Added comprehensive Configuration section
+  - `package.json` - Version bump to 0.7.1
+  - `CHANGELOG.md` - Added v0.7.1 documentation entry
+
+- **Result:** Users now have clear documentation on how to use the config system!
 
 ---
 
@@ -425,7 +443,7 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
-**Last Updated:** 2025-10-01 (Chat #3 - v0.7.0)
+**Last Updated:** 2025-10-01 (Chat #3 - v0.7.0 & v0.7.1)
 
 ---
 

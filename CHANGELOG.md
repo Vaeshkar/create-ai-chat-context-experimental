@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.7.1] - 2025-10-01
+
+### Documentation
+
+- **Enhanced README** - Added detailed Configuration section
+  - Examples of setting preferred model
+  - List of all available AI models (16 models across OpenAI, Anthropic, Google)
+  - Explanation of per-project configuration storage
+  - Clear examples: `npx aic config set preferredModel "Claude Sonnet 4.5"`
+
 ## [0.7.0] - 2025-10-01
 
 ### Added
