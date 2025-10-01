@@ -16,6 +16,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.6.3] - 2025-10-01
+
+### Improved
+
+- **Smarter token usage insights** - Context-aware recommendations based on actual AI limits
+
+  - Now considers both token count AND conversation entry count
+  - Uses realistic thresholds: 8K (healthy), 30K (moderate), 100K (large)
+  - Different advice for few vs many entries:
+    - Few entries + high tokens → "Consider starting a new chat for new topics"
+    - Many entries + high tokens → "Consider archiving old conversations"
+  - No more misleading "archive" warnings when you only have 1 conversation entry
+  - Shows "just getting started" message for new knowledge bases
+
+- **Updated AI model context windows** - Comprehensive list of latest models (October 2025)
+  - **Added OpenAI GPT-5 family:** GPT-5 (400K), GPT-5 mini (400K), GPT-5 nano (400K)
+  - **Added Claude 4 family:** Sonnet 4.5 (200K), Opus 4.1 (200K), Sonnet 4 (200K), Opus 4 (200K)
+  - **Kept Claude 3.5:** Sonnet (200K), Haiku (200K)
+  - **Kept Google Gemini:** 1.5 Pro (2M), 1.5 Flash (1M)
+  - **Removed outdated models:** GPT-3.5 (4K), GPT-4 (8K)
+  - All context window sizes verified from official sources (Anthropic, OpenAI, Google)
+
+### Why This Update?
+
+**Problem:** Stats command suggested archiving even with only 1 conversation entry
+
+**Solution:** Smarter insights that consider conversation count before suggesting actions
+
+**Impact:**
+
+- More accurate and actionable recommendations
+- No misleading warnings for new users
+- Better guidance on when to archive vs when to start new chats
+- Aligned with real AI context limits (GPT-4: 8K-128K, Claude: 100K-200K)
+
+### Examples
+
+**Before (misleading):**
+
+```
+~5,463 tokens, 1 entry
+⚠️  Token usage is moderate - consider archiving old entries
+```
+
+**After (smart):**
+
+```
+~5,463 tokens, 1 entry
+✅ Token usage is healthy - fits comfortably in most AI contexts
+💬 1 conversation entry - just getting started
+```
+
+**With many entries:**
+
+```
+~35,000 tokens, 25 entries
+⚠️  Token usage is large - may exceed some AI context limits
+💡 Action: Run 'npx aic archive' to archive old conversations
+```
+
+**With few entries but high tokens:**
+
+```
+~35,000 tokens, 3 entries
+⚠️  Token usage is large - may exceed some AI context limits
+💡 Action: Consider starting a new chat for new topics
+```
+
 ## [0.6.2] - 2025-10-01
 
 ### Added
