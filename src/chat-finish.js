@@ -421,6 +421,35 @@ async function updateConversationLog(aiDir, updates) {
     );
   }
 
+  // Clean up decisions and issues (remove conventional commit prefixes)
+  const cleanDecisions = updates.decisions
+    ? updates.decisions
+        .split("\n")
+        .filter((d) => d.trim())
+        .map((d) =>
+          d
+            .replace(/^-\s*/, "")
+            .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+            .trim()
+        )
+        .map((d) => `- ${d.charAt(0).toUpperCase() + d.slice(1)}`)
+        .join("\n")
+    : "";
+
+  const cleanIssues = updates.issues
+    ? updates.issues
+        .split("\n")
+        .filter((i) => i.trim())
+        .map((i) =>
+          i
+            .replace(/^-\s*/, "")
+            .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+            .trim()
+        )
+        .map((i) => `- ${i.charAt(0).toUpperCase() + i.slice(1)}`)
+        .join("\n")
+    : "";
+
   // Generate new entry
   const entry = `## Chat #${updates.chatNumber} - [Date: ${updates.timestamp}]${
     updates.devHandle ? ` - ${updates.devHandle}` : ""
@@ -430,8 +459,8 @@ async function updateConversationLog(aiDir, updates) {
 
 ${updates.mainGoal}
 
-${updates.decisions ? `### Key Decisions\n\n${updates.decisions}\n\n` : ""}${
-    updates.issues ? `### Issues\n\n${updates.issues}\n\n` : ""
+${cleanDecisions ? `### Key Decisions\n\n${cleanDecisions}\n\n` : ""}${
+    cleanIssues ? `### Issues\n\n${cleanIssues}\n\n` : ""
   }${updates.nextSteps ? `### Next Steps\n\n${updates.nextSteps}\n\n` : ""}${
     updates.changes.hasChanges
       ? `### Files Changed\n\n${
@@ -497,8 +526,9 @@ async function updateTechnicalDecisions(aiDir, updates) {
           d
             .replace(/^-\s*/, "")
             .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+            .trim()
         )
-        .map((d) => `- ${d}`)
+        .map((d) => `- ${d.charAt(0).toUpperCase() + d.slice(1)}`)
         .join("\n")
     : "";
 
@@ -586,8 +616,9 @@ async function updateKnownIssues(aiDir, updates) {
           i
             .replace(/^-\s*/, "")
             .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+            .trim()
         )
-        .map((i) => `- ${i}`)
+        .map((i) => `- ${i.charAt(0).toUpperCase() + i.slice(1)}`)
         .join("\n")
     : "";
 
@@ -634,15 +665,55 @@ async function updateNextSteps(aiDir, updates) {
   const nextStepsPath = path.join(aiDir, "next-steps.md");
   let content = fs.readFileSync(nextStepsPath, "utf8");
 
+  // Create a better completed entry
+  let completedEntry = "";
+
+  if (updates.decisions) {
+    // Extract the most important decision as the completed item
+    const decisions = updates.decisions
+      .split("\n")
+      .filter((d) => d.trim())
+      .map((d) =>
+        d
+          .replace(/^-\s*/, "")
+          .replace(/^(feat|fix|docs|refactor|test|chore):\s*/i, "")
+          .trim()
+      );
+
+    if (decisions.length > 0) {
+      const mainDecision = decisions[0];
+      completedEntry = `- [x] **${
+        mainDecision.charAt(0).toUpperCase() + mainDecision.slice(1)
+      }** - ${updates.timestamp} (Chat #${updates.chatNumber})`;
+
+      // Add sub-items if there are more decisions
+      if (decisions.length > 1) {
+        completedEntry +=
+          "\n" +
+          decisions
+            .slice(1, 3)
+            .map((d) => `  - ${d.charAt(0).toUpperCase() + d.slice(1)}`)
+            .join("\n");
+      }
+      completedEntry += "\n";
+    }
+  }
+
+  // Fallback to main goal if no decisions
+  if (!completedEntry) {
+    completedEntry = `- [x] ${updates.mainGoal} - ${updates.timestamp} (Chat #${updates.chatNumber})\n`;
+  }
+
   // Add to completed section
   const completedMarker = "## ✅ Completed\n\n";
   const completedIndex = content.indexOf(completedMarker);
 
   if (completedIndex !== -1) {
-    const entry = `- [x] ${updates.mainGoal} - ${updates.timestamp}\n`;
     const insertPosition = completedIndex + completedMarker.length;
     content =
-      content.slice(0, insertPosition) + entry + content.slice(insertPosition);
+      content.slice(0, insertPosition) +
+      completedEntry +
+      content.slice(insertPosition);
   }
 
   // Add next steps to immediate section if provided

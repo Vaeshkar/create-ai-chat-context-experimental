@@ -6,6 +6,22 @@ Track problems and their solutions.
 
 ## ✅ Resolved Issues
 
+### Improve technical-decisions and known-issues formatting
+
+**Date Discovered:** 2025-10-01
+**Date Resolved:** 2025-10-01
+**Severity:** 🟡 Medium
+**Chat:** #7
+
+**Problem:**
+- improve technical-decisions and known-issues formatting
+- v0.9.1 - chat-finish compatibility with older conversation-log formats
+
+**Solution:**
+Resolved during Chat #7. 
+
+---
+
 ### Worked on new features, bug fixes, documentation
 
 **Date Discovered:** 2025-10-01
