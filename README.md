@@ -33,6 +33,7 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.10.2** - 🎯 All commands now recommend `chat-finish` (automatic workflow)!
 - **v0.10.1** - ✨ Perfect formatting for all `.ai/` files - Clean, professional output!
 - **v0.10.0** - 🤖 Fully automatic `chat-finish` - Auto-generates summaries from git history!
 - **v0.9.1** - 🔧 Fixed `chat-finish` compatibility with older conversation-log.md formats
@@ -68,8 +69,7 @@ git commit -m "Add AI knowledge base"
 
 ```bash
 npx aic init                    # Initialize (auto-detects project type)
-npx aic chat-finish             # 🎬 Auto-update all .ai/ files (end of chat)
-npx aic log                     # Add conversation entry (manual)
+npx aic chat-finish             # 🎬 Auto-update all .ai/ files (recommended!)
 npx aic search "query"          # Find information
 npx aic stats                   # View analytics
 npx aic validate                # Check quality

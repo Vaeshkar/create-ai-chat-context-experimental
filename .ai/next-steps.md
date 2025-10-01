@@ -17,9 +17,9 @@ Roadmap and priorities for your project.
 ## 📅 Short-term (This Month)
 
 - [ ] Add more AI models as they're released
-- [ ] Improve `npx aic log` interactive prompts
 - [ ] Add validation for config values
 - [ ] Add `config reset` command to restore defaults
+- [ ] Improve `chat-finish` auto-summary intelligence
 
 ---
 

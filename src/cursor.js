@@ -42,9 +42,7 @@ async function generateCursorRules(options = {}) {
 
     console.log(chalk.green("\n✅ Cursor integration configured!\n"));
     console.log(chalk.bold("📝 What this does:\n"));
-    console.log(
-      "  • Cursor will automatically read your .ai/ knowledge base"
-    );
+    console.log("  • Cursor will automatically read your .ai/ knowledge base");
     console.log("  • Context is loaded at the start of every chat");
     console.log("  • No need to manually prompt Cursor to read files");
     console.log();
@@ -56,11 +54,9 @@ async function generateCursorRules(options = {}) {
     console.log();
 
     console.log(chalk.bold("💡 Tips:\n"));
+    console.log("  • Update .ai/ files regularly for best results");
     console.log(
-      "  • Update .ai/ files regularly for best results"
-    );
-    console.log(
-      "  • Use 'npx create-ai-chat-context log' to add conversation entries"
+      "  • Use 'npx create-ai-chat-context chat-finish' after each chat session"
     );
     console.log(
       "  • Run 'npx create-ai-chat-context check' to monitor token usage"
@@ -137,8 +133,8 @@ function generateRulesContent() {
 
 ### At END of conversation:
 - Remind user to update the conversation log
-- Suggest: "Run \`npx create-ai-chat-context log\` to add this session to the conversation log"
-- Or: "Update .ai/conversation-log.md with what we accomplished today"
+- Suggest: "Run \`npx create-ai-chat-context chat-finish\` to automatically update all .ai/ files"
+- This will analyze git changes and update conversation-log.md, technical-decisions.md, and more
 
 ## 📊 TOKEN MANAGEMENT:
 
@@ -206,4 +202,3 @@ async function addToGitignore(cwd, entry) {
 module.exports = {
   generateCursorRules,
 };
-

@@ -16,6 +16,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team collaboration features
 - Analytics dashboard
 
+## [0.10.2] - 2025-10-01
+
+### Changed
+
+- **Replaced `log` command recommendations with `chat-finish`** across all commands
+  - Updated `stats` command helpful tips
+  - Updated `validate` command recommendations
+  - Updated `cursor` integration tips
+  - Updated `copilot` integration instructions
+  - Updated README.md quick reference
+  - Updated COMMANDS.md workflows
+- **De-emphasized manual `log` command** in favor of automatic `chat-finish`
+- **Improved command output consistency** - all tools now recommend the automatic workflow
+
+### Impact
+
+- **Before v0.10.2:** Commands suggested manual `log` command (old workflow)
+- **After v0.10.2:** Commands suggest automatic `chat-finish` (new workflow)
+- **Users are now guided to the better, automatic workflow!** 🎯
+
 ## [0.10.1] - 2025-10-01
 
 ### Fixed

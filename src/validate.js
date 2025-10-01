@@ -164,10 +164,14 @@ function calculateScore(results) {
  * Get quality rating
  */
 function getQualityRating(percentage) {
-  if (percentage >= 90) return { rating: "Excellent", icon: "🌟", color: chalk.green };
-  if (percentage >= 75) return { rating: "Good", icon: "✅", color: chalk.green };
-  if (percentage >= 60) return { rating: "Fair", icon: "⚠️", color: chalk.yellow };
-  if (percentage >= 40) return { rating: "Needs Work", icon: "⚠️", color: chalk.yellow };
+  if (percentage >= 90)
+    return { rating: "Excellent", icon: "🌟", color: chalk.green };
+  if (percentage >= 75)
+    return { rating: "Good", icon: "✅", color: chalk.green };
+  if (percentage >= 60)
+    return { rating: "Fair", icon: "⚠️", color: chalk.yellow };
+  if (percentage >= 40)
+    return { rating: "Needs Work", icon: "⚠️", color: chalk.yellow };
   return { rating: "Poor", icon: "❌", color: chalk.red };
 }
 
@@ -306,7 +310,9 @@ function displayValidationResults(results) {
 
     if (!results.conversationLog.valid) {
       console.log(
-        chalk.gray("  • Add conversation entries using: npx create-ai-chat-context log")
+        chalk.gray(
+          "  • Add conversation entries using: npx create-ai-chat-context chat-finish"
+        )
       );
     }
 
@@ -334,4 +340,3 @@ function displayValidationResults(results) {
 module.exports = {
   validateKnowledgeBase,
 };
-

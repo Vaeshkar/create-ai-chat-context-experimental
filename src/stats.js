@@ -246,6 +246,11 @@ async function showStats() {
   console.log(chalk.bold("🛠️  Helpful Commands:\n"));
   console.log(
     chalk.gray(
+      "   npx create-ai-chat-context chat-finish     - Auto-update all .ai/ files"
+    )
+  );
+  console.log(
+    chalk.gray(
       "   npx create-ai-chat-context search <query>  - Search knowledge base"
     )
   );
@@ -256,9 +261,6 @@ async function showStats() {
     chalk.gray(
       "   npx create-ai-chat-context archive         - Archive old entries"
     )
-  );
-  console.log(
-    chalk.gray("   npx create-ai-chat-context log             - Add new entry")
   );
   console.log();
 }

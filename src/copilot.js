@@ -10,7 +10,10 @@ async function generateCopilotInstructions(options = {}) {
   const cwd = process.cwd();
   const aiDir = path.join(cwd, ".ai");
   const githubDir = path.join(cwd, ".github");
-  const copilotInstructionsPath = path.join(githubDir, "copilot-instructions.md");
+  const copilotInstructionsPath = path.join(
+    githubDir,
+    "copilot-instructions.md"
+  );
 
   // Check if .ai directory exists
   if (!(await fs.pathExists(aiDir))) {
@@ -205,8 +208,8 @@ The user should update the knowledge base regularly:
 Help users maintain their knowledge base:
 
 \`\`\`bash
-# Add conversation entry (interactive)
-npx create-ai-chat-context log
+# Auto-update all .ai/ files (recommended after each chat)
+npx create-ai-chat-context chat-finish
 
 # Validate knowledge base quality
 npx create-ai-chat-context validate
@@ -268,4 +271,3 @@ async function addToGitignore(cwd, entry) {
 module.exports = {
   generateCopilotInstructions,
 };
-

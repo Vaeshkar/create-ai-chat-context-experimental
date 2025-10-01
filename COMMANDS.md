@@ -36,7 +36,7 @@ npx aic init --template nextjs            # Initialize with specific template
 npx aic init --force                      # Overwrite existing files
 
 # Daily Usage
-npx aic log                               # Add conversation entry
+npx aic chat-finish                       # Auto-update all .ai/ files (recommended!)
 npx aic stats                             # View statistics
 npx aic search "query"                    # Search knowledge base
 npx aic validate                          # Check quality
@@ -857,8 +857,8 @@ npx aic check
 # During work: Search for context
 npx aic search "authentication"
 
-# After AI chat: Log conversation
-npx aic log
+# After AI chat: Auto-update knowledge base
+npx aic chat-finish
 
 # End of day: Check token usage
 npx aic stats
@@ -932,7 +932,7 @@ npx create-ai-chat-context init  # ❌ Long
 
 ### Regular Maintenance
 
-- Run `npx aic log` after every AI chat session
+- Run `npx aic chat-finish` after every AI chat session
 - Run `npx aic validate` weekly
 - Run `npx aic archive` when tokens >25,000
 - Run `npx aic update` after package updates
