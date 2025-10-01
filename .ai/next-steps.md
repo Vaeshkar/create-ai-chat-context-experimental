@@ -50,6 +50,9 @@ Roadmap and priorities for your project.
 
 ## ✅ Completed
 
+- [x] **V0.10.0 - 100% automatic chat-finish with git analysis** - 2025-10-01 (Chat #9)
+  - V0.9.0 - chat-finish command with dev handle tracking
+  - V0.9.0 - chat-finish command with dev handle tracking
 - [x] Worked on new features, bug fixes, documentation, refactoring - 2025-10-01
 - [x] **`chat-finish` command - THE KEY FEATURE!** - 2025-10-01 (v0.9.0)
   - Automatically update all `.ai/` files at end of chat

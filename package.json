@@ -1,6 +1,6 @@
 {
   "name": "create-ai-chat-context",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Preserve AI chat context and history across sessions - Solve knowledge loss in AI-assisted development",
   "main": "src/index.js",
   "bin": {

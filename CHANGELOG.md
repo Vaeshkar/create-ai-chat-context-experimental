@@ -16,6 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team collaboration features
 - Analytics dashboard
 
+## [0.10.1] - 2025-10-01
+
+### Fixed
+
+- **Perfect formatting for all `.ai/` files:**
+  - **conversation-log.md:** Removes "feat:" and "fix:" prefixes, capitalizes entries
+  - **technical-decisions.md:** Extracts meaningful titles, capitalizes, adds Chat # reference
+  - **known-issues.md:** Extracts meaningful titles, capitalizes, adds Chat # reference
+  - **next-steps.md:** Creates bold entries with main decision as title, adds sub-items
+- **Always updates next-steps.md** when decisions exist (not just when nextSteps provided)
+- **Consistent capitalization** across all auto-generated entries
+- **Clean professional format** - no more "feat:", "fix:", "docs:" prefixes in output
+
+### Impact
+
+- **Before v0.10.1:** Entries had "feat:" prefixes, inconsistent capitalization, generic titles
+- **After v0.10.1:** Clean, professional, properly formatted entries in all files!
+- **All 4 `.ai/` files now have perfect formatting** 🎉
+
 ## [0.10.0] - 2025-10-01
 
 ### Added
