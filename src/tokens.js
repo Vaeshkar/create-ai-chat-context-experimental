@@ -114,10 +114,12 @@ async function getTokenUsage(cwd = process.cwd()) {
  */
 async function displayTokenUsage(options = {}) {
   const cwd = process.cwd();
+  const { loadConfig } = require("./config");
 
   console.log(chalk.bold.cyan("\n📊 Token Usage Report\n"));
 
   const usage = await getTokenUsage(cwd);
+  const config = await loadConfig(cwd);
 
   if (usage.totalWords === 0) {
     console.log(
@@ -169,44 +171,87 @@ async function displayTokenUsage(options = {}) {
   // Context window comparison
   console.log(chalk.bold("Context Window Usage:\n"));
 
-  const contextWindows = [
+  const allModels = [
     // OpenAI Models (October 2025)
-    { name: "GPT-5", size: 400000 },
-    { name: "GPT-5 mini", size: 400000 },
-    { name: "GPT-5 nano", size: 400000 },
-    { name: "GPT-4o", size: 128000 },
-    { name: "GPT-4 Turbo", size: 128000 },
-    { name: "o1-preview", size: 128000 },
-    { name: "o1-mini", size: 128000 },
+    { name: "GPT-5", size: 400000, popular: true },
+    { name: "GPT-5 mini", size: 400000, popular: false },
+    { name: "GPT-5 nano", size: 400000, popular: false },
+    { name: "GPT-4o", size: 128000, popular: true },
+    { name: "GPT-4 Turbo", size: 128000, popular: false },
+    { name: "o1-preview", size: 128000, popular: false },
+    { name: "o1-mini", size: 128000, popular: false },
 
     // Anthropic Claude Models (October 2025)
-    { name: "Claude Sonnet 4.5", size: 200000 },
-    { name: "Claude Opus 4.1", size: 200000 },
-    { name: "Claude Sonnet 4", size: 200000 },
-    { name: "Claude Opus 4", size: 200000 },
-    { name: "Claude 3.5 Sonnet", size: 200000 },
-    { name: "Claude 3.5 Haiku", size: 200000 },
-    { name: "Claude 3 Opus", size: 200000 },
+    { name: "Claude Sonnet 4.5", size: 200000, popular: true },
+    { name: "Claude Opus 4.1", size: 200000, popular: false },
+    { name: "Claude Sonnet 4", size: 200000, popular: false },
+    { name: "Claude Opus 4", size: 200000, popular: false },
+    { name: "Claude 3.5 Sonnet", size: 200000, popular: false },
+    { name: "Claude 3.5 Haiku", size: 200000, popular: false },
+    { name: "Claude 3 Opus", size: 200000, popular: false },
 
     // Google Gemini Models (October 2025)
-    { name: "Gemini 1.5 Pro", size: 2000000 },
-    { name: "Gemini 1.5 Flash", size: 1000000 },
+    { name: "Gemini 1.5 Pro", size: 2000000, popular: true },
+    { name: "Gemini 1.5 Flash", size: 1000000, popular: false },
   ];
 
-  contextWindows.forEach((model) => {
+  // Determine which models to show
+  const showAll = options.all || config.showAllModels;
+  let modelsToShow = allModels;
+
+  if (!showAll) {
+    // Show preferred model + top 3 popular models
+    const preferredModel = config.preferredModel;
+    const popularModels = allModels.filter((m) => m.popular);
+
+    if (preferredModel) {
+      // Find preferred model
+      const preferred = allModels.find((m) => m.name === preferredModel);
+      if (preferred) {
+        // Show preferred + top 3 popular (excluding preferred if it's already popular)
+        modelsToShow = [preferred];
+        popularModels.forEach((m) => {
+          if (m.name !== preferredModel && modelsToShow.length < 4) {
+            modelsToShow.push(m);
+          }
+        });
+      } else {
+        // Preferred model not found, just show popular
+        modelsToShow = popularModels.slice(0, 4);
+      }
+    } else {
+      // No preferred model, show top 4 popular
+      modelsToShow = popularModels.slice(0, 4);
+    }
+  }
+
+  // Display models
+  modelsToShow.forEach((model) => {
     const percentage = ((usage.totalTokens / model.size) * 100).toFixed(2);
     const bar = "█".repeat(Math.min(Math.floor(percentage / 2), 50));
     const color =
       percentage < 5 ? chalk.green : percentage < 15 ? chalk.yellow : chalk.red;
 
+    const isPreferred = model.name === config.preferredModel;
+    const prefix = isPreferred ? "⭐ " : "   ";
+
     console.log(
-      `  ${model.name.padEnd(20)} ${color(
+      `${prefix}${model.name.padEnd(20)} ${color(
         percentage.toString().padStart(6)
       )}%  ${color(bar)}`
     );
   });
 
   console.log();
+
+  // Show hint if not showing all models
+  if (!showAll) {
+    console.log(
+      chalk.gray(
+        `💡 Showing ${modelsToShow.length} models. Run 'npx aic tokens --all' to see all ${allModels.length} models\n`
+      )
+    );
+  }
 
   // Recommendations
   if (usage.totalTokens < 10000) {

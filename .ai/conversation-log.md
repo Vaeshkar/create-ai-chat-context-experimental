@@ -40,6 +40,139 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
+## Chat #3 - [Date: 2025-10-01] - v0.7.0 Feature: Configuration System + Simplified Token Report
+
+### What We Did
+
+- **Released v0.7.0** - Major feature release with configuration system
+
+  - **New `config` command** for managing user preferences
+
+    - `npx aic config` - List all configuration
+    - `npx aic config set preferredModel "Claude Sonnet 4.5"` - Set preferred AI model
+    - `npx aic config set showAllModels true` - Always show all models
+    - `npx aic config get preferredModel` - Get specific config value
+    - Configuration stored in `.ai/config.json`
+
+  - **Simplified token report** - Less overwhelming, more useful
+    - **Default behavior:** Shows only top 4 popular models (GPT-5, GPT-4o, Claude Sonnet 4.5, Gemini 1.5 Pro)
+    - **With preferred model:** Shows ⭐ Your model + top 3 popular models
+    - **`--all` flag:** Shows all 16 models when needed
+    - **Smart hint:** "Showing 4 models. Run 'npx aic tokens --all' to see all 16 models"
+
+- **Motivation:** User wanted "even number" version (v0.7.0 instead of v0.6.6) 😄
+
+  - Also wanted cleaner token output (16 models was overwhelming)
+  - Wanted to set preferred model and see it highlighted
+
+- **Testing completed:**
+  - ✅ `npx aic config` - Lists configuration
+  - ✅ `npx aic config set preferredModel "Claude Sonnet 4.5"` - Sets preferred model
+  - ✅ `npx aic tokens` - Shows 4 models with ⭐ star on preferred
+  - ✅ `npx aic tokens --all` - Shows all 16 models with ⭐ star on preferred
+  - ✅ Tested in `toy-store-ai-system` project
+
+### Key Decisions
+
+- **Configuration file location: `.ai/config.json`**
+
+  - **Rationale:** Keeps config with knowledge base, not global
+  - **Alternative considered:** Global config in `~/.aic/config.json` (rejected - per-project is better)
+  - **Decision:** Per-project config allows different models for different projects
+
+- **Default: Show 4 models instead of 16**
+
+  - **Rationale:** Most users only care about 1-2 models they actually use
+  - **Impact:** Cleaner output, less overwhelming
+  - **Escape hatch:** `--all` flag for power users
+
+- **Star (⭐) for preferred model**
+
+  - **Rationale:** Visual indicator makes it easy to spot your model
+  - **Alternative considered:** Highlighting with color (rejected - star is clearer)
+  - **Decision:** Star prefix is simple and works in all terminals
+
+- **Popular models: GPT-5, GPT-4o, Claude Sonnet 4.5, Gemini 1.5 Pro**
+  - **Rationale:** These are the most commonly used models as of October 2025
+  - **Decision:** Hardcoded for now, could be made configurable later
+
+### Problems Solved
+
+- **Problem:** Token report showed 16 models, overwhelming for most users
+
+  - **Root cause:** Tried to be comprehensive, but most users only care about 1-2 models
+  - **Solution:** Default to 4 popular models, add `--all` flag for full list
+  - **Result:** Cleaner output, still accessible when needed
+
+- **Problem:** No way to set preferred model
+  - **Root cause:** No configuration system existed
+  - **Solution:** Created `src/config.js` with full config management
+  - **Result:** Users can now set preferences and see them highlighted
+
+### Files Changed
+
+- **New file:** `src/config.js` - Configuration management system
+
+  - `loadConfig()` - Load config from `.ai/config.json`
+  - `saveConfig()` - Save config to `.ai/config.json`
+  - `getConfigValue()` - Get specific config value
+  - `setConfigValue()` - Set specific config value
+  - `listConfig()` - Display all configuration
+  - `handleConfigCommand()` - CLI command handler
+
+- **Updated:** `src/tokens.js` - Simplified model display
+
+  - Added config loading
+  - Added logic to show 4 models by default
+  - Added logic to show preferred model with ⭐ star
+  - Added `--all` flag support
+  - Added hint message when not showing all models
+
+- **Updated:** `bin/cli.js` - Added config command
+
+  - Added `config [action] [key] [value]` command
+  - Updated `tokens` command to accept `--all` flag
+  - Imported `handleConfigCommand` from `src/config.js`
+
+- **Updated:** `package.json` - Version bump to 0.7.0
+- **Updated:** `CHANGELOG.md` - Added v0.7.0 entry
+- **Updated:** `README.md` - Added v0.7.0 to "What's New" and updated command list
+
+### Next Steps
+
+- **Immediate:** Publish v0.7.0 to npm
+
+  ```bash
+  git add .
+  git commit -m "feat: v0.7.0 - Configuration system + simplified token report"
+  git push origin main
+  npm publish
+  git tag v0.7.0
+  git push origin v0.7.0
+  ```
+
+- **Future (v0.8.0):** Potential enhancements
+  - Add more config options (e.g., default archive keep count)
+  - Make "popular models" list configurable
+  - Add config validation
+  - Add config reset command
+
+### Testing Completed
+
+- ✅ Config command works: `npx aic config`
+- ✅ Set preferred model: `npx aic config set preferredModel "Claude Sonnet 4.5"`
+- ✅ Tokens shows 4 models with star: `npx aic tokens`
+- ✅ Tokens --all shows 16 models with star: `npx aic tokens --all`
+- ✅ Config stored in `.ai/config.json`
+- ✅ Tested in `toy-store-ai-system` project
+
+### User Feedback
+
+- User: "Yeah lets push this v0.70 so we have an even number." 😄
+- Result: Shipped v0.7.0 with major new features!
+
+---
+
 ## Chat #2 - [Date: 2025-10-01] - v0.6.5 Bug Fix: Conversation Entry Counting
 
 ### What We Did
@@ -292,7 +425,7 @@ Track key decisions and progress from AI chat sessions.
 
 ---
 
-**Last Updated:** 2025-10-01 (Chat #2 - v0.6.5)
+**Last Updated:** 2025-10-01 (Chat #3 - v0.7.0)
 
 ---
 

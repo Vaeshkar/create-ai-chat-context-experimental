@@ -33,9 +33,9 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 ## What's New
 
+- **v0.7.0** - ⚙️ Configuration system + simplified token report
 - **v0.6.5** - 🐛 Fixed conversation entry counting for date-first format
 - **v0.6.4** - 🧠 Smarter insights + latest AI models (GPT-5, Claude 4.5)
-- **v0.6.3** - 🧠 Smarter insights (context-aware token recommendations)
 - **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
 - **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
 - **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
@@ -72,6 +72,7 @@ npx aic log                     # Add conversation entry
 npx aic search "query"          # Find information
 npx aic stats                   # View analytics
 npx aic validate                # Check quality
+npx aic config                  # Manage configuration
 npx aic export --format md      # Export knowledge base
 npx aic update                  # Update templates
 npx aic install-hooks           # Install Git hooks
@@ -79,7 +80,8 @@ npx aic cursor                  # Cursor AI integration
 npx aic copilot                 # GitHub Copilot integration
 npx aic claude-project          # Claude Projects export
 npx aic archive --keep 10       # Archive old entries
-npx aic tokens                  # Check token usage
+npx aic tokens                  # Check token usage (top 4 models)
+npx aic tokens --all            # Check token usage (all 16 models)
 ```
 
 Run `npx aic --help` for all commands.

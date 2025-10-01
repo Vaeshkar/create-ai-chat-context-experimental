@@ -16,6 +16,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics dashboard
 - AI-powered summarization with API integration
 
+## [0.7.0] - 2025-10-01
+
+### Added
+
+- **Configuration system** - New `config` command to manage user preferences
+
+  - `npx aic config` - List all configuration
+  - `npx aic config set preferredModel "Claude Sonnet 4.5"` - Set your preferred AI model
+  - `npx aic config set showAllModels true` - Always show all models in tokens command
+  - `npx aic config get preferredModel` - Get specific config value
+  - Configuration stored in `.ai/config.json`
+
+- **Simplified token report** - Smarter, less overwhelming output
+  - Default: Shows only top 4 popular models (GPT-5, GPT-4o, Claude Sonnet 4.5, Gemini 1.5 Pro)
+  - If you set a preferred model, it shows: ⭐ Your model + top 3 popular models
+  - Add `--all` flag to see all 16 models: `npx aic tokens --all`
+  - Preferred model marked with ⭐ star
+
+### Improved
+
+- **Better token insights** - More actionable recommendations
+  - Shows hint: "Showing 4 models. Run 'npx aic tokens --all' to see all 16 models"
+  - Cleaner output focused on what you actually use
+
+### Technical
+
+- New module: `src/config.js` - Configuration management
+- Updated: `src/tokens.js` - Simplified model display logic
+- Updated: `bin/cli.js` - Added config command and --all flag for tokens
+
 ## [0.6.5] - 2025-10-01
 
 ### Fixed

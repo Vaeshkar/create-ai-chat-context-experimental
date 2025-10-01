@@ -17,6 +17,7 @@ const { showStats } = require("../src/stats");
 const { exportKnowledgeBase } = require("../src/export");
 const { updateKnowledgeBase } = require("../src/update");
 const { installGitHooks } = require("../src/install-hooks");
+const { handleConfigCommand } = require("../src/config");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -120,11 +121,24 @@ program
   });
 
 program
+  .command("config [action] [key] [value]")
+  .description("Manage configuration (list, get, set)")
+  .action(async (action, key, value) => {
+    try {
+      await handleConfigCommand(action, key, value);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
   .command("tokens")
   .description("Show detailed token usage breakdown of .ai/ knowledge base")
-  .action(async () => {
+  .option("-a, --all", "Show all AI models (default: show top 4)")
+  .action(async (options) => {
     try {
-      await displayTokenUsage();
+      await displayTokenUsage(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
