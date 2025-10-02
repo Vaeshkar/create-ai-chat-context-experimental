@@ -55,9 +55,17 @@ Historical documents and notes:
 
 Visual representations of the system:
 
+### Core Concepts
+
 - **[AI Knowledge Persistence](./01_ai-knowledge-persistence.png)** - How context is preserved
 - **[Knowledge Loss vs Persistence](./02_knowledge-loss-vs-persistence.png)** - Problem vs solution
 - **[AI Knowledge Base Structure](./03_ai-knowledge-base-structure.png)** - Directory structure
+
+### AICF 2.0
+
+- **[AICF Workflow](./04_aicf-workflow.png)** - How AICF 2.0 enables persistent memory
+- **[Token Efficiency](./05_token-efficiency.png)** - Markdown vs YAML vs AICF comparison
+- **[Anthropic Alignment](./06_anthropic-alignment.png)** - How AICF aligns with Anthropic's vision
 
 ### Generate Diagrams
 

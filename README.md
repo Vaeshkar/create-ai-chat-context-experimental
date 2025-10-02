@@ -30,7 +30,21 @@ npx aic migrate      # Convert .ai/ to .aicf/ format
 npx aic context --ai # Get AI-ready context for new chats
 ```
 
-**Use Case:** Chat fills up → Start new chat → Paste context → **Full memory instantly!** 🪄
+**The Magic:**
+
+```
+Chat Session 1 (fills up)
+    ↓
+npx aic context --ai
+    ↓
+Copy output
+    ↓
+Chat Session 2 (new)
+    ↓
+Paste context
+    ↓
+AI has FULL MEMORY of Session 1! ✨
+```
 
 ---
 
