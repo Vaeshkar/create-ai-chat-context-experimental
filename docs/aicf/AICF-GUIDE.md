@@ -171,7 +171,7 @@ npx aic context --full
 **Output (--ai):**
 
 ```
-# AI Context - create-ai-chat-context v0.13.0
+# AI Context - create-ai-chat-context v0.14.0
 
 ## Project Overview
 Preserve AI chat context and history across sessions

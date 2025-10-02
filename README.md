@@ -86,8 +86,9 @@ The tool supports three formats with increasing token efficiency:
 
 ## What's New
 
+- **v0.14.0** - 🚀 Direct .aicf/ reading - ZERO manual steps! AI reads files directly, no copy/paste!
 - **v0.13.1** - Documentation reorganization and AICF 2.0 visual diagrams
-- **v0.13.0** - ✅ AICF 2.0 - Universal AI Memory Protocol! Direct .aicf/ reading, zero manual steps!
+- **v0.13.0** - AICF 2.0 - Universal AI Memory Protocol! 88% token reduction!
 - **v0.12.0** - AI-Native Format (AICF) - 85% token reduction! Keep 6x more history in context!
 - **v0.11.1** - AI-Optimized Format - YAML entries + pipe-delimited summaries (52% token reduction!)
 - **v0.11.0** - "Verify Before You Advise" - Prevents AI from suggesting completed work!

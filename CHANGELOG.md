@@ -16,6 +16,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team collaboration features
 - Analytics dashboard
 
+## [0.14.0] - 2025-10-02
+
+### Changed
+
+- **🚀 Direct .aicf/ Reading - ZERO Manual Steps!**
+
+  - AI can now read `.aicf/` files directly without copy/paste
+  - Removed copy/paste workflow from all documentation
+  - Updated workflow: "Start new chat → Say: 'Read .aicf/ and continue' → Done!"
+  - Zero manual steps, zero clipboard usage
+
+- **📊 Updated Diagrams**
+
+  - Removed decorative emojis (kept only ✅/❌)
+  - Updated AI models: Claude Sonnet 4.5, Opus 4, OpenAI o1
+  - Fixed workflow diagram (removed orphaned nodes)
+  - All diagrams show direct reading workflow
+
+- **📝 Documentation Cleanup**
+
+  - Removed duplicate Anthropic comparison table
+  - Updated "What's New" section (v0.13.0, v0.13.1, v0.14.0)
+  - Simplified "Key Commands" (15 → 8 essential commands)
+  - Created dedicated "AICF 2.0 Commands" section
+  - Moved advanced commands to COMMANDS.md
+
+- **🎯 Repositioned `context` Command**
+  - Now optional (for human review only)
+  - AI reads `.aicf/` files directly without this command
+  - `context --ai` shows AI-optimized summary for review
+
+### Added
+
+- **📖 Complete AICF Guide** (`docs/aicf/AICF-GUIDE.md`)
+
+  - How to read AICF files
+  - Format specifications
+  - Converting back instructions
+  - Advanced usage examples
+  - Troubleshooting section
+
+- **🎨 Visual Diagrams**
+  - `04_aicf-workflow.mmd` - Complete AICF 2.0 workflow
+  - `05_token-efficiency.mmd` - Token comparison (Markdown/YAML/AICF)
+  - `06_anthropic-alignment.mmd` - Anthropic vision alignment
+
+### Fixed
+
+- Removed 6 orphaned nodes from workflow diagram
+- Fixed duplicate content in README
+- Updated all version references
+
+## [0.13.1] - 2025-10-02
+
+### Changed
+
+- **📚 Documentation Reorganization**
+
+  - Moved 8 AICF docs to `docs/aicf/`
+  - Moved 2 guides to `docs/guides/`
+  - Moved 3 archive files to `docs/archive/`
+  - Deleted 7 temp files (test scripts, etc.)
+  - Root now has only 7 essential files
+
+- **📝 Simplified README**
+
+  - Reduced from 315 lines → 208 lines (34% reduction)
+  - Moved detailed format examples to docs
+  - Kept hero section and quick start
+  - Added links to comprehensive docs
+
+- **📖 Updated docs/README.md**
+  - Complete index of all documentation
+  - Organized by category (AICF, Guides, Archive)
+  - Quick links for users/contributors/developers
+
+### Added
+
+- Added `migrate` command documentation to COMMANDS.md
+- Added `context` command documentation to COMMANDS.md
+
 ## [0.13.0] - 2025-10-02
 
 ### Added
