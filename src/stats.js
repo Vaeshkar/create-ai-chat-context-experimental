@@ -245,23 +245,19 @@ async function showStats() {
   // Display helpful commands
   console.log(chalk.bold("🛠️  Helpful Commands:\n"));
   console.log(
-    chalk.gray(
-      "   npx create-ai-chat-context chat-finish     - Auto-update all .ai/ files"
-    )
+    chalk.gray("   npx aic migrate           - Convert to AICF 2.0 format")
   );
   console.log(
-    chalk.gray(
-      "   npx create-ai-chat-context search <query>  - Search knowledge base"
-    )
+    chalk.gray("   npx aic context           - View AI context summary")
   );
   console.log(
-    chalk.gray("   npx create-ai-chat-context validate        - Check quality")
+    chalk.gray("   npx aic chat-finish       - Auto-update all files")
   );
   console.log(
-    chalk.gray(
-      "   npx create-ai-chat-context archive         - Archive old entries"
-    )
+    chalk.gray("   npx aic search <query>    - Search knowledge base")
   );
+  console.log(chalk.gray("   npx aic validate          - Check quality"));
+  console.log(chalk.gray("   npx aic archive           - Archive old entries"));
   console.log();
 }
 

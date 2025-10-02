@@ -6,24 +6,40 @@ Complete reference for all `create-ai-chat-context` commands.
 
 ## Table of Contents
 
-- [Quick Reference](#quick-reference)
-- [Command Details](#command-details)
-  - [init](#init)
-  - [log](#log)
-  - [config](#config)
-  - [tokens](#tokens)
-  - [stats](#stats)
-  - [search](#search)
-  - [validate](#validate)
-  - [check](#check)
-  - [archive](#archive)
-  - [summary](#summary)
-  - [export](#export)
-  - [update](#update)
-  - [cursor](#cursor)
-  - [copilot](#copilot)
-  - [claude-project](#claude-project)
-  - [install-hooks](#install-hooks)
+- [Command Reference](#command-reference)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Reference](#quick-reference)
+  - [Command Details](#command-details)
+    - [init](#init)
+    - [chat-finish](#chat-finish)
+    - [config](#config)
+    - [tokens](#tokens)
+    - [stats](#stats)
+    - [search](#search)
+    - [validate](#validate)
+    - [check](#check)
+    - [archive](#archive)
+    - [summary](#summary)
+    - [export](#export)
+    - [update](#update)
+    - [cursor](#cursor)
+    - [copilot](#copilot)
+    - [claude-project](#claude-project)
+    - [migrate](#migrate)
+    - [context](#context)
+    - [convert](#convert)
+    - [install-hooks](#install-hooks)
+  - [Common Workflows](#common-workflows)
+    - [Daily Development Workflow](#daily-development-workflow)
+    - [Weekly Maintenance](#weekly-maintenance)
+    - [New Project Setup](#new-project-setup)
+    - [Token Management Workflow](#token-management-workflow)
+  - [Tips \& Best Practices](#tips--best-practices)
+    - [Command Aliases](#command-aliases)
+    - [Regular Maintenance](#regular-maintenance)
+    - [Configuration](#configuration)
+    - [Search Tips](#search-tips)
+  - [See Also](#see-also)
 
 ---
 
@@ -189,16 +205,6 @@ NEXT:
 - Efficient: Saves time and ensures nothing is missed
 
 ---
-
-### log
-
-Add a conversation log entry interactively (manual alternative to `chat-finish`).
-
-**Syntax:**
-
-```bash
-npx aic log
-```
 
 **Interactive prompts:**
 

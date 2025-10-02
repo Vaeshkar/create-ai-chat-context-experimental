@@ -7,7 +7,6 @@ const { displayTokenUsage } = require("../src/tokens");
 const { archiveConversations } = require("../src/archive");
 const { summarizeConversations } = require("../src/summary");
 const { healthCheck } = require("../src/check");
-const { addLogEntry } = require("../src/log");
 const { validateKnowledgeBase } = require("../src/validate");
 const { generateCursorRules } = require("../src/cursor");
 const { generateCopilotInstructions } = require("../src/copilot");
@@ -33,7 +32,7 @@ program
 
 program
   .command("init")
-  .description("Initialize .ai/ knowledge base system in current directory")
+  .description("Initialize AI knowledge base in current directory")
   .option("-f, --force", "Overwrite existing files")
   .option("--no-git", "Skip Git integration")
   .option(
@@ -50,20 +49,8 @@ program
   });
 
 program
-  .command("log")
-  .description("Add a conversation log entry interactively")
-  .action(async () => {
-    try {
-      await addLogEntry();
-    } catch (error) {
-      console.error(chalk.red("Error:"), error.message);
-      process.exit(1);
-    }
-  });
-
-program
   .command("chat-finish")
-  .description("Automatically update all .ai/ files at end of chat session")
+  .description("Auto-update all knowledge base files at end of chat session")
   .action(async () => {
     try {
       await handleChatFinish();
@@ -126,7 +113,7 @@ program
 
 program
   .command("check")
-  .description("Quick health check of .ai/ knowledge base")
+  .description("Quick health check of knowledge base")
   .action(async () => {
     try {
       await healthCheck();
@@ -150,7 +137,7 @@ program
 
 program
   .command("tokens")
-  .description("Show detailed token usage breakdown of .ai/ knowledge base")
+  .description("Show token usage breakdown of knowledge base")
   .option("-a, --all", "Show all AI models (default: show top 4)")
   .action(async (options) => {
     try {
@@ -287,7 +274,7 @@ program
 
 program
   .command("migrate")
-  .description("Migrate .ai/ directory to .aicf/ format (AICF 2.0)")
+  .description("Convert .ai/ to .aicf/ format (AICF 2.0 - 88% token reduction)")
   .action(async () => {
     try {
       await migrateToAICF();
@@ -299,7 +286,7 @@ program
 
 program
   .command("context")
-  .description("Display AI context for starting new chat sessions")
+  .description("View AI context summary (for starting new chat sessions)")
   .option("--ai", "Output in AI-optimized format")
   .option("--full", "Show full context (all files)")
   .action(async (options) => {
