@@ -3,46 +3,40 @@
 
 graph TB
     Start([Developer working in Chat #1]) --> Working[Building features,<br/>making decisions,<br/>solving problems]
-    
+
     Working --> ChatFull{Chat approaching<br/>token limit?}
-    
+
     ChatFull -->|No| Working
     ChatFull -->|Yes| Decision{Have .aicf/<br/>directory?}
-    
+
     Decision -->|No| Migrate[Run: npx aic migrate<br/>Convert .ai/ to .aicf/]
-    Decision -->|Yes| GetContext
-    
-    Migrate --> MigrateResult[✅ Created .aicf/ directory:<br/>- conversations.aicf<br/>- decisions.aicf<br/>- tasks.aicf<br/>- issues.aicf<br/>- index.aicf]
-    
-    MigrateResult --> GetContext[Run: npx aic context --ai]
-    
-    GetContext --> Output[📋 Output generated:<br/>AI-optimized context<br/>88% token reduction<br/>1.8K tokens vs 15K]
-    
-    Output --> Copy[📋 Copy output to clipboard]
-    
-    Copy --> NewChat[🆕 Start Chat #2<br/>Fresh session]
-    
-    NewChat --> Paste[📝 Paste context into new chat]
-    
-    Paste --> Say[💬 Say: 'Continue from here']
-    
-    Say --> Magic[✨ MAGIC HAPPENS ✨]
-    
-    Magic --> FullContext[🎯 Chat #2 AI has:<br/>✅ All conversation history<br/>✅ All technical decisions<br/>✅ All tasks & status<br/>✅ All known issues<br/>✅ Full project context]
-    
-    FullContext --> Continue[Continue working<br/>with ZERO context loss!]
-    
+    Decision -->|Yes| NewChat
+
+    Migrate --> MigrateResult[Created .aicf/ directory:<br/>- conversations.aicf<br/>- decisions.aicf<br/>- tasks.aicf<br/>- issues.aicf<br/>- index.aicf]
+
+    MigrateResult --> NewChat[Start Chat #2<br/>Fresh session]
+
+    NewChat --> DirectRead[Say: Read .aicf/ and continue]
+
+    DirectRead --> AIReads[AI reads .aicf/ files directly:<br/>- index.aicf project overview<br/>- conversations.aicf all chats<br/>- decisions.aicf all decisions<br/>- tasks.aicf all tasks<br/>- issues.aicf all issues]
+
+    AIReads --> Parse[AI parses @SCHEMA sections<br/>Understands pipe-delimited format<br/>Self-documenting structure]
+
+    Parse --> FullContext[Chat #2 AI has:<br/>✅ All conversation history<br/>✅ All technical decisions<br/>✅ All tasks and status<br/>✅ All known issues<br/>✅ Full project context]
+
+    FullContext --> Continue[Continue working<br/>ZERO context loss<br/>ZERO manual steps]
+
     Continue --> MoreWork[Build more features,<br/>make more decisions]
-    
+
     MoreWork --> ChatFull2{Chat #2<br/>filling up?}
-    
+
     ChatFull2 -->|No| MoreWork
-    ChatFull2 -->|Yes| Repeat[Repeat process:<br/>npx aic context --ai<br/>→ Start Chat #3<br/>→ Paste context]
-    
-    Repeat --> Infinite[♾️ Infinite memory<br/>across ALL chats!]
-    
-    Infinite --> Benefits[🎉 Benefits:<br/>✅ No re-explaining<br/>✅ No context loss<br/>✅ Instant continuity<br/>✅ 88% token savings<br/>✅ Works with ALL AIs]
-    
+    ChatFull2 -->|Yes| Repeat[Repeat process:<br/>Start Chat #3<br/>Say: Read .aicf/ and continue]
+
+    Repeat --> Infinite[Infinite memory<br/>across ALL chats]
+
+    Infinite --> Benefits[Benefits:<br/>✅ No re-explaining<br/>✅ No context loss<br/>✅ No copy/paste<br/>✅ No manual steps<br/>✅ 88% token savings<br/>✅ Works with ALL AIs]
+
     style Start fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
     style Working fill:#fff4e6,stroke:#ff9800,stroke-width:2px
     style ChatFull fill:#ffe6e6,stroke:#f44336,stroke-width:2px
@@ -63,4 +57,3 @@ graph TB
     style Repeat fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
     style Infinite fill:#e1bee7,stroke:#8e24aa,stroke-width:3px
     style Benefits fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-

@@ -20,29 +20,29 @@ graph TB
 
     AICF --> AICFTokens[💰 Tokens: 12<br/>📏 Characters: 120<br/>👤 Human-readable: ⚠️ Compact<br/>🤖 AI-parseable: ✅✅✅ Instant]
 
-    MDTokens --> Compare[📊 Comparison]
+    MDTokens --> Compare[Comparison]
     YAMLTokens --> Compare
     AICFTokens --> Compare
 
-    Compare --> Savings[💎 Token Savings:<br/>YAML vs Markdown: 47% reduction<br/>AICF vs YAML: 85% reduction<br/>AICF vs Markdown: 92% reduction]
+    Compare --> Savings[Token Savings:<br/>YAML vs Markdown: 47% reduction<br/>AICF vs YAML: 85% reduction<br/>AICF vs Markdown: 92% reduction]
 
-    Savings --> Scale[📈 At Scale 100 entries]
+    Savings --> Scale[At Scale: 100 entries]
 
     Scale --> Scale1[Markdown: 15,000 tokens<br/>YAML: 8,000 tokens<br/>AICF: 1,200 tokens]
 
-    Scale1 --> Context[🎯 Context Window Capacity]
+    Scale1 --> Context[Context Window Capacity]
 
-    Context --> Claude[<b>Claude 3.5 Sonnet 200K:</b><br/>Markdown: 1,333 entries<br/>YAML: 2,500 entries<br/>AICF: 16,600 entries<br/>🚀 6.6x more history!]
+    Context --> Claude[<b>Claude Sonnet 4.5 - 200K:</b><br/>Markdown: 1,333 entries<br/>YAML: 2,500 entries<br/>AICF: 16,600 entries<br/>Result: 6.6x more history]
 
-    Context --> GPT4[<b>GPT-4 Turbo 128K:</b><br/>Markdown: 853 entries<br/>YAML: 1,600 entries<br/>AICF: 10,600 entries<br/>🚀 6.6x more history!]
+    Context --> Opus[<b>Claude Opus 4 - 200K:</b><br/>Markdown: 1,333 entries<br/>YAML: 2,500 entries<br/>AICF: 16,600 entries<br/>Result: 6.6x more history]
 
-    Context --> GPT4o[<b>GPT-4o 128K:</b><br/>Markdown: 853 entries<br/>YAML: 1,600 entries<br/>AICF: 10,600 entries<br/>🚀 6.6x more history!]
+    Context --> O1[<b>OpenAI o1 - 128K:</b><br/>Markdown: 853 entries<br/>YAML: 1,600 entries<br/>AICF: 10,600 entries<br/>Result: 6.6x more history]
 
-    Claude --> Winner[🏆 AICF 2.0 Winner:<br/>✅ 88% token reduction<br/>✅ 6.6x more history<br/>✅ Instant AI parsing<br/>✅ O1 lookup via index<br/>✅ Relationship tracking]
-    GPT4 --> Winner
-    GPT4o --> Winner
+    Claude --> Winner[AICF 2.0 Results:<br/>✅ 88% token reduction<br/>✅ 6.6x more history<br/>✅ Instant AI parsing<br/>✅ O1 lookup via index<br/>✅ Relationship tracking]
+    Opus --> Winner
+    O1 --> Winner
 
-    Winner --> RealWorld[🌍 Real-World Impact:<br/>Chat #1: 50 entries 600 tokens<br/>Chat #2: 100 entries 1,200 tokens<br/>Chat #3: 200 entries 2,400 tokens<br/>Chat #10: 500 entries 6,000 tokens<br/><br/>Still fits in context window! 🎉]
+    Winner --> RealWorld[Real-World Impact:<br/>Chat #1: 50 entries = 600 tokens<br/>Chat #2: 100 entries = 1,200 tokens<br/>Chat #3: 200 entries = 2,400 tokens<br/>Chat #10: 500 entries = 6,000 tokens<br/><br/>Still fits in context window]
 
     style Title fill:#e1f5ff,stroke:#0288d1,stroke-width:3px,font-size:18px
     style Format1 fill:#ffebee,stroke:#c62828,stroke-width:2px
@@ -64,8 +64,8 @@ graph TB
     style Context fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
 
     style Claude fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
-    style GPT4 fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
-    style GPT4o fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
+    style Opus fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
+    style O1 fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
 
     style Winner fill:#c8e6c9,stroke:#2e7d32,stroke-width:4px,font-size:16px
     style RealWorld fill:#e6ffe6,stroke:#4caf50,stroke-width:3px

@@ -35,16 +35,14 @@ npx aic context --ai # Get AI-ready context for new chats
 ```
 Chat Session 1 (fills up)
     ↓
-npx aic context --ai
+Start Chat Session 2
     ↓
-Copy output
+Say: "Read .aicf/ and continue"
     ↓
-Chat Session 2 (new)
-    ↓
-Paste context
-    ↓
-AI has FULL MEMORY of Session 1! ✨
+AI has FULL MEMORY of Session 1!
 ```
+
+**Zero manual steps. Zero copy/paste. Just works.** ✅
 
 ---
 

@@ -32,16 +32,14 @@ AICF 2.0 creates a persistent memory system (`.aicf/` directory) that connects a
 ```
 Chat Session 1 (fills up)
     ↓
-npx aic context --ai
+Start Chat Session 2
     ↓
-Copy output
+Say: "Read .aicf/ and continue"
     ↓
-Chat Session 2 (new)
-    ↓
-Paste context
-    ↓
-AI has FULL MEMORY! ✨
+AI has FULL MEMORY!
 ```
+
+**Zero manual steps. AI reads files directly.** ✅
 
 ### Key Benefits
 
@@ -64,6 +62,7 @@ npx aic migrate
 This converts your `.ai/` directory to `.aicf/` format.
 
 **What it does:**
+
 - Converts `conversation-log.md` → `conversations.aicf`
 - Converts `technical-decisions.md` → `decisions.aicf`
 - Converts `known-issues.md` → `issues.aicf`
@@ -72,6 +71,7 @@ This converts your `.ai/` directory to `.aicf/` format.
 - Generates `.meta` with project metadata
 
 **Expected output:**
+
 ```
 🚀 Migrating to AICF 2.0
 
@@ -89,30 +89,34 @@ Converting files...
    Issues: 5
 ```
 
-### 2. View Your Context
+### 2. Use in New Chat
+
+When your current chat fills up:
+
+1. Start a new AI chat
+2. Say: **"Read .aicf/ and continue"**
+3. Done!
+
+**The AI reads .aicf/ files directly and has full context instantly!**
+
+**Zero manual steps. Zero copy/paste. Just works.** ✅
+
+### 3. View Your Context (Optional)
+
+For human review only:
 
 ```bash
 # Human-readable summary
 npx aic context
 
-# AI-optimized format (for new chats)
+# AI-optimized format
 npx aic context --ai
 
 # Complete details
 npx aic context --full
 ```
 
-### 3. Use in New Chat
-
-When your current chat fills up:
-
-1. Run `npx aic context --ai`
-2. Copy the output
-3. Start a new AI chat
-4. Paste the output
-5. Say: "Continue from here"
-
-**The new AI instantly has full context!** 🎉
+**Note:** The `context` command is for humans to review project state. AI can read `.aicf/` files directly without this command.
 
 ---
 
@@ -123,9 +127,11 @@ When your current chat fills up:
 Convert `.ai/` directory to `.aicf/` format.
 
 **Options:**
+
 - None (runs automatically)
 
 **What it preserves:**
+
 - All conversation history
 - All technical decisions
 - All tasks and their status
@@ -133,6 +139,7 @@ Convert `.ai/` directory to `.aicf/` format.
 - Project metadata
 
 **Safe:**
+
 - Original `.ai/` files are NOT deleted
 - You can always go back
 - Non-destructive operation
@@ -144,6 +151,7 @@ Convert `.ai/` directory to `.aicf/` format.
 Display AI context for starting new chat sessions.
 
 **Options:**
+
 - `--ai` - AI-optimized format (paste into new chats)
 - `--full` - Show complete details
 
@@ -161,6 +169,7 @@ npx aic context --full
 ```
 
 **Output (--ai):**
+
 ```
 # AI Context - create-ai-chat-context v0.13.0
 
@@ -232,6 +241,7 @@ C#|TIMESTAMP|TYPE|TOPIC|WHAT|WHY|OUTCOME|FILES
 ```
 
 **Fields:**
+
 - `C#` - Chat number
 - `TIMESTAMP` - Date (YYYYMMDD format)
 - `TYPE` - R=Release, F=Feature, X=Fix, D=Docs, W=Work, M=Refactor
@@ -266,8 +276,8 @@ T#|PRIORITY|EFFORT|STATUS|TASK|DEPENDENCIES|ASSIGNED|CREATED|COMPLETED
 3|M|S|DONE|Add config command|None||2025-10-01T10:00:00Z|2025-10-01T14:30:00Z
 ```
 
-**Priority:** H=High, M=Medium, L=Low  
-**Effort:** S=Small, M=Medium, L=Large  
+**Priority:** H=High, M=Medium, L=Low
+**Effort:** S=Small, M=Medium, L=Large
 **Status:** TODO, DOING, DONE, BLOCKED, CANCELLED
 
 ### Example: issues.aicf
@@ -282,7 +292,7 @@ I#|TIMESTAMP|SEVERITY|TITLE|ISSUE|IMPACT|WORKAROUND|STATUS
 2|20251001T120000Z|LOW|Token report overwhelming|16 models too many|Cluttered output|Show 4 by default|RESOLVED
 ```
 
-**Severity:** CRITICAL, HIGH, MEDIUM, LOW  
+**Severity:** CRITICAL, HIGH, MEDIUM, LOW
 **Status:** OPEN, INVESTIGATING, WORKAROUND, FIXED, WONTFIX, RESOLVED
 
 ---
@@ -299,20 +309,20 @@ I#|TIMESTAMP|SEVERITY|TITLE|ISSUE|IMPACT|WORKAROUND|STATUS
 
 ### Scaling Analysis
 
-| Entries | Markdown | YAML  | AICF  | Savings |
-| ------- | -------- | ----- | ----- | ------- |
-| 10      | 1,500    | 800   | 120   | 85%     |
-| 50      | 7,500    | 4,000 | 600   | 85%     |
-| 100     | 15,000   | 8,000 | 1,200 | 85%     |
-| 500     | 75,000   | 40,000| 6,000 | 85%     |
+| Entries | Markdown | YAML   | AICF  | Savings |
+| ------- | -------- | ------ | ----- | ------- |
+| 10      | 1,500    | 800    | 120   | 85%     |
+| 50      | 7,500    | 4,000  | 600   | 85%     |
+| 100     | 15,000   | 8,000  | 1,200 | 85%     |
+| 500     | 75,000   | 40,000 | 6,000 | 85%     |
 
 ### Context Window Capacity
 
-| AI Model              | YAML Entries | AICF Entries | Improvement |
-| --------------------- | ------------ | ------------ | ----------- |
-| Claude 3.5 Sonnet     | 2,500        | 16,600       | 6.6x        |
-| GPT-4 Turbo           | 1,600        | 10,600       | 6.6x        |
-| GPT-4o                | 1,600        | 10,600       | 6.6x        |
+| AI Model          | YAML Entries | AICF Entries | Improvement |
+| ----------------- | ------------ | ------------ | ----------- |
+| Claude 3.5 Sonnet | 2,500        | 16,600       | 6.6x        |
+| GPT-4 Turbo       | 1,600        | 10,600       | 6.6x        |
+| GPT-4o            | 1,600        | 10,600       | 6.6x        |
 
 ---
 
@@ -373,19 +383,22 @@ npx aic migrate
 The `.aicf/` files are designed for AI parsing, but you can also read them programmatically:
 
 ```javascript
-const fs = require('fs');
+const fs = require("fs");
 
 // Read conversations
-const content = fs.readFileSync('.aicf/conversations.aicf', 'utf8');
-const lines = content.split('\n');
+const content = fs.readFileSync(".aicf/conversations.aicf", "utf8");
+const lines = content.split("\n");
 
 // Find @DATA section
-const dataStart = lines.findIndex(l => l === '@DATA') + 1;
-const entries = lines.slice(dataStart).filter(l => l.trim() && !l.startsWith('@'));
+const dataStart = lines.findIndex((l) => l === "@DATA") + 1;
+const entries = lines
+  .slice(dataStart)
+  .filter((l) => l.trim() && !l.startsWith("@"));
 
 // Parse entries
-entries.forEach(entry => {
-  const [id, timestamp, type, topic, what, why, outcome, files] = entry.split('|');
+entries.forEach((entry) => {
+  const [id, timestamp, type, topic, what, why, outcome, files] =
+    entry.split("|");
   console.log(`Chat #${id}: ${topic}`);
 });
 ```
@@ -393,17 +406,20 @@ entries.forEach(entry => {
 ### Integration with AI Tools
 
 **Claude Projects:**
+
 ```bash
 npx aic context --ai > claude-context.md
 # Upload to Claude Projects
 ```
 
 **Cursor:**
+
 ```bash
 # Cursor automatically reads .aicf/ if present
 ```
 
 **Custom AI:**
+
 ```bash
 # Get context and pass to your AI
 CONTEXT=$(npx aic context --ai)
@@ -419,6 +435,7 @@ your-ai-tool --context "$CONTEXT"
 **Problem:** `npx aic migrate` shows 0 conversations/decisions/tasks/issues.
 
 **Solution:**
+
 1. Check if `.ai/` files exist: `ls -la .ai/`
 2. Check if files have content: `cat .ai/conversation-log.md`
 3. Check file format matches expected format
@@ -429,6 +446,7 @@ your-ai-tool --context "$CONTEXT"
 **Problem:** `npx aic context` says command not found.
 
 **Solution:**
+
 1. Update to latest version: `npm install -g create-ai-chat-context@latest`
 2. Or use full command: `npx create-ai-chat-context context`
 
@@ -437,6 +455,7 @@ your-ai-tool --context "$CONTEXT"
 **Problem:** `.aicf/` files have strange formatting.
 
 **Solution:**
+
 1. Delete and re-migrate: `rm -rf .aicf && npx aic migrate`
 2. Check `.ai/` source files for corruption
 3. Report issue: https://github.com/Vaeshkar/create-ai-chat-context/issues
@@ -446,6 +465,7 @@ your-ai-tool --context "$CONTEXT"
 **Problem:** AICF files are hard to read manually.
 
 **Solution:**
+
 - Use `npx aic context` for human-readable summary
 - Use `npx aic context --full` for complete details
 - Original `.ai/` files are still available (human-readable)
@@ -463,4 +483,3 @@ your-ai-tool --context "$CONTEXT"
 ---
 
 **Questions?** [Open an issue on GitHub](https://github.com/Vaeshkar/create-ai-chat-context/issues)
-
