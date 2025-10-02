@@ -82,38 +82,18 @@ The tool supports three formats with increasing token efficiency:
 
 **AICF 2.0** (AI Context Format) provides **88% token reduction** and enables persistent memory across chat sessions.
 
-**Learn more:** [AICF Guide](./docs/aicf/AICF-GUIDE.md) | [Format Comparison](./docs/aicf/AICF-BENCHMARK-REPORT.md)
-
-### 🎯 Aligned with Anthropic's Context Management Vision
-
-On September 29, 2025, Anthropic announced [context management features](https://www.anthropic.com/news/context-management) for Claude. **AICF 2.0 implements their vision - and goes beyond:**
-
-| Feature               | Anthropic | AICF 2.0   |
-| --------------------- | --------- | ---------- |
-| Token Reduction       | 84%       | **88%** ✨ |
-| File-based Memory     | ✅        | ✅         |
-| Persistent Storage    | ✅        | ✅         |
-| Relationship Tracking | ❌        | **✅** ✨  |
-| O(1) Lookup           | ❌        | **✅** ✨  |
-| Works with ALL AIs    | ❌        | **✅** ✨  |
-
-**Learn more:** [Anthropic Alignment](./docs/aicf/ANTHROPIC-ALIGNMENT.md)
+**Learn more:** [AICF Guide](./docs/aicf/AICF-GUIDE.md) | [Format Comparison](./docs/aicf/AICF-BENCHMARK-REPORT.md) | [Anthropic Alignment](./docs/aicf/ANTHROPIC-ALIGNMENT.md)
 
 ## What's New
 
-- **v0.12.0** - 🚀 AI-Native Format (AICF) - 85% token reduction! Keep 6x more history in context!
-- **v0.11.1** - 🤖 AI-Optimized Format - YAML entries + pipe-delimited summaries (52% token reduction!)
-- **v0.11.0** - 🚨 "Verify Before You Advise" - Prevents AI from suggesting completed work!
-- **v0.10.2** - 🎯 All commands now recommend `chat-finish` (automatic workflow)!
-- **v0.10.1** - ✨ Perfect formatting for all `.ai/` files - Clean, professional output!
-- **v0.9.1** - 🔧 Fixed `chat-finish` compatibility with older conversation-log.md formats
-- **v0.6.2** - ⚡ Added `aic` short alias (use `npx aic` instead of `npx create-ai-chat-context`)
-- **v0.6.1** - 📖 Cleaned up README (76% shorter, easier to read)
-- **v0.6.0** - 🎯 Auto-detection (Next.js, Python, Rust) + Git hooks for reminders
-- **v0.5.0** - 🔍 Search, stats, export, and update commands
-- **v0.4.0** - 🤖 GitHub Copilot & Claude Projects integration
-- **v0.3.0** - 🎨 Project-specific templates (Next.js, Python)
-- **v0.2.0** - 📝 Effortless logging, validation, Cursor integration
+- **v0.13.1** - Documentation reorganization and AICF 2.0 visual diagrams
+- **v0.13.0** - ✅ AICF 2.0 - Universal AI Memory Protocol! Direct .aicf/ reading, zero manual steps!
+- **v0.12.0** - AI-Native Format (AICF) - 85% token reduction! Keep 6x more history in context!
+- **v0.11.1** - AI-Optimized Format - YAML entries + pipe-delimited summaries (52% token reduction!)
+- **v0.11.0** - "Verify Before You Advise" - Prevents AI from suggesting completed work!
+- **v0.10.2** - All commands now recommend `chat-finish` (automatic workflow)!
+
+See [CHANGELOG.md](./CHANGELOG.md) for complete version history.
 
 ## Quick Start
 
@@ -137,25 +117,25 @@ git commit -m "Add AI knowledge base"
 
 ## Key Commands
 
+### AICF 2.0 Commands
+
 ```bash
-npx aic init                    # Initialize (auto-detects project type)
-npx aic chat-finish             # 🎬 Auto-update all .ai/ files (recommended!)
+npx aic migrate                 # Convert .ai/ to .aicf/ format (one-time)
+npx aic context                 # View AI context summary
+npx aic context --ai            # AI-optimized format (for review)
+```
+
+### Essential Commands
+
+```bash
+npx aic init                    # Initialize knowledge base
+npx aic chat-finish             # Auto-update all files (recommended!)
 npx aic search "query"          # Find information
 npx aic stats                   # View analytics
 npx aic validate                # Check quality
-npx aic config                  # Manage configuration
-npx aic export --format md      # Export knowledge base
-npx aic update                  # Update templates
-npx aic install-hooks           # Install Git hooks
-npx aic cursor                  # Cursor AI integration
-npx aic copilot                 # GitHub Copilot integration
-npx aic claude-project          # Claude Projects export
-npx aic archive --keep 10       # Archive old entries
-npx aic tokens                  # Check token usage (top 4 models)
-npx aic tokens --all            # Check token usage (all 16 models)
 ```
 
-Run `npx aic --help` for all commands.
+**See [COMMANDS.md](./COMMANDS.md) for all 20+ commands** (config, export, integrations, etc.)
 
 ## Configuration
 
