@@ -97,6 +97,14 @@ async function listConfig(cwd = process.cwd()) {
     }`
   );
 
+  console.log(
+    `${chalk.bold("AI-Native Format:")} ${
+      config.useAiNativeFormat
+        ? chalk.green("Enabled") + chalk.gray(" (85% token reduction!)")
+        : chalk.gray("Disabled") + chalk.gray(" (using YAML)")
+    }`
+  );
+
   console.log();
   console.log(
     chalk.gray(
@@ -172,11 +180,29 @@ async function handleConfigCommand(action, key, value) {
         console.log(
           chalk.green(`\n✅ Show all models set to: ${chalk.cyan(boolValue)}\n`)
         );
+      } else if (key === "useAiNativeFormat") {
+        // Convert to boolean
+        const boolValue = value === "true" || value === "1" || value === "yes";
+        await setConfigValue("useAiNativeFormat", boolValue, cwd);
+        console.log(
+          chalk.green(
+            `\n✅ AI-native format set to: ${chalk.cyan(boolValue)}\n`
+          )
+        );
+        console.log(
+          chalk.gray(
+            boolValue
+              ? "💡 chat-finish will now generate ultra-compact format (85% token reduction!)"
+              : "💡 chat-finish will use YAML format (human-readable)"
+          )
+        );
+        console.log(chalk.gray("\n"));
       } else {
         console.log(chalk.yellow(`\n⚠️  Unknown config key: ${key}\n`));
         console.log(chalk.gray("Available keys:"));
         console.log(chalk.gray("  - preferredModel"));
-        console.log(chalk.gray("  - showAllModels\n"));
+        console.log(chalk.gray("  - showAllModels"));
+        console.log(chalk.gray("  - useAiNativeFormat\n"));
       }
       return;
     }

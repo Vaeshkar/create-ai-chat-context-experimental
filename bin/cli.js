@@ -19,6 +19,9 @@ const { updateKnowledgeBase } = require("../src/update");
 const { installGitHooks } = require("../src/install-hooks");
 const { handleConfigCommand } = require("../src/config");
 const { handleChatFinish } = require("../src/chat-finish");
+const { handleConvertCommand } = require("../src/convert");
+const { migrateToAICF } = require("../src/aicf-migrate");
+const { handleContextCommand } = require("../src/aicf-context");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -256,6 +259,52 @@ program
   .action(async (options) => {
     try {
       await installGitHooks(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("convert")
+  .description("Convert conversation log format")
+  .option("--to-ai-native", "Convert to AI-native format (85% token reduction)")
+  .option("--to-yaml", "Convert to YAML format (human-readable)")
+  .option("--to-markdown", "Convert to Markdown format (traditional)")
+  .option(
+    "--all-files",
+    "Convert ALL knowledge base files to AICF (maximum efficiency)"
+  )
+  .option("--no-backup", "Skip creating backup file")
+  .action(async (options) => {
+    try {
+      await handleConvertCommand(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("migrate")
+  .description("Migrate .ai/ directory to .aicf/ format (AICF 2.0)")
+  .action(async () => {
+    try {
+      await migrateToAICF();
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("context")
+  .description("Display AI context for starting new chat sessions")
+  .option("--ai", "Output in AI-optimized format")
+  .option("--full", "Show full context (all files)")
+  .action(async (options) => {
+    try {
+      await handleContextCommand(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

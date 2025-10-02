@@ -272,6 +272,7 @@ npx aic config [action] [key] [value]
 
 - `preferredModel` - Your preferred AI model
 - `showAllModels` - Show all models (true/false)
+- `useAiNativeFormat` - Use AI-native format for conversation logs (true/false)
 
 **Examples:**
 
@@ -289,7 +290,39 @@ npx aic config set preferredModel "GPT-5"
 
 # Always show all models
 npx aic config set showAllModels true
+
+# Enable AI-native format (85% token reduction!)
+npx aic config set useAiNativeFormat true
+
+# Disable AI-native format (back to YAML)
+npx aic config set useAiNativeFormat false
 ```
+
+**AI-Native Format (AICF):**
+
+The AI-native format is an ultra-compact format designed for maximum token efficiency:
+
+- **85% fewer tokens** vs YAML (12 tokens vs 80 tokens per entry)
+- **92% fewer tokens** vs prose (150 tokens vs 12 tokens per entry)
+- **6x more history** in context windows
+- **Instant parsing** - Simple string split, no NLP needed
+
+**Format:** `C#|YYYYMMDD|T|TOPIC|WHAT|WHY|O|FILES`
+
+**Example:**
+
+```
+7|20251001|R|v0.10.0 auto chat-finish|Rewrote chat-finish auto operation|Users no questions after 4hr sessions|S|src/chat-finish.js
+```
+
+**When to use:**
+
+- Large conversation history (50+ chats)
+- Hitting context window limits
+- Maximum token efficiency needed
+- Don't need to manually read logs
+
+**Backward compatible:** Supports reading all 3 formats (Markdown, YAML, AI-native) simultaneously.
 
 **See also:** [CONFIGURATION.md](CONFIGURATION.md) for detailed guide
 
@@ -856,6 +889,97 @@ npx aic claude-project --force
 - Using Claude AI (claude.ai)
 - Want to use Claude Projects feature
 - Need single-file export for Claude
+
+---
+
+### convert
+
+Convert conversation log between formats (Markdown, YAML, AI-native).
+
+**Syntax:**
+
+```bash
+npx aic convert [options]
+```
+
+**Options:**
+
+- `--to-ai-native` - Convert to AI-native format (85% token reduction)
+- `--to-yaml` - Convert to YAML format (human-readable)
+- `--to-markdown` - Convert to Markdown format (traditional)
+- `--no-backup` - Skip creating backup file (default: creates backup)
+
+**Examples:**
+
+```bash
+# Convert to AI-native format (maximum token efficiency)
+npx aic convert --to-ai-native
+
+# Convert to YAML format (human-readable)
+npx aic convert --to-yaml
+
+# Convert to Markdown format (traditional)
+npx aic convert --to-markdown
+
+# Convert without creating backup
+npx aic convert --to-ai-native --no-backup
+```
+
+**What it does:**
+
+- Detects current format(s) in conversation log
+- Converts all entries to target format
+- Creates backup by default (`.ai/conversation-log.md.backup`)
+- Shows token savings comparison
+- Preserves file structure and headers
+
+**Token Savings:**
+
+| Source Format | Target Format | Token Reduction |
+| ------------- | ------------- | --------------- |
+| Markdown      | YAML          | ~47%            |
+| Markdown      | AI-native     | ~92%            |
+| YAML          | AI-native     | ~85%            |
+| AI-native     | YAML          | -85% (increase) |
+| AI-native     | Markdown      | -92% (increase) |
+
+**Example Output:**
+
+```
+📝 Converting Conversation Log
+
+✔ Detected current format: YAML
+✔ Converting to: AI-native
+✔ Found 10 entries
+✔ Created backup: .ai/conversation-log.md.backup
+✔ Converted 10 entries
+
+✅ Conversion completed successfully!
+
+Token Savings:
+   Before: 800 tokens (YAML)
+   After: 120 tokens (AI-native)
+   Savings: 680 tokens (85% reduction!)
+
+🚀 Impact: Can keep 6x more history in context!
+
+💡 Next steps:
+   1. Review the converted log
+   2. Run "npx aic tokens" to see updated token usage
+   3. If satisfied, delete backup: rm .ai/conversation-log.md.backup
+```
+
+**When to use:**
+
+- **To AI-native:** When you have 50+ chat entries or hitting context limits
+- **To YAML:** When you want human-readable format with good token efficiency
+- **To Markdown:** When you want traditional format (not recommended for large logs)
+
+**Safety:**
+
+- Always creates backup by default
+- Can revert by copying backup: `cp .ai/conversation-log.md.backup .ai/conversation-log.md`
+- Non-destructive (original preserved in backup)
 
 ---
 

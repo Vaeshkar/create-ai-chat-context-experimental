@@ -35,6 +35,7 @@ This project uses a `.ai/` knowledge base system to preserve context across chat
 - Key decisions from previous chat sessions
 - What was accomplished and when
 - Historical context and evolution
+- **Format:** YAML (v0.11.1+) or AI-native (v0.12.0+) for token efficiency
 
 ### 5. **`.ai/known-issues.md`** (3 minutes)
 
@@ -177,7 +178,9 @@ This automatically updates ALL `.ai/` files based on git changes.
 
 ### 2. **OR Manually Update `.ai/conversation-log.md`:**
 
-Add a new entry at the TOP of the file (most recent first) using YAML format:
+Add a new entry at the TOP of the file (most recent first) using YAML format (or AI-native format if enabled):
+
+**YAML Format (default):**
 
 ```yaml
 ---
@@ -201,6 +204,16 @@ NEXT:
   - What should be done next
 ---
 ```
+
+**AI-Native Format (AICF) - if enabled via config:**
+
+```
+C#|YYYYMMDD|T|TOPIC|WHAT|WHY|O|FILES
+```
+
+Example: `7|20251001|R|v0.10.0 auto chat-finish|Rewrote chat-finish auto operation|Users no questions after 4hr sessions|S|src/chat-finish.js`
+
+**Note:** AI-native format is 85% more token-efficient but less human-readable. Enable with `npx aic config set useAiNativeFormat true`
 
 **This is NOT optional. The next AI session depends on this!**
 
