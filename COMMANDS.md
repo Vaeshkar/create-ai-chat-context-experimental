@@ -892,6 +892,154 @@ npx aic claude-project --force
 
 ---
 
+### migrate
+
+Convert `.ai/` directory to `.aicf/` format (AICF 2.0).
+
+**Syntax:**
+
+```bash
+npx aic migrate
+```
+
+**What it does:**
+
+- Converts `conversation-log.md` → `conversations.aicf`
+- Converts `technical-decisions.md` → `decisions.aicf`
+- Converts `known-issues.md` → `issues.aicf`
+- Converts `next-steps.md` → `tasks.aicf`
+- Creates `index.aicf` for fast lookup
+- Generates `.meta` with project metadata
+
+**Example Output:**
+
+```
+🚀 Migrating to AICF 2.0
+
+Converting files...
+  - Conversations: 9
+  - Decisions: 6
+  - Tasks: 49
+  - Issues: 5
+✔ Migration complete!
+
+📊 Results:
+   Conversations: 9
+   Decisions: 6
+   Tasks: 49
+   Issues: 5
+```
+
+**What it preserves:**
+
+- All conversation history
+- All technical decisions
+- All tasks and their status
+- All known issues
+- Project metadata
+
+**Safety:**
+
+- Original `.ai/` files are NOT deleted
+- You can always go back
+- Non-destructive operation
+- Can re-migrate anytime: `rm -rf .aicf && npx aic migrate`
+
+**When to use:**
+
+- First time using AICF 2.0
+- Want 88% token reduction
+- Need persistent AI memory across chat sessions
+- Hitting context window limits
+
+**See also:** [AICF Guide](./docs/aicf/AICF-GUIDE.md) for complete documentation
+
+---
+
+### context
+
+Display AI context for starting new chat sessions.
+
+**Syntax:**
+
+```bash
+npx aic context [options]
+```
+
+**Options:**
+
+- `--ai` - AI-optimized format (paste into new chats)
+- `--full` - Show complete details
+
+**Examples:**
+
+```bash
+# Human-readable summary
+npx aic context
+
+# AI-optimized (for new chats)
+npx aic context --ai
+
+# Complete details
+npx aic context --full
+```
+
+**Example Output (--ai):**
+
+```
+# AI Context - create-ai-chat-context v0.13.0
+
+## Project Overview
+Preserve AI chat context and history across sessions
+
+## Current State
+Status: active_development
+Phase: migrated_to_aicf
+Last Chat: #9
+
+## Statistics
+- Conversations: 9
+- Decisions: 6
+- Tasks: 49
+- Issues: 5
+
+## Active Tasks
+- [TODO] Test v0.10.0 and publish to npm (Priority: H)
+- [TODO] Gather user feedback (Priority: H)
+...
+
+## Recent Decisions
+- Per-Project Configuration Storage: Store config in .ai/config.json
+- Simplified Token Report: Show 4 models by default
+...
+
+---
+Full context available in .aicf/ directory
+```
+
+**Use Case:**
+
+When your current chat fills up:
+
+1. Run `npx aic context --ai`
+2. Copy the output
+3. Start a new AI chat
+4. Paste the output
+5. Say: "Continue from here"
+
+**The new AI instantly has full context!** 🎉
+
+**When to use:**
+
+- Chat session is filling up (approaching token limit)
+- Starting a new AI chat session
+- Want to transfer context between AIs
+- Need quick project overview
+
+**See also:** [AICF Guide](./docs/aicf/AICF-GUIDE.md) for complete documentation
+
+---
+
 ### convert
 
 Convert conversation log between formats (Markdown, YAML, AI-native).

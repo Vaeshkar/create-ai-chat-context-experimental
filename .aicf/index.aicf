@@ -3,10 +3,10 @@
 
 @PROJECT
 name=create-ai-chat-context
-version=0.12.0
+version=0.13.1
 language=javascript
 repo=https://github.com/Vaeshkar/create-ai-chat-context.git
-last_update=2025-10-02T05:34:12Z
+last_update=2025-10-02T09:27:23Z
 
 @COUNTS
 conversations=9
@@ -27,9 +27,9 @@ Preserve AI chat context and history across sessions - Solve knowledge loss in A
 @CURRENT_WORK
 task=Migrated to AICF 2.0 format
 priority=HIGH
-started=2025-10-02T05:34:12Z
+started=2025-10-02T09:27:23Z
 blockers=none
 
 @RECENT_ACTIVITY
-2025-10-02T05:34:12Z|MIGRATION|Converted .ai/ to .aicf/ format
+2025-10-02T09:27:23Z|MIGRATION|Converted .ai/ to .aicf/ format
 

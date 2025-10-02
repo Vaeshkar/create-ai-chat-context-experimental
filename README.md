@@ -58,141 +58,34 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 `create-ai-chat-context` creates a `.ai/` knowledge base in your project that AI assistants read at the start of each chat. Result: AI gets full context immediately. No more re-explaining.
 
-### 🤖 AI-Optimized Format (v0.11.1+)
+### 🚀 Token-Efficient Formats
 
-**Why YAML?** AI assistants don't need natural language - they parse structured data faster and use fewer tokens.
+The tool supports three formats with increasing token efficiency:
 
-**Benefits:**
+| Format       | Tokens/Entry | Best For                     |
+| ------------ | ------------ | ---------------------------- |
+| **Markdown** | 150          | Human readability            |
+| **YAML**     | 80           | Balance (readable + compact) |
+| **AICF 2.0** | 12           | Maximum efficiency           |
 
-- **52% fewer tokens** for conversation summaries (250 → 120 tokens for 10 chats)
-- **47% fewer tokens** per entry (150 → 80 tokens)
-- **Instant parsing** - No natural language processing needed
-- **100% accuracy** - Structured data eliminates ambiguity
+**AICF 2.0** (AI Context Format) provides **88% token reduction** and enables persistent memory across chat sessions.
 
-**Example:**
-
-Traditional format (150 tokens):
-
-```markdown
-## Chat #7 - v0.10.0: Automatic chat-finish
-
-### What We Did
-
-- Released v0.10.0 with automatic chat-finish
-- Rewrote src/chat-finish.js (274 lines)
-
-### Key Decisions
-
-- Make chat-finish 100% automatic
-- Rationale: Users don't want questions after 4-hour sessions
-```
-
-AI-optimized YAML (80 tokens):
-
-```yaml
----
-CHAT: 7
-DATE: 2025-10-01
-TYPE: RELEASE
-TOPIC: v0.10.0: Automatic chat-finish
-WHAT:
-  - Rewrote chat-finish for automatic operation
-WHY:
-  - Users don't want questions after 4-hour sessions
-OUTCOME: SHIPPED
----
-```
-
-**Result:** You can keep 2x more conversation history in AI context windows!
-
-### 🚀 AI-Native Format (AICF) - v0.12.0+
-
-**For Power Users: Maximum Token Efficiency**
-
-The AI-native format is an ultra-compact format designed purely for AI parsing efficiency, not human readability.
-
-**When to use:**
-
-- Large conversation history (50+ chats)
-- Hitting context window limits
-- Maximum token efficiency needed
-- Don't need to manually read logs
-
-**Token Savings:**
-
-- **85% fewer tokens** vs YAML (12 tokens vs 80 tokens per entry)
-- **92% fewer tokens** vs prose (150 tokens vs 12 tokens per entry)
-- **6x more history** in context windows
-
-**Enable:**
-
-```bash
-npx aic config set useAiNativeFormat true
-```
-
-**Format:** `C#|YYYYMMDD|T|TOPIC|WHAT|WHY|O|FILES`
-
-**Example:**
-
-```
-7|20251001|R|v0.10.0 auto chat-finish|Rewrote chat-finish auto operation|Users no questions after 4hr sessions|S|src/chat-finish.js
-```
-
-**Comparison:**
-
-| Format   | Tokens | Example                          |
-| -------- | ------ | -------------------------------- |
-| Prose    | 150    | Full markdown with sections      |
-| YAML     | 80     | Structured YAML with labels      |
-| **AICF** | **12** | **Pipe-delimited ultra-compact** |
-
-**Real-World Impact:**
-
-- Claude 3.5 Sonnet (200K): 2,500 entries (YAML) → **16,600 entries (AICF)**
-- GPT-4 Turbo (128K): 1,600 entries (YAML) → **10,600 entries (AICF)**
-
-**Backward Compatible:** Supports reading all 3 formats (Markdown, YAML, AICF) simultaneously. Can revert anytime.
+**Learn more:** [AICF Guide](./docs/aicf/AICF-GUIDE.md) | [Format Comparison](./docs/aicf/AICF-BENCHMARK-REPORT.md)
 
 ### 🎯 Aligned with Anthropic's Context Management Vision
 
-On September 29, 2025, Anthropic announced [context management features](https://www.anthropic.com/news/context-management) for Claude, including a **memory tool** for file-based persistent storage across conversations. **AICF 2.0 is perfectly aligned with this vision!**
+On September 29, 2025, Anthropic announced [context management features](https://www.anthropic.com/news/context-management) for Claude. **AICF 2.0 implements their vision - and goes beyond:**
 
-**What Anthropic Recommends:**
+| Feature               | Anthropic | AICF 2.0   |
+| --------------------- | --------- | ---------- |
+| Token Reduction       | 84%       | **88%** ✨ |
+| File-based Memory     | ✅        | ✅         |
+| Persistent Storage    | ✅        | ✅         |
+| Relationship Tracking | ❌        | **✅** ✨  |
+| O(1) Lookup           | ❌        | **✅** ✨  |
+| Works with ALL AIs    | ❌        | **✅** ✨  |
 
-- ✅ File-based memory system
-- ✅ Persistent storage across conversations
-- ✅ Knowledge bases that grow over time
-- ✅ Client-side storage (you control the data)
-- ✅ Token efficiency (84% reduction with context editing)
-
-**What AICF 2.0 Delivers:**
-
-- ✅ `.aicf/` directory (file-based memory)
-- ✅ Persistent across all chat sessions
-- ✅ Conversations, decisions, tasks, issues (knowledge base)
-- ✅ Local storage (your data stays with you)
-- ✅ **88% token reduction** (even better than Anthropic's 84%!)
-
-**AICF 2.0 Advantages:**
-
-- **Ultra-compact format** - 88% token reduction vs markdown
-- **Structured schema** - O(1) lookup, instant parsing
-- **Relationship tracking** - Link conversations to decisions
-- **Instant context loading** - 2 seconds vs 5 minutes
-
-**New Commands:**
-
-```bash
-# Migrate .ai/ to .aicf/ format
-npx aic migrate
-
-# Display AI context for new chat sessions
-npx aic context --ai
-```
-
-**Use Case:** When your chat fills up, start a new chat and paste the output from `npx aic context --ai`. The new AI instantly knows your full project history!
-
-See [ANTHROPIC-ALIGNMENT.md](./ANTHROPIC-ALIGNMENT.md) for complete details.
+**Learn more:** [Anthropic Alignment](./docs/aicf/ANTHROPIC-ALIGNMENT.md)
 
 ## What's New
 
