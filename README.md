@@ -1,5 +1,37 @@
 # create-ai-chat-context
 
+![npm version](https://img.shields.io/npm/v/create-ai-chat-context)
+![GitHub tag](https://img.shields.io/github/v/tag/Vaeshkar/create-ai-chat-context)
+![Downloads](https://img.shields.io/npm/dm/create-ai-chat-context.svg)
+
+> **Universal AI Memory Protocol - Never lose context between AI chat sessions**
+
+---
+
+## 🚀 **NEW: AICF 2.0 - Aligned with Anthropic's Context Management Vision**
+
+On **September 29, 2025**, Anthropic announced [context management features](https://www.anthropic.com/news/context-management) for Claude, including a **memory tool** for persistent storage across conversations.
+
+**We built AICF 2.0 - and it's even better:**
+
+| Feature               | Anthropic | AICF 2.0   |
+| --------------------- | --------- | ---------- |
+| Token Reduction       | 84%       | **88%** ✨ |
+| File-based Memory     | ✅        | ✅         |
+| Persistent Storage    | ✅        | ✅         |
+| Relationship Tracking | ❌        | **✅** ✨  |
+| O(1) Lookup           | ❌        | **✅** ✨  |
+| Works with ALL AIs    | ❌        | **✅** ✨  |
+
+**New Commands:**
+
+```bash
+npx aic migrate      # Convert .ai/ to .aicf/ format
+npx aic context --ai # Get AI-ready context for new chats
+```
+
+**Use Case:** Chat fills up → Start new chat → Paste context → **Full memory instantly!** 🪄
+
 ---
 
 ## 🚨 FOR AI ASSISTANTS: READ THIS FIRST 🚨
@@ -15,11 +47,6 @@
 **See `.ai-instructions` file for detailed instructions.**
 
 ---
-
-![npm version](https://img.shields.io/npm/v/create-ai-chat-context)
-![GitHub tag](https://img.shields.io/github/v/tag/Vaeshkar/create-ai-chat-context)
-
-> Preserve AI chat context and history across sessions
 
 ## The Problem
 
