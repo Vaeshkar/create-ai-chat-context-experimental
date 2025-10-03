@@ -1,7 +1,7 @@
-# create-ai-chat-context - Project Overview
+\*\*\*\*# create-ai-chat-context - Project Overview
 
-**Last Updated:** 2025-10-03  
-**Version:** 11.0+  
+**Last Updated:** 2025-10-03
+**Version:** 11.0+
 **Status:** ✅ Active Development
 
 ---
@@ -25,6 +25,7 @@
 ### The Challenge
 
 AI assistants lose context between chat sessions, leading to:
+
 - Repeated explanations of project architecture
 - Loss of previous decisions and rationale
 - Inconsistent coding patterns
@@ -33,6 +34,7 @@ AI assistants lose context between chat sessions, leading to:
 ### The Solution
 
 A dual-folder system that provides:
+
 - **`.ai/` folder:** Human-readable markdown documentation
 - **`.aicf/` folder:** AI-optimized structured memory format
 
@@ -43,12 +45,14 @@ A dual-folder system that provides:
 ### Dual Documentation System
 
 **For Humans (`.ai/` folder):**
+
 - Markdown files for project documentation
 - Easy to read and edit
 - Version controlled
 - Onboarding resource
 
 **For AI (`.aicf/` folder):**
+
 - Structured AICF format (AI Chat Context Format)
 - Token-efficient representation
 - Fast to parse
@@ -157,22 +161,26 @@ create-ai-chat-context init
 ### Usage Pattern
 
 **1. Project Start:**
+
 ```bash
 cd my-project
 npx create-ai-chat-context init
 ```
 
 **2. During Development:**
+
 - AI reads `.ai/` and `.aicf/` files at session start
 - AI has full context of project history
 - AI follows established patterns
 
 **3. Session End:**
+
 - AI updates `.aicf/` files with new information
 - Developer reviews changes
 - Commit to version control
 
 **4. Next Session:**
+
 - AI reads updated files
 - Perfect memory restoration
 - No context loss
@@ -186,6 +194,7 @@ npx create-ai-chat-context init
 **Approach:** AI writes `.aicf/` files at session end (not automated compression)
 
 **Benefits:**
+
 - ✅ 100% preservation (AI controls what to save)
 - ✅ Zero cost (no API calls)
 - ✅ Instant (no processing time)
@@ -194,11 +203,13 @@ npx create-ai-chat-context init
 ### Abandoned Approach: Automated Compression
 
 **What we tried:**
+
 - Multi-agent system with Analysis, Quality, and Format agents
 - Automated compression of 20k token conversations
 - Regex-based quality validation
 
 **Why it failed:**
+
 - Only 20-26% key term preservation (needed 60%+)
 - AI couldn't determine what's important
 - Cost $14.63/month with 2-minute processing
@@ -213,52 +224,61 @@ npx create-ai-chat-context init
 ### `.ai/` Folder (Human Documentation)
 
 **README.md**
+
 - Instructions for AI assistants
 - Reading order
 - File purposes
 
 **architecture.md**
+
 - System design
 - Tech stack
 - Data flow
 - Component relationships
 
 **conversation-log.md**
+
 - Chat session history
 - Key decisions
 - Progress tracking
 - Most recent first
 
 **technical-decisions.md**
+
 - Why we chose X over Y
 - Alternatives considered
 - Rationale and tradeoffs
 
 **known-issues.md**
+
 - Current problems
 - Workarounds
 - Solutions
 - Status tracking
 
 **next-steps.md**
+
 - Roadmap
 - TODOs
 - Priorities
 - Future features
 
 **design-system.md**
+
 - File structure patterns
 - Documentation standards
 - CLI interface design
 - API patterns
 
 **code-style.md**
+
 - Coding conventions
 - Naming standards
 - Error handling
 - Testing patterns
 
 **project-overview.md**
+
 - This file
 - High-level project description
 - Architecture overview
@@ -267,24 +287,28 @@ npx create-ai-chat-context init
 ### `.aicf/` Folder (AI Memory)
 
 **README.md**
+
 - AICF format specification
 - Workflow instructions
 - Formatting rules
 - Examples
 
 **conversation-memory.aicf**
+
 - Recent conversation state
 - Decisions made
 - Insights discovered
 - Current context
 
 **technical-context.aicf**
+
 - Architecture details
 - Technical decisions
 - Design patterns
 - Implementation details
 
 **work-state.aicf**
+
 - Current work status
 - Next actions
 - Blockers
@@ -297,21 +321,25 @@ npx create-ai-chat-context init
 ### Evolution
 
 **v1.0 - Initial Concept**
+
 - Created `.ai/` folder with markdown files
 - Manual documentation approach
 
 **v2.0 - AICF Format**
+
 - Designed AI-optimized format
 - Structured sections
 - Token efficiency
 
 **v3.0 - Automated Compression (Abandoned)**
+
 - Multi-agent architecture
 - Tested 6 AI models
 - Failed at 20k token preservation
 - Abandoned approach
 
 **v11.0 - Manual AICF Writing (Current)**
+
 - AI writes `.aicf/` at session end
 - 100% preservation
 - Zero cost
@@ -324,21 +352,25 @@ npx create-ai-chat-context init
 ### Key Choices
 
 **1. Dual Folder System**
+
 - **Decision:** Keep both `.ai/` and `.aicf/` folders
 - **Reasoning:** Different audiences need different formats
 - **Impact:** CRITICAL
 
 **2. Manual AICF Writing**
+
 - **Decision:** AI writes files at session end, not automated
 - **Reasoning:** Automated compression failed (20-26% preservation)
 - **Impact:** CRITICAL
 
 **3. CommonJS Modules**
+
 - **Decision:** Use CommonJS instead of ES modules
 - **Reasoning:** Better Node.js compatibility
 - **Impact:** MEDIUM
 
 **4. NPX Distribution**
+
 - **Decision:** Distribute via NPX, not global install
 - **Reasoning:** No global pollution, always latest version
 - **Impact:** HIGH
@@ -368,12 +400,14 @@ npx create-ai-chat-context init
 ### For Developers
 
 **Setup:**
+
 1. Run `npx create-ai-chat-context init` in project root
 2. Review generated files
 3. Customize for your project
 4. Commit to version control
 
 **Maintenance:**
+
 1. Update `.ai/` files as project evolves
 2. Let AI update `.aicf/` files at session end
 3. Review AI changes before committing
@@ -382,16 +416,19 @@ npx create-ai-chat-context init
 ### For AI Assistants
 
 **Session Start:**
+
 1. Read ALL files in `.ai/` and `.aicf/` folders
 2. Understand project context
 3. Follow established patterns
 
 **During Session:**
+
 1. Track important decisions
 2. Note technical details
 3. Remember insights
 
 **Session End:**
+
 1. Update `.aicf/` files with new information
 2. Preserve ALL key details
 3. Use proper AICF format
@@ -446,4 +483,3 @@ MIT License - Free to use, modify, and distribute
 ---
 
 **This project aims to solve AI context loss with a simple, effective, zero-cost solution.**
-
