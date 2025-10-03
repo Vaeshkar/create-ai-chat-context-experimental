@@ -119,9 +119,47 @@ Created comprehensive documentation:
 
 ## ⏳ Active Issues
 
-### None Currently
+### AICF 2.0 Information Loss (CRITICAL)
 
-No active issues at this time! 🎉
+**Date Discovered:** 2025-10-02 (Chat #13)
+**Severity:** 🔴 Critical
+
+**Problem:**
+AICF 2.0 format with fixed field lengths (40-80 characters) causes 95% information loss when migrating complex projects. Real-world testing on German toy store project:
+
+- Expected: 24 conversations, 10+ decisions
+- Actual: 0 conversations extracted, 1 decision extracted
+- **Root cause:** Fixed field lengths force truncation (cutting off information), not compression (preserving information)
+
+**Impact:**
+
+- AICF 2.0 doesn't solve the core problem (AI memory persistence)
+- Token reduction (88%) solves non-existent problem (projects using only 8.5% of context)
+- Users lose critical strategic context when migrating to AICF format
+
+**Solution:**
+Complete redesign as AICF 3.0:
+
+- AI-native memory format (design for AI-to-AI communication)
+- Structured detail format (@FLOW, @DETAILS, @INSIGHTS, @DECISIONS, @STATE)
+- Every-50-messages checkpoint strategy
+- Target: 95% compression, 70% detail preservation
+- Goal: Enable AI to persist memory across sessions with zero amnesia
+
+**Status:** 🚧 In Design (Chat #13)
+
+**Next Steps:**
+
+- [ ] Write AICF 3.0 specification in architecture.md
+- [ ] Manually create checkpoint of Chat #13
+- [ ] Test that new AI can read and continue seamlessly
+- [ ] Implement every-50-messages checkpoint mechanism
+
+---
+
+### None Currently (Other Than AICF 2.0)
+
+No other active issues at this time!
 
 ---
 

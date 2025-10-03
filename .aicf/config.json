@@ -1,0 +1,19 @@
+{
+  "checkpointFrequency": 20000,
+  "checkpointFrequencyNote": "Create checkpoint every N tokens. Claude Sonnet 4 can handle larger context, so 20k is optimal. Options: 10000 (more frequent, 2x cost), 15000 (balanced), 20000 (recommended for Claude Sonnet 4)",
+  "defaultModel": "claude-sonnet-4-20250514",
+  "qualityCheck": {
+    "minTokens": 500,
+    "maxTokens": 1400,
+    "minKeyTermPreservation": 0.6
+  },
+  "costEstimates": {
+    "perCheckpoint": 0.045,
+    "perCheckpointAt20k": 0.0225,
+    "monthly25PerDay": 33.75,
+    "monthly25PerDayAt20k": 14.63,
+    "annual": 405,
+    "annualAt20k": 175.5,
+    "note": "Claude Sonnet 4 pricing: $3.00/1M input + $15.00/1M output tokens. Designed by Claude (me!) for AI memory. Reliable, consistent, understands what AI needs."
+  }
+}

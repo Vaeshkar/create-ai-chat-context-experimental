@@ -4,6 +4,389 @@ Document WHY you made specific technical choices.
 
 ---
 
+## AICF 3.0: AI-Native Memory Format
+
+**Date:** 2025-10-02
+**Status:** 🚧 In Design (Chat #13)
+
+### Decision
+
+Design AICF 3.0 as an AI-native memory format optimized for AI-to-AI communication, not human readability. Focus on 1:1 compression (preserving information while reducing tokens) rather than truncation.
+
+### Rationale
+
+**The fundamental problem with AICF 2.0:**
+
+- AICF 2.0 used fixed field lengths (40-80 characters per field)
+- This forced **truncation** (cutting off information) not **compression** (preserving information in smaller format)
+- Real-world testing showed **95% information loss** when migrating complex projects
+- Token reduction (88%) was solving a non-existent problem (projects using only 8.5% of context window)
+
+**The paradigm shift:**
+
+- User insight: "You are asking me as a human. But the AICF is file YOU need to read. You should ask yourself what you need, not what I need."
+- AI should design for AI, not for humans
+- Goal: Enable AI to persist memory across sessions (solve the "amnesia problem")
+- Test: Can new AI read AICF and continue conversation without asking user to repeat context?
+
+**What AI needs to persist memory:**
+
+1. **Conversation flow** - Who said what, in what order
+2. **Causal chain** - Why decisions were made (not just what)
+3. **State tracking** - What's done, in progress, blocked
+4. **Semantic relationships** - What affects what (explicit links)
+5. **Temporal context** - What came before/after, evolution over time
+6. **Checkpoint markers** - Where to resume from
+
+### Alternatives Considered
+
+**Option 1: Keep AICF 2.0 with fixed fields**
+
+- **Pros:** Already implemented, simple format
+- **Cons:** 95% information loss, truncates instead of compresses
+- **Rejected:** Doesn't solve the core problem
+
+**Option 2: Three-tier system (SIMPLE/COMPLEX/STRATEGIC)**
+
+- **Pros:** Flexible, adapts to content complexity
+- **Cons:** Still human-focused thinking, adds complexity
+- **Rejected:** User said "I don't see a tier. There is only 1:1 compression that works for you"
+
+**Option 3: "Jist" format (ultra-compressed)**
+
+- **Pros:** Very small (200 tokens for 50 messages)
+- **Cons:** Too compressed (50% information loss), pointers to information not information itself
+- **Rejected:** User had to scroll up to remember details, meaning AI would also be missing context
+
+**Option 4: Structured detail format (CHOSEN)**
+
+- **Pros:** 95% compression, 30% information loss, 70% detail preserved
+- **Cons:** Larger than "jist" but still very efficient
+- **Chosen:** Sweet spot where new AI can continue seamlessly without scrolling up
+
+### Trade-offs
+
+**Pros:**
+
+- **Zero amnesia:** New AI knows everything previous AI knew
+- **Efficient:** 95% compression (10,000 tokens → 500-600 tokens)
+- **Semantic:** Preserves meaning, not just words
+- **Scannable:** Jump to @INSIGHTS, @DECISIONS, @STATE sections
+- **Universal:** Works with all AI assistants (ChatGPT, Claude, Cursor, etc.)
+- **Causal:** Preserves WHY decisions were made, not just WHAT
+
+**Cons:**
+
+- **Not human-optimized:** Structured data, not prose (but that's intentional)
+- **Requires parsing:** AI needs to understand @SECTION format (but simple pipe-delimited)
+- **30% information loss:** Not perfect 1:1, but acceptable trade-off for 95% compression
+
+### Impact
+
+**For AI assistants:**
+
+- Can persist memory across sessions (solve amnesia problem)
+- Can read checkpoint and continue seamlessly
+- Can understand causal chain (why decisions were made)
+- Can track state (what's done, in progress, blocked)
+
+**For developers:**
+
+- Start new chat sessions without repeating context
+- AI already knows project history
+- Faster onboarding (AI reads AICF, not 10,000 tokens of Markdown)
+- Can verify AICF is accurate (human-readable structured data)
+
+**For the project:**
+
+- Positions AICF as universal AI memory standard
+- Compatible with Anthropic's Memory Tool (future integration)
+- Solves real problem (context persistence) not fake problem (token reduction)
+
+---
+
+## Every-50-Messages Checkpoint Strategy
+
+**Date:** 2025-10-02
+**Status:** 🚧 In Design (Chat #13)
+
+### Decision
+
+Automatically save conversation checkpoint every 50 messages to `.aicf/conversations.aicf` using structured detail format.
+
+### Rationale
+
+**The 5-16 hour session problem:**
+
+- Long work sessions fill context window (200K tokens)
+- Conversation gets truncated (supervisor summary kicks in)
+- Detailed back-and-forth is lost
+- Next session starts fresh (new AI has no memory)
+
+**Why every 50 messages:**
+
+- Balances granularity with token efficiency
+- Not too frequent (would create too many checkpoints)
+- Not too infrequent (would lose too much between checkpoints)
+- Natural breakpoint for analyzing conversation flow
+
+**Why structured detail format:**
+
+- Preserves 70% of information (30% loss acceptable)
+- Compresses 10,000 tokens → 500-600 tokens (95% compression)
+- New AI can continue seamlessly without asking user to repeat
+- Human can verify checkpoint is accurate
+
+### Alternatives Considered
+
+**Option 1: Real-time continuous saves (every decision)**
+
+- **Pros:** Never lose important insights
+- **Cons:** Too granular, hard to distinguish valuable vs. noise, token explosion
+- **Rejected:** Would save too much, defeating purpose of compression
+
+**Option 2: Context window threshold (when 80% full)**
+
+- **Pros:** Saves before truncation happens
+- **Cons:** Might be too late, doesn't help with 16-hour sessions, large batch to analyze
+- **Rejected:** Too infrequent, would lose context between saves
+
+**Option 3: Semantic triggers (when key phrases detected)**
+
+- **Pros:** Saves only valuable information
+- **Cons:** Might miss implicit insights, requires pattern matching, unreliable
+- **Rejected:** Too complex, could miss important context
+
+**Option 4: Every 50 messages (CHOSEN)**
+
+- **Pros:** Balanced, predictable, manageable batch size
+- **Cons:** Arbitrary number (but based on testing)
+- **Chosen:** Best balance of granularity and efficiency
+
+### Trade-offs
+
+**Pros:**
+
+- **Automatic:** No manual intervention required
+- **Balanced:** Not too frequent, not too infrequent
+- **Predictable:** Always happens at message 50, 100, 150, etc.
+- **Manageable:** 50 messages = ~10,000 tokens → 500-600 tokens checkpoint
+- **Recoverable:** If session crashes, at most 50 messages lost
+
+**Cons:**
+
+- **Arbitrary:** Why 50 not 40 or 60? (but based on testing)
+- **Fixed:** Doesn't account for conversation density (but simple to implement)
+- **Batch delay:** Waits until 50 messages before saving (but acceptable)
+
+### Impact
+
+**For long sessions:**
+
+- Every 50 messages, conversation is checkpointed
+- If session crashes or context fills up, checkpoint preserves memory
+- New session can resume from last checkpoint
+
+**For implementation:**
+
+- Need message counter in chat system
+- Need automatic trigger at message 50, 100, 150, etc.
+- Need conversation analyzer to extract flow, insights, decisions, state
+- Need append-only write to `.aicf/conversations.aicf`
+
+---
+
+## Structured Detail Format (@FLOW + @DETAILS + @INSIGHTS + @DECISIONS + @STATE)
+
+**Date:** 2025-10-02
+**Status:** 🚧 In Design (Chat #13)
+
+### Decision
+
+Use sectioned format with @FLOW (conversation flow), @DETAILS (expanded context), @INSIGHTS (key realizations), @DECISIONS (what was decided and why), and @STATE (current status).
+
+### Rationale
+
+**Why sectioned format:**
+
+- **Scannable:** AI can jump to @INSIGHTS without reading entire checkpoint
+- **Structured:** Each section has semantic meaning
+- **Parseable:** Simple pipe-delimited data, easy to parse
+- **Extensible:** Can add new sections without breaking old checkpoints
+
+**Why these specific sections:**
+
+- **@FLOW:** Captures who said what, in what order (conversation flow)
+- **@DETAILS:** Expands on flow with full context (prevents "jist" problem)
+- **@INSIGHTS:** Key realizations and discoveries (CRITICAL information)
+- **@DECISIONS:** What was decided and why (causal chain)
+- **@STATE:** Current status (done, in progress, blocked, next actions)
+
+**Why pipe-delimited:**
+
+- Simple to parse (split on `|`)
+- Universal (works in all programming languages)
+- Compact (no JSON overhead)
+- Human-readable (can verify accuracy)
+
+### Alternatives Considered
+
+**Option 1: JSON format**
+
+- **Pros:** Structured, well-supported, easy to parse
+- **Cons:** Verbose (lots of `{"key": "value"}` overhead), less human-readable
+- **Rejected:** Too much overhead for simple data
+
+**Option 2: YAML format**
+
+- **Pros:** Human-readable, structured, less verbose than JSON
+- **Cons:** Whitespace-sensitive, harder to parse, not as universal
+- **Rejected:** Complexity not worth the benefits
+
+**Option 3: Inline extended format (no sections)**
+
+- **Pros:** Simpler, all data in one place
+- **Cons:** Not scannable, AI has to read entire checkpoint to find insights
+- **Rejected:** Loses scannability advantage
+
+**Option 4: Sectioned pipe-delimited (CHOSEN)**
+
+- **Pros:** Scannable, parseable, compact, human-readable
+- **Cons:** Custom format (but very simple)
+- **Chosen:** Best balance of all requirements
+
+### Trade-offs
+
+**Pros:**
+
+- **Scannable:** Jump to relevant section (@INSIGHTS, @DECISIONS)
+- **Structured:** Each field has semantic meaning
+- **Compact:** Pipe-delimited is more compact than JSON/YAML
+- **Parseable:** Simple split on `|` and newlines
+- **Human-readable:** Can verify checkpoint is accurate
+- **Extensible:** Add new sections without breaking old checkpoints
+
+**Cons:**
+
+- **Custom format:** Not standard like JSON (but very simple)
+- **Pipe escaping:** Need to escape `|` in content (but rare)
+- **Learning curve:** AI needs to understand format (but simple)
+
+### Impact
+
+**Example checkpoint:**
+
+```
+@CONVERSATION:C5-CP1
+timestamp_start=20251002T201500Z
+timestamp_end=20251002T203000Z
+messages=1-50
+
+@FLOW
+user_asked|read_anthropic_docs
+ai_read|4_documents|summarized_findings
+user_said|like_hybrid_approach
+ai_proposed|aicf_3.0_tiers
+user_corrected|design_for_ai_not_humans
+ai_reframed|ai_native_format
+
+@DETAILS:user_corrected
+quote="You are asking me as a human. But the AICF is file YOU need to read."
+impact=CRITICAL|fundamental_shift_in_approach
+reasoning=ai_should_design_for_ai_not_humans
+
+@INSIGHTS
+aicf_truncates_not_compresses|95_percent_information_loss|CRITICAL
+design_for_ai_not_humans|ai_native_format_needed|CRITICAL
+
+@DECISIONS
+reject_tier_system|human_focused_not_ai_focused|IMPACT:HIGH
+adopt_ai_native_format|structured_sectioned_piped|IMPACT:CRITICAL
+
+@STATE
+working_on=aicf_3.0_design
+current_phase=architecture_discussion
+next_action=write_architecture_spec
+blockers=none
+```
+
+---
+
+## Reject AICF 2.0 Fixed Field Lengths
+
+**Date:** 2025-10-02
+**Status:** ✅ Decided (Chat #13)
+
+### Decision
+
+Abandon AICF 2.0 format with fixed field lengths (40-80 characters per field).
+
+### Rationale
+
+**Real-world testing revealed fatal flaw:**
+
+- Tested AICF migration on German toy store project (complex, 5-agent architecture)
+- Expected: 24 conversations, 10+ decisions
+- Actual: 0 conversations extracted, 1 decision extracted
+- **Result: 95% information loss**
+
+**Root cause:**
+
+- Fixed field lengths forced truncation, not compression
+- Example: 1,800-word strategic analysis → 80 characters = lost 99% of content
+- We thought we were doing 1:1 conversion, but we were just cutting off information
+
+**Token economics:**
+
+- Project using only 8.5% of context (17,000 / 200,000 tokens)
+- AICF reduction: 17,000 → 2,000 tokens (saved 15,000 tokens = 7.5% of context)
+- **Cost: 95% information loss for 7.5% token savings**
+- Solving non-existent problem (no token pressure) while creating real problem (information loss)
+
+### Alternatives Considered
+
+**Option 1: Keep AICF 2.0, increase field lengths**
+
+- **Pros:** Simple fix, backward compatible
+- **Cons:** Still truncation, just at higher threshold
+- **Rejected:** Doesn't solve fundamental problem
+
+**Option 2: Keep AICF 2.0, add overflow fields**
+
+- **Pros:** Preserves existing format, adds capacity
+- **Cons:** Complex, defeats purpose of fixed format
+- **Rejected:** Band-aid on broken design
+
+**Option 3: Complete redesign (CHOSEN)**
+
+- **Pros:** Solves root cause, enables true compression
+- **Cons:** Breaking change, need migration path
+- **Chosen:** Only way to achieve 1:1 compression goal
+
+### Trade-offs
+
+**Pros:**
+
+- **Honest assessment:** Admit AICF 2.0 doesn't work
+- **Clean slate:** Design from first principles
+- **Right goal:** Information fidelity over token reduction
+- **Learn from mistakes:** Document what went wrong
+
+**Cons:**
+
+- **Breaking change:** Existing users need to migrate (but few users exist)
+- **Wasted effort:** AICF 2.0 development was learning, not waste
+- **Delayed release:** Need to redesign before v1.0
+
+### Impact
+
+- AICF 2.0 marked as deprecated
+- Focus shifts to AICF 3.0 design
+- Lesson learned: Test with real, complex data before claiming success
+- Lesson learned: Token reduction ≠ Better memory
+
+---
+
 ## Per-Project Configuration Storage
 
 **Date:** 2025-10-01

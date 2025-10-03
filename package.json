@@ -1,7 +1,7 @@
 {
   "name": "create-ai-chat-context",
-  "version": "0.14.1",
-  "description": "Preserve AI chat context and history across sessions - Solve knowledge loss in AI-assisted development",
+  "version": "1.0.0",
+  "description": "Initialize AI memory system for projects - Dual documentation (.ai/ for humans, .aicf/ for AI) to preserve context across chat sessions",
   "main": "src/index.js",
   "bin": {
     "create-ai-chat-context": "./bin/cli.js",
@@ -15,6 +15,8 @@
     "ai",
     "ai-context",
     "ai-chat",
+    "ai-memory",
+    "aicf",
     "chat-history",
     "conversation-history",
     "knowledge-base",
@@ -26,7 +28,9 @@
     "chatgpt",
     "claude",
     "cli",
-    "developer-tools"
+    "developer-tools",
+    "context-preservation",
+    "session-memory"
   ],
   "author": "Dennis van Leeuwen (AI Orchestrator Engineer)",
   "license": "MIT",
@@ -51,6 +55,8 @@
   "files": [
     "bin/",
     "src/",
-    "templates/"
+    "templates/",
+    "README.md",
+    "LICENSE"
   ]
 }
