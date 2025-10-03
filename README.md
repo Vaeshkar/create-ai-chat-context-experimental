@@ -4,45 +4,9 @@
 ![GitHub tag](https://img.shields.io/github/v/tag/Vaeshkar/create-ai-chat-context)
 ![Downloads](https://img.shields.io/npm/dm/create-ai-chat-context.svg)
 
-> **Universal AI Memory Protocol - Never lose context between AI chat sessions**
+> **Simple AI Memory System - Never lose context between AI chat sessions**
 
----
-
-## 🚀 **NEW: AICF 2.0 - Aligned with Anthropic's Context Management Vision**
-
-On **September 29, 2025**, Anthropic announced [context management features](https://www.anthropic.com/news/context-management) for Claude, including a **memory tool** for persistent storage across conversations.
-
-**We built AICF 2.0 - and it's even better:**
-
-| Feature               | Anthropic | AICF 2.0   |
-| --------------------- | --------- | ---------- |
-| Token Reduction       | 84%       | **88%** ✨ |
-| File-based Memory     | ✅        | ✅         |
-| Persistent Storage    | ✅        | ✅         |
-| Relationship Tracking | ❌        | **✅** ✨  |
-| O(1) Lookup           | ❌        | **✅** ✨  |
-| Works with ALL AIs    | ❌        | **✅** ✨  |
-
-**New Commands:**
-
-```bash
-npx aic migrate      # Convert .ai/ to .aicf/ format
-npx aic context --ai # Get AI-ready context for new chats
-```
-
-**The Magic:**
-
-```
-Chat Session 1 (fills up)
-    ↓
-Start Chat Session 2
-    ↓
-Say: "Read .aicf/ and continue"
-    ↓
-AI has FULL MEMORY of Session 1!
-```
-
-**Zero manual steps. Zero copy/paste. Just works.** ✅
+Create a `.ai/` knowledge base that AI assistants read at the start of each chat. No more re-explaining your project every time.
 
 ---
 
@@ -50,7 +14,7 @@ AI has FULL MEMORY of Session 1!
 
 **CRITICAL: Before working on this project, read the `.ai/` knowledge base:**
 
-1. **`.ai/architecture.md`** - Complete system architecture
+1. **`.ai/project-overview.md`** - Project context and conventions
 2. **`.ai/conversation-log.md`** - Key decisions from previous chats
 3. **`.ai/technical-decisions.md`** - Why we chose X over Y
 
@@ -70,29 +34,28 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 `create-ai-chat-context` creates a `.ai/` knowledge base in your project that AI assistants read at the start of each chat. Result: AI gets full context immediately. No more re-explaining.
 
-### 🚀 Token-Efficient Formats
+### � What Gets Created
 
-The tool supports three formats with increasing token efficiency:
+The tool creates **7 essential documentation files** in your project:
 
-| Format       | Tokens/Entry | Best For                     |
-| ------------ | ------------ | ---------------------------- |
-| **Markdown** | 150          | Human readability            |
-| **YAML**     | 80           | Balance (readable + compact) |
-| **AICF 2.0** | 12           | Maximum efficiency           |
+| File                       | Purpose                           |
+| -------------------------- | --------------------------------- |
+| **conversation-log.md**    | Chat history and key decisions    |
+| **technical-decisions.md** | Why you chose X over Y            |
+| **next-steps.md**          | Current priorities and tasks      |
+| **project-overview.md**    | Project context for AI assistants |
+| **design-system.md**       | Design patterns and conventions   |
+| **code-style.md**          | Coding standards and guidelines   |
+| **README.md**              | Overview of the knowledge base    |
 
-**AICF 2.0** (AI Context Format) provides **88% token reduction** and enables persistent memory across chat sessions.
-
-**Learn more:** [AICF Guide](./docs/aicf/AICF-GUIDE.md) | [Format Comparison](./docs/aicf/AICF-BENCHMARK-REPORT.md) | [Anthropic Alignment](./docs/aicf/ANTHROPIC-ALIGNMENT.md)
+**Simple, focused, and effective.** No complex formats or token optimization needed.
 
 ## What's New
 
-- **v0.14.0** - 🚀 Direct .aicf/ reading - ZERO manual steps! AI reads files directly, no copy/paste!
-- **v0.13.1** - Documentation reorganization and AICF 2.0 visual diagrams
+- **v1.0.0** - 🎯 Simplified to 7 essential files! Removed complex .aicf/ format. Focus on what works.
+- **v0.14.0** - Direct .aicf/ reading - ZERO manual steps! AI reads files directly, no copy/paste!
 - **v0.13.0** - AICF 2.0 - Universal AI Memory Protocol! 88% token reduction!
 - **v0.12.0** - AI-Native Format (AICF) - 85% token reduction! Keep 6x more history in context!
-- **v0.11.1** - AI-Optimized Format - YAML entries + pipe-delimited summaries (52% token reduction!)
-- **v0.11.0** - "Verify Before You Advise" - Prevents AI from suggesting completed work!
-- **v0.10.2** - All commands now recommend `chat-finish` (automatic workflow)!
 
 See [CHANGELOG.md](./CHANGELOG.md) for complete version history.
 
@@ -103,11 +66,11 @@ See [CHANGELOG.md](./CHANGELOG.md) for complete version history.
 npx aic init
 
 # Customize for your project
-vim .ai/architecture.md
+vim .ai/project-overview.md
 vim .ai/technical-decisions.md
 
 # Commit to Git
-git add .ai/ .ai-instructions
+git add .ai/ .ai-instructions NEW_CHAT_PROMPT.md
 git commit -m "Add AI knowledge base"
 
 # In your next AI chat, start with:
@@ -118,25 +81,16 @@ git commit -m "Add AI knowledge base"
 
 ## Key Commands
 
-### AICF 2.0 Commands
-
 ```bash
-npx aic migrate                 # Convert .ai/ to .aicf/ format (one-time)
-npx aic context                 # View AI context summary
-npx aic context --ai            # AI-optimized format (for review)
+npx aic init                    # Initialize knowledge base (7 files)
+npx aic migrate                 # Upgrade existing projects to v1.0.0
+npx aic search "query"          # Find information in knowledge base
+npx aic stats                   # View analytics and token usage
+npx aic validate                # Check knowledge base quality
+npx aic config                  # Manage configuration
 ```
 
-### Essential Commands
-
-```bash
-npx aic init                    # Initialize knowledge base
-npx aic chat-finish             # Auto-update all files (recommended!)
-npx aic search "query"          # Find information
-npx aic stats                   # View analytics
-npx aic validate                # Check quality
-```
-
-**See [COMMANDS.md](./COMMANDS.md) for all 20+ commands** (config, export, integrations, etc.)
+**Manual workflow:** At the end of each AI session, ask the AI to update the `.ai/` files with what was accomplished.
 
 ## Configuration
 
@@ -179,8 +133,13 @@ npx aic config get preferredModel
 These files are created in your project:
 
 - **`.ai/README.md`** - Overview of the knowledge base system
-- **`.ai/SETUP_GUIDE.md`** - Comprehensive setup and usage guide
-- **`.ai/TOKEN_MANAGEMENT.md`** - Token usage and optimization tips
+- **`.ai/project-overview.md`** - Project context and conventions (AI config)
+- **`.ai/conversation-log.md`** - Chat history and decisions
+- **`.ai/technical-decisions.md`** - Architecture and technical choices
+- **`.ai/next-steps.md`** - Current priorities and tasks
+- **`.ai/design-system.md`** - Design patterns and conventions
+- **`.ai/code-style.md`** - Coding standards and guidelines
+- **`.ai-instructions`** - Instructions for AI assistants
 - **`NEW_CHAT_PROMPT.md`** - Quick reference for the one-liner prompt
 
 ## Links

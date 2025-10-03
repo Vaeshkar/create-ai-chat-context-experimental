@@ -16,6 +16,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team collaboration features
 - Analytics dashboard
 
+## [1.0.0] - 2025-10-03
+
+### Changed
+
+- **🎯 BREAKING CHANGE: Simplified to 7 Essential Files**
+
+  - Reduced from 15 files to 7 essential documentation files
+  - Removed `.aicf/` folder entirely (complex format not needed)
+  - Focus on simple, maintainable markdown files
+  - Files: README.md, conversation-log.md, technical-decisions.md, next-steps.md, design-system.md, code-style.md, project-overview.md
+
+- **📝 Updated Commands**
+
+  - `init` now creates only 7 files in `.ai/` folder
+  - `migrate` upgrades existing projects to v1.0.0 structure
+  - Removed `chat-finish` command (manual workflow adopted)
+  - Updated success messages and documentation
+
+- **🔧 Simplified Workflow**
+  - Manual workflow: Ask AI to "update the .ai files" at session end
+  - No complex formats or token optimization
+  - Simple, readable markdown files
+  - Works with all AI assistants
+
+### Removed
+
+- **`.aicf/` folder and all AICF format complexity**
+- **4 template files**: architecture.md, known-issues.md, SETUP_GUIDE.md, TOKEN_MANAGEMENT.md
+- **`chat-finish` command** (replaced with manual workflow)
+- **All AICF 2.0 features and documentation**
+
+### Added
+
+- **`project-overview.md`** as AI-optimized config file with "Quick Reference" section
+- **Simplified README.md** focused on core functionality
+- **Updated package.json** description
+
 ## [0.14.0] - 2025-10-02
 
 ### Changed

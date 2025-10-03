@@ -15,22 +15,24 @@ Complete documentation for `create-ai-chat-context`.
 
 ---
 
-## 🚀 AICF 2.0 Documentation
+## 🎯 v1.0.0 - Simplified Approach
 
-### Getting Started
+**v1.0.0 focuses on simplicity and maintainability:**
 
-- **[AICF Guide](./aicf/AICF-GUIDE.md)** - Complete guide to AICF 2.0
-- **[Quick Start](./aicf/QUICKSTART-AICF.md)** - Get started in 3 commands
-- **[AICF Specification](./aicf/AICF-SPEC.md)** - Technical specification
+- **7 essential files** in `.ai/` folder
+- **Simple markdown format** - no complex optimization needed
+- **Manual workflow** - ask AI to update files at session end
+- **Works with all AI assistants** - no special format requirements
 
-### Deep Dive
+**Key files:**
 
-- **[Anthropic Alignment](./aicf/ANTHROPIC-ALIGNMENT.md)** - How AICF aligns with Anthropic's vision
-- **[Benchmark Report](./aicf/AICF-BENCHMARK-REPORT.md)** - Real-world performance data
-- **[Implementation Details](./aicf/AI-NATIVE-FORMAT-IMPLEMENTATION.md)** - How it was built
-- **[AICF Demo](./aicf/AICF-DEMO.md)** - Example output
-- **[Complete Overview](./aicf/AICF-2.0-COMPLETE.md)** - Full system overview
-- **[Example Summary](./aicf/EXAMPLE-AI-OPTIMIZED-SUMMARY.md)** - AI-optimized format example
+- `conversation-log.md` - Chat history and decisions
+- `technical-decisions.md` - Architecture choices
+- `next-steps.md` - Current priorities
+- `project-overview.md` - Project context for AI
+- `design-system.md` - Design patterns
+- `code-style.md` - Coding standards
+- `README.md` - Knowledge base overview
 
 ---
 

@@ -11,7 +11,7 @@ Complete reference for all `create-ai-chat-context` commands.
   - [Quick Reference](#quick-reference)
   - [Command Details](#command-details)
     - [init](#init)
-    - [chat-finish](#chat-finish)
+    - [migrate](#migrate)
     - [config](#config)
     - [tokens](#tokens)
     - [stats](#stats)
@@ -25,7 +25,6 @@ Complete reference for all `create-ai-chat-context` commands.
     - [cursor](#cursor)
     - [copilot](#copilot)
     - [claude-project](#claude-project)
-    - [migrate](#migrate)
     - [context](#context)
     - [convert](#convert)
     - [install-hooks](#install-hooks)
@@ -52,7 +51,7 @@ npx aic init --template nextjs            # Initialize with specific template
 npx aic init --force                      # Overwrite existing files
 
 # Daily Usage
-npx aic chat-finish                       # Auto-update all .ai/ files (recommended!)
+npx aic migrate                           # Upgrade existing projects to v1.0.0
 npx aic stats                             # View statistics
 npx aic search "query"                    # Search knowledge base
 npx aic validate                          # Check quality
@@ -125,14 +124,13 @@ npx aic init --no-git
 
 **Files created in `.ai/`:**
 
-- `README.md` - Overview
-- `architecture.md` - System architecture
-- `conversation-log.md` - Chat history
-- `technical-decisions.md` - Decision log
-- `known-issues.md` - Known issues
-- `next-steps.md` - Planned work
-- `SETUP_GUIDE.md` - Setup instructions
-- `TOKEN_MANAGEMENT.md` - Token optimization
+- `README.md` - Overview of the knowledge base system
+- `conversation-log.md` - Chat history and key decisions
+- `technical-decisions.md` - Why you chose X over Y
+- `next-steps.md` - Current priorities and tasks
+- `project-overview.md` - Project context for AI assistants
+- `design-system.md` - Design patterns and conventions
+- `code-style.md` - Coding standards and guidelines
 
 **When to use:**
 
@@ -142,119 +140,63 @@ npx aic init --no-git
 
 ---
 
-### chat-finish
+### migrate
 
-**⭐ RECOMMENDED:** Automatically update all `.ai/` files at the end of a chat session.
+Upgrade existing projects to the latest v1.0.0 structure.
 
 **Syntax:**
 
 ```bash
-npx aic chat-finish
+npx aic migrate [options]
 ```
+
+**Options:**
+
+- `--force` - Skip confirmation prompt
 
 **What it does:**
 
-1. Analyzes git changes since last run
-2. Detects new/modified files
-3. Extracts commit messages
-4. Auto-generates entries for:
-   - `conversation-log.md` - Chat summary (YAML format)
-   - `technical-decisions.md` - Decisions with rationale
-   - `known-issues.md` - Issues found/resolved
-   - `next-steps.md` - Completed tasks and future work
-   - `architecture.md` - Updates timestamp
-
-**Output format (YAML):**
-
-```yaml
----
-CHAT: 5
-DATE: 2025-10-01
-TYPE: FEAT
-TOPIC: Implement user authentication
-
-WHAT:
-  - Added JWT auth with bcrypt password hashing
-
-WHY:
-  - JWT for stateless API, bcrypt for secure password storage
-
-OUTCOME: SHIPPED
-
-FILES:
-  - src/auth.js: JWT authentication logic
-  - src/routes/login.js: Login/logout endpoints
-
-NEXT:
-  - Add password reset flow
-  - Implement 2FA
----
-```
+1. Checks which `.ai/` files are missing from your project
+2. Shows what will be added before making changes
+3. Adds missing template files without modifying existing content
+4. Non-destructive - never overwrites existing files
 
 **When to use:**
 
-- ✅ **After every AI chat session** (recommended!)
-- After making significant code changes
-- Before committing major features
+- Upgrading from older versions to v1.0.0
+- Adding missing files to existing projects
+- Ensuring your project has all 7 essential files
 
-**Why use this instead of `log`:**
-
-- Automatic: No manual typing required
-- Consistent: Uses git history for accuracy
-- Complete: Updates ALL `.ai/` files at once
-- Efficient: Saves time and ensures nothing is missed
-
----
-
-**Interactive prompts:**
-
-1. Chat number (auto-increments)
-2. Topic/title
-3. What was accomplished
-4. Key decisions made
-5. Next steps
-
-**Example session:**
+**Example:**
 
 ```bash
-$ npx aic log
+$ npx aic migrate
 
-📝 Add Conversation Log Entry
+🔄 Migrating AI Memory System
 
-Chat number: 5
-Topic: Implement user authentication
-What was accomplished: Added JWT auth, login/logout endpoints
-Key decisions: Using bcrypt for passwords, 7-day token expiry
-Next steps: Add password reset flow, implement 2FA
+✔ Found 4/7 .ai/ files
 
-✅ Entry added to .ai/conversation-log.md
+📝 Will add to .ai/:
+   + design-system.md
+   + code-style.md
+   + project-overview.md
+
+✅ Migration complete!
 ```
 
-**Output format (Markdown):**
+**Manual workflow:**
 
-```markdown
-## Chat #5 - Implement user authentication
+At the end of each AI session, ask the AI to update the `.ai/` files:
 
-### What We Did
-
-- Added JWT auth, login/logout endpoints
-
-### Key Decisions
-
-- Using bcrypt for passwords, 7-day token expiry
-
-### Next Steps
-
-- Add password reset flow, implement 2FA
+```
+"Can you update the .ai files with what we accomplished in this session?"
 ```
 
-**When to use:**
+The AI will update:
 
-- When you prefer manual entry over automatic
-- When you haven't committed code yet
-- For quick notes without git analysis
-
-**Note:** `chat-finish` is recommended over `log` for most use cases.
+- `conversation-log.md` - Add chat summary
+- `technical-decisions.md` - Document decisions made
+- `next-steps.md` - Update priorities and tasks
 
 ---
 
@@ -1201,8 +1143,8 @@ npx aic check
 # During work: Search for context
 npx aic search "authentication"
 
-# After AI chat: Auto-update knowledge base
-npx aic chat-finish
+# After AI chat: Ask AI to update files
+# "Can you update the .ai files with what we accomplished?"
 
 # End of day: Check token usage
 npx aic stats
@@ -1276,7 +1218,7 @@ npx create-ai-chat-context init  # ❌ Long
 
 ### Regular Maintenance
 
-- Run `npx aic chat-finish` after every AI chat session
+- Ask AI to update `.ai/` files after every chat session
 - Run `npx aic validate` weekly
 - Run `npx aic archive` when tokens >25,000
 - Run `npx aic update` after package updates

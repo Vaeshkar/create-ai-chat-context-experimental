@@ -16,12 +16,12 @@ This project uses a `.ai/` knowledge base system to preserve context across chat
 - How to use and maintain these files
 - Purpose and structure
 
-### 2. **`.ai/architecture.md`** (5 minutes)
+### 2. **`.ai/project-overview.md`** (3 minutes)
 
-- Complete system architecture
-- Tech stack and dependencies
-- Component structure
-- Data flow and integrations
+- Project context and conventions
+- Key files and their purposes
+- Current focus and priorities
+- Quick reference for AI assistants
 
 ### 3. **`.ai/technical-decisions.md`** (5 minutes)
 
@@ -35,19 +35,25 @@ This project uses a `.ai/` knowledge base system to preserve context across chat
 - Key decisions from previous chat sessions
 - What was accomplished and when
 - Historical context and evolution
-- **Format:** YAML (v0.11.1+) or AI-native (v0.12.0+) for token efficiency
+- **Format:** Simple markdown entries
 
-### 5. **`.ai/known-issues.md`** (3 minutes)
+### 5. **`.ai/next-steps.md`** (2 minutes)
 
-- Current problems and their solutions
-- Workarounds and limitations
-- Things to avoid
-
-### 6. **`.ai/next-steps.md`** (2 minutes)
-
+- Current priorities and tasks
 - Planned features and improvements
-- Current priorities
 - Roadmap and future direction
+
+### 6. **`.ai/design-system.md`** (2 minutes)
+
+- Design patterns and conventions
+- UI/UX guidelines
+- Component standards
+
+### 7. **`.ai/code-style.md`** (2 minutes)
+
+- Coding standards and guidelines
+- Formatting and naming conventions
+- Best practices
 
 ---
 
