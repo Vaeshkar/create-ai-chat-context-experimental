@@ -4,6 +4,68 @@ Document WHY you made specific technical choices.
 
 ---
 
+## v1.0.0 Release Strategy: Dual-Format Coexistence (.ai + .aicf)
+
+**Date:** 2025-10-03
+**Status:** ✅ Decided (Chat #17)
+
+### Decision
+
+Released v1.0.0 with simplified 7-file .ai approach, then immediately restored .aicf files for continued parallel development. Both formats will coexist.
+
+### Rationale
+
+**"JSON had to coexist with XML before gaining acceptance"** - User insight on format evolution.
+
+**v1.0.0 Simplification was necessary:**
+
+- ✅ Provides stable, simple foundation for users
+- ✅ Removes complexity barriers to adoption
+- ✅ 7 essential files: README.md, conversation-log.md, technical-decisions.md, next-steps.md, project-overview.md, design-system.md, code-style.md
+- ✅ Manual workflow: "ask AI to update .ai files"
+
+**Restoring .aicf was strategic:**
+
+- ✅ Innovation requires experimentation space
+- ✅ Format evolution happens through parallel development
+- ✅ Users get stability (.ai) while we iterate on optimization (.aicf)
+- ✅ No need to choose - both can coexist
+
+### Implementation
+
+**v1.0.0 Release:**
+
+- Updated all documentation to reflect 7-file approach
+- Removed chat-finish command (replaced with manual workflow)
+- Published to npm successfully
+- Comprehensive CHANGELOG.md entry
+
+**Dual-Format Restoration:**
+
+- Brought back .aicf files alongside .ai files
+- Both formats maintained in parallel
+- Users can choose their preferred approach
+- Continued innovation without breaking stability
+
+### Alternatives Considered
+
+**Option 1: Abandon .aicf entirely**
+
+- **Rejected:** Would halt format innovation
+- **Problem:** Premature optimization abandonment
+
+**Option 2: Keep only .aicf, abandon .ai**
+
+- **Rejected:** Too complex for v1.0.0 users
+- **Problem:** Adoption barrier too high
+
+**Option 3: Dual-format coexistence** ✅ **CHOSEN**
+
+- **Benefits:** Stability + Innovation
+- **Precedent:** JSON/XML, Markdown/HTML, REST/GraphQL
+
+---
+
 ## v1.0.0 Release: Abandon Automated Compression, Adopt Manual AICF Writing
 
 **Date:** 2025-10-03

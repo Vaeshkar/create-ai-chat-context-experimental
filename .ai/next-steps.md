@@ -6,6 +6,15 @@ Roadmap and priorities for your project.
 
 ## ✅ Recently Completed (Last 2 Weeks)
 
+**2025-10-03 - Chat #17:**
+
+- ✅ **SHIPPED v1.0.0** - Successfully published to npm
+- ✅ **Simplified to 7 essential files** - Reduced complexity for v1.0.0 users
+- ✅ **Updated ALL documentation** - README.md, CHANGELOG.md, COMMANDS.md, package.json, docs/
+- ✅ **Removed chat-finish command** - Replaced with manual "ask AI to update files" workflow
+- ✅ **Strategic decision** - Restored .aicf files for dual-format coexistence
+- ✅ **Format evolution insight** - "JSON had to coexist with XML before gaining acceptance"
+
 **2025-10-03 - Chat #16:**
 
 - ✅ Created `.aicf/` template folder with 4 files
