@@ -4,6 +4,103 @@ Document WHY you made specific technical choices.
 
 ---
 
+## v1.0.0 Release: Abandon Automated Compression, Adopt Manual AICF Writing
+
+**Date:** 2025-10-03
+**Status:** ✅ Decided (Chat #15)
+
+### Decision
+
+Abandon the automated compression system (multi-agent architecture with Analysis/Quality/Format agents) and adopt a manual AICF writing approach where the AI writes `.aicf/` files directly at session end.
+
+### Rationale
+
+**Automated compression failed quality tests:**
+
+- Tested on 20k token conversation with 123 key terms
+- 5 consecutive test runs achieved only 19-26% key term preservation (average 23%)
+- Required 60%+ preservation, got less than half
+- The AI couldn't determine which terms were important vs mentioned in passing
+- Fundamental problem: Compression AI lacked context to make preservation decisions
+
+**Manual approach is superior:**
+
+- ✅ 100% preservation (AI controls what to save)
+- ✅ Zero cost (no API calls)
+- ✅ Instant (no processing time)
+- ✅ Simple (no complex agent orchestration)
+- ✅ Reliable (AI knows what's important in real-time)
+
+**Workflow:**
+
+1. User runs `aic chat-finish @username`
+2. AI writes/updates both `.ai/` (human-readable) and `.aicf/` (AI-optimized) files
+3. User reviews changes with `git diff`
+4. User commits if satisfied
+
+### Alternatives Considered
+
+**Option 1: Keep automated compression, improve prompts**
+
+- **Tried:** Changed "compress" to "detailed summary", adjusted token targets
+- **Result:** Only improved from 27% to 32% preservation (still failed)
+- **Rejected:** Fundamental problem can't be solved with better prompts
+
+**Option 2: Use better AI models**
+
+- **Tried:** Tested 6 models (Claude Haiku, GPT-4o Mini, GPT-5 Mini, GPT-4.1, GPT-4o, Claude Sonnet 4)
+- **Result:** All failed on 20k tokens (only GPT-4o worked on 12k tokens)
+- **Rejected:** Even best models can't solve the context problem
+
+**Option 3: Manual AICF writing (CHOSEN)**
+
+- **Pros:** 100% preservation, zero cost, instant, simple, reliable
+- **Cons:** Requires AI to write files (but AI is already doing this in conversation)
+- **Chosen:** Best solution for the problem
+
+### Impact
+
+**Code removed:**
+
+- `src/checkpoint-agent-sdk.js` (Anthropic agent)
+- `src/checkpoint-agent-openai.js` (OpenAI agent)
+- `src/checkpoint-agent.js` (original agent)
+- `src/checkpoint-agent-cli.js` (CLI)
+- `src/checkpoint-dump.js` (dump functionality)
+- 11 test files
+- 2 installation scripts
+
+**Dependencies removed:**
+
+- `@anthropic-ai/sdk` (heavy)
+- `openai` (heavy)
+- `@openai/agents` (heavy)
+- `dotenv` (not needed)
+
+**Package changes:**
+
+- Version: 0.14.1 → 1.0.0
+- Size: Reduced significantly (removed heavy dependencies)
+- Commands: Removed `checkpoint-dump` and `checkpoint-agent`
+
+**Documentation added:**
+
+- `.ai/design-system.md` - Design patterns
+- `.ai/code-style.md` - Coding standards
+- `.ai/project-overview.md` - High-level description
+- `.aicf/README.md` - AICF format specification
+- `archive/abandoned-automated-compression/README.md` - Why approach was abandoned
+
+### Lessons Learned
+
+1. **Test early with real data** - Should have tested 20k tokens before building full system
+2. **Quality over efficiency** - 88% token reduction means nothing if 95% information is lost
+3. **AI knows best in real-time** - AI writing files during conversation has full context
+4. **Simple is better** - Manual approach is simpler and more reliable than complex agents
+5. **User feedback is critical** - User's insight "this is not better than .md files" was correct
+
+---
+
 ## AICF 3.0: AI-Native Memory Format
 
 **Date:** 2025-10-02

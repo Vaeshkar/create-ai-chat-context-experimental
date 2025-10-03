@@ -9,6 +9,7 @@ const { detectProjectType, getProjectInfo } = require("./detect");
 async function init(options = {}) {
   const cwd = process.cwd();
   const aiDir = path.join(cwd, ".ai");
+  const aicfDir = path.join(cwd, ".aicf");
   const aiInstructions = path.join(cwd, ".ai-instructions");
   const newChatPrompt = path.join(cwd, "NEW_CHAT_PROMPT.md");
 
@@ -56,11 +57,74 @@ async function init(options = {}) {
     );
   }
 
-  // Check if .ai directory already exists
+  // Check if .ai directory and files already exist
   if (fs.existsSync(aiDir) && !options.force) {
-    console.log(chalk.yellow("⚠️  .ai/ directory already exists!"));
-    console.log(chalk.gray("   Use --force to overwrite\n"));
-    process.exit(1);
+    // Check if any template files exist
+    const aiTemplateFiles = [
+      "README.md",
+      "architecture.md",
+      "conversation-log.md",
+      "technical-decisions.md",
+      "known-issues.md",
+      "next-steps.md",
+      "design-system.md",
+      "code-style.md",
+      "project-overview.md",
+      "SETUP_GUIDE.md",
+      "TOKEN_MANAGEMENT.md",
+    ];
+
+    const existingFiles = aiTemplateFiles.filter((file) =>
+      fs.existsSync(path.join(aiDir, file))
+    );
+
+    if (existingFiles.length > 0) {
+      console.log(chalk.yellow("⚠️  .ai/ directory already exists!"));
+      console.log(
+        chalk.gray(`   Found ${existingFiles.length} existing file(s)`)
+      );
+      console.log(chalk.gray("   Use --force to overwrite\n"));
+      process.exit(1);
+    }
+  }
+
+  // Check if .aicf directory and files already exist
+  if (fs.existsSync(aicfDir) && !options.force) {
+    // Check if any template files exist
+    const aicfTemplateFiles = [
+      "README.md",
+      "conversation-memory.aicf",
+      "technical-context.aicf",
+      "work-state.aicf",
+    ];
+
+    const existingFiles = aicfTemplateFiles.filter((file) =>
+      fs.existsSync(path.join(aicfDir, file))
+    );
+
+    if (existingFiles.length > 0) {
+      console.log(chalk.yellow("⚠️  .aicf/ directory already exists!"));
+      console.log(
+        chalk.gray(`   Found ${existingFiles.length} existing file(s)`)
+      );
+      console.log(chalk.gray("   Use --force to overwrite\n"));
+      process.exit(1);
+    }
+  }
+
+  // Check if root files already exist
+  if (!options.force) {
+    const rootFiles = [".ai-instructions", "NEW_CHAT_PROMPT.md"];
+    const existingRootFiles = rootFiles.filter((file) =>
+      fs.existsSync(path.join(cwd, file))
+    );
+
+    if (existingRootFiles.length > 0) {
+      console.log(chalk.yellow("⚠️  AI instruction files already exist!"));
+      console.log(chalk.gray(`   Found: ${existingRootFiles.join(", ")}`));
+      console.log(chalk.gray("   Use --force to overwrite\n"));
+      process.exit(1);
+    }
   }
 
   const spinner = ora("Creating directory structure...").start();
@@ -69,6 +133,11 @@ async function init(options = {}) {
     // Create .ai directory
     await fs.ensureDir(aiDir);
     spinner.succeed("Created .ai/ directory");
+
+    // Create .aicf directory
+    spinner.start("Creating .aicf/ directory...");
+    await fs.ensureDir(aicfDir);
+    spinner.succeed("Created .aicf/ directory");
 
     // Copy template files
     const templatesDir = path.join(__dirname, "../templates");
@@ -84,6 +153,9 @@ async function init(options = {}) {
       "technical-decisions.md",
       "known-issues.md",
       "next-steps.md",
+      "design-system.md",
+      "code-style.md",
+      "project-overview.md",
       "SETUP_GUIDE.md",
       "TOKEN_MANAGEMENT.md",
     ];
@@ -110,7 +182,27 @@ async function init(options = {}) {
     // Copy NEW_CHAT_PROMPT.md to root
     await fs.copy(path.join(templatesDir, "NEW_CHAT_PROMPT.md"), newChatPrompt);
 
-    spinner.succeed("Copied all template files");
+    spinner.succeed("Copied all .ai/ template files");
+
+    // Copy .aicf template files
+    spinner.start("Copying .aicf/ template files...");
+
+    const aicfTemplateFiles = [
+      "README.md",
+      "conversation-memory.aicf",
+      "technical-context.aicf",
+      "work-state.aicf",
+    ];
+
+    const aicfTemplateDir = path.join(templatesDir, "aicf");
+
+    for (const file of aicfTemplateFiles) {
+      const src = path.join(aicfTemplateDir, file);
+      const dest = path.join(aicfDir, file);
+      await fs.copy(src, dest);
+    }
+
+    spinner.succeed("Copied all .aicf/ template files");
 
     // Update README.md if it exists
     const readmePath = path.join(cwd, "README.md");
@@ -184,10 +276,17 @@ async function init(options = {}) {
 
     // Success message
     console.log(
-      chalk.bold.green(
-        "\n✅ AI Knowledge Base System initialized successfully!\n"
-      )
+      chalk.bold.green("\n✅ AI Memory System initialized successfully!\n")
     );
+
+    console.log(chalk.bold("📁 Created:\n"));
+    console.log(
+      chalk.gray("   .ai/   - Human-readable documentation (markdown)")
+    );
+    console.log(
+      chalk.gray("   .aicf/ - AI-optimized memory (structured format)")
+    );
+    console.log();
 
     console.log(chalk.bold("📝 Next steps:\n"));
     console.log("1. Customize the files for your project:");
@@ -203,15 +302,16 @@ async function init(options = {}) {
       chalk.gray("   vim .ai/conversation-log.md    # Start YOUR log\n")
     );
 
-    console.log("2. Commit to Git:");
-    console.log(
-      chalk.gray("   git add .ai/ .ai-instructions NEW_CHAT_PROMPT.md")
-    );
-    console.log(
-      chalk.gray('   git commit -m "feat: Add .ai/ knowledge base system"\n')
-    );
+    console.log("2. At end of each AI session, ask AI to update:");
+    console.log(chalk.cyan('   "Can you update the .ai and .aicf files?"\n'));
 
-    console.log("3. Test it in a new AI chat:");
+    console.log("3. Commit to Git:");
+    console.log(
+      chalk.gray("   git add .ai/ .aicf/ .ai-instructions NEW_CHAT_PROMPT.md")
+    );
+    console.log(chalk.gray('   git commit -m "feat: Add AI memory system"\n'));
+
+    console.log("4. Test it in a new AI chat:");
     console.log(
       chalk.cyan(
         '   "Read .ai-instructions first, then help me with [your project]."\n'

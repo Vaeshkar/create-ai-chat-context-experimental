@@ -17,9 +17,8 @@ const { exportKnowledgeBase } = require("../src/export");
 const { updateKnowledgeBase } = require("../src/update");
 const { installGitHooks } = require("../src/install-hooks");
 const { handleConfigCommand } = require("../src/config");
-const { handleChatFinish } = require("../src/chat-finish-v2");
 const { handleConvertCommand } = require("../src/convert");
-const { migrateToAICF } = require("../src/aicf-migrate");
+const { migrateProject } = require("../src/migrate");
 const { handleContextCommand } = require("../src/aicf-context");
 const packageJson = require("../package.json");
 
@@ -42,18 +41,6 @@ program
   .action(async (options) => {
     try {
       await init(options);
-    } catch (error) {
-      console.error(chalk.red("Error:"), error.message);
-      process.exit(1);
-    }
-  });
-
-program
-  .command("chat-finish")
-  .description("Auto-update all knowledge base files at end of chat session")
-  .action(async () => {
-    try {
-      await handleChatFinish();
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
@@ -274,10 +261,11 @@ program
 
 program
   .command("migrate")
-  .description("Convert .ai/ to .aicf/ format (AICF 2.0 - 88% token reduction)")
-  .action(async () => {
+  .description("Upgrade existing project to latest AI memory system")
+  .option("--force", "Skip confirmation prompt")
+  .action(async (options) => {
     try {
-      await migrateToAICF();
+      await migrateProject(options);
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
