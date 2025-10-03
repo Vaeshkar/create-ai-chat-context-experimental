@@ -1,6 +1,6 @@
 {
   "name": "create-ai-chat-context",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Initialize AI memory system for projects - Creates .ai/ knowledge base to preserve context across chat sessions",
   "main": "src/index.js",
   "bin": {
@@ -9,6 +9,11 @@
   },
   "scripts": {
     "test": "echo \"No tests yet\" && exit 0",
+    "test:checkpoint": "node test-checkpoint.js",
+    "checkpoint:demo": "node bin/cli.js checkpoint --demo --verbose",
+    "checkpoint:example": "node bin/cli.js checkpoint --file examples/checkpoint-example.json --verbose --show-memory",
+    "memory:decay": "node bin/cli.js memory-decay --verbose",
+    "generate:templates": "node scripts/generate-templates.js",
     "lint": "echo \"No linting yet\" && exit 0"
   },
   "keywords": [

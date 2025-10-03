@@ -18,34 +18,101 @@ async function convertConversationLog(aiDir) {
   const content = await fs.readFile(logPath, "utf8");
   const entries = [];
 
-  // Parse entries (supports AICF 1.0, YAML, and Markdown)
+  // Parse entries (supports AICF 1.0, YAML, and structured Markdown)
   const lines = content.split("\n");
   let chatNumber = 0;
 
-  for (const line of lines) {
-    // AICF 1.0 format: C#|DATE|TYPE|TOPIC|WHAT|WHY|OUTCOME|FILES
-    if (/^\d+\|/.test(line)) {
-      const parts = line.split("|");
-      if (parts.length >= 7) {
-        chatNumber = parseInt(parts[0]);
-        const timestamp = parts[1].includes("T")
-          ? parts[1]
-          : parts[1] + "T120000Z";
-        entries.push({
-          "C#": parts[0],
-          TIMESTAMP: timestamp,
-          TYPE: parts[2] || "W",
-          TOPIC: parts[3] || "",
-          WHAT: parts[4] || "",
-          WHY: parts[5] || "",
-          OUTCOME: parts[6] || "",
-          FILES: parts[7] || "",
-        });
+  // Handle structured markdown format
+  const sections = content.split(/^## Chat #/m).filter(s => s.trim());
+  
+  for (const section of sections) {
+    if (!section.trim()) continue;
+    
+    const lines = section.split("\n");
+    let chatNum = "";
+    let date = "";
+    let topic = "";
+    let what = "";
+    let why = "";
+    let outcome = "";
+    
+    // Extract chat number from first line
+    const firstLine = lines[0].trim();
+    const chatMatch = firstLine.match(/^(\d+)/);
+    if (chatMatch) {
+      chatNum = chatMatch[1];
+      chatNumber = parseInt(chatNum);
+    } else {
+      chatNumber++;
+      chatNum = chatNumber.toString();
+    }
+    
+    // Parse structured content
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("**Date:**")) {
+        date = trimmed.replace("**Date:**", "").trim();
+      } else if (trimmed.startsWith("**Topic:**")) {
+        topic = trimmed.replace("**Topic:**", "").trim();
+      } else if (trimmed.startsWith("**What:**")) {
+        what = trimmed.replace("**What:**", "").trim();
+      } else if (trimmed.startsWith("**Why:**")) {
+        why = trimmed.replace("**Why:**", "").trim();
+      } else if (trimmed.startsWith("**Outcome:**")) {
+        outcome = trimmed.replace("**Outcome:**", "").trim();
       }
     }
-    // Markdown format: ## Chat #N
-    else if (line.startsWith("## Chat #")) {
-      chatNumber++;
+    
+    // Only add if we have meaningful content
+    if (topic || what || why || outcome) {
+      const timestamp = date ? date.replace(/-/g, "") + "T120000Z" : new Date().toISOString().replace(/\.\d{3}/, "");
+      
+      // Calculate confidence and impact based on content richness
+      const contentLength = (topic + what + why + outcome).length;
+      const confidence = contentLength > 200 ? "9" : contentLength > 100 ? "8" : "7";
+      const impact = topic.toLowerCase().includes("aicf") || topic.toLowerCase().includes("schema") ? "8" : "6";
+      
+      entries.push({
+        "C#": chatNum,
+        TIMESTAMP: timestamp,
+        TYPE: "W", // Work session
+        TOPIC: topic.substring(0, 80),
+        WHAT: what.substring(0, 100),
+        WHY: why.substring(0, 100),
+        OUTCOME: outcome.substring(0, 120),
+        FILES: "", // Could be enhanced to extract file references
+        CONTEXT_REFS: "", // Could be enhanced to find cross-references
+        CONFIDENCE: confidence,
+        IMPACT_SCORE: impact,
+      });
+    }
+  }
+  
+  // Fallback: Handle AICF 1.0 pipe-separated format if no structured content found
+  if (entries.length === 0) {
+    for (const line of lines) {
+      if (/^\d+\|/.test(line)) {
+        const parts = line.split("|");
+        if (parts.length >= 7) {
+          chatNumber = parseInt(parts[0]);
+          const timestamp = parts[1].includes("T")
+            ? parts[1]
+            : parts[1] + "T120000Z";
+          entries.push({
+            "C#": parts[0],
+            TIMESTAMP: timestamp,
+            TYPE: parts[2] || "W",
+            TOPIC: (parts[3] || "").substring(0, 80),
+            WHAT: (parts[4] || "").substring(0, 100),
+            WHY: (parts[5] || "").substring(0, 100),
+            OUTCOME: (parts[6] || "").substring(0, 120),
+            FILES: parts[7] || "",
+            CONTEXT_REFS: parts[8] || "",
+            CONFIDENCE: parts[9] || "8",
+            IMPACT_SCORE: parts[10] || "5",
+          });
+        }
+      }
     }
   }
 
@@ -54,11 +121,14 @@ async function convertConversationLog(aiDir) {
       "C#",
       "TIMESTAMP",
       "TYPE",
-      "TOPIC",
-      "WHAT",
-      "WHY",
-      "OUTCOME",
-      "FILES",
+      "TOPIC", // 80 chars - Enhanced for complex topics
+      "WHAT", // 100 chars - Actions and changes
+      "WHY", // 100 chars - Reasoning and context
+      "OUTCOME", // 120 chars - Enhanced for detailed results
+      "FILES", // File references
+      "CONTEXT_REFS", // Links to related conversations/decisions
+      "CONFIDENCE", // Information certainty (1-10)
+      "IMPACT_SCORE", // Relative importance (1-10)
     ],
     entries,
     links: [],
@@ -177,11 +247,14 @@ async function convertTechnicalDecisions(aiDir) {
       entries.push({
         "D#": id.toString(),
         TIMESTAMP: timestamp,
-        TITLE: title.substring(0, 60),
-        DECISION: decision.substring(0, 100),
-        RATIONALE: rationale.substring(0, 100),
-        IMPACT: impact.substring(0, 80),
+        TITLE: title.substring(0, 80), // Enhanced from 60
+        DECISION: decision.substring(0, 120), // Enhanced from 100
+        RATIONALE: rationale.substring(0, 120), // Enhanced from 100
+        IMPACT: impact.substring(0, 100), // Enhanced from 80
         STATUS: status,
+        CONTEXT_REFS: "", // Links to related conversations/tasks
+        CONFIDENCE: "9", // Decisions are usually high confidence
+        IMPACT_SCORE: impact.length > 50 ? "8" : "6", // Score based on impact detail
       });
       id++;
     } else {
@@ -200,11 +273,14 @@ async function convertTechnicalDecisions(aiDir) {
     schema: [
       "D#",
       "TIMESTAMP",
-      "TITLE",
-      "DECISION",
-      "RATIONALE",
-      "IMPACT",
+      "TITLE", // 80 chars - Enhanced for complex decision names
+      "DECISION", // 120 chars - Enhanced for detailed decisions
+      "RATIONALE", // 120 chars - Enhanced for comprehensive reasoning
+      "IMPACT", // 100 chars - Enhanced for impact details
       "STATUS",
+      "CONTEXT_REFS", // Links to related conversations/tasks
+      "CONFIDENCE", // Decision certainty (1-10)
+      "IMPACT_SCORE", // Relative importance (1-10)
     ],
     entries,
     links: [],
@@ -281,7 +357,7 @@ async function convertNextSteps(aiDir) {
           .replace(/^- \[[ x\/]\] /, "")
           .replace(/^- /, "")
           .trim();
-        task = task.replace(/\*\*/g, "").substring(0, 100);
+        task = task.replace(/\*\*/g, "").substring(0, 140); // Enhanced from 100
 
         if (task) {
           let effort = "M";
@@ -299,6 +375,14 @@ async function convertNextSteps(aiDir) {
             effort = "L";
           }
 
+          // Calculate task importance based on priority and effort
+          let taskScore = "5"; // default
+          if (priority === "H" && effort === "L") taskScore = "9";
+          else if (priority === "H" && effort === "M") taskScore = "8";
+          else if (priority === "H" && effort === "S") taskScore = "7";
+          else if (priority === "M" && effort === "L") taskScore = "6";
+          else if (priority === "L") taskScore = "3";
+          
           entries.push({
             "T#": id.toString(),
             PRIORITY: priority,
@@ -309,6 +393,9 @@ async function convertNextSteps(aiDir) {
             ASSIGNED: "",
             CREATED: timestamp,
             COMPLETED: isCompleted ? timestamp : "",
+            CONTEXT_REFS: "", // Links to related conversations/decisions
+            CONFIDENCE: isCompleted ? "10" : "7", // Completed tasks are certain
+            IMPACT_SCORE: taskScore, // Based on priority/effort matrix
           });
           id++;
         }
@@ -322,11 +409,14 @@ async function convertNextSteps(aiDir) {
       "PRIORITY",
       "EFFORT",
       "STATUS",
-      "TASK",
+      "TASK", // 140 chars - Enhanced for detailed task descriptions
       "DEPENDENCIES",
       "ASSIGNED",
       "CREATED",
       "COMPLETED",
+      "CONTEXT_REFS", // Links to related conversations/decisions
+      "CONFIDENCE", // Task clarity/certainty (1-10)
+      "IMPACT_SCORE", // Task importance (1-10)
     ],
     entries,
     links: [],
@@ -357,7 +447,7 @@ async function convertKnownIssues(aiDir) {
       continue;
 
     const lines = section.split("\n");
-    const title = lines[0].trim().substring(0, 60);
+    const title = lines[0].trim().substring(0, 80); // Enhanced from 60
 
     let issue = "";
     let impact = "";
@@ -431,15 +521,25 @@ async function convertKnownIssues(aiDir) {
     }
 
     if (title && issue) {
+      // Calculate confidence based on status and workaround availability
+      const confidence = status === "RESOLVED" ? "10" : (workaround ? "8" : "6");
+      
+      // Calculate impact score based on severity
+      const impactScore = severity === "HIGH" ? "9" : 
+                         severity === "MEDIUM" ? "6" : "3";
+      
       entries.push({
         "I#": id.toString(),
         TIMESTAMP: timestamp,
         SEVERITY: severity,
-        TITLE: title.substring(0, 60),
-        ISSUE: issue.substring(0, 100),
-        IMPACT: impact || "See description",
-        WORKAROUND: workaround.substring(0, 100),
+        TITLE: title.substring(0, 80), // Enhanced from 60
+        ISSUE: issue.substring(0, 120), // Enhanced from 100
+        IMPACT: (impact || "See description").substring(0, 100),
+        WORKAROUND: workaround.substring(0, 120), // Enhanced from 100
         STATUS: status,
+        CONTEXT_REFS: "", // Links to related conversations/decisions
+        CONFIDENCE: confidence, // Based on resolution status
+        IMPACT_SCORE: impactScore, // Based on severity
       });
       id++;
     }
@@ -450,11 +550,14 @@ async function convertKnownIssues(aiDir) {
       "I#",
       "TIMESTAMP",
       "SEVERITY",
-      "TITLE",
-      "ISSUE",
-      "IMPACT",
-      "WORKAROUND",
+      "TITLE", // 80 chars - Enhanced for detailed issue titles
+      "ISSUE", // 120 chars - Enhanced for comprehensive problem descriptions
+      "IMPACT", // 100 chars - Impact details
+      "WORKAROUND", // 120 chars - Enhanced for detailed solutions
       "STATUS",
+      "CONTEXT_REFS", // Links to related conversations/decisions
+      "CONFIDENCE", // Information certainty (1-10)
+      "IMPACT_SCORE", // Issue severity impact (1-10)
     ],
     entries,
     links: [],
@@ -468,7 +571,7 @@ function generateIndex(packageJson, conversations, decisions, tasks, issues) {
   const timestamp = new Date().toISOString().replace(/\.\d{3}/, "");
 
   return {
-    version: "2.0.0",
+    version: "3.0.0",
     project: {
       name: packageJson.name || "unknown",
       version: packageJson.version || "0.0.0",
@@ -485,13 +588,13 @@ function generateIndex(packageJson, conversations, decisions, tasks, issues) {
     },
     state: {
       status: "active_development",
-      phase: "migrated_to_aicf",
+      phase: "migrated_to_aicf_3_0",
       last_chat: conversations?.entries.length || 0,
       last_commit: "",
     },
     context: packageJson.description || "No description available",
     currentWork: {
-      task: "Migrated to AICF 2.0 format",
+      task: "Migrated to AICF 3.0 format with enhanced AI continuity",
       priority: "HIGH",
       started: timestamp,
       blockers: "none",
@@ -500,7 +603,7 @@ function generateIndex(packageJson, conversations, decisions, tasks, issues) {
       {
         timestamp,
         type: "MIGRATION",
-        description: "Converted .ai/ to .aicf/ format",
+        description: "Converted .ai/ to .aicf/ 3.0 format with enhanced AI continuity",
       },
     ],
   };
@@ -510,7 +613,7 @@ function generateIndex(packageJson, conversations, decisions, tasks, issues) {
  * Main migration function
  */
 async function migrateToAICF(aiDir = ".ai", aicfDir = ".aicf") {
-  console.log(chalk.bold("\n🚀 Migrating to AICF 2.0\n"));
+  console.log(chalk.bold("\n🚀 Migrating to AICF 3.0\n"));
 
   // Check if .ai/ exists
   if (!(await fs.pathExists(aiDir))) {
@@ -551,7 +654,7 @@ async function migrateToAICF(aiDir = ".ai", aicfDir = ".aicf") {
 
   // Generate .meta
   const meta = {
-    aicf_version: "2.0.0",
+    aicf_version: "3.0.0",
     project: index.project,
     created: index.project.last_update,
     last_update: index.project.last_update,

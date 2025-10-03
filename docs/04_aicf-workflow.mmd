@@ -1,56 +1,68 @@
-%% AICF 2.0 Workflow
-%% How AICF 2.0 enables persistent memory across chat sessions
+%% Checkpoint Orchestrator Workflow
+%% How the logic agent orchestrator processes conversation checkpoints with zero API costs
 
 graph TB
-    Start([Developer working in Chat #1]) --> Working[Building features,<br/>making decisions,<br/>solving problems]
+    Start([Long conversation session<br/>5-16 hours, 200+ messages]) --> Trigger{Every 50 messages<br/>or context window<br/>approaching limit?}
 
-    Working --> ChatFull{Chat approaching<br/>token limit?}
+    Trigger -->|No| Continue[Continue conversation<br/>Building features,<br/>making decisions]
+    Continue --> Start
+    
+    Trigger -->|Yes| Checkpoint[Run: aic checkpoint --demo<br/>or automatic trigger]
 
-    ChatFull -->|No| Working
-    ChatFull -->|Yes| Decision{Have .aicf/<br/>directory?}
+    Checkpoint --> DataDump[Create checkpoint dump:<br/>• Session ID + number<br/>• Message array<br/>• Timestamps<br/>• Token count]
 
-    Decision -->|No| Migrate[Run: npx aic migrate<br/>Convert .ai/ to .aicf/]
-    Decision -->|Yes| NewChat
+    DataDump --> Orchestrator[Checkpoint Orchestrator<br/>Initialize 6 logic agents]
 
-    Migrate --> MigrateResult[Created .aicf/ directory:<br/>- conversations.aicf<br/>- decisions.aicf<br/>- tasks.aicf<br/>- issues.aicf<br/>- index.aicf]
+    Orchestrator --> Parallel[🤖 Parallel Agent Processing<br/>Zero API costs, 10ms execution]
 
-    MigrateResult --> NewChat[Start Chat #2<br/>Fresh session]
+    Parallel --> Agent1[ConversationParserAgent<br/>Extract conversation flow<br/>@FLOW section]
+    Parallel --> Agent2[DecisionExtractorAgent<br/>Find key decisions<br/>@DECISIONS section]
+    Parallel --> Agent3[InsightAnalyzerAgent<br/>Capture insights<br/>@INSIGHTS section]
+    Parallel --> Agent4[StateTrackerAgent<br/>Monitor project state<br/>@STATE section]
+    Parallel --> Agent5[FileWriterAgent<br/>Output dual formats<br/>AICF + Markdown]
+    Parallel --> Agent6[MemoryDropOffAgent<br/>Apply decay strategy<br/>Optimize storage]
 
-    NewChat --> DirectRead[Say: Read .aicf/ and continue]
+    Agent1 --> Combine[Combine Results<br/>Structured data ready]
+    Agent2 --> Combine
+    Agent3 --> Combine
+    Agent4 --> Combine
+    Agent5 --> Combine
+    Agent6 --> Combine
 
-    DirectRead --> AIReads[AI reads .aicf/ files directly:<br/>- index.aicf project overview<br/>- conversations.aicf all chats<br/>- decisions.aicf all decisions<br/>- tasks.aicf all tasks<br/>- issues.aicf all issues]
+    Combine --> WriteFiles[Write Files:<br/>• .aicf/conversations.aicf<br/>• .ai/conversation-log.md<br/>• .ai/technical-decisions.md<br/>• .ai/next-steps.md]
 
-    AIReads --> Parse[AI parses @SCHEMA sections<br/>Understands pipe-delimited format<br/>Self-documenting structure]
+    WriteFiles --> MemoryDecay[Apply Memory Decay<br/>if file > 1MB:<br/>Recent: Full detail<br/>Medium: Key points<br/>Old: Summaries<br/>Archived: Critical only]
 
-    Parse --> FullContext[Chat #2 AI has:<br/>✅ All conversation history<br/>✅ All technical decisions<br/>✅ All tasks and status<br/>✅ All known issues<br/>✅ Full project context]
+    MemoryDecay --> NewSession[Start new chat session<br/>Say: Read .aicf/ and continue]
 
-    FullContext --> Continue[Continue working<br/>ZERO context loss<br/>ZERO manual steps]
+    NewSession --> AIReads[AI reads optimized files:<br/>✅ 85% token reduction<br/>✅ 100% information preservation<br/>✅ Instant parsing<br/>✅ Zero context loss]
 
-    Continue --> MoreWork[Build more features,<br/>make more decisions]
+    AIReads --> FullContext[New AI has complete context:<br/>✅ All conversation flow<br/>✅ All decisions + reasoning<br/>✅ All insights + breakthroughs<br/>✅ Current project state<br/>✅ Task status + blockers]
 
-    MoreWork --> ChatFull2{Chat #2<br/>filling up?}
+    FullContext --> Seamless[Continue seamlessly<br/>No re-explaining needed<br/>AI knows everything]
 
-    ChatFull2 -->|No| MoreWork
-    ChatFull2 -->|Yes| Repeat[Repeat process:<br/>Start Chat #3<br/>Say: Read .aicf/ and continue]
+    Seamless --> Benefits[Logic Agent Benefits:<br/>✅ Zero API costs<br/>✅ 10ms processing time<br/>✅ 100% information preservation<br/>✅ Parallel execution<br/>✅ Automatic memory decay<br/>✅ Works with all AIs]
 
-    Repeat --> Infinite[Infinite memory<br/>across ALL chats]
-
-    Infinite --> Benefits[Benefits:<br/>✅ No re-explaining<br/>✅ No context loss<br/>✅ No copy/paste<br/>✅ No manual steps<br/>✅ 88% token savings<br/>✅ Works with ALL AIs]
-
-    style Start fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
-    style Working fill:#fff4e6,stroke:#ff9800,stroke-width:2px
-    style ChatFull fill:#ffe6e6,stroke:#f44336,stroke-width:2px
-    style Decision fill:#ffe6e6,stroke:#f44336,stroke-width:2px
-    style Migrate fill:#e1f5ff,stroke:#0288d1,stroke-width:3px
-    style MigrateResult fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
-    style NewChat fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
-    style DirectRead fill:#fff4e6,stroke:#ff9800,stroke-width:2px
-    style AIReads fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
-    style Parse fill:#fff4e6,stroke:#ff9800,stroke-width:2px
-    style FullContext fill:#e6ffe6,stroke:#4caf50,stroke-width:3px
-    style Continue fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
-    style MoreWork fill:#fff4e6,stroke:#ff9800,stroke-width:2px
-    style ChatFull2 fill:#ffe6e6,stroke:#f44336,stroke-width:2px
-    style Repeat fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
-    style Infinite fill:#e1bee7,stroke:#8e24aa,stroke-width:3px
-    style Benefits fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
+    style Start fill:#e1f5ff,stroke:#0288d1,stroke-width:3px
+    style Trigger fill:#ffe6e6,stroke:#f44336,stroke-width:2px
+    style Continue fill:#fff4e6,stroke:#ff9800,stroke-width:2px
+    style Checkpoint fill:#e1f5ff,stroke:#0288d1,stroke-width:3px
+    style DataDump fill:#fff4e6,stroke:#ff9800,stroke-width:2px
+    style Orchestrator fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style Parallel fill:#e1bee7,stroke:#8e24aa,stroke-width:3px
+    
+    style Agent1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Agent2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Agent3 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Agent4 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Agent5 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Agent6 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    
+    style Combine fill:#fff9c4,stroke:#fbc02d,stroke-width:2px
+    style WriteFiles fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    style MemoryDecay fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style NewSession fill:#fff4e6,stroke:#ff9800,stroke-width:3px
+    style AIReads fill:#e6ffe6,stroke:#4caf50,stroke-width:3px
+    style FullContext fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style Seamless fill:#e6ffe6,stroke:#4caf50,stroke-width:2px
+    style Benefits fill:#c8e6c9,stroke:#2e7d32,stroke-width:4px

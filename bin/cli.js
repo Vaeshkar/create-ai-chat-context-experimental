@@ -19,7 +19,11 @@ const { installGitHooks } = require("../src/install-hooks");
 const { handleConfigCommand } = require("../src/config");
 const { handleConvertCommand } = require("../src/convert");
 const { migrateProject } = require("../src/migrate");
+const { migrateToAICF } = require("../src/aicf-migrate");
+const { finishSession } = require("../src/finish");
+const { analyzeTokenUsage, displayTokenReport, shouldWrapUpSession } = require("../src/token-monitor");
 const { handleContextCommand } = require("../src/aicf-context");
+const { processCheckpoint, processMemoryDecay } = require("../src/checkpoint-process");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -263,9 +267,28 @@ program
   .command("migrate")
   .description("Upgrade existing project to latest AI memory system")
   .option("--force", "Skip confirmation prompt")
+  .option("--to-aicf", "Convert .ai/ directory to .aicf/ format (AICF 3.0)")
   .action(async (options) => {
     try {
-      await migrateProject(options);
+      if (options.toAicf) {
+        // Convert .ai/ to .aicf/ (AICF 2.0)
+        const fs = require('fs-extra');
+        const path = require('path');
+        
+        const aiDir = path.join(process.cwd(), '.ai');
+        const aicfDir = path.join(process.cwd(), '.aicf');
+        
+        if (!fs.existsSync(aiDir)) {
+          console.log(chalk.yellow('⚠️  No .ai/ directory found!'));
+          console.log(chalk.gray('   Run \'npx aic init\' to create a new project\n'));
+          process.exit(1);
+        }
+        
+        await migrateToAICF(aiDir, aicfDir);
+      } else {
+        // Traditional migration - add missing .ai/ files
+        await migrateProject(options);
+      }
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
@@ -280,6 +303,90 @@ program
   .action(async (options) => {
     try {
       await handleContextCommand(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("checkpoint")
+  .description("Process conversation checkpoint using AI logic agents")
+  .option("-f, --file <path>", "Load checkpoint from JSON file")
+  .option("--demo", "Use demo data for testing (default if no file specified)")
+  .option("-v, --verbose", "Enable verbose logging")
+  .option("--show-memory", "Display memory statistics after processing")
+  .action(async (options) => {
+    try {
+      await processCheckpoint(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("memory-decay")
+  .description("Apply intelligent memory decay to optimize storage")
+  .option("-v, --verbose", "Enable verbose logging")
+  .action(async (options) => {
+    try {
+      await processMemoryDecay(options);
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("finish")
+  .description("Finish AI session and prepare handoff to new chat")
+  .option("-t, --topic <topic>", "Session topic")
+  .option("-w, --what <what>", "What was accomplished")
+  .option("-y, --why <why>", "Why this work was done")
+  .option("-o, --outcome <outcome>", "Session outcome")
+  .option("--aicf", "Migrate to AICF 3.0 format")
+  .option("--no-commit", "Skip git commit")
+  .action(async (options) => {
+    try {
+      const sessionData = {
+        topic: options.topic,
+        what: options.what,
+        why: options.why,
+        outcome: options.outcome
+      };
+      
+      await finishSession({
+        sessionData: sessionData.topic ? sessionData : null,
+        migrateAicf: options.aicf,
+        skipCommit: options.noCommit
+      });
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("monitor")
+  .description("Monitor token usage and suggest session management")
+  .option("--check-finish", "Check if session should be finished")
+  .action(async (options) => {
+    try {
+      if (options.checkFinish) {
+        const result = await shouldWrapUpSession();
+        if (result.shouldWrapUp) {
+          console.log(chalk.yellow(`\n⚠️  ${result.reason}\n`));
+          console.log(chalk.bold("Consider running:"));
+          console.log(chalk.green("   npx aic finish --aicf"));
+          console.log();
+        } else {
+          console.log(chalk.green(`\n✅ ${result.reason}\n`));
+        }
+      } else {
+        const analysis = await analyzeTokenUsage();
+        displayTokenReport(analysis);
+      }
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
