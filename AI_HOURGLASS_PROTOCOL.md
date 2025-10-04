@@ -11,26 +11,51 @@
 ```javascript
 const { autoTrigger } = require('./src/hourglass');
 
+// 🚨 CRITICAL: Include FULL response content, not just description!
 await autoTrigger(
-  '[USER INPUT TEXT]',  // The message the user just sent
-  '[YOUR RESPONSE]'     // Brief description of your response
+  '[USER INPUT TEXT]',       // The exact message the user just sent
+  '[COMPLETE AI RESPONSE]'   // Your ENTIRE response with all details
 );
 ```
+
+### ⚠️ **FUNDAMENTAL REQUIREMENT: FULL CONTENT CAPTURE**
+
+**The second parameter MUST contain your complete response content:**
+- ✅ All detailed explanations and analysis
+- ✅ All code blocks and examples  
+- ✅ All formatting and structure
+- ✅ All command outputs and results
+- ✅ All file changes and edits
+
+**❌ DO NOT use brief summaries like:**
+- "AI processing user request..."
+- "Claude responding to user query"
+- "Helped debug function"
+
+**✅ DO include the full response like:**
+- Your complete explanation text
+- All code blocks you provided
+- All detailed analysis and findings
+- All formatting, emojis, and structure
+
+**Why this matters:** Agents need the complete conversation context to maintain continuity, not compressed summaries that lose critical details.
 
 ### 🎯 **Implementation for Each Platform:**
 
 #### **Warp AI**
 ```javascript
-// Execute this at the start of every response
+// Execute this with your COMPLETE response content
 const { autoTrigger } = require('./src/hourglass');
-await autoTrigger(userMessage, 'AI processing user request...');
+const fullResponse = `[Your entire detailed response with all explanations, code blocks, formatting]`;
+await autoTrigger(userMessage, fullResponse);
 ```
 
 #### **Claude (Projects/Chat)**
 ```javascript
-// Include this in every response where you execute code
+// Include your FULL response content, not just a description
 const { autoTrigger } = require('./src/hourglass');
-await autoTrigger(userInput, 'Claude responding to user query');
+const completeResponse = `[All your detailed analysis, code examples, explanations, formatting]`;
+await autoTrigger(userInput, completeResponse);
 ```
 
 #### **ChatGPT (Code Interpreter)**
@@ -162,16 +187,54 @@ This protocol works across:
 
 **AI Response:**
 ```javascript
-// Auto-trigger hourglass (MANDATORY)
+// Auto-trigger hourglass with COMPLETE response content (MANDATORY)
 const { autoTrigger } = require('./src/hourglass');
+const fullAIResponse = `
+## Debugging Your Function 🔍
+
+I found several issues in your function:
+
+\`\`\`javascript
+// Original problematic code
+function buggyFunction(data) {
+  // Issue 1: No null check
+  return data.map(item => item.value * 2);
+}
+
+// Fixed version
+function fixedFunction(data) {
+  if (!data || !Array.isArray(data)) {
+    return [];
+  }
+  return data.map(item => {
+    return (item && typeof item.value === 'number') 
+      ? item.value * 2 
+      : 0;
+  });
+}
+\`\`\`
+
+**Problems identified:**
+1. No null/undefined checking for \`data\` parameter
+2. No validation that \`data\` is an array
+3. No checking if \`item.value\` exists or is a number
+
+**Testing the fix:**
+\`\`\`javascript
+console.log(fixedFunction([{value: 5}, {value: 10}])); // [10, 20]
+console.log(fixedFunction(null)); // []
+console.log(fixedFunction([{}, {value: 'invalid'}])); // [0, 0]
+\`\`\`
+
+✅ The function now handles edge cases safely!
+`;
+
 await autoTrigger(
     'Help me debug this function',
-    'AI analyzing code and providing debug assistance'
+    fullAIResponse  // COMPLETE response with all details, formatting, code blocks
 );
 
-// Now provide actual help
-console.log('Let me analyze your function...');
-// [rest of debugging assistance]
+console.log('✅ Hourglass captured full debugging conversation!');
 ```
 
 ---

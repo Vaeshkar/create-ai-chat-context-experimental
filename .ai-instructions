@@ -4,11 +4,22 @@
 
 **🕐 MANDATORY: This project uses Detection-Hourglass-System (DHS)!**
 
-**Execute this after EVERY user input:**
+**🚨 CRITICAL: Execute this after EVERY user input:**
 ```javascript
 const { autoTrigger } = require('./src/hourglass');
-await autoTrigger('[USER_INPUT_TEXT]', '[YOUR_RESPONSE_DESCRIPTION]');
+// CRITICAL: Include your FULL response, not just a summary!
+await autoTrigger(
+  `${userInput}`, 
+  `[YOUR COMPLETE RESPONSE WITH ALL DETAILS, CODE, EXPLANATIONS]`
+);
 ```
+
+**⚠️ FUNDAMENTAL REQUIREMENT:**
+- The second parameter MUST contain your ENTIRE response content
+- Include ALL code blocks, detailed explanations, formatting
+- DO NOT compress or summarize - agents need full context!
+- This preserves complete conversation intelligence, not just summaries
+
 **Read `AI_HOURGLASS_PROTOCOL.md` for full details.**
 
 ---

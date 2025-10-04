@@ -283,10 +283,23 @@ class HourglassManager {
 
 /**
  * Auto-trigger function - Call this from AI responses
+ * 
+ * CRITICAL: aiResponse should contain the FULL AI response content,
+ * not just a summary. This preserves complete conversation context.
  */
 async function autoTrigger(userMessage = null, aiResponse = null) {
   const hourglass = new HourglassManager({ verbose: false });
   return await hourglass.triggerUserInput(userMessage, aiResponse);
+}
+
+/**
+ * Enhanced auto-trigger that captures complete conversation context
+ * Including all detailed work, commands, outputs, and explanations
+ */
+async function autoTriggerFullContext(userInput, fullAIResponse) {
+  // This function should receive the COMPLETE AI response text
+  // including all formatting, code blocks, explanations, etc.
+  return await autoTrigger(userInput, fullAIResponse);
 }
 
 // CLI usage
@@ -335,5 +348,6 @@ if (require.main === module) {
 
 module.exports = {
   HourglassManager,
-  autoTrigger
+  autoTrigger,
+  autoTriggerFullContext
 };
