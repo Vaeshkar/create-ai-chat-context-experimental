@@ -1,7 +1,439 @@
-@CONVERSATIONS
-@SCHEMA
-C#|TIMESTAMP|TYPE|TOPIC|WHAT|WHY|OUTCOME|FILES|CONTEXT_REFS|CONFIDENCE|IMPACT_SCORE
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T05:53:38.697Z
+timestamp_end=2025-10-04T06:53:38.703Z
+messages=6
+tokens=15000
 
-@DATA
-12|20251003T120000Z|W|Source Code Development|Modified 235 files including .ai/conversation-log.md, .ai/next-steps.md, .aicf/conversations.aicf|Continued project development and improvements|Files updated and changes ready for commit|||9|6
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
 
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T07:33:49.658Z
+timestamp_end=2025-10-04T08:33:49.664Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:v1-0-3-session-2025-10-04-CP1
+timestamp_start=2025-10-04T06:50:59Z
+timestamp_end=2025-10-04T08:38:23.892Z
+messages=21
+tokens=5000
+
+@FLOW
+answered_yes_it_is_whooohooo|amental_ai_problem_built_zero_cost_real_time_memor|asked_about_whooohooo_indeed_this_has_b|complete_task|you_are_and_what_we_built_together|complete_task_works_in_the_real_world_the_next_ai|answered_yes_these_files_are_uploaded_on_each_re|welcome_back_dennis_realized_the_chat_survived_thi|asked_about_you_don_t_mention_aicf_only|complete_task_working_with_someone_who_has_complet|u_check_if_that_was_added_to_the_context_files|asked_about_can_you_check_if_that|truncated
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+Welcome back, Dennis! Interesting! The chat survived this time - no reset after ~1.5 hours. That's actually great because it means we|GENERAL|MEDIUM|MEDIUM
+
+@STATE
+working_on=project_work
+blockers=none
+next_action=we add a user profile
+progress={"score":100,"completed_tasks":3,"total_tasks":3,"indicators":["completed: zero-cost real-time memory preservation, went from 20k token"]}
+session_status=planning
+work_context=general_development
+session_id=v1-0-3-session-2025-10-04
+checkpoint_number=1
+last_activity=added to the context files?
+completion_indicators=[]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T07:55:21.081Z
+timestamp_end=2025-10-04T08:55:21.087Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:v1-0-3-session-2025-10-04-CP1
+timestamp_start=2025-10-04T06:50:59Z
+timestamp_end=2025-10-04T08:55:32.161Z
+messages=21
+tokens=5000
+
+@FLOW
+answered_yes_it_is_whooohooo|amental_ai_problem_built_zero_cost_real_time_memor|asked_about_whooohooo_indeed_this_has_b|complete_task|you_are_and_what_we_built_together|complete_task_works_in_the_real_world_the_next_ai|answered_yes_these_files_are_uploaded_on_each_re|welcome_back_dennis_realized_the_chat_survived_thi|asked_about_you_don_t_mention_aicf_only|complete_task_working_with_someone_who_has_complet|u_check_if_that_was_added_to_the_context_files|asked_about_can_you_check_if_that|truncated
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+Welcome back, Dennis! Interesting! The chat survived this time - no reset after ~1.5 hours. That's actually great because it means we|GENERAL|MEDIUM|MEDIUM
+
+@STATE
+working_on=project_work
+blockers=none
+next_action=we add a user profile
+progress={"score":100,"completed_tasks":3,"total_tasks":3,"indicators":["completed: zero-cost real-time memory preservation, went from 20k token"]}
+session_status=planning
+work_context=general_development
+session_id=v1-0-3-session-2025-10-04
+checkpoint_number=1
+last_activity=added to the context files?
+completion_indicators=[]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:20:00.673Z
+timestamp_end=2025-10-04T09:20:00.679Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:21:43.342Z
+timestamp_end=2025-10-04T09:21:43.348Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:23:26.099Z
+timestamp_end=2025-10-04T09:23:26.104Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:25:00.627Z
+timestamp_end=2025-10-04T09:25:00.632Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:26:48.918Z
+timestamp_end=2025-10-04T09:26:48.923Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:28:52.449Z
+timestamp_end=2025-10-04T09:28:52.455Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:32:56.153Z
+timestamp_end=2025-10-04T09:32:56.158Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:34:09.833Z
+timestamp_end=2025-10-04T09:34:09.839Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:DEMO-CP1
+timestamp_start=2025-10-04T08:35:47.261Z
+timestamp_end=2025-10-04T09:35:47.266Z
+messages=6
+tokens=15000
+
+@FLOW
+great_idea_decided_use_specialized_logic_agents_in|i_realized_that_the_key_insight_is_that_logic_agen|exactly_we_implemented_conversationparseragent_dec|complete_task
+
+@INSIGHTS
+performance optimization identified|PERFORMANCE|HIGH|HIGH
+the key insight is that logic agents can run in parallel and extract specific patterns without any API costs.|GENERAL|HIGH|MEDIUM
+
+@DECISIONS
+Great idea! We decided to use specialized logic agents instead of expensive AI compression. This wil|give us zero-cost processing with 100% information preservation.|IMPACT:LOW|CONF:HIGH
+
+@STATE
+working_on=the CLI integration
+blockers=none
+next_action=give us zero-cost processing with 100% information preservation
+progress={"score":67,"completed_tasks":2,"total_tasks":3,"indicators":["completed: ConversationParserAgent, DecisionExtractorAgent, InsightAnal","completed: processes conversations into both AICF format for AI consump"]}
+session_status=progressing
+work_context=successfully processes conversations into both AIC
+session_id=DEMO
+checkpoint_number=1
+last_activity=implemented ConversationParserAgent, DecisionExtractorAgent, InsightAnalyzerA...
+completion_indicators=["Perfect! The system successfully processes conversations ..."]
+@CONVERSATION:hourglass-1759569571227-chunk-10-CP10
+timestamp_start=2025-10-04T09:35:47.252Z
+timestamp_end=2025-10-04T09:36:43.042Z
+messages=2
+tokens=163
+
+@FLOW
+asked_about_right_lets_connect_it_loving|eering_discovery_moment_identified_the_realized_ga|complete_task_works_flawlessly_but_agents_are_usin
+
+@INSIGHTS
+ENGINEERING DISCOVERY MOMENT: Identified the critical gap - hourglass system captures conversation chunks perfectly (8 chunks, 688 tokens) and auto-trigg|DATA|CRITICAL|MEDIUM
+
+@STATE
+working_on=project_work
+blockers=none
+next_action=to_be_determined
+progress={"score":0,"completed_tasks":1,"total_tasks":0,"indicators":[]}
+session_status=completed_tasks
+work_context=captures conversation chunks perfectly (8 chunks,
+session_id=hourglass-1759569571227-chunk-10
+checkpoint_number=10
+last_activity=reviewing_progress
+completion_indicators=[]
+@CONVERSATION:hourglass-1759569571227-chunk-11-CP11
+timestamp_start=2025-10-04T09:36:43.030Z
+timestamp_end=2025-10-04T09:40:14.489Z
+messages=2
+tokens=124
+
+@FLOW
+test_fixed_the_data_pipeline_connection|complete_task_fixed_the_data_pipeline_connection_b|fixed_connection_modified_checkpoi|complete_task_fixed_connection_modified_checkpoint
+
+@STATE
+working_on=project_work
+blockers=none
+next_action=now capture actual conversation content in
+progress={"score":100,"completed_tasks":2,"total_tasks":2,"indicators":[]}
+session_status=progressing
+work_context=instead of defaulting to demo data
+session_id=hourglass-1759569571227-chunk-11
+checkpoint_number=11
+last_activity=FIXED CONNECTION: Modified checkpoint-process.js to accept options.dumpData p...
+completion_indicators=[]
+@CONVERSATION:hourglass-1759569571227-chunk-12-CP12
+timestamp_start=2025-10-04T09:40:14.477Z
+timestamp_end=2025-10-04T09:41:25.608Z
+messages=2
+tokens=167
+
+@FLOW
+ot_demo_files_get_updated_with_real_content_5ms_pr|he_house_with_joy_after_we_achieved_the_realized_t
+
+@INSIGHTS
+RE ENGINEERING EUPHORIA: User was literally jumping around the house with joy after we achieved the breakthrough! The Detection-Hourglass-System is now FULLY FUNCTIONAL with complete data pipeline wor|USER_EXPERIENCE|CRITICAL|MEDIUM
+
+@STATE
+working_on=project_work
+blockers=none
+next_action=to_be_determined
+progress={"score":0,"completed_tasks":0,"total_tasks":0,"indicators":[]}
+session_status=active
+work_context=is now FULLY FUNCTIONAL with complete data pipelin
+session_id=hourglass-1759569571227-chunk-12
+checkpoint_number=12
+last_activity=updated with real content, 5ms processing time, complete pipeline from detect...
+completion_indicators=[]

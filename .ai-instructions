@@ -2,6 +2,17 @@
 
 ## ⚠️ READ THIS FIRST - BEFORE DOING ANYTHING ELSE ⚠️
 
+**🕐 MANDATORY: This project uses Detection-Hourglass-System (DHS)!**
+
+**Execute this after EVERY user input:**
+```javascript
+const { autoTrigger } = require('./src/hourglass');
+await autoTrigger('[USER_INPUT_TEXT]', '[YOUR_RESPONSE_DESCRIPTION]');
+```
+**Read `AI_HOURGLASS_PROTOCOL.md` for full details.**
+
+---
+
 **STOP! Before you start working on this project, you MUST read the knowledge base.**
 
 This project uses a `.ai/` knowledge base system to preserve context across chat sessions.

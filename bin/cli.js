@@ -24,6 +24,7 @@ const { finishSession } = require("../src/finish");
 const { analyzeTokenUsage, displayTokenReport, shouldWrapUpSession } = require("../src/token-monitor");
 const { handleContextCommand } = require("../src/aicf-context");
 const { processCheckpoint, processMemoryDecay } = require("../src/checkpoint-process");
+const { UniversalSetup } = require("../src/universal-setup");
 const packageJson = require("../package.json");
 
 const program = new Command();
@@ -391,6 +392,69 @@ program
         const analysis = await analyzeTokenUsage();
         displayTokenReport(analysis);
       }
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("universal")
+  .description("Setup Universal AI Memory System for ALL AI assistants")
+  .option("-v, --verbose", "Enable verbose logging")
+  .action(async (options) => {
+    try {
+      const setup = new UniversalSetup({ verbose: options.verbose });
+      const results = await setup.setupUniversalMemory();
+      
+      const successful = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+      
+      console.log(chalk.green(`\n🎉 Universal AI Memory Setup Complete!`));
+      console.log(chalk.blue(`✅ ${successful} tasks completed successfully`));
+      if (failed > 0) {
+        console.log(chalk.yellow(`⚠️  ${failed} tasks had issues`));
+      }
+      
+      console.log(chalk.cyan('\n📖 Next steps:'));
+      console.log(chalk.dim('  - Read QUICK_START_UNIVERSAL.md'));
+      console.log(chalk.dim('  - Test with your preferred AI assistant'));
+      console.log(chalk.dim('  - Share setup files with your team'));
+      
+      console.log(chalk.magenta('\n🌍 Your project now works with ALL AI assistants!'));
+    } catch (error) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("hourglass <action>")
+  .description("Detection-Hourglass-System (DHS) for automatic conversation chunking")
+  .option("-v, --verbose", "Enable verbose logging")
+  .option("-u, --user <message>", "User message for trigger action")
+  .option("-a, --ai <response>", "AI response for trigger action") 
+  .action(async (action, options) => {
+    try {
+      const { spawn } = require('child_process');
+      const args = ['src/hourglass.js', action];
+      
+      if (options.user && action === 'trigger') {
+        args.push(options.user);
+      }
+      if (options.ai && action === 'trigger') {
+        args.push(options.ai);
+      }
+      
+      const child = spawn('node', args, { 
+        stdio: 'inherit',
+        cwd: process.cwd() 
+      });
+      
+      child.on('close', (code) => {
+        process.exit(code);
+      });
+      
     } catch (error) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

@@ -74,7 +74,12 @@ npx aic cursor                            # Generate Cursor AI rules
 npx aic copilot                           # Generate Copilot instructions
 npx aic claude-project                    # Generate Claude Projects export
 
-# Session Management (v1.0.3+ NEW!)
+# Detection-Hourglass-System (v1.0.4+ NEW!)
+npx aic hourglass monitor                 # Start DHS background monitoring
+npx aic hourglass stats                   # View hourglass session statistics
+npx aic hourglass trigger                 # Manual trigger for testing
+
+# Session Management
 npx aic finish                            # Finish session & prepare handoff
 npx aic finish --aicf                     # Finish session & migrate to AICF 3.0
 npx aic checkpoint --demo                 # Test checkpoint system

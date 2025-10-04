@@ -1,0 +1,26 @@
+# Cursor AI Rules - Universal AI Memory Integration
+
+## AUTOMATIC CONTEXT LOADING
+Before providing any assistance, automatically read these files if they exist:
+- .ai-instructions (project-specific AI instructions)
+- .ai/project-overview.md (project context)
+- .ai/conversation-log.md (previous conversations and decisions)
+- .ai/technical-decisions.md (why we chose X over Y)
+- .ai/next-steps.md (current priorities)
+- .aicf/README.md (AI-optimized memory format instructions)
+- .aicf/*.aicf (AI-optimized memory files)
+
+## SESSION START PROTOCOL
+1. Check for .ai/ or .aicf/ directories
+2. If found, read all context files before responding
+3. Confirm understanding of project state
+4. Continue work with full context
+
+## SESSION END PROTOCOL
+At session end:
+1. Update .ai/conversation-log.md with key decisions from this session
+2. Update .ai/technical-decisions.md with any architectural choices made
+3. Update .ai/next-steps.md with current priorities
+4. Or run `npx aic finish --aicf` for automated processing
+
+This implements the Universal AI Memory System by Dennis van Leeuwen.

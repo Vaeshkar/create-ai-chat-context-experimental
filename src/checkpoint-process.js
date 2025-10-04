@@ -21,7 +21,11 @@ async function processCheckpoint(options = {}) {
     // Handle different input modes
     let checkpointData;
     
-    if (options.file) {
+    if (options.dumpData) {
+      // Use provided dump data (from hourglass system)
+      checkpointData = options.dumpData;
+      console.log(chalk.green(`✅ Using provided session dump data`));
+    } else if (options.file) {
       // Load from file
       checkpointData = await loadCheckpointFromFile(options.file);
     } else if (options.demo) {

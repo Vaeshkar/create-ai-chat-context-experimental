@@ -1,7 +1,7 @@
 {
   "name": "create-ai-chat-context",
-  "version": "1.0.3",
-  "description": "Real-time AI memory preservation - Every response triggers automatic context saving with zero API costs. No more lost conversations!",
+  "version": "1.0.4",
+  "description": "🚀 BREAKTHROUGH: Detection-Hourglass-System (DHS) - Revolutionary auto-detection of AI conversation chunks with zero-cost processing. Universal AI memory that actually works!",
   "main": "src/index.js",
   "bin": {
     "create-ai-chat-context": "bin/cli.js",
@@ -22,6 +22,10 @@
     "ai-chat",
     "ai-memory",
     "aicf",
+    "detection-hourglass-system",
+    "dhs",
+    "auto-detection",
+    "breakthrough",
     "chat-history",
     "conversation-history",
     "knowledge-base",
