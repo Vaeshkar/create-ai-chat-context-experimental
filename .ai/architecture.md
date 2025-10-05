@@ -1,15 +1,36 @@
 # System Architecture
 
-**Last Updated:** 2025-10-03
+**Last Updated:** 2025-10-04 (Consolidated with project overview)
 **Status:** Production
+**Version:** 1.0.3+
 
 ---
 
-## Overview
+## Project Overview
 
-**Project Name:** create-ai-chat-context
-**Purpose:** Preserve AI chat context and history across sessions
-**Target Users:** Developers using AI coding assistants (ChatGPT, Claude, Copilot, Cursor, Augment, etc.)
+**create-ai-chat-context** is an NPM package that solves AI context loss between chat sessions.
+
+### The Problem
+AI assistants lose context when sessions end, leading to:
+- Repeated explanations of project architecture
+- Loss of previous decisions and rationale  
+- Inconsistent coding patterns
+- Wasted time re-establishing context
+
+### The Solution
+A **dual-folder system** providing:
+- **`.ai/` folder:** Human-readable markdown documentation
+- **`.aicf/` folder:** AI-optimized structured memory format (AICF 3.0)
+
+### Key Information
+- **Package Name:** create-ai-chat-context
+- **Type:** CLI tool + NPM package
+- **Language:** JavaScript (Node.js)
+- **License:** MIT
+- **Repository:** GitHub
+- **Distribution:** NPX (npx create-ai-chat-context)
+
+---
 
 ---
 

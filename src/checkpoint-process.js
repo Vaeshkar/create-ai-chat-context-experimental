@@ -25,6 +25,12 @@ async function processCheckpoint(options = {}) {
       // Use provided dump data (from hourglass system)
       checkpointData = options.dumpData;
       console.log(chalk.green(`✅ Using provided session dump data`));
+      
+      // If JSON master record is provided, pass it to orchestrator
+      if (options.jsonRecord) {
+        console.log(chalk.blue(`📄 JSON master record available - agents can access full content`));
+        checkpointData.jsonMasterRecord = options.jsonRecord;
+      }
     } else if (options.file) {
       // Load from file
       checkpointData = await loadCheckpointFromFile(options.file);

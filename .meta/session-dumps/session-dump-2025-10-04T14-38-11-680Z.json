@@ -1,0 +1,49 @@
+{
+  "session_id": "auto-12k-1759588691680",
+  "timestamp": "2025-10-04T14:38:11.680Z",
+  "processing_info": {
+    "session_significance": "NORMAL",
+    "conversation_type": "AUTO_TOKEN_THRESHOLD",
+    "duration_minutes": 2
+  },
+  "environment": {
+    "platform": "MacOS",
+    "shell": "zsh 5.9",
+    "directory": "/Users/leeuwen/Programming/create-ai-chat-context",
+    "user": "Dennis van Leeuwen"
+  },
+  "conversation_dump": {
+    "user_inputs": [],
+    "ai_responses": [],
+    "decisions": [
+      {
+        "decision": "Session completed successfully",
+        "rationale": "All requested tasks were completed",
+        "impact": "Progress made on project objectives"
+      }
+    ],
+    "insights": [
+      "Session captured after 24 minutes gap",
+      "Current tokens: 9499",
+      "Important conversation continuity preserved"
+    ],
+    "technical_work": [],
+    "files_modified": [],
+    "next_steps": [
+      "Continue conversation with fresh context",
+      "Monitor for next natural break"
+    ]
+  },
+  "metadata": {
+    "metrics": {
+      "conversation_length": 1,
+      "technical_commands": 0,
+      "files_created": 0,
+      "estimated_tokens": 9499
+    },
+    "tags": [
+      "session-dump",
+      "technical-work"
+    ]
+  }
+}

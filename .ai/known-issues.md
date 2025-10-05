@@ -157,9 +157,46 @@ Complete redesign as AICF 3.0:
 
 ---
 
-### None Currently (Other Than AICF 2.0)
+### ContextExtractor Infinite Loop (CRITICAL)
 
-No other active issues at this time!
+**Date Discovered:** 2025-10-04 (Chat #14)
+**Severity:** 🔴 Critical
+**Components:** `extract-warp-conversation.js`, `src/agents/intelligent-conversation-parser.js`, `src/context-extractor.js`
+
+**Problem:**
+"ContextExtractor is not a constructor" error creates infinite recursion loop when called from `extract-warp-conversation.js`. The bug is context-specific:
+
+- ContextExtractor works perfectly when tested in isolation (successfully extracts 1,203 messages)
+- IntelligentConversationParser works perfectly when called directly
+- Only fails when called through the extract-warp-conversation.js → IntelligentConversationParser → ContextExtractor chain
+
+**Loop Mechanism:**
+1. Script tries SQLite processing → fails with "ContextExtractor is not a constructor"
+2. Falls back to regular processing → still has conversation ID → tries SQLite again
+3. Endless recursion continues indefinitely
+
+**Impact:**
+- `extract-warp-conversation.js extract <id>` command is completely broken
+- Prevents users from manually extracting Warp conversations through CLI
+- AI processing system otherwise works perfectly (confirmed via direct testing)
+
+**Current Workaround:**
+Direct method works flawlessly:
+```bash
+# This works and successfully processes 1,203 messages
+node -e "const IntelligentConversationParser = require('./src/agents/intelligent-conversation-parser'); const parser = new IntelligentConversationParser({ verbose: true }); parser.processFromSQLite('1237cec7-c68c-4f77-986f-0746e5fc4655', { verbose: true })"
+```
+
+**Root Cause:** 
+Suspected module loading context issue - same code works in different execution contexts but fails in specific calling pattern.
+
+**Status:** 🚧 Needs Investigation
+
+**Next Steps:**
+- [ ] Investigate module import/export context differences
+- [ ] Test different module loading approaches
+- [ ] Consider temporary bypass: disable SQLite in extract script and use direct method
+- [ ] Implement proper fallback logic that doesn't recurse
 
 ---
 
@@ -184,4 +221,14 @@ No other active issues at this time!
 
 ---
 
-**Last Updated:** 2025-10-01
+
+
+## Status Update (2025-10-04)
+
+### Warp Conversation Processing
+- ✅ SQLite extraction working correctly
+- ✅ Processed 0 conversations successfully
+- ✅ Markdown generation operational
+- 📊 Total messages processed: 0
+
+**Last Updated:** 2025-10-04

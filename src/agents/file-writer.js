@@ -261,8 +261,9 @@ class FileWriterAgent {
 
     lines.push(`\n**${date} - ${sessionId} Checkpoint ${checkpointNumber}:**\n`);
 
-    // Add working status
-    if (sections.state && sections.state.content && sections.state.content.working_on !== 'unknown') {
+    // Add working status (only if meaningful data exists)
+    if (sections.state && sections.state.content && sections.state.content.working_on && 
+        sections.state.content.working_on !== 'unknown' && sections.state.content.working_on !== undefined) {
       lines.push(`- 🔄 **Working on:** ${sections.state.content.working_on}`);
     }
 
@@ -290,13 +291,15 @@ class FileWriterAgent {
       }
     }
 
-    // Add blockers
-    if (sections.state && sections.state.content && sections.state.content.blockers !== 'none') {
+    // Add blockers (only if meaningful data exists)
+    if (sections.state && sections.state.content && sections.state.content.blockers && 
+        sections.state.content.blockers !== 'none' && sections.state.content.blockers !== undefined) {
       lines.push(`- 🚫 **Blockers:** ${sections.state.content.blockers}`);
     }
 
-    // Add next action
-    if (sections.state && sections.state.content && sections.state.content.next_action !== 'to_be_determined') {
+    // Add next action (only if meaningful data exists)
+    if (sections.state && sections.state.content && sections.state.content.next_action && 
+        sections.state.content.next_action !== 'to_be_determined' && sections.state.content.next_action !== undefined) {
       lines.push(`- ⏭️ **Next:** ${sections.state.content.next_action}`);
     }
 

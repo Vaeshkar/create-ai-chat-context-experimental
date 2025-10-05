@@ -1,0 +1,52 @@
+{
+  "session_id": "real-conversation-1759590569443",
+  "timestamp": "2025-10-04T15:09:29.444Z",
+  "processing_info": {
+    "session_significance": "TEST_REAL_DATA",
+    "conversation_type": "REAL_SESSION_CAPTURE",
+    "duration_minutes": 30
+  },
+  "environment": {
+    "platform": "MacOS",
+    "shell": "zsh 5.9",
+    "directory": "/Users/leeuwen/Programming/create-ai-chat-context",
+    "user": "Dennis van Leeuwen"
+  },
+  "conversation_dump": {
+    "user_inputs": [],
+    "ai_responses": [],
+    "decisions": [
+      {
+        "decision": "@DECISION:unknown",
+        "rationale": "From current session",
+        "impact": "Affects current development"
+      },
+      {
+        "decision": "@DECISION:unknown",
+        "rationale": "From current session",
+        "impact": "Affects current development"
+      },
+      {
+        "decision": "decision_1=@DECISION:unknown",
+        "rationale": "From current session",
+        "impact": "Affects current development"
+      }
+    ],
+    "insights": [],
+    "technical_work": [],
+    "files_modified": [],
+    "next_steps": []
+  },
+  "metadata": {
+    "metrics": {
+      "conversation_length": 1,
+      "technical_commands": 0,
+      "files_created": 0,
+      "estimated_tokens": 1000
+    },
+    "tags": [
+      "session-dump",
+      "technical-work"
+    ]
+  }
+}

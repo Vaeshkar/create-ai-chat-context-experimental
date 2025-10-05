@@ -1,0 +1,23 @@
+{
+  "sessionId": "hourglass-1759569571227-chunk-33",
+  "chunkId": "chunk-33",
+  "timestamp": "2025-10-04T11:53:28.239Z",
+  "startTime": "2025-10-04T10:57:10.809Z",
+  "endTime": "2025-10-04T11:53:28.239Z",
+  "duration": 3377.43,
+  "tokenCount": 80,
+  "user_input": "So if the system works, I type message and the autoTrigger should grab this work you did between this user_input and the last user_input and chunk.json it and the agents now with the router read the data and write it there where it should be udated? Run this by me, so I know the system works.",
+  "ai_response": "[SESSION_IN_PROGRESS]",
+  "environment": {
+    "timestamp": "2025-10-04T11:53:28.239Z",
+    "session_info": {
+      "total_chunks": 33,
+      "total_tokens": 11734
+    }
+  },
+  "preservation_status": {
+    "content_preserved": true,
+    "compression_applied": false,
+    "source": "hourglass-master-storage"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "sessionId": "hourglass-1759569571227-chunk-45",
+  "chunkId": "chunk-45",
+  "timestamp": "2025-10-04T13:25:22.457Z",
+  "startTime": "2025-10-04T13:19:15.603Z",
+  "endTime": "2025-10-04T13:25:22.457Z",
+  "duration": 366.854,
+  "tokenCount": 11,
+  "user_input": "activity-detected",
+  "ai_response": "[SESSION_IN_PROGRESS]",
+  "environment": {
+    "timestamp": "2025-10-04T13:25:22.457Z",
+    "session_info": {
+      "total_chunks": 45,
+      "total_tokens": 11866
+    }
+  },
+  "preservation_status": {
+    "content_preserved": true,
+    "compression_applied": false,
+    "source": "hourglass-master-storage"
+  }
+}

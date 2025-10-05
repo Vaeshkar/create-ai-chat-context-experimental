@@ -1,0 +1,13 @@
+{
+  "isRunning": false,
+  "lastContextCheck": 1759599892142,
+  "lastTokenCheck": null,
+  "processedConversations": [],
+  "sessionStart": 1759599892104,
+  "totalConversationsProcessed": 0,
+  "stats": {
+    "contextsExtracted": 0,
+    "sessionsProcessed": 0,
+    "tokensProcessed": 0
+  }
+}

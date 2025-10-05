@@ -2,11 +2,9 @@ const fs = require('fs').promises;
 const path = require('path');
 const chalk = require('chalk');
 
-// Import specialized agents
-const { ConversationParserAgent } = require('./agents/conversation-parser');
-const { DecisionExtractorAgent } = require('./agents/decision-extractor');
-const { InsightAnalyzerAgent } = require('./agents/insight-analyzer');
-const { StateTrackerAgent } = require('./agents/state-tracker');
+// Import SQLite-based system components
+const IntelligentConversationParser = require('./agents/intelligent-conversation-parser');
+// Keep legacy agents for backwards compatibility
 const { FileWriterAgent } = require('./agents/file-writer');
 const { MemoryDropOffAgent } = require('./agents/memory-dropoff');
 
@@ -19,12 +17,10 @@ class CheckpointOrchestrator {
     this.projectRoot = options.projectRoot || process.cwd();
     this.verbose = options.verbose || false;
     
-    // Initialize agents
+    // Initialize SQLite-based system
     this.agents = {
-      conversationParser: new ConversationParserAgent(options),
-      decisionExtractor: new DecisionExtractorAgent(options),
-      insightAnalyzer: new InsightAnalyzerAgent(options),
-      stateTracker: new StateTrackerAgent(options),
+      intelligentParser: new IntelligentConversationParser(options),
+      // Legacy agents for backwards compatibility
       fileWriter: new FileWriterAgent(options),
       memoryDropOff: new MemoryDropOffAgent(options)
     };
@@ -90,24 +86,84 @@ class CheckpointOrchestrator {
    * @returns {Object} Combined agent results
    */
   async runAgentsParallel(rawDump) {
-    this.log(chalk.cyan('🤖 Running specialized agents in parallel...'));
+    this.log(chalk.cyan('🧠 Running intelligent routing system...'));
+    
+    // Check if JSON master record is available
+    const jsonRecord = rawDump.jsonMasterRecord || null;
+    if (jsonRecord) {
+      this.log(chalk.blue('📄 JSON master record available - using intelligent routing'));
+    }
+    
+    // Use intelligent routing parser as primary processor
+    try {
+      // Enable SQLite access if we have a conversation ID
+      const processingOptions = { 
+        verbose: this.verbose,
+        useDirectSQLite: true // Enable SQLite direct access
+      };
+      
+      const intelligentResult = await this.agents.intelligentParser.processConversation(rawDump, processingOptions);
+      
+      if (intelligentResult.success) {
+        this.log(chalk.green(`✅ Intelligent routing completed - distributed to ${intelligentResult.routingResults?.length || 0} files`));
+        
+        // Use structured sections if available, otherwise return basic format
+        if (intelligentResult.structuredSections) {
+          this.log(chalk.blue(`📊 Using structured sections for conversation log compatibility`));
+          return {
+            // Map structured sections to expected agent format
+            conversationParser: intelligentResult.structuredSections.flow,
+            decisionExtractor: intelligentResult.structuredSections.decisions,
+            insightAnalyzer: intelligentResult.structuredSections.insights,
+            stateTracker: intelligentResult.structuredSections.state
+          };
+        } else {
+          // Fallback to old format
+          return {
+            intelligentParser: {
+              section: '@INTELLIGENT_ROUTING',
+              content: 'content_distributed_to_specialized_files',
+              metadata: {
+                success: true,
+                chunkId: intelligentResult.chunkId,
+                filesUpdated: intelligentResult.routingResults,
+                itemsFound: intelligentResult.routingResults?.length || 0
+              }
+            }
+          };
+        }
+      } else {
+        this.log(chalk.yellow('⚠️ Intelligent routing failed, falling back to legacy agents'));
+        return await this.runLegacyAgents(rawDump, jsonRecord);
+      }
+    } catch (error) {
+      this.log(chalk.yellow(`⚠️ Intelligent routing error: ${error.message}, falling back to legacy agents`));
+      return await this.runLegacyAgents(rawDump, jsonRecord);
+    }
+  }
+  
+  /**
+   * Fallback to legacy agents if intelligent routing fails
+   */
+  async runLegacyAgents(rawDump, jsonRecord) {
+    this.log(chalk.cyan('🤖 Running legacy agents in parallel...'));
     
     const agentTasks = [
       { 
         name: 'conversationParser', 
-        task: this.agents.conversationParser.parse(rawDump.messages) 
+        task: this.agents.conversationParser.parse(rawDump.messages, jsonRecord) 
       },
       { 
         name: 'decisionExtractor', 
-        task: this.agents.decisionExtractor.extract(rawDump.messages) 
+        task: this.agents.decisionExtractor.extract(rawDump.messages, jsonRecord) 
       },
       { 
         name: 'insightAnalyzer', 
-        task: this.agents.insightAnalyzer.analyze(rawDump.messages) 
+        task: this.agents.insightAnalyzer.analyze(rawDump.messages, jsonRecord) 
       },
       { 
         name: 'stateTracker', 
-        task: this.agents.stateTracker.track(rawDump.messages, rawDump) 
+        task: this.agents.stateTracker.track(rawDump.messages, rawDump, jsonRecord) 
       }
     ];
     

@@ -1,7 +1,7 @@
 {
   "name": "create-ai-chat-context",
-  "version": "1.0.4",
-  "description": "🚀 BREAKTHROUGH: Detection-Hourglass-System (DHS) - Revolutionary auto-detection of AI conversation chunks with zero-cost processing. Universal AI memory that actually works!",
+  "version": "2.0.0",
+  "description": "AI Chat Context & Memory System - Automatically extracts and preserves conversation history across multiple AI assistants. Works with Warp, Claude, ChatGPT, Cursor, Copilot, and Augment.",
   "main": "src/index.js",
   "bin": {
     "create-ai-chat-context": "bin/cli.js",
@@ -22,10 +22,9 @@
     "ai-chat",
     "ai-memory",
     "aicf",
-    "detection-hourglass-system",
-    "dhs",
-    "auto-detection",
-    "breakthrough",
+    "multi-ai",
+    "cross-platform",
+    "auto-extraction",
     "chat-history",
     "conversation-history",
     "knowledge-base",
@@ -55,12 +54,19 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "commander": "^11.1.0",
+    "@types/sqlite3": "^3.1.11",
+    "better-sqlite3": "^12.4.1",
     "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.1.1",
     "ora": "^5.4.1",
-    "fs-extra": "^11.1.1"
+    "sqlite3": "^5.1.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/commander": "^2.12.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
   "files": [
     "bin/",
     "src/",
