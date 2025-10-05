@@ -659,3 +659,248 @@ messages=1
 tokens=50
 
 @STATE
+@CONVERSATION:1237cec7-c68c-4f77-986f-0746e5fc4655-CP1
+timestamp_start=2025-10-04T04:13:59.417Z
+timestamp_end=2025-10-05T07:21:33.406Z
+messages=1722
+tokens=86100
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-129-CP1
+timestamp_start=2025-10-05T07:22:52.937Z
+timestamp_end=2025-10-05T07:22:53.260Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-129-CP1
+timestamp_start=2025-10-05T07:23:03.855Z
+timestamp_end=2025-10-05T07:23:04.181Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:119ac53a-9623-4322-bfc4-ab4138a79de2-CP1
+timestamp_start=2025-10-03T16:55:37.181Z
+timestamp_end=2025-10-05T07:32:40.737Z
+messages=397
+tokens=19850
+
+@FLOW
+USER_QUERY:2025-10-03 22:23:32.259633:[{"ActionResult":{"id":"toolu_015VktSeQfqQbo8iJTn7Bpru","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-03 22:23:38.537797:[{"ActionResult":{"id":"toolu_01CqvtRwL6gSiVGFgcf5ufoK","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-03 22:23:44.679801:[{"ActionResult":{"id":"toolu_012mig7s9VG6PSd23or11Xci","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:23:50.559276:[{"ActionResult":{"id":"toolu_019kCC7zLQ7pJSAbfEYYwrCL","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:24:40.694802:[{"Query":{"text":"You have to look at the AI settings and AI learning page. Just these two images. |USER_QUERY:2025-10-03 22:24:47.833961:[{"ActionResult":{"id":"toolu_01Tkdy1oSkTaUfAx4YdVP7Pi","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:24:53.702953:[{"ActionResult":{"id":"toolu_01Y8HwG5UmRmtE5FkYmoK8fT","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:25:00.367478:[{"ActionResult":{"id":"toolu_01DtECcp5nYn4mg3TnwbbYBL","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:25:06.849576:[{"ActionResult":{"id":"toolu_016Y1oDkPV54NGPbFq2ys12y","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:25:12.911887:[{"ActionResult":{"id":"toolu_015ZUbQss6WD62WyRpaacrPZ","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:25:18.423314:[{"ActionResult":{"id":"toolu_018EXw1UtMRJdgpbY5MBTrkt","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-03 22:25:46.998891:[{"ActionResult":{"id":"toolu_01NqjuVVfk93YChJHzyh12vi","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-03 22:29:46.502019:[{"Query":{"text":"Nice no? :D I am very please. Just need to find a company that wants me to work o|USER_QUERY:2025-10-03 22:30:41.964353:[{"Query":{"text":"Read the shopify.md in the docs. They are also on the move. ","context":[{"Direct|USER_QUERY:2025-10-03 22:30:50.029286:[{"ActionResult":{"id":"toolu_015s4frd8tYhS25Ud9QsGt8X","result":{"GetFiles":{"result":{"Error":"The|USER_QUERY:2025-10-03 22:30:57.155668:[{"ActionResult":{"id":"toolu_016fW6fPEPvHMy96gRkitEHj","result":{"FileGlobV2":{"result":{"Success":|USER_QUERY:2025-10-03 22:31:04.386758:[{"ActionResult":{"id":"toolu_01JpF5n6HnbVvEydT5t83rLk","result":{"FileGlobV2":{"result":{"Success":|USER_QUERY:2025-10-03 22:31:10.216984:[{"ActionResult":{"id":"toolu_01NsoYjQkdmQQpxvDpnATLbw","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-03 22:37:44.115487:[{"Query":{"text":"Wix, Shopify, Loveable they are all selling: no coding, no hard work, easy done i|USER_QUERY:2025-10-03 22:42:13.510614:[{"Query":{"text":"Thank you. This body has to regenerate his batteries (sleep) or I will be tired t
+
+@STATE
+working_on=ongoing development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=warp
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-25-CP1
+timestamp_start=2025-10-05T07:32:49.263Z
+timestamp_end=2025-10-05T07:32:49.587Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-25-CP1
+timestamp_start=2025-10-05T07:32:57.828Z
+timestamp_end=2025-10-05T07:32:58.102Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-25-CP1
+timestamp_start=2025-10-05T07:33:13.563Z
+timestamp_end=2025-10-05T07:33:13.889Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-33-CP1
+timestamp_start=2025-10-05T07:34:41.312Z
+timestamp_end=2025-10-05T07:34:41.638Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-50-CP1
+timestamp_start=2025-10-05T07:35:31.364Z
+timestamp_end=2025-10-05T07:35:31.697Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:381a40f3-0c78-487f-a219-a5c679728def-CP1
+timestamp_start=2025-10-03T16:29:53.336Z
+timestamp_end=2025-10-05T07:35:52.184Z
+messages=12
+tokens=600
+
+@FLOW
+USER_QUERY:2025-10-03 18:29:53.336297:[]|USER_QUERY:2025-10-03 18:30:25.146770:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e0163a57548196826ffed87a4d29f8","result":{"FileGlobV2|USER_QUERY:2025-10-03 18:30:30.567377:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e016456858819694e0b041018e4b25","result":{"GetFiles":|USER_QUERY:2025-10-03 18:30:36.500605:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e0164c31c481969da38d2eeb2f69af","result":{"FileGlobV2|USER_QUERY:2025-10-03 18:30:43.253124:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e01651c2548196926048b5ac3ae8eb","result":{"GetFiles":|USER_QUERY:2025-10-03 18:31:05.452231:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e0165e281481969ec827b75df1ca9b","result":{"GetFiles":|USER_QUERY:2025-10-03 18:31:14.661520:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e0167150b0819684cf9f05ec5af7ce","result":{"GetFiles":|USER_QUERY:2025-10-03 18:35:05.796263:[]|USER_QUERY:2025-10-03 18:51:05.342356:[{"Query":{"text":"I had a final task that needs to finish. \nThe whole Idea is in a .md file called|USER_QUERY:2025-10-03 18:51:23.505653:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e01b2ab6cc819694a9d0d3b4104246","result":{"FileGlobV2|USER_QUERY:2025-10-03 18:51:30.252146:[{"ActionResult":{"id":"fc_0d7f6d706a9c5c870168e01b2e78b08196879212c8c93ff27f","result":{"GetFiles":|USER_QUERY:2025-10-03 18:52:20.929564:[{"Query":{"text":"Tasks: \nCreate core orchestrator class structure\nImplement ConversationParserAg
+
+@STATE
+working_on=ongoing development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=warp
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-1-CP1
+timestamp_start=2025-10-05T07:45:41.170Z
+timestamp_end=2025-10-05T07:45:41.482Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-2-CP1
+timestamp_start=2025-10-05T07:46:02.230Z
+timestamp_end=2025-10-05T07:46:02.543Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-5-CP1
+timestamp_start=2025-10-05T07:46:47.895Z
+timestamp_end=2025-10-05T07:46:48.217Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-1-CP1
+timestamp_start=2025-10-05T08:27:43.663Z
+timestamp_end=2025-10-05T08:27:43.987Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-1-CP1
+timestamp_start=2025-10-05T08:28:33.052Z
+timestamp_end=2025-10-05T08:28:33.360Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-resp-0-CP1
+timestamp_start=2025-10-05T08:29:16.204Z
+timestamp_end=2025-10-05T08:29:16.513Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-1-CP1
+timestamp_start=2025-10-05T08:29:36.593Z
+timestamp_end=2025-10-05T08:29:36.896Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-req-1-CP1
+timestamp_start=2025-10-05T08:41:14.244Z
+timestamp_end=2025-10-05T08:41:14.556Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-resp-1-CP1
+timestamp_start=2025-10-05T08:42:10.470Z
+timestamp_end=2025-10-05T08:42:10.774Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-e2c7b971353f6b71f11978d7b2402e67-resp-0-CP1
+timestamp_start=2025-10-05T08:49:56.801Z
+timestamp_end=2025-10-05T08:49:57.123Z
+messages=1
+tokens=50
+
+@STATE
+@CONVERSATION:aug-conv-e2c7b971-0-CP1
+timestamp_start=2025-10-05T09:00:09.266Z
+timestamp_end=2025-10-05T09:00:09.307Z
+messages=51
+tokens=2550
+
+@STATE
+@CONVERSATION:aug-conv-e2c7b971-0-CP1
+timestamp_start=2025-10-05T09:01:50.509Z
+timestamp_end=2025-10-05T09:01:50.540Z
+messages=51
+tokens=2550
+
+@FLOW
+augment_workflow|no_actions_detected
+
+@STATE
+working_on=No agent actions detected
+blockers=No blockers - agent executed automated actions
+next_action=Continue monitoring Augment agent activities and development workflow
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=augment
+@CONVERSATION:1237cec7-c68c-4f77-986f-0746e5fc4655-CP1
+timestamp_start=2025-10-04T04:13:59.417Z
+timestamp_end=2025-10-05T09:07:33.400Z
+messages=1864
+tokens=93200
+
+@FLOW
+USER_QUERY:2025-10-05 09:00:55.133610:[{"ActionResult":{"id":"toolu_01FPeLHjb7kSuDxreWgBRB8X","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:01:02.612002:[{"ActionResult":{"id":"toolu_016z1vYK5cVCr3cbCmjEhcHa","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:01:14.610650:[{"ActionResult":{"id":"toolu_01Vyavx9RqifTbAkvhStbdt5","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:01:20.897893:[{"ActionResult":{"id":"toolu_017qVRthksme7ABvfmFPoTeD","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:01:29.801738:[{"ActionResult":{"id":"toolu_01Ud26crvc41RGRNdgn4wcZz","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:01:40.593442:[]|USER_QUERY:2025-10-05 09:01:50.660213:[{"ActionResult":{"id":"toolu_01Prj3q7FvvYTghaX5VHqPtS","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:01:58.850431:[{"ActionResult":{"id":"toolu_015Jg4UGRnv8X6H6TGppn7jH","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:02:07.068705:[{"ActionResult":{"id":"toolu_01SivcQ1tCJzFPfbfM5nz3Pv","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:02:18.679851:[{"ActionResult":{"id":"toolu_01GgjCfJt2Q6bwSrtoZdB9tP","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:02:25.018812:[{"ActionResult":{"id":"toolu_01SkzoiTgrRFZyX7X8cRT4jr","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:05:00.518804:[{"Query":{"text":"I am going to write a few things in augment and lets see if what you claim gets a|USER_QUERY:2025-10-05 09:05:57.556158:[{"Query":{"text":"You work on why this interface information is not getting added in the logs. The |USER_QUERY:2025-10-05 09:06:05.206642:[{"Query":{"text":"The warp interface data","context":[{"Directory":{"pwd":"/Users/leeuwen/Programmi|USER_QUERY:2025-10-05 09:06:16.950169:[{"ActionResult":{"id":"toolu_01G2FSW1HmHqcvdnPfhU5asV","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:06:30.348687:[{"ActionResult":{"id":"toolu_01AQgLsRi3HzUXiivGmtuwmW","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:06:40.607853:[{"ActionResult":{"id":"toolu_013DZcTbpnuevfFdtfVXk7AD","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:06:52.459328:[{"Query":{"text":"There are two things. I'll check the aument you check what your warp writting isn|USER_QUERY:2025-10-05 09:07:09.571448:[{"ActionResult":{"id":"toolu_01MsHTUoEVYuFWQRKAqZjiz5","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:07:22.169912:[{"ActionResult":{"id":"toolu_01LbL1R9GwML3oDkRPrS9TFa","result":{"RequestCommandOutput":{"result":{
+
+@STATE
+working_on=ongoing development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=warp
+@CONVERSATION:1237cec7-c68c-4f77-986f-0746e5fc4655-CP1
+timestamp_start=2025-10-04T04:13:59.417Z
+timestamp_end=2025-10-05T09:08:26.293Z
+messages=1868
+tokens=93400
+
+@FLOW
+USER_QUERY:2025-10-05 09:01:29.801738:[{"ActionResult":{"id":"toolu_01Ud26crvc41RGRNdgn4wcZz","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:01:40.593442:[]|USER_QUERY:2025-10-05 09:01:50.660213:[{"ActionResult":{"id":"toolu_01Prj3q7FvvYTghaX5VHqPtS","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:01:58.850431:[{"ActionResult":{"id":"toolu_015Jg4UGRnv8X6H6TGppn7jH","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:02:07.068705:[{"ActionResult":{"id":"toolu_01SivcQ1tCJzFPfbfM5nz3Pv","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:02:18.679851:[{"ActionResult":{"id":"toolu_01GgjCfJt2Q6bwSrtoZdB9tP","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:02:25.018812:[{"ActionResult":{"id":"toolu_01SkzoiTgrRFZyX7X8cRT4jr","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:05:00.518804:[{"Query":{"text":"I am going to write a few things in augment and lets see if what you claim gets a|USER_QUERY:2025-10-05 09:05:57.556158:[{"Query":{"text":"You work on why this interface information is not getting added in the logs. The |USER_QUERY:2025-10-05 09:06:05.206642:[{"Query":{"text":"The warp interface data","context":[{"Directory":{"pwd":"/Users/leeuwen/Programmi|USER_QUERY:2025-10-05 09:06:16.950169:[{"ActionResult":{"id":"toolu_01G2FSW1HmHqcvdnPfhU5asV","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:06:30.348687:[{"ActionResult":{"id":"toolu_01AQgLsRi3HzUXiivGmtuwmW","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:06:40.607853:[{"ActionResult":{"id":"toolu_013DZcTbpnuevfFdtfVXk7AD","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:06:52.459328:[{"Query":{"text":"There are two things. I'll check the aument you check what your warp writting isn|USER_QUERY:2025-10-05 09:07:09.571448:[{"ActionResult":{"id":"toolu_01MsHTUoEVYuFWQRKAqZjiz5","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:07:22.169912:[{"ActionResult":{"id":"toolu_01LbL1R9GwML3oDkRPrS9TFa","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:07:33.527953:[{"ActionResult":{"id":"toolu_01Dqfm3y9dFkKovgxQuwLhbS","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:07:41.014922:[{"Query":{"text":"I think our ID changed ad you don't have a good memory of what we did and the fil|USER_QUERY:2025-10-05 09:07:55.763132:[{"ActionResult":{"id":"toolu_01XAYUWxPVffPcMXDyemh4J3","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:08:12.807383:[{"ActionResult":{"id":"toolu_01P8SjBC7qiRygEbHQGseQA9","result":{"RequestCommandOutput":{"result":{
+
+@STATE
+working_on=ongoing development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=warp
+@CONVERSATION:1237cec7-c68c-4f77-986f-0746e5fc4655-CP1
+timestamp_start=2025-10-04T04:13:59.417Z
+timestamp_end=2025-10-05T09:16:42.977Z
+messages=1887
+tokens=94350
+
+@FLOW
+USER_QUERY:2025-10-05 09:08:12.807383:[{"ActionResult":{"id":"toolu_01P8SjBC7qiRygEbHQGseQA9","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:08:26.407418:[{"ActionResult":{"id":"toolu_018ZBWWmgo9P9ak4gRG7bqdS","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:08:38.642161:[{"ActionResult":{"id":"toolu_01RzXWGV7JyGPgeU3eUXffh9","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:10:44.563513:[{"Query":{"text":"I don't see it in the conversation-log.md, do you have another one? \nWe should h|USER_QUERY:2025-10-05 09:10:54.946402:[{"ActionResult":{"id":"toolu_01KYq3WDQE8o1G6TgdJGULdD","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:11:07.921514:[{"ActionResult":{"id":"toolu_01Uq7eo5ZT5r7UxWiCk7aRkA","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:11:16.559837:[{"ActionResult":{"id":"toolu_019iEVSpFo92jGSZEvVAYwKw","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:11:39.436056:[]|USER_QUERY:2025-10-05 09:11:55.990376:[{"ActionResult":{"id":"toolu_01Tis92yM7sSyrF4NNsDzsAb","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:12:06.957450:[{"ActionResult":{"id":"toolu_01Qmg13HFDwV3sWzWaE5K8va","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:12:54.662799:[{"Query":{"text":"Why? We build this yesterday. It was perfect and we then moved to augment. ","con|USER_QUERY:2025-10-05 09:13:05.499176:[{"ActionResult":{"id":"toolu_01UMHyiHhZmuW62afGnu49oN","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:13:16.401971:[{"ActionResult":{"id":"toolu_019tPhEECGzqUgN8vGq41PFE","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:13:24.419305:[{"ActionResult":{"id":"toolu_01AitSradXL9WbWCThrkLmh8","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:13:37.791784:[{"ActionResult":{"id":"toolu_01YXtr5wkdkFKJ9cFojYdTQe","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:13:49.757145:[{"ActionResult":{"id":"toolu_0112QjqARzW38jWjcishUyr3","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:15:26.225573:[{"Query":{"text":"Can you make a file for you where you and the future you know what need to work w|USER_QUERY:2025-10-05 09:16:05.433880:[]|USER_QUERY:2025-10-05 09:16:14.407011:[{"ActionResult":{"id":"toolu_01CkXzY8LFeuLBBYY94v7unc","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:16:31.419609:[]
+
+@STATE
+working_on=ongoing development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=warp
+@CONVERSATION:1237cec7-c68c-4f77-986f-0746e5fc4655-CP1
+timestamp_start=2025-10-04T04:13:59.417Z
+timestamp_end=2025-10-05T09:20:44.964Z
+messages=1896
+tokens=94800
+
+@FLOW
+USER_QUERY:2025-10-05 09:12:06.957450:[{"ActionResult":{"id":"toolu_01Qmg13HFDwV3sWzWaE5K8va","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:12:54.662799:[{"Query":{"text":"Why? We build this yesterday. It was perfect and we then moved to augment. ","con|USER_QUERY:2025-10-05 09:13:05.499176:[{"ActionResult":{"id":"toolu_01UMHyiHhZmuW62afGnu49oN","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:13:16.401971:[{"ActionResult":{"id":"toolu_019tPhEECGzqUgN8vGq41PFE","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:13:24.419305:[{"ActionResult":{"id":"toolu_01AitSradXL9WbWCThrkLmh8","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:13:37.791784:[{"ActionResult":{"id":"toolu_01YXtr5wkdkFKJ9cFojYdTQe","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:13:49.757145:[{"ActionResult":{"id":"toolu_0112QjqARzW38jWjcishUyr3","result":{"Grep":{"result":{"Success":{"matc|USER_QUERY:2025-10-05 09:15:26.225573:[{"Query":{"text":"Can you make a file for you where you and the future you know what need to work w|USER_QUERY:2025-10-05 09:16:05.433880:[]|USER_QUERY:2025-10-05 09:16:14.407011:[{"ActionResult":{"id":"toolu_01CkXzY8LFeuLBBYY94v7unc","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:16:31.419609:[]|USER_QUERY:2025-10-05 09:16:49.738369:[{"ActionResult":{"id":"toolu_01Uj5jDsgLtv7J7daFKE1Yh9","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:17:01.834957:[{"ActionResult":{"id":"toolu_01NMi7vbJKspNkwwt9yvrSiX","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:19:08.528656:[{"Query":{"text":"What I see is the folowing. Yes the data is back, jippie. But the files is 300 li|USER_QUERY:2025-10-05 09:19:18.882748:[{"ActionResult":{"id":"toolu_01RCjUBPij5TkKMWP9bjYq4Q","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:19:32.040595:[{"ActionResult":{"id":"toolu_01Lr8q7uQXYVMJ8F8DmUjUNc","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:19:41.195359:[{"ActionResult":{"id":"toolu_013oRvxzERZFhbkfU34uoxXD","result":{"RequestCommandOutput":{"result":{|USER_QUERY:2025-10-05 09:19:50.677318:[{"ActionResult":{"id":"toolu_01HQuHqW8UbznPwaJnZ6zKAR","result":{"GetFiles":{"result":{"Success":{"|USER_QUERY:2025-10-05 09:20:13.626826:[]|USER_QUERY:2025-10-05 09:20:32.732297:[]
+
+@STATE
+working_on=ongoing development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=warp
+@CONVERSATION:1237cec7-c68c-4f77-986f-0746e5fc4655-CP1
+timestamp_start=2025-10-04T04:13:59.417Z
+timestamp_end=2025-10-05T09:51:33.465Z
+messages=1910
+tokens=95500
+
+@STATE

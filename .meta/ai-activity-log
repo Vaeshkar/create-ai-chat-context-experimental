@@ -1512,3 +1512,510 @@ COMMAND_END:31123:2025-10-05T07:05:38Z:0
 COMMAND_START:31123:2025-10-05T07:05:44Z:git status
 COMMAND_END:31123:2025-10-05T07:05:44Z:0
 COMMAND_START:31123:2025-10-05T07:06:03Z:git add .
+COMMAND_END:31123:2025-10-05T07:06:03Z:0
+COMMAND_START:31123:2025-10-05T07:06:09Z:git status --porcelain | head -10
+COMMAND_END:31123:2025-10-05T07:06:09Z:0
+COMMAND_END:31123:2025-10-05T07:06:23Z:0
+COMMAND_START:31123:2025-10-05T07:06:30Z:git status
+COMMAND_END:31123:2025-10-05T07:06:30Z:0
+COMMAND_START:31123:2025-10-05T07:06:40Z:git commit -m "feat: v2.0.0 - Multi-AI Memory System with Auto-Updates
+
+Major release with intelligent topic summaries, multi-AI support, 
+auto-update daemon, and advanced text processing.
+
+Fixes JSON tool call contamination issues from v1.x.
+Production ready with extensive testing."
+COMMAND_END:31123:2025-10-05T07:06:40Z:0
+COMMAND_START:31123:2025-10-05T07:06:50Z:git push origin main
+COMMAND_END:31123:2025-10-05T07:06:53Z:0
+COMMAND_START:31123:2025-10-05T07:07:58Z:ls -la "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-user-assets/agent-edits/shards/" | head -5
+COMMAND_END:31123:2025-10-05T07:07:58Z:0
+COMMAND_START:31123:2025-10-05T07:08:19Z:ls -la "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-user-assets/task-storage/"
+COMMAND_END:31123:2025-10-05T07:08:19Z:0
+COMMAND_START:31123:2025-10-05T07:08:26Z:ls "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-user-assets/task-storage/tasks/" | head -10
+COMMAND_END:31123:2025-10-05T07:08:26Z:0
+COMMAND_START:31123:2025-10-05T07:10:12Z:find "/Users/leeuwen/Library/Application Support/Code/User" -name "*augment*" -type d
+COMMAND_END:31123:2025-10-05T07:10:13Z:0
+COMMAND_START:31123:2025-10-05T07:10:24Z:ls -la "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store/"
+COMMAND_END:31123:2025-10-05T07:10:24Z:0
+COMMAND_START:31123:2025-10-05T07:10:33Z:ls -la "/Users/leeuwen/Library/Application Support/Code/User/globalStorage/augment.vscode-augment/"
+COMMAND_END:31123:2025-10-05T07:10:33Z:0
+COMMAND_START:31123:2025-10-05T07:12:10Z:strings "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store/001775.log" | head -20
+COMMAND_END:31123:2025-10-05T07:12:11Z:0
+COMMAND_START:31123:2025-10-05T07:12:22Z:strings "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store/001775.log" | grep -i "read the .ai and .aicf" | head -5
+COMMAND_END:31123:2025-10-05T07:12:22Z:0
+COMMAND_START:31123:2025-10-05T07:12:30Z:strings "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store/001776.ldb" | grep -i "aicf" | head -3
+COMMAND_END:31123:2025-10-05T07:12:30Z:0
+COMMAND_START:31123:2025-10-05T07:12:38Z:strings "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store/001776.ldb" | grep -B5 -A5 "aicf"
+COMMAND_END:31123:2025-10-05T07:12:38Z:0
+COMMAND_START:31123:2025-10-05T07:12:47Z:ls -lat "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/" | grep Augment | head -3
+COMMAND_END:31123:2025-10-05T07:12:47Z:0
+COMMAND_START:31123:2025-10-05T07:12:55Z:ls -lat "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/" | grep -E "(Augment|augment)" | head -3
+COMMAND_END:31123:2025-10-05T07:12:55Z:0
+COMMAND_START:31123:2025-10-05T07:13:02Z:stat -f "%Sa %N" "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment"
+COMMAND_END:31123:2025-10-05T07:13:02Z:0
+COMMAND_START:31123:2025-10-05T07:13:12Z:find "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage" -name "*Augment*" -type d -maxdepth 2 | head -5 | while read dir; do echo "$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$dir") $dir"; done | sort -r
+COMMAND_END:31123:2025-10-05T07:13:12Z:0
+COMMAND_START:31123:2025-10-05T07:13:20Z:find "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage" -name "*.ldb" -o -name "*.log" | xargs ls -lt | head -10
+COMMAND_END:31123:2025-10-05T07:13:20Z:0
+COMMAND_START:31123:2025-10-05T07:13:27Z:find "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage" -name "*.ldb" -exec ls -lt {} \; | head -10
+COMMAND_END:31123:2025-10-05T07:13:28Z:0
+COMMAND_START:31123:2025-10-05T07:13:37Z:find "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage" -name "*.log" -exec ls -lt {} \; | head -5
+COMMAND_END:31123:2025-10-05T07:13:37Z:0
+COMMAND_START:31123:2025-10-05T07:13:45Z:strings "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store/001775.log" | grep -A10 -B10 "get back to me"
+COMMAND_END:31123:2025-10-05T07:13:45Z:0
+COMMAND_START:31123:2025-10-05T07:21:39Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node src/context-extractor.js --source=augment --list
+COMMAND_END:31123:2025-10-05T07:21:39Z:0
+COMMAND_START:31123:2025-10-05T07:21:46Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node src/context-extractor.js --help
+COMMAND_END:31123:2025-10-05T07:21:46Z:0
+COMMAND_START:31123:2025-10-05T07:21:59Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -50 src/context-extractor.js
+COMMAND_END:31123:2025-10-05T07:21:59Z:0
+COMMAND_START:31123:2025-10-05T07:22:19Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-list --source=augment
+COMMAND_END:31123:2025-10-05T07:22:21Z:0
+COMMAND_START:31123:2025-10-05T07:22:30Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-129 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T07:22:31Z:0
+COMMAND_START:31123:2025-10-05T07:22:51Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-129 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T07:22:53Z:0
+COMMAND_START:31123:2025-10-05T07:23:02Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic update --conversation
+COMMAND_END:31123:2025-10-05T07:23:04Z:0
+COMMAND_START:31123:2025-10-05T07:32:19Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-list --source=augment --limit=50
+COMMAND_END:31123:2025-10-05T07:32:21Z:0
+COMMAND_START:31123:2025-10-05T07:32:31Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-list --source=warp --limit=20
+COMMAND_END:31123:2025-10-05T07:32:32Z:0
+COMMAND_START:31123:2025-10-05T07:32:39Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation 119ac53a-9623-4322-bfc4-ab4138a79de2 --source=warp --verbose --no-checkpoint
+COMMAND_END:31123:2025-10-05T07:32:40Z:0
+COMMAND_START:31123:2025-10-05T07:32:47Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-25 --source=augment --verbose --no-checkpoint
+COMMAND_END:31123:2025-10-05T07:32:49Z:0
+COMMAND_START:31123:2025-10-05T07:32:56Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-25 --source=augment --no-checkpoint
+COMMAND_END:31123:2025-10-05T07:32:58Z:0
+COMMAND_START:31123:2025-10-05T07:33:12Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-25 --source=augment --no-checkpoint
+COMMAND_END:31123:2025-10-05T07:33:13Z:0
+COMMAND_START:31123:2025-10-05T07:34:40Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-33 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T07:34:41Z:0
+COMMAND_START:31123:2025-10-05T07:35:30Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-50 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T07:35:31Z:0
+COMMAND_START:31123:2025-10-05T07:35:40Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -20 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T07:35:40Z:0
+COMMAND_START:31123:2025-10-05T07:35:51Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation 381a40f3-0c78-487f-a219-a5c679728def --source=warp --verbose
+COMMAND_END:31123:2025-10-05T07:35:52Z:0
+COMMAND_START:31123:2025-10-05T07:35:59Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -50 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T07:35:59Z:0
+COMMAND_START:31123:2025-10-05T07:43:03Z:cd "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage" && find . -name "augment-kv-store" -type d | head -3
+COMMAND_END:31123:2025-10-05T07:45:05Z:0
+COMMAND_START:31123:2025-10-05T07:45:29Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-list --source=augment --limit=10
+COMMAND_END:31123:2025-10-05T07:45:31Z:0
+COMMAND_START:31123:2025-10-05T07:45:39Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-1 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T07:45:41Z:0
+COMMAND_START:31123:2025-10-05T07:45:49Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -15 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T07:45:49Z:0
+COMMAND_START:31123:2025-10-05T07:46:00Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-2 --source=augment --no-checkpoint
+COMMAND_END:31123:2025-10-05T07:46:02Z:0
+COMMAND_START:31123:2025-10-05T07:46:46Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-5 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T07:46:48Z:0
+COMMAND_START:31123:2025-10-05T07:46:55Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -10 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T07:46:55Z:0
+COMMAND_START:31123:2025-10-05T07:47:07Z:cd "/Users/leeuwen/Library/Application Support/Code/User/workspaceStorage/e2c7b971353f6b71f11978d7b2402e67/Augment.vscode-augment/augment-kv-store" && strings *.ldb *.log 2>/dev/null | grep -A2 -B2 'request_message.*[a-zA-Z].*[a-zA-Z]' | head -10
+COMMAND_END:31123:2025-10-05T08:27:31Z:0
+COMMAND_START:31123:2025-10-05T08:27:41Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-1 --source=augment --no-checkpoint
+COMMAND_END:31123:2025-10-05T08:27:44Z:0
+COMMAND_START:31123:2025-10-05T08:28:31Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-1 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T08:28:33Z:0
+COMMAND_START:31123:2025-10-05T08:29:14Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic update --conversation
+COMMAND_END:31123:2025-10-05T08:29:16Z:0
+COMMAND_START:31123:2025-10-05T08:29:25Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -10 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T08:29:25Z:0
+COMMAND_START:31123:2025-10-05T08:29:35Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-1 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T08:29:36Z:0
+COMMAND_START:31123:2025-10-05T08:29:46Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -15 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T08:29:46Z:0
+COMMAND_START:31123:2025-10-05T08:30:06Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-2 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T08:30:08Z:0
+COMMAND_START:31123:2025-10-05T08:30:51Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-2 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T08:30:52Z:0
+COMMAND_START:31123:2025-10-05T08:31:10Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic extract-conversation aug-e2c7b971353f6b71f11978d7b2402e67-req-2 --source=augment --verbose
+COMMAND_END:31123:2025-10-05T08:31:12Z:0
+COMMAND_START:31123:2025-10-05T08:31:22Z:cd /Users/leeuwen && npx aic update --conversation
+COMMAND_END:31123:2025-10-05T08:31:32Z:0
+COMMAND_START:31123:2025-10-05T08:49:37Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const AutoUpdater = require('./src/auto-updater');
+const { ContextExtractor } = require('./src/context-extractor');
+
+const extractor = new ContextExtractor();
+const availableSources = extractor.getAvailableSources();
+
+console.log('🔍 Available AI sources:', availableSources);
+
+const updater = new AutoUpdater(30);
+const sources = updater.getSourcesByExclusivePriority(availableSources);
+console.log('📊 Auto-updater source mode:', sources);
+"
+COMMAND_END:31123:2025-10-05T08:49:37Z:0
+COMMAND_START:31123:2025-10-05T08:49:47Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const AutoUpdater = require('./src/auto-updater');
+
+const updater = new AutoUpdater(30);
+
+// Test fallback behavior when Augment is not in available sources
+const fallbackSources = ['warp', 'cursor', 'claude', 'chatgpt'];
+const fallbackResult = updater.getSourcesByExclusivePriority(fallbackSources);
+console.log('📊 Auto-updater fallback mode (no Augment):', fallbackResult);
+"
+COMMAND_END:31123:2025-10-05T08:49:47Z:0
+COMMAND_START:31123:2025-10-05T08:49:55Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node bin/cli.js update --conversation
+COMMAND_END:31123:2025-10-05T08:49:57Z:0
+COMMAND_START:31123:2025-10-05T08:55:09Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const AugmentParser = require('./src/session-parsers/augment-parser');
+const parser = new AugmentParser();
+
+console.log('🔍 Augment Parser Status:');
+const status = parser.getStatus();
+console.log(JSON.stringify(status, null, 2));
+
+console.log('\n📊 Getting sample conversations...');
+parser.extractConversations(1).then(conversations => {
+  if (conversations.length > 0) {
+    const sample = conversations[0];
+    console.log('\n📝 Sample conversation:');
+    console.log('ID:', sample.id);
+    console.log('Content preview:', sample.content.substring(0, 200) + '...');
+    console.log('Type:', sample.type);
+    console.log('Source:', sample.source);
+    console.log('Metadata:', JSON.stringify(sample.metadata, null, 2));
+  } else {
+    console.log('❌ No conversations found');
+  }
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T08:55:09Z:0
+COMMAND_START:31123:2025-10-05T08:55:29Z:cd /Users/leeuwen/Programming/create-ai-chat-context && find . -name "conversation-augment-*.json" | head -3
+COMMAND_END:31123:2025-10-05T08:55:29Z:0
+COMMAND_START:31123:2025-10-05T08:55:44Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const { ContextExtractor } = require('./src/context-extractor');
+const extractor = new ContextExtractor();
+
+console.log('🔍 Testing Augment conversation extraction...');
+
+extractor.listConversations('augment', { limit: 3 }).then(async conversations => {
+  if (conversations.length > 0) {
+    const latest = conversations[0];
+    console.log('\n📊 Latest conversation:', latest.id);
+    console.log('Messages:', latest.messageCount);
+    console.log('Updated:', latest.updated);
+    
+    console.log('\n🔄 Extracting full conversation...');
+    const fullConversation = await extractor.extractConversation(latest.id, 'augment');
+    
+    console.log('\n📝 Full conversation structure:');
+    console.log('ID:', fullConversation.id);
+    console.log('Message count:', fullConversation.messageCount);
+    console.log('Messages length:', fullConversation.messages.length);
+    
+    if (fullConversation.messages.length > 0) {
+      const firstMsg = fullConversation.messages[0];
+      console.log('\nFirst message:');
+      console.log('- Content preview:', firstMsg.content.substring(0, 150));
+      console.log('- Type:', firstMsg.type);
+      console.log('- Timestamp:', firstMsg.timestamp);
+    }
+    
+    if (fullConversation.messages.length > 1) {
+      const secondMsg = fullConversation.messages[1];
+      console.log('\nSecond message:');
+      console.log('- Content preview:', secondMsg.content.substring(0, 150));
+      console.log('- Type:', secondMsg.type); 
+      console.log('- Timestamp:', secondMsg.timestamp);
+    }
+  } else {
+    console.log('❌ No Augment conversations found');
+  }
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T08:55:45Z:0
+COMMAND_START:31123:2025-10-05T08:57:36Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const { ContextExtractor } = require('./src/context-extractor');
+const extractor = new ContextExtractor();
+
+console.log('🔍 Testing improved Augment conversation grouping...');
+
+extractor.listConversations('augment', { limit: 3 }).then(conversations => {
+  console.log('\n📊 Conversation list:');
+  conversations.forEach((conv, i) => {
+    console.log(\`  \${i+1}. \${conv.id}\`);
+    console.log(\`     Messages: \${conv.messageCount} (Users: \${conv.userMessageCount}, AI: \${conv.assistantMessageCount})\`);
+    console.log(\`     Duration: \${Math.round(conv.duration / 1000 / 60)} minutes\`);
+    console.log(\`     Preview: \${conv.content.substring(0, 100)}...\`);
+    console.log('');
+  });
+  
+  if (conversations.length > 0) {
+    console.log('\n🔄 Testing full extraction of first grouped conversation...');
+    const firstConv = conversations[0];
+    return extractor.extractConversation(firstConv.id, 'augment');
+  }
+}).then(fullConversation => {
+  if (fullConversation) {
+    console.log('\n📝 Full conversation details:');
+    console.log('ID:', fullConversation.id);
+    console.log('Messages:', fullConversation.messageCount);
+    console.log('Duration:', Math.round(fullConversation.timespan.duration / 1000 / 60), 'minutes');
+    console.log('\nMessage breakdown:');
+    fullConversation.messages.forEach((msg, i) => {
+      console.log(\`  \${i+1}. [\${msg.role.toUpperCase()}] \${msg.content.substring(0, 80)}...\`);
+    });
+  }
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T08:57:37Z:0
+COMMAND_START:31123:2025-10-05T08:58:42Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const { ContextExtractor } = require('./src/context-extractor');
+const extractor = new ContextExtractor();
+
+console.log('🔍 Testing improved Augment conversation grouping...');
+
+extractor.listConversations('augment', { limit: 3 }).then(conversations => {
+  console.log('\n📊 Conversation list:');
+  conversations.forEach((conv, i) => {
+    console.log(\`  \${i+1}. \${conv.id}\`);
+    console.log(\`     Messages: \${conv.messageCount} (Users: \${conv.userMessageCount}, AI: \${conv.assistantMessageCount})\`);
+    console.log(\`     Duration: \${Math.round(conv.duration / 1000 / 60)} minutes\`);
+    console.log(\`     Preview: \${conv.content.substring(0, 100)}...\`);
+    console.log('');
+  });
+  
+  if (conversations.length > 0) {
+    console.log('\n🔄 Testing full extraction of first grouped conversation...');
+    const firstConv = conversations[0];
+    return extractor.extractConversation(firstConv.id, 'augment');
+  }
+}).then(fullConversation => {
+  if (fullConversation) {
+    console.log('\n📝 Full conversation details:');
+    console.log('ID:', fullConversation.id);
+    console.log('Messages:', fullConversation.messageCount);
+    console.log('Duration:', Math.round(fullConversation.timespan.duration / 1000 / 60), 'minutes');
+    console.log('\nFirst few messages:');
+    fullConversation.messages.slice(0, 3).forEach((msg, i) => {
+      console.log(\`  \${i+1}. [\${msg.role.toUpperCase()}] \${msg.content.substring(0, 80)}...\`);
+    });
+  }
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T08:58:43Z:0
+COMMAND_START:31123:2025-10-05T08:58:52Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic update --conversation
+COMMAND_END:31123:2025-10-05T08:58:54Z:0
+COMMAND_START:31123:2025-10-05T09:00:07Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic update --conversation
+COMMAND_END:31123:2025-10-05T09:00:09Z:0
+COMMAND_START:31123:2025-10-05T09:00:39Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "Checking recent checkpoint files..." && find . -name "conversation-augment-*.json" -mmin -10 | head -3
+COMMAND_END:31123:2025-10-05T09:00:40Z:0
+COMMAND_START:31123:2025-10-05T09:01:48Z:cd /Users/leeuwen/Programming/create-ai-chat-context && npx aic update --conversation
+COMMAND_END:31123:2025-10-05T09:01:50Z:0
+COMMAND_START:31123:2025-10-05T09:02:06Z:cd /Users/leeuwen/Programming/create-ai-chat-context && tail -50 .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:02:06Z:0
+COMMAND_START:31123:2025-10-05T09:06:16Z:cd /Users/leeuwen/Programming/create-ai-chat-context && wc -l .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:06:16Z:0
+COMMAND_END:31123:2025-10-05T09:06:30Z:0
+COMMAND_START:31123:2025-10-05T09:06:40Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+console.log('🔍 Testing Warp conversation extraction...');
+
+const { ContextExtractor } = require('./src/context-extractor');
+try {
+  const extractor = new ContextExtractor();
+  console.log('✅ ContextExtractor loaded');
+  
+  extractor.listConversations('warp', { limit: 1 }).then(conversations => {
+    console.log(\`📊 Found \${conversations.length} Warp conversations\`);
+    if (conversations.length > 0) {
+      const latest = conversations[0];
+      console.log(\`Latest: \${latest.id} - \${latest.messageCount} messages\`);
+    } else {
+      console.log('❌ No Warp conversations found');
+    }
+  }).catch(error => {
+    console.error('❌ Warp extraction error:', error.message);
+  });
+  
+} catch (error) {
+  console.error('❌ Setup error:', error.message);
+}
+"
+COMMAND_END:31123:2025-10-05T09:06:40Z:0
+COMMAND_START:31123:2025-10-05T09:07:09Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+console.log('🔍 Investigating current Warp conversation capture...');
+
+const { ContextExtractor } = require('./src/context-extractor');
+const extractor = new ContextExtractor();
+
+extractor.listConversations('warp', { limit: 1 }).then(async conversations => {
+  if (conversations.length > 0) {
+    const current = conversations[0];
+    console.log(\`\n📊 Current Warp conversation:\`);
+    console.log(\`  ID: \${current.id}\`);
+    console.log(\`  Messages reported: \${current.messageCount}\`);
+    console.log(\`  Last updated: \${current.updated}\`);
+    
+    console.log('\n🔄 Extracting full conversation details...');
+    try {
+      const fullConv = await extractor.extractConversation(current.id, 'warp');
+      console.log(\`  Actual messages in conversation: \${fullConv.messages.length}\`);
+      console.log(\`  Timespan: \${fullConv.timespan.start} to \${fullConv.timespan.end}\`);
+      console.log(\`  Duration: \${Math.round(fullConv.timespan.duration / 1000 / 60)} minutes\`);
+      
+      if (fullConv.messages.length > 0) {
+        const lastMsg = fullConv.messages[fullConv.messages.length - 1];
+        console.log(\`\n📝 Last message preview:\`);
+        console.log(\`  Timestamp: \${lastMsg.timestamp}\`);
+        console.log(\`  Content: \${lastMsg.content.substring(0, 100)}...\`);
+        
+        // Check if this includes our recent Augment discussion
+        const hasAugmentDiscussion = fullConv.messages.some(msg => 
+          msg.content.toLowerCase().includes('augment') && 
+          msg.content.toLowerCase().includes('conversation')
+        );
+        console.log(\`  Contains Augment discussion: \${hasAugmentDiscussion}\`);
+      }
+    } catch (error) {
+      console.error('❌ Full extraction error:', error.message);
+    }
+  } else {
+    console.log('❌ No current Warp conversations found');
+  }
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T09:07:09Z:0
+COMMAND_START:31123:2025-10-05T09:07:22Z:cd /Users/leeuwen/Programming/create-ai-chat-context && grep -r "1237cec7" .aicf/ | tail -5
+COMMAND_END:31123:2025-10-05T09:07:22Z:0
+COMMAND_START:31123:2025-10-05T09:07:31Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔄 Force updating current Warp conversation..." && npx aic extract-conversation 1237cec7-c68c-4f77-986f-0746e5fc4655 --source warp
+COMMAND_END:31123:2025-10-05T09:07:33Z:0
+COMMAND_START:31123:2025-10-05T09:07:55Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const { ContextExtractor } = require('./src/context-extractor');
+const extractor = new ContextExtractor();
+
+console.log('🔍 Finding CURRENT Warp conversation ID...');
+
+extractor.listConversations('warp', { limit: 3 }).then(conversations => {
+  console.log('\n📊 Recent Warp conversations:');
+  conversations.forEach((conv, i) => {
+    const date = new Date(conv.updated);
+    const isRecent = date > new Date(Date.now() - 2 * 60 * 60 * 1000); // Last 2 hours
+    const marker = isRecent ? '🔥 CURRENT?' : '  ';
+    console.log(\`\${marker} \${i+1}. \${conv.id.substring(0, 8)}... - \${conv.messageCount} msgs - \${date.toLocaleString()}\`);
+  });
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T09:07:55Z:0
+COMMAND_START:31123:2025-10-05T09:08:12Z:cd /Users/leeuwen/Programming/create-ai-chat-context && node -e "
+const { ContextExtractor } = require('./src/context-extractor');
+const extractor = new ContextExtractor();
+
+console.log('🔍 Checking current conversation content...');
+
+extractor.extractConversation('1237cec7-c68c-4f77-986f-0746e5fc4655', 'warp').then(conv => {
+  console.log(\`\n📊 Current conversation reality check:\`);
+  console.log(\`  Total messages: \${conv.messages.length}\`);
+  console.log(\`  Timespan: \${conv.timespan.start} to \${conv.timespan.end}\`);
+  console.log(\`  Duration: \${Math.round(conv.timespan.duration / 1000 / 60)} minutes\`);
+  
+  // Check last few messages for our current discussion
+  const recentMessages = conv.messages.slice(-5);
+  console.log(\`\n🔍 Last 5 messages:\`);
+  recentMessages.forEach((msg, i) => {
+    const content = msg.content.substring(0, 80).replace(/\n/g, ' ');
+    console.log(\`  \${recentMessages.length - 4 + i}. [\${msg.timestamp.substring(11, 19)}] \${content}...\`);
+  });
+  
+  // Check for very recent messages (last 10 minutes)
+  const now = new Date();
+  const recent = conv.messages.filter(msg => {
+    const msgTime = new Date(msg.timestamp);
+    return (now - msgTime) < 10 * 60 * 1000; // 10 minutes
+  });
+  console.log(\`\n⏰ Messages in last 10 minutes: \${recent.length}\`);
+  
+}).catch(error => {
+  console.error('❌ Error:', error.message);
+});
+"
+COMMAND_END:31123:2025-10-05T09:08:12Z:0
+COMMAND_START:31123:2025-10-05T09:08:24Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔄 Forcing update of current conversation with latest messages..." && npx aic extract-conversation 1237cec7-c68c-4f77-986f-0746e5fc4655 --source warp --verbose
+COMMAND_END:31123:2025-10-05T09:08:26Z:0
+COMMAND_START:31123:2025-10-05T09:08:38Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "📊 Checking conversation-log.md line count..." && wc -l .ai/conversation-log.md && echo -e "
+📝 Latest entries:" && tail -20 .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:08:38Z:0
+COMMAND_START:31123:2025-10-05T09:10:54Z:cd /Users/leeuwen/Programming/create-ai-chat-context && find . -name "*conversation-log*" -type f
+COMMAND_END:31123:2025-10-05T09:10:54Z:0
+COMMAND_START:31123:2025-10-05T09:11:07Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 What SHOULD be in conversation-log.md from our discussion:" && echo "
+Expected content about our work:
+- ✅ Source-exclusive mode implementation  
+- ✅ Augment conversation grouping (51→1 conversations)
+- ✅ Message extraction improvements 
+- ✅ Error fixing (.join() undefined issues)
+- ✅ Warp vs Augment conversation processing
+- ✅ Timestamp detection issues
+- ✅ FileWriter append vs prepend problems
+
+But currently showing: 'ongoing development' (generic)
+"
+COMMAND_END:31123:2025-10-05T09:11:07Z:0
+COMMAND_START:31123:2025-10-05T09:11:16Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Checking what rich content was actually extracted..." && tail -50 .aicf/conversation-memory.aicf
+COMMAND_END:31123:2025-10-05T09:11:16Z:0
+COMMAND_END:31123:2025-10-05T09:11:55Z:0
+COMMAND_END:31123:2025-10-05T09:12:06Z:0
+COMMAND_START:31123:2025-10-05T09:13:05Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Checking what broke in the Warp extraction..." && head -50 .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:13:05Z:0
+COMMAND_START:31123:2025-10-05T09:13:37Z:cd /Users/leeuwen/Programming/create-ai-chat-context && grep -A 50 "Chat 1237cec7 - 2025-10-04 - AI Terminal Session" .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:13:37Z:0
+COMMAND_START:31123:2025-10-05T09:16:41Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔧 Testing fixed system - should now use MarkdownUpdater for rich content..." && npx aic extract-conversation 1237cec7-c68c-4f77-986f-0746e5fc4655 --source warp --verbose
+COMMAND_END:31123:2025-10-05T09:16:49Z:0
+COMMAND_START:31123:2025-10-05T09:17:01Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Checking if we now have rich content..." && echo "Line count:" && wc -l .ai/conversation-log.md && echo -e "
+📝 Looking for new rich entry..." && head -100 .ai/conversation-log.md | grep -A 50 "Chat 1237cec7 - 2025-10-05"
+COMMAND_END:31123:2025-10-05T09:17:01Z:0
+COMMAND_START:31123:2025-10-05T09:19:18Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Investigating data loss..." && echo "Current size:" && wc -l .ai/conversation-log.md && echo -e "
+Checking if we have backups..." && ls -la .ai/conversation-log.md* 2>/dev/null || echo "No backups found"
+COMMAND_END:31123:2025-10-05T09:19:18Z:0
+COMMAND_START:31123:2025-10-05T09:19:27Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Checking git history for conversation-log.md..." && git log --oneline -10 -- .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:19:31Z:0
+COMMAND_START:31123:2025-10-05T09:19:40Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Checking for any backup files..." && find . -name "*conversation*log*" -type f 2>/dev/null
+COMMAND_END:31123:2025-10-05T09:19:41Z:0
+COMMAND_START:31123:2025-10-05T09:20:43Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "📊 Before fix test:" && wc -l .ai/conversation-log.md && echo -e "
+🔧 Testing history preservation fix..." && npx aic extract-conversation 1237cec7-c68c-4f77-986f-0746e5fc4655 --source warp
+COMMAND_END:31123:2025-10-05T09:20:49Z:0
+COMMAND_START:31123:2025-10-05T09:21:04Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "📊 After fix test:" && wc -l .ai/conversation-log.md && echo -e "
+🔍 Checking if we have more entries now (should have grown from 239 lines)..." && head -100 .ai/conversation-log.md | grep "Chat 1237cec7" | wc -l
+COMMAND_END:31123:2025-10-05T09:21:04Z:0
+COMMAND_START:31123:2025-10-05T09:21:14Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Verifying multiple conversation entries are preserved..." && grep "^## Chat" .ai/conversation-log.md | head -10
+COMMAND_END:31123:2025-10-05T09:21:14Z:0
+COMMAND_START:31123:2025-10-05T09:22:25Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 Checking for duplicate conversation entries..." && grep "^## Chat" .ai/conversation-log.md | sort | uniq -c | sort -nr
+COMMAND_END:31123:2025-10-05T09:22:25Z:0
+COMMAND_START:31123:2025-10-05T09:22:48Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "📊 Current file structure:" && wc -l .ai/conversation-log.md && echo -e "
+🔝 First 20 lines:" && head -20 .ai/conversation-log.md && echo -e "
+🔚 Last 20 lines:" && tail -20 .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:22:48Z:0
+COMMAND_START:31123:2025-10-05T09:23:12Z:cd /Users/leeuwen/Programming/create-ai-chat-context && python scripts/dedupe-conversation-log.py
+COMMAND_END:31123:2025-10-05T09:23:12Z:0
+COMMAND_START:31123:2025-10-05T09:23:20Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "✅ Verifying deduplication results:" && grep "^## Chat" .ai/conversation-log.md | sort | uniq -c | sort -nr
+COMMAND_END:31123:2025-10-05T09:23:20Z:0
+COMMAND_START:31123:2025-10-05T09:23:28Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "📊 File comparison:" && echo "Original (backup): $(wc -l .ai/conversation-log.md.backup | cut -d' ' -f1) lines" && echo "Deduplicated:     $(wc -l .ai/conversation-log.md | cut -d' ' -f1) lines" && echo -e "
+🔝 Current structure (first 15 lines):" && head -15 .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:23:28Z:0
+COMMAND_START:31123:2025-10-05T09:23:35Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "📊 File comparison:" && echo "Original (backup): $(wc -l < .ai/conversation-log.md.backup) lines" && echo "Deduplicated:     $(wc -l < .ai/conversation-log.md) lines" && echo -e "
+🎯 Conversations now in chronological order (newest first):" && grep "^## Chat" .ai/conversation-log.md
+COMMAND_END:31123:2025-10-05T09:23:35Z:0
+COMMAND_START:31123:2025-10-05T10:12:54Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🔍 First, let's check our git history to find v1.0.2 or a good revert point:" && git log --oneline -10
+COMMAND_END:31123:2025-10-05T10:12:58Z:0
+COMMAND_START:31123:2025-10-05T10:13:05Z:cd /Users/leeuwen/Programming/create-ai-chat-context && git status
+COMMAND_END:31123:2025-10-05T10:13:05Z:0
+COMMAND_START:31123:2025-10-05T10:13:13Z:cd /Users/leeuwen/Programming/create-ai-chat-context && git --no-pager log --oneline -15
+COMMAND_END:31123:2025-10-05T10:13:13Z:0
+COMMAND_START:31123:2025-10-05T10:13:22Z:cd /Users/leeuwen/Programming && echo "🚀 Creating experimental repo..." && gh repo create create-ai-chat-context-experimental --public --description "Experimental version of AI chat context system with advanced features and automation"

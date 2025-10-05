@@ -80,10 +80,13 @@ class IntelligentConversationParser {
       // Store platform for use in parsing methods
       this.currentPlatform = aiPlatform;
 
-      // NEW: Check if we should use direct SQLite access
-      if (options.useDirectSQLite && conversationData.id) {
+      // NEW: Check if we should use direct SQLite access (only for Warp)
+      if (options.useDirectSQLite && conversationData.id && aiPlatform === 'warp') {
         console.log(`📈 Using direct SQLite access for conversation: ${conversationData.id}`);
         return await this.processFromSQLite(conversationData.id, options);
+      } else if (options.useDirectSQLite && aiPlatform === 'augment') {
+        console.log(`⚠️ Skipping SQLite access for Augment - using direct message processing`);
+        // Continue with regular processing for Augment
       }
 
       // Extract chunk ID
@@ -100,8 +103,15 @@ class IntelligentConversationParser {
 
       this.processedChunks.add(chunkId);
 
-      // Analyze conversation content
-      const analysis = this.analyzeConversation(conversationData);
+      // Analyze conversation content using platform-specific analysis if available
+      let analysis;
+      if (this.currentPlatform === 'augment') {
+        console.log(`🔍 Using Augment-specific conversation analysis`);
+        analysis = this.analyzeAugmentConversation({ messages: conversationData.messages }, conversationData.messages || []);
+      } else {
+        console.log(`🔍 Using generic conversation analysis`);
+        analysis = this.analyzeConversation(conversationData);
+      }
 
       // Classify content for routing
       const classifications = this.router.classifyContent(conversationData);
@@ -129,7 +139,9 @@ class IntelligentConversationParser {
         success: true,
         chunkId,
         analysis,
-        routingResults
+        routingResults,
+        // Include structured sections for conversation-log.md compatibility (especially for Augment)
+        structuredSections: this.createStructuredSections(analysis)
       };
 
     } catch (error) {
@@ -206,24 +218,20 @@ class IntelligentConversationParser {
       // Fallback to regular processing WITHOUT SQLite access to prevent infinite loop
       console.log(`⚠️ Falling back to regular processing...`);
       
-      // Create minimal conversation data for fallback processing
-      const fallbackData = {
-        id: conversationId,
-        messages: [{
-          role: 'system',
-          content: `Fallback processing for conversation ${conversationId} due to SQLite error: ${error.message}`,
-          timestamp: new Date().toISOString()
-        }],
-        metadata: {
-          source: 'warp-fallback',
-          chunkId: conversationId,
-          fallbackReason: error.message
-        }
-      };
+      // For Augment: Try to get the original conversation data instead of creating fake fallback
+      // The processConversation method should be called with the original conversationData
+      // that contains the real messages, not a synthetic fallback message
       
       // Process without SQLite flag to prevent recursion
       const fallbackOptions = { ...options, useDirectSQLite: false };
-      return await this.processConversation(fallbackData, fallbackOptions);
+      
+      // Use the original conversationData from the parent call instead of synthetic fallback
+      // We need to get the original conversation from the checkpoint data
+      return {
+        success: false,
+        error: `Augment SQLite fallback not implemented - conversation data should be processed directly`,
+        fallbackToRegularProcessing: true
+      };
     }
   }
 
@@ -275,6 +283,13 @@ class IntelligentConversationParser {
   classifyRichContent(richConversation, analysis) {
     const classifications = [];
     
+    // Platform-specific classification
+    if (analysis.platform === 'augment') {
+      // Simplified Augment classification to avoid errors
+      return ['conversation_flow']; // Keep it simple for now
+    }
+    
+    // Default rich content classification for other platforms
     // Always include conversation flow
     classifications.push('conversation_flow');
     
@@ -322,15 +337,27 @@ class IntelligentConversationParser {
     let userInput = '';
     let aiResponse = '';
     
+    // DEBUG: Log the conversation data structure
+    if (this.verbose) {
+      console.log('📋 DEBUG - Conversation Data Structure:');
+      console.log(`   Platform: ${this.currentPlatform}`);
+      console.log(`   Source: ${conversationData.source}`);
+      console.log(`   Messages: ${conversationData.messages?.length || 0}`);
+      if (conversationData.messages && conversationData.messages.length > 0) {
+        console.log(`   First message content: ${conversationData.messages[0].content?.substring(0, 100)}...`);
+        console.log(`   First message type: ${conversationData.messages[0].type}`);
+      }
+    }
+    
     // Handle different data formats
     if (conversationData.user_input && conversationData.ai_response) {
       userInput = conversationData.user_input;
       aiResponse = conversationData.ai_response;
     } else if (conversationData.messages && Array.isArray(conversationData.messages)) {
       conversationData.messages.forEach(msg => {
-        if (msg.role === 'user') {
+        if (msg.role === 'user' || msg.type === 'user') {
           userInput += msg.content + ' ';
-        } else if (msg.role === 'assistant') {
+        } else if (msg.role === 'assistant' || msg.type === 'assistant') {
           aiResponse += msg.content + ' ';
         }
       });
@@ -341,11 +368,20 @@ class IntelligentConversationParser {
       aiResponse = parts.slice(1).join('\n') || '';
     }
 
-    return {
+    const result = {
       userInput: userInput.trim(),
       aiResponse: aiResponse.trim(),
       combined: (userInput + ' ' + aiResponse).trim()
     };
+    
+    // DEBUG: Log extracted content
+    if (this.verbose && this.currentPlatform === 'augment') {
+      console.log('📋 DEBUG - Extracted Content:');
+      console.log(`   User Input: ${result.userInput.substring(0, 100)}...`);
+      console.log(`   AI Response: ${result.aiResponse.substring(0, 100)}...`);
+    }
+    
+    return result;
   }
 
   /**
@@ -562,6 +598,32 @@ class IntelligentConversationParser {
   }
 
   /**
+   * Analyze Augment VSCode Extension conversation (agent edit/action data)
+   */
+  analyzeAugmentConversation(richConversation, messages) {
+    // Augment data is agent edit/action focused, not traditional chat
+    const agentActions = messages.filter(m => m.type === 'AI_ACTION' || m.source === 'augment-leveldb');
+    const fileOperations = this.extractAugmentFileOperations(agentActions);
+    const agentInsights = this.extractAugmentAgentInsights(agentActions);
+    
+    return {
+      userIntents: this.extractAugmentUserIntents(agentActions),
+      aiActions: this.extractAugmentAIActions(agentActions),
+      technicalWork: this.extractAugmentTechnicalWork(agentActions),
+      decisions: this.extractAugmentDecisions(agentActions),
+      insights: agentInsights,
+      flow: this.generateAugmentFlow(agentActions),
+      cleanupWork: [],
+      fileModifications: fileOperations,
+      // Augment-specific state tracking
+      workingOn: this.extractAugmentWorkingState(agentActions),
+      blockers: this.extractAugmentBlockers(agentActions),
+      nextAction: this.extractAugmentNextAction(agentActions),
+      platform: 'augment'
+    };
+  }
+
+  /**
    * Analyze ChatGPT conversation (encrypted, metadata only)
    */
   analyzeChatGPTConversation(richConversation, messages) {
@@ -664,14 +726,18 @@ class IntelligentConversationParser {
   }
 
   /**
-   * Generate rich content for conversation-memory.aicf
+   * Generate rich content for conversation-memory.aicf with clear source headers
    */
   generateRichConversationMemoryContent(analysis, timestamp, conversationId, richConversation) {
+    const sourceHeader = analysis.platform ? `[${analysis.platform.toUpperCase()}]` : '[UNKNOWN]';
     const recentQueries = analysis.userIntents.slice(-5).map(ui => `${ui.timestamp}: ${ui.intent}`).join('\n  ');
     const recentActions = analysis.aiActions.slice(-5).map(action => `${action.timestamp}: ${action.type} - ${action.details}`).join('\n  ');
     
     return `@CONVERSATION:${conversationId}
+${sourceHeader}
 timestamp=${timestamp}
+platform=${analysis.platform || 'unknown'}
+source_type=${analysis.platform === 'warp' ? 'terminal_ai' : analysis.platform === 'augment' ? 'vscode_agent' : 'unknown'}
 message_count=${richConversation.messageCount}
 user_queries="""
   ${recentQueries}
@@ -737,6 +803,179 @@ flow=${analysis.flow.substring(0, 200)}...
 `;
   }
 
+  // =================================================================
+  // AUGMENT-SPECIFIC EXTRACTION METHODS
+  // =================================================================
+
+  /**
+   * Extract user intents from Augment agent actions (with real message content)
+   */
+  extractAugmentUserIntents(agentActions) {
+    const intents = [];
+    for (const action of agentActions) {
+      const content = action.content || '';
+      
+      // For Augment, the "content" field should contain the actual user message
+      if (action.metadata && action.metadata.messageType === 'user_request') {
+        // This is a real user request message from Augment
+        intents.push({
+          timestamp: action.timestamp,
+          intent: content, // Use the actual user message content
+          inferredFrom: 'augment_leveldb',
+          confidence: 'high'
+        });
+      } else {
+        // Fallback: infer intent from agent actions if no direct user message
+        if (content.includes('file') || content.includes('edit')) {
+          intents.push({
+            timestamp: action.timestamp,
+            intent: 'File editing/modification requested',
+            inferredFrom: 'agent_action',
+            confidence: 'medium'
+          });
+        }
+        if (content.includes('implement') || content.includes('add')) {
+          intents.push({
+            timestamp: action.timestamp,
+            intent: 'Feature implementation requested',
+            inferredFrom: 'agent_action',
+            confidence: 'high'
+          });
+        }
+      }
+    }
+    return intents.slice(-5); // Last 5 intents (real messages prioritized)
+  }
+
+  /**
+   * Extract AI actions specific to Augment agent behavior
+   */
+  extractAugmentAIActions(agentActions) {
+    const actions = [];
+    for (const action of agentActions) {
+      const content = action.content || '';
+      actions.push({
+        type: 'augment_agent_action',
+        timestamp: action.timestamp,
+        details: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
+        workingDirectory: action.workingDirectory,
+        source: 'augment_leveldb'
+      });
+    }
+    return actions;
+  }
+
+  /**
+   * Extract technical work from Augment agent actions
+   */
+  extractAugmentTechnicalWork(agentActions) {
+    const technicalWork = [];
+    for (const action of agentActions) {
+      const content = action.content || '';
+      // Augment actions are inherently technical
+      technicalWork.push({
+        timestamp: action.timestamp,
+        work: `Augment agent action: ${content.substring(0, 250)}`,
+        type: 'agent_automation',
+        source: 'augment'
+      });
+    }
+    return technicalWork;
+  }
+
+  /**
+   * Extract decisions from Augment agent actions (implicit decisions)
+   */
+  extractAugmentDecisions(agentActions) {
+    const decisions = [];
+    for (const action of agentActions) {
+      const content = action.content || '';
+      if (content.includes('choose') || content.includes('selected') || content.includes('decision')) {
+        decisions.push({
+          timestamp: action.timestamp,
+          decision: `Agent decision: ${content.substring(0, 200)}`,
+          type: 'agent_decision',
+          confidence: 'automated'
+        });
+      }
+    }
+    return decisions;
+  }
+
+  /**
+   * Extract insights from Augment agent actions
+   */
+  extractAugmentAgentInsights(agentActions) {
+    const insights = [];
+    for (const action of agentActions) {
+      const content = action.content || '';
+      // Agent actions provide insights into development workflow
+      insights.push({
+        timestamp: action.timestamp,
+        insight: `Augment workflow insight: AI agent performed automated action in development environment`,
+        type: 'AGENT_WORKFLOW',
+        details: content.substring(0, 150) + (content.length > 150 ? '...' : '')
+      });
+    }
+    return insights.slice(-3); // Most recent insights
+  }
+
+  /**
+   * Extract file operations from Augment agent actions
+   */
+  extractAugmentFileOperations(agentActions) {
+    const operations = [];
+    for (const action of agentActions) {
+      if (action.workingDirectory && action.workingDirectory.includes('.ldb')) {
+        // File extracted from LevelDB
+        operations.push({
+          timestamp: action.timestamp,
+          files: [action.workingDirectory],
+          action: 'extracted_from_leveldb',
+          source: 'augment'
+        });
+      }
+    }
+    return operations;
+  }
+
+  /**
+   * Generate Augment-specific conversation flow
+   */
+  generateAugmentFlow(agentActions) {
+    if (!agentActions || agentActions.length === 0) {
+      return 'augment_workflow|no_actions_detected';
+    }
+    const flowSteps = agentActions.map(action => 
+      `AGENT_ACTION:${action.timestamp}:${(action.content || '').substring(0, 50)}`
+    );
+    return flowSteps.join('|');
+  }
+
+  /**
+   * Extract what Augment agent is working on
+   */
+  extractAugmentWorkingState(agentActions) {
+    if (agentActions.length === 0) return 'No agent actions detected';
+    const latestAction = agentActions[agentActions.length - 1];
+    return `Augment agent development assistance: ${latestAction.content.substring(0, 100)}`;
+  }
+
+  /**
+   * Extract Augment-specific blockers
+   */
+  extractAugmentBlockers(agentActions) {
+    // Augment agents typically don't have blockers, they execute actions
+    return 'No blockers - agent executed automated actions';
+  }
+
+  /**
+   * Extract next action for Augment workflow
+   */
+  extractAugmentNextAction(agentActions) {
+    return 'Continue monitoring Augment agent activities and development workflow';
+  }
+
   /**
    * Generate specialized content based on classification
    */
@@ -769,15 +1008,23 @@ flow=${analysis.flow.substring(0, 200)}...
   }
 
   /**
-   * Generate content for conversation-memory.aicf
+   * Generate content for conversation-memory.aicf with source headers
    */
   generateConversationMemoryContent(analysis, timestamp, chunkId) {
+    const sourceHeader = this.currentPlatform ? `[${this.currentPlatform.toUpperCase()}]` : '[UNKNOWN]';
+    // Extract real user intent from analysis
+    const realUserIntent = (analysis.userIntents && analysis.userIntents.length > 0) 
+      ? analysis.userIntents[0].intent 
+      : analysis.userIntent || 'no_intent_detected';
+    
     return `@CONVERSATION:${chunkId}
+${sourceHeader}
 timestamp=${timestamp}
-flow=${analysis.flow}
-user_intent=${analysis.userIntent}
-ai_actions=${analysis.aiActions.join(',')}
-key_topics=${analysis.keyTopics.join(',')}
+platform=${this.currentPlatform || 'unknown'}
+flow=${analysis.flow || 'unknown_flow'}
+user_intent=${realUserIntent ? realUserIntent.substring(0, 200) + '...' : 'no_intent'}
+ai_actions=${Array.isArray(analysis.aiActions) ? analysis.aiActions.map(a => (typeof a === 'object' ? a.type : a) || 'unknown').join(',') : (analysis.aiActions || 'processing')}
+key_topics=${Array.isArray(analysis.keyTopics) ? analysis.keyTopics.join(',') : (analysis.keyTopics || 'GENERAL')}
 outcome=session_processed
 `;
   }
@@ -786,11 +1033,19 @@ outcome=session_processed
    * Generate content for technical-context.aicf
    */
   generateTechnicalContent(analysis, timestamp, chunkId) {
+    const insights = Array.isArray(analysis.insights) 
+      ? analysis.insights.map(i => typeof i === 'object' ? i.insight || i.details || 'insight' : i).join('|')
+      : 'no_insights';
+    const topics = Array.isArray(analysis.keyTopics) 
+      ? analysis.keyTopics.join(',')
+      : 'GENERAL';
+    
     return `@TECHNICAL:${chunkId}
 timestamp=${timestamp}
-insights=${analysis.insights.join('|')}
-technical_flow=${analysis.flow}
-topics=${analysis.keyTopics.join(',')}
+platform=${this.currentPlatform || 'unknown'}
+insights=${insights}
+technical_flow=${analysis.flow || 'unknown_flow'}
+topics=${topics}
 `;
   }
 
@@ -798,10 +1053,15 @@ topics=${analysis.keyTopics.join(',')}
    * Generate content for decisions.aicf
    */
   generateDecisionContent(analysis, timestamp, chunkId) {
+    const decisions = Array.isArray(analysis.decisions) 
+      ? analysis.decisions.map(d => typeof d === 'object' ? d.decision || d.type || 'decision' : d).join('|')
+      : 'no_decisions';
+    
     return `@DECISION:${chunkId}
 timestamp=${timestamp}
-decisions=${analysis.decisions.join('|')}
-context=${analysis.flow}
+platform=${this.currentPlatform || 'unknown'}
+decisions=${decisions}
+context=${analysis.flow || 'unknown_flow'}
 impact=MEDIUM
 confidence=HIGH
 `;
@@ -811,11 +1071,16 @@ confidence=HIGH
    * Generate content for work-state.aicf
    */
   generateWorkStateContent(analysis, timestamp, chunkId) {
+    const actions = Array.isArray(analysis.aiActions) 
+      ? analysis.aiActions.map(a => typeof a === 'object' ? a.type || a.action || 'action' : a).join(',')
+      : 'processing';
+    
     return `@WORK:${chunkId}
 timestamp=${timestamp}
+platform=${this.currentPlatform || 'unknown'}
 status=progressing
-actions=${analysis.aiActions.join(',')}
-flow=${analysis.flow}
+actions=${actions}
+flow=${analysis.flow || 'unknown_flow'}
 `;
   }
 

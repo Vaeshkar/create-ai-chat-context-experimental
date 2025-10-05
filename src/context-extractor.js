@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
 const os = require('os');
+const AugmentParser = require('./session-parsers/augment-parser');
 
 /**
  * Universal AI Context Extractor
@@ -262,202 +263,141 @@ class WarpContextSource extends ContextSource {
 
 /**
  * Augment VS Code Extension Context Source
- * Extracts conversations from Augment's agent edit shard files
+ * Extracts conversations from Augment's LevelDB storage using AugmentParser
  */
 class AugmentContextSource extends ContextSource {
     constructor() {
         super();
-        this.augmentDirs = this.findAugmentStorageDirectories();
-    }
-
-    findAugmentStorageDirectories() {
-        const homeDir = os.homedir();
-        const vscodeWorkspaceDir = path.join(homeDir, 'Library/Application Support/Code/User/workspaceStorage');
-        
-        if (!fs.existsSync(vscodeWorkspaceDir)) {
-            return [];
-        }
-
-        const augmentDirs = [];
-        const workspaces = fs.readdirSync(vscodeWorkspaceDir);
-        
-        for (const workspace of workspaces) {
-            const augmentPath = path.join(vscodeWorkspaceDir, workspace, 'Augment.vscode-augment');
-            if (fs.existsSync(augmentPath)) {
-                augmentDirs.push(augmentPath);
-            }
-        }
-        
-        return augmentDirs;
+        this.parser = new AugmentParser();
     }
 
     isAvailable() {
-        return this.augmentDirs.length > 0;
+        return this.parser.isAvailable();
+    }
+
+    getStatus() {
+        return this.parser.getStatus();
+    }
+
+    getExtractionStats() {
+        return this.parser.getExtractionStats();
     }
 
     async listConversations(options = {}) {
         if (!this.isAvailable()) {
-            throw new Error('Augment storage directories not found. Please ensure Augment VS Code extension is installed.');
+            return [];
         }
 
-        const limit = options.limit || 10;
-        const conversations = [];
+        const limit = options.limit || 50;
+        const workspaceLimit = options.workspaceLimit || 3;
+        
+        try {
+            const conversations = await this.parser.extractConversations(workspaceLimit);
+            
+            // Convert to standard format and limit results
+            return conversations.slice(0, limit).map(conv => ({
+                id: conv.id,
+                source: 'augment',
+                workspaceId: conv.workspaceId,
+                conversationId: conv.conversationId,
+                created: conv.timespan ? conv.timespan.start : conv.timestamp,
+                updated: conv.timestamp,
+                messageCount: conv.messageCount || 1,
+                userMessageCount: conv.userMessageCount || 0,
+                assistantMessageCount: conv.assistantMessageCount || 0,
+                type: conv.type,
+                filePath: conv.filePath,
+                content: conv.content ? conv.content.substring(0, 200) + '...' : '', // Preview
+                duration: conv.timespan ? conv.timespan.duration : 0,
+                metadata: conv.metadata
+            }));
 
-        // Look through all Augment directories
-        for (const augmentDir of this.augmentDirs) {
-            const agentEditsDir = path.join(augmentDir, 'augment-user-assets/agent-edits/shards');
-            if (!fs.existsSync(agentEditsDir)) continue;
-
-            const shardFiles = fs.readdirSync(agentEditsDir)
-                .filter(file => file.endsWith('.json'))
-                .map(file => {
-                    const filePath = path.join(agentEditsDir, file);
-                    const stats = fs.statSync(filePath);
-                    return {
-                        file,
-                        path: filePath,
-                        modified: stats.mtime
-                    };
-                })
-                .sort((a, b) => b.modified - a.modified)
-                .slice(0, limit);
-
-            // Parse shard files to get conversation IDs and metadata
-            for (const shard of shardFiles) {
-                try {
-                    const content = JSON.parse(fs.readFileSync(shard.path, 'utf-8'));
-                    const conversationIds = Object.keys(content.checkpoints || {})
-                        .map(key => key.split(':')[0])
-                        .filter((id, index, arr) => arr.indexOf(id) === index); // unique IDs
-
-                    for (const conversationId of conversationIds) {
-                        if (!conversations.find(c => c.id === conversationId)) {
-                            // Get first and last timestamps for this conversation
-                            const checkpoints = Object.entries(content.checkpoints)
-                                .filter(([key]) => key.startsWith(conversationId))
-                                .map(([, checkpoints]) => checkpoints)
-                                .flat();
-
-                            const timestamps = checkpoints.map(cp => cp.timestamp).filter(t => t > 0);
-                            const minTime = timestamps.length > 0 ? Math.min(...timestamps) : Date.now();
-                            const maxTime = timestamps.length > 0 ? Math.max(...timestamps) : Date.now();
-
-                            conversations.push({
-                                id: conversationId,
-                                source: 'augment',
-                                created: new Date(minTime).toISOString(),
-                                updated: new Date(maxTime).toISOString(),
-                                messageCount: checkpoints.length,
-                                queryCount: checkpoints.length, // Approximate
-                                shardFile: shard.file
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`Could not parse Augment shard file ${shard.file}:`, error.message);
-                }
-            }
+        } catch (error) {
+            console.warn('Warning: Could not list Augment conversations:', error.message);
+            return [];
         }
-
-        return conversations
-            .sort((a, b) => new Date(b.updated) - new Date(a.updated))
-            .slice(0, limit);
     }
 
     async extractConversation(conversationId, options = {}) {
         if (!this.isAvailable()) {
-            throw new Error('Augment storage directories not found.');
+            throw new Error('Augment not available.');
         }
 
-        let conversationData = null;
-        let allCheckpoints = [];
+        try {
+            // Extract conversations and find the one with matching ID
+            // Use same workspace limit as listConversations for consistency
+            const conversations = await this.parser.extractConversations(options.workspaceLimit || 3);
+            const conversation = conversations.find(conv => 
+                conv.id === conversationId || 
+                conv.conversationId === conversationId
+            );
 
-        // Search through all shard files for this conversation
-        for (const augmentDir of this.augmentDirs) {
-            const agentEditsDir = path.join(augmentDir, 'augment-user-assets/agent-edits/shards');
-            if (!fs.existsSync(agentEditsDir)) continue;
-
-            const shardFiles = fs.readdirSync(agentEditsDir)
-                .filter(file => file.endsWith('.json'));
-
-            for (const shardFile of shardFiles) {
-                try {
-                    const content = JSON.parse(fs.readFileSync(path.join(agentEditsDir, shardFile), 'utf-8'));
-                    const relevantCheckpoints = Object.entries(content.checkpoints || {})
-                        .filter(([key]) => key.startsWith(conversationId))
-                        .map(([key, checkpoints]) => ({ key, checkpoints }))
-                        .filter(item => item.checkpoints.length > 0);
-
-                    if (relevantCheckpoints.length > 0) {
-                        allCheckpoints.push(...relevantCheckpoints.map(item => ({
-                            filePath: item.key,
-                            checkpoints: item.checkpoints
-                        })));
-                    }
-                } catch (error) {
-                    console.warn(`Could not parse shard file ${shardFile}:`, error.message);
-                }
+            if (!conversation) {
+                throw new Error(`Conversation ${conversationId} not found in Augment data`);
             }
-        }
 
-        if (allCheckpoints.length === 0) {
-            throw new Error(`Augment conversation ${conversationId} not found`);
-        }
-
-        // Flatten and sort all checkpoints by timestamp
-        const flatCheckpoints = allCheckpoints
-            .map(item => item.checkpoints.map(cp => ({
-                ...cp,
-                filePath: item.filePath
-            })))
-            .flat()
-            .sort((a, b) => a.timestamp - b.timestamp);
-
-        // Convert to messages format
-        const messages = flatCheckpoints.map((checkpoint, index) => {
-            const filePath = checkpoint.filePath.split(':')[1] || 'unknown';
-            const fileName = path.basename(filePath);
+            // Handle both grouped and individual conversations
+            const isGroupedConversation = conversation.messages && Array.isArray(conversation.messages);
             
             return {
-                type: 'AGENT_EDIT',
-                timestamp: checkpoint.timestamp > 0 ? new Date(checkpoint.timestamp).toISOString() : new Date().toISOString(),
-                workingDirectory: path.dirname(filePath),
-                content: `Agent edit on ${fileName} (${checkpoint.sourceToolCallRequestId})`,
-                context: {
-                    sourceToolCallRequestId: checkpoint.sourceToolCallRequestId,
-                    editSource: checkpoint.editSource,
-                    filePath: filePath,
-                    conversationId: checkpoint.conversationId,
-                    documentMetadata: checkpoint.documentMetadata
-                }
+                id: conversation.id,
+                source: 'augment',
+                aiAssistant: 'augment', // For platform detection
+                conversationId: conversation.conversationId,
+                workspaceId: conversation.workspaceId,
+                created: conversation.timespan ? conversation.timespan.start : conversation.timestamp,
+                updated: conversation.timestamp,
+                messageCount: conversation.messageCount || 1,
+                content: conversation.content,
+                type: conversation.type,
+                metadata: {
+                    ...conversation.metadata,
+                    source: 'augment',
+                    chunkId: conversation.id,
+                    isGrouped: isGroupedConversation,
+                    userMessageCount: conversation.userMessageCount || 0,
+                    assistantMessageCount: conversation.assistantMessageCount || 0
+                },
+                workingDirectories: conversation.filePath ? [conversation.filePath] : [process.cwd()],
+                timespan: conversation.timespan || {
+                    start: conversation.timestamp,
+                    end: conversation.timestamp,
+                    duration: 0
+                },
+                messages: isGroupedConversation ? 
+                    // Convert grouped messages to standard format
+                    conversation.messages.map(msg => ({
+                        type: msg.type === 'user' ? 'USER_QUERY' : 'AI_ACTION',
+                        role: msg.type === 'user' ? 'user' : 'assistant',
+                        timestamp: msg.timestamp,
+                        content: msg.content,
+                        source: 'augment-leveldb',
+                        workingDirectory: msg.filePath || conversation.filePath || process.cwd(),
+                        context: {
+                            aiSource: 'augment',
+                            extractedFrom: 'leveldb-grouped',
+                            messageType: msg.metadata?.messageType
+                        }
+                    })) :
+                    // Single message format (backward compatibility)
+                    [{
+                        type: conversation.type === 'user' ? 'USER_QUERY' : 'AI_ACTION',
+                        role: conversation.type === 'user' ? 'user' : 'assistant',
+                        timestamp: conversation.timestamp,
+                        content: conversation.content,
+                        source: 'augment-leveldb',
+                        workingDirectory: conversation.filePath || process.cwd(),
+                        context: {
+                            aiSource: 'augment',
+                            extractedFrom: 'leveldb-single'
+                        }
+                    }]
             };
-        });
 
-        // Get unique working directories
-        const workingDirs = [...new Set(messages
-            .map(m => m.workingDirectory)
-            .filter(dir => dir && dir !== 'unknown')
-        )];
-
-        // Calculate timespan
-        const timestamps = messages.map(m => new Date(m.timestamp)).filter(t => !isNaN(t));
-        const startTime = timestamps.length > 0 ? Math.min(...timestamps) : new Date();
-        const endTime = timestamps.length > 0 ? Math.max(...timestamps) : new Date();
-
-        return {
-            id: conversationId,
-            source: 'augment',
-            created: new Date(startTime).toISOString(),
-            updated: new Date(endTime).toISOString(),
-            messageCount: messages.length,
-            workingDirectories: workingDirs,
-            timespan: {
-                start: new Date(startTime).toISOString(),
-                end: new Date(endTime).toISOString(),
-                duration: endTime - startTime
-            },
-            messages: messages
-        };
+        } catch (error) {
+            console.warn('Warning: Could not extract Augment conversation:', error.message);
+            throw error;
+        }
     }
 }
 

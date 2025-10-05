@@ -75,8 +75,14 @@ class AutoUpdater {
       let bestSource = null;
       let latestTimestamp = null;
       
-      // Check all available AI sources for the most recent conversation
-      for (const source of availableSources) {
+      // AUTO-UPDATER SOURCE-EXCLUSIVE MODE:
+      // If Augment is available and has recent activity, ONLY use Augment
+      // This prevents mixing shallow/redundant data from multiple AI sources
+      const sourcesToCheck = this.getSourcesByExclusivePriority(availableSources);
+      console.log(chalk.blue(`   Auto-updater mode: ${sourcesToCheck.mode} - checking ${sourcesToCheck.sources.join(', ')}`));
+      
+      // Check sources according to exclusive priority
+      for (const source of sourcesToCheck.sources) {
         try {
           // Skip ChatGPT if encrypted (metadata only)
           const limit = source === 'chatgpt' ? 1 : 3;
@@ -223,6 +229,43 @@ class AutoUpdater {
         fs.unlinkSync(tempFile);
       }
     }
+  }
+
+  /**
+   * Get sources to check based on exclusive priority mode
+   * If Augment is available and has recent activity, only use Augment
+   * This prevents redundant/shallow data mixing from multiple AI sources
+   */
+  getSourcesByExclusivePriority(availableSources) {
+    // Check if Augment is available and has recent activity
+    if (availableSources.includes('augment')) {
+      try {
+        const AugmentParser = require('./session-parsers/augment-parser');
+        const augmentParser = new AugmentParser();
+        const status = augmentParser.getStatus();
+        
+        if (status.available && status.recentWorkspaces > 0) {
+          console.log(chalk.blue(`   🎯 Augment detected with ${status.recentWorkspaces} recent workspaces - using EXCLUSIVE mode`));
+          return {
+            mode: 'AUGMENT_EXCLUSIVE',
+            sources: ['augment']
+          };
+        }
+      } catch (error) {
+        console.log(chalk.yellow(`   Augment detection error: ${error.message}`));
+      }
+    }
+    
+    // Fallback: check all sources (but prioritize Warp > others)
+    const prioritizedSources = availableSources.sort((a, b) => {
+      const priority = { 'warp': 1, 'cursor': 2, 'copilot': 3, 'claude': 4, 'chatgpt': 5 };
+      return (priority[a] || 99) - (priority[b] || 99);
+    });
+    
+    return {
+      mode: 'MULTI_SOURCE',
+      sources: prioritizedSources
+    };
   }
 
   getStatus() {

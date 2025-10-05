@@ -190,31 +190,40 @@ class MarkdownUpdater {
       existingContent = fs.readFileSync(mdPath, 'utf-8');
     }
 
-    // Find where to insert new entries
+    // Find where to insert new entries - PRESERVE EXISTING HISTORY!
     const historyMarker = '## 📋 CHAT HISTORY (Most Recent First)';
     const templateMarker = '## Template for New Entries';
     
     let beforeHistory = '';
+    let existingHistory = '';
     let afterTemplate = '';
     
     if (existingContent.includes(historyMarker)) {
       beforeHistory = existingContent.split(historyMarker)[0] + historyMarker + '\n\n---\n\n';
-      if (existingContent.includes(templateMarker)) {
+      
+      // CRITICAL FIX: Extract and preserve existing conversation history
+      const historySection = existingContent.split(historyMarker)[1];
+      if (historySection && existingContent.includes(templateMarker)) {
+        existingHistory = historySection.split(templateMarker)[0];
         afterTemplate = '\n\n---\n\n' + existingContent.split(templateMarker).slice(1).join(templateMarker);
+      } else {
+        // No template marker, everything after history marker is history
+        existingHistory = historySection || '';
       }
     } else {
       // Use template if no existing structure
       beforeHistory = this.getConversationLogTemplate().split(historyMarker)[0] + historyMarker + '\n\n---\n\n';
       afterTemplate = '\n\n---\n\n' + this.getConversationLogTemplate().split(templateMarker).slice(1).join(templateMarker);
     }
-
+    
     // Apply memory decay for better human readability
     const processedConversations = this.applyMemoryDecayToConversations(conversationsData);
     
     // Generate entries from processed SQLite data
     const newEntries = processedConversations.map(conv => this.formatConversationEntryFromSQLite(conv)).join('\n\n---\n\n');
-
-    return beforeHistory + newEntries + afterTemplate;
+    
+    // CRITICAL FIX: PREPEND new entries to existing history (don't replace it!)
+    return beforeHistory + newEntries + (existingHistory ? '\n\n---\n\n' + existingHistory : '') + afterTemplate;
   }
 
   /**

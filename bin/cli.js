@@ -237,7 +237,10 @@ program
         let bestSource = null;
         let latestTimestamp = null;
         
-        // Check all available AI sources for the most recent conversation
+        // Manual update command checks ALL sources to find the most recent
+        // (Source-exclusive mode is only for auto-update daemon)
+        console.log(chalk.blue(`   Manual update mode: checking all sources for latest conversation`));
+        
         for (const source of availableSources) {
           try {
             const conversations = await extractor.listConversations(source, { limit: 1 });

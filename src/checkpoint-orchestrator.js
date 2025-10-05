@@ -230,15 +230,27 @@ class CheckpointOrchestrator {
   async writeToFiles(structuredData) {
     this.log(chalk.cyan('💾 Writing to .aicf and .ai files...'));
     
+    // Use MarkdownUpdater for rich conversation-log.md entries (not generic FileWriter)
+    const MarkdownUpdater = require('./agents/markdown-updater');
+    const markdownUpdater = new MarkdownUpdater({ verbose: this.verbose });
+    
+    // Write rich markdown content
+    this.log(chalk.blue('📝 Using MarkdownUpdater for rich conversation-log.md content...'));
+    const markdownResult = await markdownUpdater.updateAllMarkdownFiles();
+    
+    // Also use FileWriter for .aicf files (but not for conversation-log.md)
     const writeResult = await this.agents.fileWriter.write(structuredData.sections, structuredData.metadata);
     
-    this.log(chalk.green(`  ✅ Updated ${writeResult.filesUpdated.length} files`));
-    writeResult.filesUpdated.forEach(file => {
+    // Combine results
+    const allFilesUpdated = [...writeResult.filesUpdated, ...markdownResult.updated.map(f => `.ai/${f}`)];
+    
+    this.log(chalk.green(`  ✅ Updated ${allFilesUpdated.length} files`));
+    allFilesUpdated.forEach(file => {
       this.log(chalk.dim(`    - ${file}`));
     });
     
     return {
-      filesUpdated: writeResult.filesUpdated,
+      filesUpdated: allFilesUpdated,
       memoryDecayApplied: false // Will be set by memory decay process
     };
   }
