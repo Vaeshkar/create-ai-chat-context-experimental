@@ -1,0 +1,36 @@
+AICF (AI Context Format) - Revolutionary AI Context Compression System
+Copyright (c) 2025 Dennis van Leeuwen. All rights reserved.
+
+Original Innovation: 95%+ compression with zero semantic loss
+Co-developed with Claude AI Assistant (Anthropic)
+
+This software is licensed under the GNU Affero General Public License v3.0 or later.
+See LICENSE file for complete license terms.
+
+PATENT CLAIMS:
+This project includes potentially patentable inventions related to:
+1. Method for compressing AI conversation data while maintaining semantic accessibility
+2. Line-numbered indexing system enabling O(1) access patterns  
+3. Semantic tag system (@CONVERSATION, @STATE, etc.) for AI-native parsing
+4. Pipe-delimited format achieving >90% compression without preprocessing requirements
+
+Original Publication Date: 2025-10-05T18:54:49Z
+Priority Date: 2025-10-05T18:54:49Z
+
+THIRD PARTY COMPONENTS:
+This software includes dependencies with their own licenses.
+See package.json and node_modules for individual component licenses.
+
+ATTRIBUTION REQUIREMENT:
+Any derivative work, publication, or commercial use must include:
+- Original inventor attribution: Dennis van Leeuwen
+- Co-development credit: Claude AI Assistant (Anthropic)
+- Reference to this original implementation
+- Link to official repository
+
+For inquiries regarding commercial licensing or patent matters:
+Contact: Dennis van Leeuwen
+Email: [To be added]
+GitHub: https://github.com/Vaeshkar/create-ai-chat-context
+
+This notice must be preserved in all copies or substantial portions of the software.

@@ -2019,3 +2019,13 @@ COMMAND_END:31123:2025-10-05T10:13:05Z:0
 COMMAND_START:31123:2025-10-05T10:13:13Z:cd /Users/leeuwen/Programming/create-ai-chat-context && git --no-pager log --oneline -15
 COMMAND_END:31123:2025-10-05T10:13:13Z:0
 COMMAND_START:31123:2025-10-05T10:13:22Z:cd /Users/leeuwen/Programming && echo "🚀 Creating experimental repo..." && gh repo create create-ai-chat-context-experimental --public --description "Experimental version of AI chat context system with advanced features and automation"
+COMMAND_END:31123:2025-10-05T10:19:19Z:0
+COMMAND_START:31123:2025-10-05T10:19:26Z:cd /Users/leeuwen/Programming/create-ai-chat-context-experimental && echo "🔍 Experimental repo structure:" && ls -la && echo -e "
+📦 Installing dependencies..." && npm install
+COMMAND_END:31123:2025-10-05T10:19:30Z:0
+COMMAND_START:31123:2025-10-05T10:19:38Z:cd /Users/leeuwen/Programming/create-ai-chat-context-experimental && echo "🧪 Testing experimental version:" && node bin/cli.js --version
+COMMAND_END:31123:2025-10-05T10:19:38Z:0
+COMMAND_START:31123:2025-10-05T10:19:46Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🎯 Stable version:" && node bin/cli.js --version && echo -e "
+🔬 Experimental version:" && cd ../create-ai-chat-context-experimental && node bin/cli.js --version
+COMMAND_END:31123:2025-10-05T10:19:46Z:0
+COMMAND_START:31123:2025-10-05T10:22:28Z:cd /Users/leeuwen/Programming/create-ai-chat-context && echo "🎯 Back to stable version" && pwd && node bin/cli.js --version
