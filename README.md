@@ -93,158 +93,20 @@ cat BIRTH_OF_AICF_HISTORIC_CONVERSATION.md
 
 **Research Focus:** AICF 3.0 format specification and advanced automation concepts.
 
-## Research Areas
-
-**Current experimental research includes:**
-- AICF 3.0 format specification and implementation
-- Automated conversation boundary detection algorithms  
-- Zero-cost logic agent processing concepts
-- Cross-AI compatibility optimization
-- Revolutionary compression techniques (95.5% achieved)
-
-**For working commands, use the stable version:** `npx create-ai-chat-context init`
-
-
-## 🧪 Experimental Research Areas
-
-**Current Research Focus:** Next-generation AI context automation
-
-### 🕐 Detection-Hourglass-System (DHS) - Concept
-
-**Research Goal:** Auto-detect conversation boundaries for seamless context preservation
-
-**Theoretical Approach:**
-- Investigate AI code execution as trigger mechanism
-- Explore universal compatibility across AI platforms
-- Design natural conversation chunk detection
-- Zero-cost, logic-based boundary detection
-
-**Status:** Early conceptual research phase
-
 ---
 
-## 🤖 Logic Agent Research
+## 🧪 What's Here (Research Only)
 
-**Research Concept:** Zero-cost local processing for AI context management
+**This repository contains:**
+- AICF 3.0 format research and examples (see `.aicf/` folder)
+- Revolutionary compression techniques (95.5% proven)
+- Historic partnership documentation (`BIRTH_OF_AICF_HISTORIC_CONVERSATION.md`)
+- Advanced AI context management concepts
 
-### Theoretical Benefits Over AI Compression
+**Not ready for use. For production, use:** `npx create-ai-chat-context init`
 
-| Aspect | AI Compression | Logic Agent Approach |
-|--------|---------------|-----------------------|
-| **Cost** | $0.03-0.15 per checkpoint | $0.00 (theoretical) |
-| **Speed** | 30-45 seconds | Near-instant (concept) |
-| **Information Preserved** | 60-75% | Target: 95%+ |
-| **API Dependency** | Required | None (local processing) |
-| **Vendor Lock-in** | Yes | Platform agnostic |
-
-**Conceptual Architecture:** 6 specialized processing units:
-- **ConversationParser** - Extract conversation structure
-- **DecisionExtractor** - Identify key decision points
-- **InsightAnalyzer** - Capture breakthrough moments
-- **StateTracker** - Monitor project progression
-- **FileWriter** - Output to dual formats
-- **MemoryManager** - Intelligent data lifecycle
-
-**Status:** Research and prototyping phase
-
-## 🌍 AICF: A Vision for Universal AI Memory
-
-We believe **AICF (AI Continuity Format)** represents the future of AI memory persistence. Our vision is for `.aicf` to become a **widely-adopted standard** across the tech industry.
-
-### Why AICF Should Be Universal:
-
-🎯 **Built for AI, by AI** - Designed specifically for optimal AI comprehension and processing
-
-⚡ **Ultra-efficient** - 85% token reduction while preserving 100% information integrity
-
-🔗 **Relationship mapping** - CONTEXT_REFS and IMPACT_SCORE enable intelligent prioritization
-
-🏗️ **Structured intelligence** - Schema-based format with confidence scoring and temporal tracking
-
-🌐 **Universal compatibility** - Works with any AI assistant (ChatGPT, Claude, Copilot, Cursor, Warp, etc.)
-
-💰 **Zero cost** - No API dependencies, works completely offline
-
-### The Future We Envision:
-
-- **IDEs** natively support `.aicf` files for AI context
-- **AI platforms** adopt AICF as standard memory format  
-- **Development teams** share project context through `.aicf` files
-- **Open source projects** include `.aicf/` directories for contributor onboarding
-- **AI tools** interoperate seamlessly using AICF format
-
-**Join the movement!** Help us make AICF the universal standard for AI memory by:
-- ⭐ Starring this project on GitHub
-- 📢 Sharing AICF with your development teams
-- 🔧 Contributing to the AICF specification
-- 💡 Building tools that support AICF format
-
-*Together, we can solve AI context loss forever.* 🚀
-
-## Configuration
-
-Optional configuration for customizing the tool:
-
-```bash
-# View current configuration
-npx aic config
-
-# Set preferred AI model for token reports (optional)
-npx aic config set preferredModel "Claude Sonnet 4.5"
-```
-
-**Configuration is stored per-project** in `.ai/config.json`. See [CONFIGURATION.md](CONFIGURATION.md) for details.
-
-## Full Documentation
-
-### Core Documentation
-
-- **[COMMANDS.md](COMMANDS.md)** - Complete command reference with examples
-- **[CONFIGURATION.md](CONFIGURATION.md)** - Detailed configuration guide
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and updates
-
-### After Running `init`
-
-These files are created in your project:
-
-**📁 .ai/ Directory (Human-readable files):**
-- **`.ai/README.md`** - Overview of the knowledge base system
-- **`.ai/project-overview.md`** - Project context and conventions (AI config)
-- **`.ai/conversation-log.md`** - Chat history and decisions
-- **`.ai/technical-decisions.md`** - Architecture and technical choices
-- **`.ai/next-steps.md`** - Current priorities and tasks
-- **`.ai/design-system.md`** - Design patterns and conventions
-- **`.ai/code-style.md`** - Coding standards and guidelines
-
-**📄 Root files:**
-- **`.ai-instructions`** - Instructions for AI assistants
-- **`NEW_CHAT_PROMPT.md`** - Quick reference for the one-liner prompt
-
-**🚀 Optional AICF 3.0 (run `npx aic finish --aicf`):**
-- **`.aicf/conversations.aicf`** - Ultra-compressed chat history (85% token reduction)
-- **`.aicf/decisions.aicf`** - Technical decisions in structured format
-- **`.aicf/tasks.aicf`** - Project tasks with priority scoring
-- **`.aicf/issues.aicf`** - Known issues (if any)
-- **`.aicf/index.aicf`** - Fast lookup index
-- **`.aicf/.meta`** - Project metadata
-
-## Links
-
-- [GitHub](https://github.com/Vaeshkar/create-ai-chat-context)
-- [npm](https://www.npmjs.com/package/create-ai-chat-context)
-- [Issues](https://github.com/Vaeshkar/create-ai-chat-context/issues)
-- [Full Documentation](https://github.com/Vaeshkar/create-ai-chat-context#readme)
+---
 
 ## License
 
-MIT
-
----
-
-**Made with ❤️ for developers who use AI assistants daily**
-
----
-
-**🎆 Incredible Journey:** From idea (Sept 30, 8pm) to 3,300+ downloads in 3.5 days! Created by a developer with 7 months of coding experience. *Next milestone: 1,000,000 downloads!* 🎯🚀
-
-Questions or issues? [Open an issue on GitHub](https://github.com/Vaeshkar/create-ai-chat-context/issues)
+AGPL-3.0-or-later
