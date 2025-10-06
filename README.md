@@ -18,9 +18,9 @@
 - **🔗 Complete pipeline** - 🚧 **PROTOTYPING** - Building advanced data flow architecture
 - **📊 AICF 3.0 Format** - ✅ **IMPLEMENTED** - Revolutionary 95.5% compression with semantic preservation
 
-> **AI Memory System with Zero-Cost Logic Agent Orchestrator**
+> **Experimental AI Context Research Platform**
 
-Create a `.ai/` knowledge base that preserves your conversation context using specialized logic agents. **Zero API costs. Lightning fast processing. Works with all major AI assistants.**
+Advanced research into next-generation AI context management. Exploring revolutionary AICF format, automated conversation detection, and zero-cost context preservation.
 
 ---
 
@@ -44,19 +44,6 @@ Create a `.ai/` knowledge base that preserves your conversation context using sp
 
 ---
 
-## 🚨 FOR AI ASSISTANTS: READ THIS FIRST 🚨
-
-**CRITICAL: Before working on this project, read the `.ai/` knowledge base:**
-
-1. **`.ai/project-overview.md`** - Project context and conventions
-2. **`.ai/conversation-log.md`** - Key decisions from previous chats
-3. **`.ai/technical-decisions.md`** - Why we chose X over Y
-
-**Why?** This preserves institutional knowledge so you have full context immediately.
-
-**See `.ai-instructions` file for detailed instructions.**
-
----
 
 ## The Problem
 
@@ -64,138 +51,58 @@ When working with AI coding assistants (ChatGPT, Claude, Copilot, Cursor, Augmen
 
 Unlike other AI context tools that focus on project planning and rules, `create-ai-chat-context` focuses on preserving conversation history and technical decisions across sessions. It works with ALL AI assistants and maintains institutional knowledge through files like `conversation-log.md`, `technical-decisions.md`, and `known-issues.md`.
 
-## The Solution
+## Experimental Approach
 
-`create-ai-chat-context` creates a `.ai/` knowledge base in your project that AI assistants read at the start of each chat. **Plus optional `.aicf/` format for 85% token reduction.** Result: AI gets full context immediately. No more re-explaining.
+**Research Goal:** Next-generation AI context management through:
 
-### 📁 What Gets Created
+**✅ PROVEN: AICF 3.0 Format**
+- Revolutionary 95.5% compression with zero semantic loss
+- Structured semantic tags optimized for AI consumption
+- Cross-AI compatibility (Claude, GPT, Copilot, Cursor, etc.)
 
-The tool creates **7 essential documentation files** in your project:
+**🚧 IN DEVELOPMENT: Advanced Features**
+- Automated conversation boundary detection
+- Zero-cost logic agent processing
+- Real-time context preservation
 
-| File                       | Purpose                           |
-| -------------------------- | --------------------------------- |
-| **conversation-log.md**    | Chat history and key decisions    |
-| **technical-decisions.md** | Why you chose X over Y            |
-| **next-steps.md**          | Current priorities and tasks      |
-| **project-overview.md**    | Project context for AI assistants |
-| **design-system.md**       | Design patterns and conventions   |
-| **code-style.md**          | Coding standards and guidelines   |
-| **README.md**              | Overview of the knowledge base    |
+**Current Focus:** Building on stable `.ai/` knowledge base foundation with revolutionary `.aicf/` compression format.
 
-**Simple, focused, and effective.** No complex formats or token optimization needed.
+## 💡 Foundation
 
-## 🎯 32 Comprehensive Templates
+**Built on proven foundation:** Inherits 32 comprehensive templates from stable version covering all major programming languages and frameworks (JavaScript/TypeScript, Python, Rust, Go, Java, .NET, PHP, Ruby, Mobile, DevOps, AI/ML, Blockchain, GameDev, etc.)
 
-**Mind-blowing coverage:** We support virtually every major programming language, framework, and development category!
-
-### JavaScript/TypeScript Ecosystem
-- **nextjs** - Next.js, React, TypeScript projects
-- **react** - React, Create React App, Vite projects  
-- **vue** - Vue.js, Nuxt.js, Vite projects
-- **angular** - Angular projects with TypeScript
-- **node** - Node.js backend projects, Express, NestJS
-
-### Python Ecosystem
-- **python** - General Python projects
-- **django** - Django web framework projects
-- **fastapi** - FastAPI backend projects  
-- **flask** - Flask web framework projects
-
-### Systems Programming
-- **rust** - Rust systems programming projects
-- **go** - Go backend and systems projects
-- **cpp** - C++ systems and application projects
-
-### Enterprise/JVM
-- **java** - Java projects, Spring Boot, Maven/Gradle
-- **spring** - Spring Boot, Spring Framework projects
-- **kotlin** - Kotlin projects, Android, multiplatform
-
-### .NET Ecosystem
-- **csharp** - C# .NET projects
-- **dotnet** - .NET Core, ASP.NET Core projects
-
-### Web Technologies
-- **php** - PHP projects, Laravel, Symfony
-- **laravel** - Laravel PHP framework projects
-- **ruby** - Ruby projects, Ruby on Rails
-- **rails** - Ruby on Rails web framework projects
-
-### Specialized Development
-- **mobile** - React Native, Flutter, Swift, Kotlin
-- **fullstack** - Full-stack projects with frontend + backend
-- **api** - Generic backend API projects
-- **database** - Database design, migrations, stored procedures
-- **devops** - Docker, Kubernetes, CI/CD, Infrastructure
-- **terraform** - Infrastructure as Code with Terraform
-- **ai_ml** - Machine Learning, Deep Learning, Data Science
-- **blockchain** - Smart contracts, DApps, cryptocurrency
-- **gamedev** - Unity, Unreal, indie games, mobile games
-
-**Each template includes:**
-- Language-specific project structure
-- Framework conventions and best practices
-- Common dependencies and tooling
-- Security and performance guidelines
-- Deployment strategies
-- Code style standards
+**Experimental additions:** Enhanced with revolutionary AICF 3.0 format research and next-generation automation concepts.
 
 
-## Quick Start
+## Experimental Setup
 
+**⚠️ For stable, production use: `npx create-ai-chat-context init`**
+
+**For experimental research:**
 ```bash
-# Auto-detect project type
-npx aic init
+# Clone experimental branch
+git clone https://github.com/Vaeshkar/create-ai-chat-context-experimental.git
+cd create-ai-chat-context-experimental
 
-# Or use specific technology template
-npx aic init --template nextjs     # Next.js/React projects
-npx aic init --template python     # Python projects  
-npx aic init --template rust       # Rust projects
-npx aic init --template go         # Go projects
-npx aic init --template java       # Java/Spring Boot
-npx aic init --template react      # React projects
-npx aic init --template vue        # Vue.js projects
-npx aic init --template fastapi    # Python FastAPI
-npx aic init --template django     # Django projects
-npx aic init --template devops     # DevOps/Infrastructure
-npx aic init --template ai_ml      # AI/ML projects
+# Explore AICF 3.0 format examples
+cat .aicf/*.aicf
 
-# Customize for your project
-vim .ai/project-overview.md
-vim .ai/technical-decisions.md
-
-# Commit to Git
-git add .ai/ .ai-instructions NEW_CHAT_PROMPT.md
-git commit -m "Add AI knowledge base"
-
-# In your next AI chat, start with:
-"Read .ai-instructions first, then help me with [your task]"
+# Study revolutionary compression
+cat BIRTH_OF_AICF_HISTORIC_CONVERSATION.md
 ```
 
-**💡 Tip:** Use `npx aic` instead of `npx create-ai-chat-context` for shorter commands!
+**Research Focus:** AICF 3.0 format specification and advanced automation concepts.
 
-## Key Commands
+## Research Areas
 
-```bash
-# Setup & Basic Usage
-npx aic init                    # Initialize knowledge base (7 files)
-npx aic universal               # Setup Universal AI Memory for ALL platforms 🌍
-npx aic migrate                 # Add missing .ai/ files
-npx aic migrate --to-aicf        # Convert to AICF 3.0 (85% token reduction)
-npx aic search "query"          # Find information in knowledge base
-npx aic stats                   # View analytics and token usage
-npx aic validate                # Check knowledge base quality
-npx aic config                  # Manage configuration
+**Current experimental research includes:**
+- AICF 3.0 format specification and implementation
+- Automated conversation boundary detection algorithms  
+- Zero-cost logic agent processing concepts
+- Cross-AI compatibility optimization
+- Revolutionary compression techniques (95.5% achieved)
 
-# 🧪 Experimental Features (In Development)
-# Note: These commands are part of ongoing research
-
-# 🤖 Logic Agent Checkpoint Orchestrator
-npx aic checkpoint --demo       # Test with demo data (instant)
-npx aic checkpoint --file data.json --verbose  # Process checkpoint
-npx aic memory-decay --verbose  # Apply intelligent memory decay
-
-```
+**For working commands, use the stable version:** `npx create-ai-chat-context init`
 
 
 ## 🧪 Experimental Research Areas
