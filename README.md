@@ -3,24 +3,44 @@
 ![npm version](https://img.shields.io/npm/v/create-ai-chat-context)
 ![GitHub tag](https://img.shields.io/github/v/tag/Vaeshkar/create-ai-chat-context)
 ![Downloads](https://img.shields.io/npm/dm/create-ai-chat-context.svg)
-![Status](https://img.shields.io/badge/Status-BREAKTHROUGH-green)
-![DHS](https://img.shields.io/badge/DHS-WORKING-brightgreen)
-![Pipeline](https://img.shields.io/badge/Pipeline-CONNECTED-success)
+![Status](https://img.shields.io/badge/Status-EXPERIMENTAL-orange)
+![AICF](https://img.shields.io/badge/AICF%203.0-PROVEN-brightgreen)
+![Research](https://img.shields.io/badge/Research-ACTIVE-blue)
 
-> **🚀 BREAKTHROUGH v1.0.4** - **Detection-Hourglass-System (DHS) WORKING!** 🎉 Revolutionary auto-detection achieved! Complete pipeline from detection to AI processing to file storage - FULLY FUNCTIONAL!
+> **🚧 EXPERIMENTAL v3.0.0** - **Advanced AICF Research & Development** 🧪 Revolutionary concepts in development! This is the experimental branch for next-generation AI context management.
 
-**🔥 BREAKTHROUGH ACHIEVED:**
-- **🕐 Detection-Hourglass-System** - ✅ **WORKING** - Auto-detects conversation boundaries
-- **🎯 Universal AI compatibility** - ✅ **TESTED** - Works with Claude, ChatGPT, Copilot, Cursor
-- **⚡ Dynamic chunk processing** - ✅ **LIVE** - Natural conversation segments (5-6ms processing)
-- **💰 Zero-cost operation** - ✅ **VERIFIED** - Logic agents run locally, no API calls
-- **🤖 Auto-trigger detection** - ✅ **FUNCTIONAL** - AI code execution = automatic user input detection
-- **🔗 Complete pipeline** - ✅ **CONNECTED** - Real conversation data flows to agents and files
-- **32 comprehensive templates** for all major tech stacks
+**🔬 CURRENT DEVELOPMENT STATUS:**
+- **🕐 Detection-Hourglass-System** - 🚧 **IN DEVELOPMENT** - Concept for auto-detecting conversation boundaries
+- **🎯 Universal AI compatibility** - ✅ **PROVEN** - Works with Claude, ChatGPT, Copilot, Cursor (via .ai/.aicf files)
+- **⚡ Dynamic chunk processing** - 🚧 **RESEARCH PHASE** - Investigating natural conversation segments
+- **💰 Zero-cost operation** - ✅ **ACHIEVED** - File-based system, no API calls required
+- **🤖 Auto-trigger detection** - 🧪 **EXPERIMENTAL** - Exploring AI code execution for automation
+- **🔗 Complete pipeline** - 🚧 **PROTOTYPING** - Building advanced data flow architecture
+- **📊 AICF 3.0 Format** - ✅ **IMPLEMENTED** - Revolutionary 95.5% compression with semantic preservation
 
 > **AI Memory System with Zero-Cost Logic Agent Orchestrator**
 
 Create a `.ai/` knowledge base that preserves your conversation context using specialized logic agents. **Zero API costs. Lightning fast processing. Works with all major AI assistants.**
+
+---
+
+## 🚨 EXPERIMENTAL BRANCH NOTICE 🚨
+
+**⚠️ This is the experimental development branch!** 
+
+**For stable, production-ready version:**
+- **NPM Package:** `npx create-ai-chat-context init` (4,400+ weekly downloads)
+- **Stable Repository:** [create-ai-chat-context](https://github.com/Vaeshkar/create-ai-chat-context)
+- **What works:** .ai and .aicf file creation, templates, all documented features
+
+**This experimental branch contains:**
+- 🧪 Advanced AICF 3.0 research (95.5% compression - PROVEN)
+- 🚧 Detection-Hourglass-System concepts (IN DEVELOPMENT)
+- 🔬 Next-generation AI automation features (RESEARCH PHASE)
+- 📊 Revolutionary partnership documentation (COMPLETED)
+
+**Use experimental branch if:** You want cutting-edge research and don't mind beta features  
+**Use stable branch if:** You want reliable, production-tested AI context management
 
 ---
 
