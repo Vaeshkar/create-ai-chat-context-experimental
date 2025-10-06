@@ -140,16 +140,6 @@ The tool creates **7 essential documentation files** in your project:
 - Deployment strategies
 - Code style standards
 
-## What's New
-
-- **v1.0.3** - 🚀 **NEW: Real-Time Memory Preservation!** Every AI response triggers automatic checkpointing. Zero API costs, intelligent memory decay, no more lost conversations!
-- **v1.0.2** - 🏁 **NEW: Session Management & AICF 3.0!** Complete session finish/handoff system + 32 comprehensive templates + enhanced AI continuity!
-- **v1.0.1** - 🚀 **NEW: Logic Agent Checkpoint Orchestrator!** Zero API costs, ultra-fast processing, excellent information preservation!
-- **v1.0.0** - 🎯 Simplified to 7 essential files! Focus on what works with optional AICF format.
-- **v0.14.0** - Direct .aicf/ reading - ZERO manual steps! AI reads files directly, no copy/paste!
-- **v0.13.0** - AICF 2.0 - Universal AI Memory Protocol! 88% token reduction!
-
-See [CHANGELOG.md](./CHANGELOG.md) for complete version history.
 
 ## Quick Start
 
@@ -197,144 +187,58 @@ npx aic stats                   # View analytics and token usage
 npx aic validate                # Check knowledge base quality
 npx aic config                  # Manage configuration
 
-# 🕐 Detection-Hourglass-System (DHS) - NEW!
-npx aic hourglass monitor       # Start DHS background monitoring  
-npx aic hourglass stats         # View hourglass session statistics
-npx aic hourglass trigger       # Manual trigger for testing
+# 🧪 Experimental Features (In Development)
+# Note: These commands are part of ongoing research
 
 # 🤖 Logic Agent Checkpoint Orchestrator
 npx aic checkpoint --demo       # Test with demo data (instant)
 npx aic checkpoint --file data.json --verbose  # Process checkpoint
 npx aic memory-decay --verbose  # Apply intelligent memory decay
 
-# 🏁 Session Management (NEW!)
-npx aic finish --aicf           # Finish session & migrate to AICF 3.0
-npx aic monitor                 # Check token usage
-npx aic monitor --check-finish  # Check if session should end
 ```
 
-**Workflows:** 
-- **Manual:** Ask the AI to update the `.ai/` files at session end
-- **Automated:** Use `npx aic finish --aicf` for complete session wrap-up with handoff
 
-## 🕐 Detection-Hourglass-System (DHS) - Revolutionary!
+## 🧪 Experimental Research Areas
 
-**The breakthrough:** Auto-detects conversation chunks between user inputs with **zero manual intervention**. Works universally across all AI platforms!
+**Current Research Focus:** Next-generation AI context automation
 
-### How DHS Works
+### 🕐 Detection-Hourglass-System (DHS) - Concept
 
-🕐 **Hourglass Lifecycle (WORKING!):**
-```
-User Input → 🕐 Hourglass Starts → AI Responds → User Input → 🕐 Hourglass Flips
-     │                                                         │
-     └──────── Dynamic Token Counting (REAL-TIME) ────────────┼─────┐
-                                                               │
-                                                    🤖 6 Agent Processing (5ms)
-                                                               │
-                                                    💾 .ai/.aicf File Updates
-                                                               │
-                                                        ✅ PIPELINE CONNECTED!
-```
+**Research Goal:** Auto-detect conversation boundaries for seamless context preservation
 
-**Key Innovation:** **AI code execution = user input detection**
-- Every time you send input → AI runs code → Auto-trigger fires
-- **Universal compatibility** - works on any platform where AI executes code
-- **Natural boundaries** - conversation chunks end at user input
-- **Dynamic sizing** - chunks adapt to conversation length (50-5000+ tokens)
+**Theoretical Approach:**
+- Investigate AI code execution as trigger mechanism
+- Explore universal compatibility across AI platforms
+- Design natural conversation chunk detection
+- Zero-cost, logic-based boundary detection
 
-### DHS Commands
-```bash
-# Start background monitoring (for testing)
-node src/hourglass.js monitor
-
-# View session statistics  
-node src/hourglass.js stats
-
-# Manual trigger (for testing)
-node src/hourglass.js trigger "user message" "ai response"
-
-# Auto-trigger from AI code (the magic!)
-const { autoTrigger } = require('./src/hourglass');
-await autoTrigger('user input', 'ai response');
-```
-
-### Universal Platform Support
-
-| Platform | DHS Compatible | Method |
-|----------|----------------|--------|
-| **Warp AI** | ✅ Perfect | Code execution auto-trigger |
-| **Claude Projects** | ✅ Perfect | Code execution auto-trigger | 
-| **ChatGPT Code Interpreter** | ✅ Perfect | Code execution auto-trigger |
-| **Cursor AI** | ✅ Perfect | Code execution auto-trigger |
-| **GitHub Copilot** | ✅ Perfect | Code execution auto-trigger |
-| **Any AI with code execution** | ✅ Perfect | Universal compatibility |
-
-**Why DHS is Revolutionary:**
-- ✅ **Zero manual intervention** - completely automatic
-- ✅ **Universal compatibility** - works with ALL AI platforms  
-- ✅ **Natural conversation chunks** - respects user interaction boundaries
-- ✅ **Dynamic sizing** - adapts to conversation complexity
-- ✅ **Zero API costs** - pure logic-based detection
-- ✅ **Lightning fast** - 5-6ms processing per chunk
-
-### 📈 **PROVEN PERFORMANCE METRICS:**
-
-| Metric | Achievement | Status |
-|--------|-------------|--------|
-| **Auto-Detection** | 13 chunks captured automatically | ✅ **WORKING** |
-| **Processing Speed** | 5-6ms per chunk | ✅ **VERIFIED** |
-| **Data Pipeline** | Real conversation → Agents → Files | ✅ **CONNECTED** |
-| **Token Processing** | 912+ tokens across session | ✅ **LIVE** |
-| **File Updates** | Both .ai/ and .aicf/ formats | ✅ **CONFIRMED** |
-| **Zero Cost** | No API calls, pure logic | ✅ **ACHIEVED** |
-| **Universal Compatibility** | All AI platforms supported | ✅ **READY** |
+**Status:** Early conceptual research phase
 
 ---
 
-## 🤖 Real-Time Memory Preservation
+## 🤖 Logic Agent Research
 
-**Revolutionary approach:** Automatically capture every AI exchange with **zero API costs** using 6 specialized logic agents. No more lost context!
+**Research Concept:** Zero-cost local processing for AI context management
 
-### Every-Response Checkpointing
-- **Triggers after every AI response** (not 20k token batches)
-- **Zero cost** - Logic agents run locally without API calls
-- **Real-time updates** to both `.ai/` and `.aicf/` files
-- **Intelligent memory decay** prevents file overflow
+### Theoretical Benefits Over AI Compression
 
-```bash
-# Process checkpoint with demo data (test the system)
-npx aic checkpoint --demo
+| Aspect | AI Compression | Logic Agent Approach |
+|--------|---------------|-----------------------|
+| **Cost** | $0.03-0.15 per checkpoint | $0.00 (theoretical) |
+| **Speed** | 30-45 seconds | Near-instant (concept) |
+| **Information Preserved** | 60-75% | Target: 95%+ |
+| **API Dependency** | Required | None (local processing) |
+| **Vendor Lock-in** | Yes | Platform agnostic |
 
-# Process real conversation checkpoint
-npx aic checkpoint --file checkpoint.json --verbose
+**Conceptual Architecture:** 6 specialized processing units:
+- **ConversationParser** - Extract conversation structure
+- **DecisionExtractor** - Identify key decision points
+- **InsightAnalyzer** - Capture breakthrough moments
+- **StateTracker** - Monitor project progression
+- **FileWriter** - Output to dual formats
+- **MemoryManager** - Intelligent data lifecycle
 
-# Apply intelligent memory decay (automatic in v1.0.3+)
-npx aic memory-decay --verbose
-
-# Run comprehensive test
-npm run test:checkpoint
-```
-
-### Why Logic Agents Beat AI Compression
-
-| Aspect | AI Compression | Logic Agent Orchestrator |
-|--------|---------------|-------------------------|
-| **Cost** | $0.03-0.15 per checkpoint | $0.00 forever |
-| **Speed** | 30-45 seconds | ~10 milliseconds |
-| **Information Preserved** | 60-75% | Nearly 100% |
-| **Quality** | Variable | Consistent |
-| **API Dependency** | Required | None (works offline) |
-| **Vendor Lock-in** | Yes | None (universal) |
-
-**Architecture:** 6 specialized agents run in parallel:
-- **ConversationParserAgent** - Extracts conversation flow
-- **DecisionExtractorAgent** - Identifies key decisions 
-- **InsightAnalyzerAgent** - Captures breakthroughs
-- **StateTrackerAgent** - Monitors project progress
-- **FileWriterAgent** - Outputs dual formats (AICF + Markdown)
-- **MemoryDropOffAgent** - Applies intelligent decay strategy
-
-**Result:** Excellent context preservation with zero ongoing costs. See `examples/checkpoint-example.json` for sample data format.
+**Status:** Research and prototyping phase
 
 ## 🌍 AICF: A Vision for Universal AI Memory
 
