@@ -10,6 +10,7 @@ coverage/
 # Build
 dist/
 build/
+*.tsbuildinfo
 
 # IDE
 .vscode/
@@ -33,3 +34,18 @@ temp/
 .env
 .env.local
 .env.*.local
+
+# AICF test files and backups
+.aicf/test-*.ai.md
+.aicf/test-*.ai.md.backup
+.aicf/test-*.ai.md.tmp
+.aicf/test-*.aicf
+.aicf/test-*.aicf.backup
+.aicf/test-*.aicf.tmp
+
+# Augment Memory Watcher runtime files
+.aicf/.meta
+.aicf/.watcher-state.json
+.aicf/.watcher.error.log
+.aicf/.watcher.log
+.aicf/.watcher-events.aicf

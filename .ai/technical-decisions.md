@@ -1098,7 +1098,7 @@ Create separate COMMANDS.md and CONFIGURATION.md files instead of putting everyt
 
 ---
 
-**Last Updated:** 2025-10-05
+**Last Updated:** 2025-10-22
 
 ## Decisions from 2025-10-04 (hourglass-1759569571227-chunk-29)
 

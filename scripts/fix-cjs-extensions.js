@@ -1,0 +1,46 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const cjsDir = path.join(__dirname, '../dist/cjs');
+
+function fixExtensions(dir) {
+  const files = fs.readdirSync(dir);
+
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+
+    if (stat.isDirectory()) {
+      fixExtensions(filePath);
+    } else if (file.endsWith('.js')) {
+      let content = fs.readFileSync(filePath, 'utf-8');
+
+      // Fix ESM imports to CJS requires
+      content = content.replace(
+        /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]([^'"]+)['"]/g,
+        'const { $1 } = require("$2")'
+      );
+
+      content = content.replace(
+        /import\s+(\w+)\s+from\s+['"]([^'"]+)['"]/g,
+        'const $1 = require("$2")'
+      );
+
+      // Fix relative imports to add .js extension
+      content = content.replace(
+        /require\(['"](\.[^'"]+)(?<!\.js)['"]\)/g,
+        'require("$1.js")'
+      );
+
+      fs.writeFileSync(filePath, content, 'utf-8');
+    }
+  }
+}
+
+if (fs.existsSync(cjsDir)) {
+  fixExtensions(cjsDir);
+  console.log('✅ Fixed CJS extensions');
+}
+

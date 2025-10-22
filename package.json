@@ -1,20 +1,40 @@
 {
-  "name": "create-ai-chat-context",
-  "version": "2.0.0",
-  "description": "AI Chat Context & Memory System - Automatically extracts and preserves conversation history across multiple AI assistants. Works with Warp, Claude, ChatGPT, Cursor, Copilot, and Augment.",
-  "main": "src/index.js",
+  "name": "create-ai-chat-context-experimental",
+  "version": "3.0.0-alpha",
+  "description": "Phase 2: TypeScript rewrite - AI Chat Context & Memory System with conversation extraction and AICF format support.",
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
   "bin": {
-    "create-ai-chat-context": "bin/cli.js",
-    "aic": "bin/cli.js"
+    "create-ai-chat-context": "./dist/esm/cli.js",
+    "aic": "./dist/esm/cli.js"
   },
   "scripts": {
-    "test": "echo \"No tests yet\" && exit 0",
-    "test:checkpoint": "node test-checkpoint.js",
-    "checkpoint:demo": "node bin/cli.js checkpoint --demo --verbose",
-    "checkpoint:example": "node bin/cli.js checkpoint --file examples/checkpoint-example.json --verbose --show-memory",
-    "memory:decay": "node bin/cli.js memory-decay --verbose",
-    "generate:templates": "node scripts/generate-templates.js",
-    "lint": "echo \"No linting yet\" && exit 0"
+    "build": "pnpm run clean && pnpm run build:esm && pnpm run build:cjs && pnpm run copy:templates",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json && pnpm run fix:cjs",
+    "fix:cjs": "node scripts/fix-cjs-extensions.js",
+    "copy:templates": "cp -r templates dist/",
+    "clean": "rm -rf dist",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build && pnpm run test && pnpm run lint",
+    "prepare": "husky"
   },
   "keywords": [
     "ai",
@@ -51,26 +71,27 @@
   },
   "homepage": "https://github.com/Vaeshkar/create-ai-chat-context#readme",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "@types/sqlite3": "^3.1.11",
-    "better-sqlite3": "^12.4.1",
-    "chalk": "^4.1.2",
-    "commander": "^11.1.0",
-    "fs-extra": "^11.1.1",
-    "ora": "^5.4.1",
-    "sqlite3": "^5.1.7"
+    "aicf-core": "^2.0.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "ora": "^8.1.1"
   },
   "devDependencies": {
-    "@types/commander": "^2.12.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.17.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.1",
+    "vitest": "^2.1.8"
   },
   "files": [
-    "bin/",
-    "src/",
-    "templates/",
+    "dist/",
     "README.md",
     "LICENSE"
   ]
