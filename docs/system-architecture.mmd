@@ -1,63 +1,68 @@
 graph TB
-    %% Data Sources
-    AUGMENT["Augment VSCode<br/>LevelDB storage<br/>~/.cache/llm/augment/"]
-    WARP["Warp Terminal<br/>SQLite database<br/>~/Library/Group Containers/"]
-    CLAUDE_DESKTOP["Claude Desktop<br/>SQLite database<br/>~/Library/Application Support/Claude/"]
-    CLAUDE_CLI["Claude CLI<br/>JSONL files<br/>~/.claude/projects/"]
-    CLAUDE_WEB["Claude Web<br/>Browser storage<br/>(manual export)"]
+    subgraph DS["📊 Data Sources"]
+        AUGMENT["Augment VSCode<br/>LevelDB storage<br/>~/.cache/llm/augment/"]
+        WARP["Warp Terminal<br/>SQLite database<br/>~/Library/Group Containers/"]
+        CLAUDE_DESKTOP["Claude Desktop<br/>SQLite database<br/>~/Library/Application Support/Claude/"]
+        CLAUDE_CLI["Claude CLI<br/>JSONL files<br/>~/.claude/projects/"]
+        CLAUDE_WEB["Claude Web<br/>Browser storage<br/>(manual export)"]
+        FUTURE["🔮 Future Sources<br/>(To be added)"]
+        GEMINI["Gemini<br/>(Planned)"]
+        COPILOT["GitHub Copilot<br/>(Planned)"]
+        KILLCODE["KillCode<br/>(Planned)"]
+    end
 
-    FUTURE["🔮 Future Sources<br/>(To be added)"]
-    GEMINI["Gemini<br/>(Planned)"]
-    COPILOT["GitHub Copilot<br/>(Planned)"]
-    KILLCODE["KillCode<br/>(Planned)"]
+    subgraph PW["🔄 Parsers & Watchers"]
+        AUGMENT_PARSER["AugmentParser<br/>(LevelDB → Message[])"]
+        WARP_PARSER["WarpParser<br/>(SQLite → Message[])"]
+        CLAUDE_DESKTOP_PARSER["ClaudeDesktopParser<br/>(SQLite → Message[])"]
+        CLAUDE_CLI_PARSER["ClaudeCliParser<br/>(JSONL → Message[])"]
+        CLAUDE_WEB_PARSER["ClaudeParser<br/>(JSON → Message[])"]
+        AUGMENT_WATCHER["AugmentWatcher<br/>(5m polling)"]
+        WARP_WATCHER["WarpWatcher<br/>(5m polling)"]
+        CLAUDE_DESKTOP_WATCHER["ClaudeDesktopWatcher<br/>(5m polling)"]
+        CLAUDE_CLI_WATCHER["ClaudeCliWatcher<br/>(5m polling)"]
+        FUTURE_PARSERS["🔮 Future Parsers<br/>(Gemini, Copilot, KillCode)"]
+    end
 
-    %% Parsers
-    AUGMENT_PARSER["AugmentParser<br/>(LevelDB → Message[])"]
-    WARP_PARSER["WarpParser<br/>(SQLite → Message[])"]
-    CLAUDE_DESKTOP_PARSER["ClaudeDesktopParser<br/>(SQLite → Message[])"]
-    CLAUDE_CLI_PARSER["ClaudeCliParser<br/>(JSONL → Message[])"]
-    CLAUDE_WEB_PARSER["ClaudeParser<br/>(JSON → Message[])"]
+    subgraph SU["🛠️ Shared Utilities"]
+        PARSER_UTILS["ParserUtils<br/>cleanContent()<br/>extractStringContent()<br/>extractContentFromBlocks()"]
+        MSG_BUILDER["MessageBuilder<br/>create()<br/>createWithPlatform()<br/>generateId()"]
+        TS_UTILS["TimestampUtils<br/>parseTimestamp()<br/>toISO8601()"]
+        FS_UTILS["FileSystemUtils<br/>listFiles()<br/>readFile()<br/>getLatestFile()"]
+        ERR_UTILS["ErrorUtils<br/>handleError()<br/>wrapResult()"]
+        VAL_UTILS["ValidationUtils<br/>isValidContent()<br/>isValidMessage()"]
+    end
 
-    %% Watchers
-    AUGMENT_WATCHER["AugmentWatcher<br/>(5m polling)"]
-    WARP_WATCHER["WarpWatcher<br/>(5m polling)"]
-    CLAUDE_DESKTOP_WATCHER["ClaudeDesktopWatcher<br/>(5m polling)"]
-    CLAUDE_CLI_WATCHER["ClaudeCliWatcher<br/>(5m polling)"]
+    subgraph ED["📦 External Dependencies"]
+        AICF["aicf-core v2.0.0<br/>(npm package)<br/>Pipe-delimited format"]
+        BETTER["better-sqlite3<br/>(npm package)<br/>SQLite support"]
+    end
 
-    FUTURE_PARSERS["🔮 Future Parsers<br/>(Gemini, Copilot, KillCode)"]
+    subgraph CO["⚙️ Consolidation & Orchestration"]
+        MULTI_CLAUDE_ORCH["MultiClaudeOrchestrator<br/>Consolidate all sources<br/>Deduplicate by hash"]
+        MULTI_CLAUDE_SERVICE["MultiClaudeConsolidationService<br/>Manage all watchers<br/>Enforce polling interval"]
+    end
 
-    %% Shared Utilities
-    PARSER_UTILS["ParserUtils<br/>cleanContent()<br/>extractStringContent()<br/>extractContentFromBlocks()"]
-    MSG_BUILDER["MessageBuilder<br/>create()<br/>createWithPlatform()<br/>generateId()"]
-    TS_UTILS["TimestampUtils<br/>parseTimestamp()<br/>toISO8601()"]
-    FS_UTILS["FileSystemUtils<br/>listFiles()<br/>readFile()<br/>getLatestFile()"]
-    ERR_UTILS["ErrorUtils<br/>handleError()<br/>wrapResult()"]
-    VAL_UTILS["ValidationUtils<br/>isValidContent()<br/>isValidMessage()"]
+    subgraph CP["📋 Checkpoint Processing"]
+        CHECKPOINT_PROC["CheckpointProcessor<br/>Read checkpoint JSON<br/>Analyze conversation"]
+        CONVERSATION_ORCH["ConversationOrchestrator<br/>Normalize messages<br/>Group by conversation"]
+    end
 
-    %% External Dependencies
-    AICF["📦 aicf-core v2.0.0<br/>(npm package)<br/>Pipe-delimited format<br/>AI-optimized"]
-    BETTER["better-sqlite3<br/>(npm package)<br/>SQLite support"]
+    subgraph MG["💾 Memory Generation"]
+        AICF_WRITER["AICF Writer<br/>(aicf-core)<br/>Pipe-delimited format"]
+        MD_WRITER["Markdown Writer<br/>Human-readable<br/>Prose format"]
+    end
 
-    %% Consolidation & Orchestration
-    MULTI_CLAUDE_ORCH["MultiClaudeOrchestrator<br/>Consolidate all sources<br/>Deduplicate by hash<br/>Track source"]
-    MULTI_CLAUDE_SERVICE["MultiClaudeConsolidationService<br/>Manage all watchers<br/>Enforce polling interval<br/>Calculate statistics"]
+    subgraph MF["📁 Memory Files"]
+        AICF_FILES[".aicf/ folder<br/>index.aicf<br/>work-state.aicf<br/>conversations.aicf"]
+        MD_FILES[".ai/ folder<br/>conversation-log.md<br/>technical-decisions.md<br/>next-steps.md"]
+    end
 
-    %% Checkpoint Processing
-    CHECKPOINT_PROC["CheckpointProcessor<br/>Read checkpoint JSON<br/>Analyze conversation<br/>Extract context"]
-    CONVERSATION_ORCH["ConversationOrchestrator<br/>Normalize messages<br/>Group by conversation<br/>Generate metadata"]
-
-    %% Memory Generation
-    AICF_WRITER["AICF Writer<br/>(aicf-core)<br/>Pipe-delimited format<br/>AI-optimized"]
-    MD_WRITER["Markdown Writer<br/>Human-readable<br/>Prose format"]
-
-    %% Memory Files
-    AICF_FILES[".aicf/ folder<br/>index.aicf<br/>work-state.aicf<br/>conversations.aicf<br/>decisions.aicf<br/>technical-context.aicf"]
-    MD_FILES[".ai/ folder<br/>conversation-log.md<br/>technical-decisions.md<br/>next-steps.md<br/>known-issues.md"]
-
-    %% Main Watcher Loop
-    WATCHER_CMD["WatcherCommand<br/>(Main Entry Point)<br/>5-second interval"]
-    CHECKPOINT_CHECK["checkForCheckpoints()<br/>Process checkpoint files"]
-    MULTI_CLAUDE_CHECK["checkForMultiClaudeMessages()<br/>Consolidate from all sources"]
+    subgraph WL["🔁 Main Watcher Loop"]
+        WATCHER_CMD["WatcherCommand<br/>(Main Entry Point)<br/>5-second interval"]
+        CHECKPOINT_CHECK["checkForCheckpoints()<br/>Process checkpoint files"]
+        MULTI_CLAUDE_CHECK["checkForMultiClaudeMessages()<br/>Consolidate from all sources"]
+    end
 
     %% Data flow (top to bottom)
     AUGMENT --> AUGMENT_PARSER
@@ -173,3 +178,14 @@ graph TB
     style WATCHER_CMD fill:#64b5f6,stroke:#1976d2,stroke-width:3px,color:#000
     style CHECKPOINT_CHECK fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
     style MULTI_CLAUDE_CHECK fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+
+    %% Subgraph styling - compact
+    style DS fill:none,stroke:#1976d2,stroke-width:2px
+    style PW fill:none,stroke:#2e7d32,stroke-width:2px
+    style SU fill:none,stroke:#f57f17,stroke-width:2px
+    style ED fill:none,stroke:#2e7d32,stroke-width:2px
+    style CO fill:none,stroke:#f57f17,stroke-width:2px
+    style CP fill:none,stroke:#8e24aa,stroke-width:2px
+    style MG fill:none,stroke:#2e7d32,stroke-width:2px
+    style MF fill:none,stroke:#2e7d32,stroke-width:2px
+    style WL fill:none,stroke:#1976d2,stroke-width:2px
