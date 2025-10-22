@@ -8,7 +8,7 @@
  */
 
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
 import { Result, Ok, Err } from '../types/result.js';
@@ -35,11 +35,13 @@ export class InitCommand {
   private cwd: string;
   private force: boolean;
   private verbose: boolean;
+  private mode: 'manual' | 'automatic';
 
   constructor(options: InitCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.force = options.force || false;
     this.verbose = options.verbose || false;
+    this.mode = options.mode || 'automatic';
   }
 
   /**
@@ -62,9 +64,9 @@ export class InitCommand {
       const mode = await this.askMode();
 
       if (mode === 'manual') {
-        return this.initManualMode(spinner);
+        return await this.initManualMode(spinner);
       } else {
-        return this.initAutomaticMode(spinner);
+        return await this.initAutomaticMode(spinner);
       }
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
@@ -79,11 +81,7 @@ export class InitCommand {
     const aiDir = join(this.cwd, '.ai');
 
     if (existsSync(aicfDir) || existsSync(aiDir)) {
-      return Err(
-        new Error(
-          'Project already initialized. Use --force to overwrite.'
-        )
-      );
+      return Err(new Error('Project already initialized. Use --force to overwrite.'));
     }
 
     return Ok(undefined);
@@ -93,9 +91,9 @@ export class InitCommand {
    * Ask user for mode: manual or automatic
    */
   private async askMode(): Promise<'manual' | 'automatic'> {
-    // For now, default to automatic
-    // TODO: Implement interactive prompt using inquirer
-    return 'automatic';
+    // Return the mode set in constructor
+    // TODO: Implement interactive prompt using inquirer if mode not specified
+    return this.mode;
   }
 
   /**
@@ -146,7 +144,7 @@ export class InitCommand {
       const filesCreated: string[] = [];
 
       // Step 1: Create directory structure
-      spinner.text('Creating directory structure...');
+      spinner.text = 'Creating directory structure...';
       const cacheLlmDir = join(this.cwd, '.cache', 'llm');
       const aiDir = join(this.cwd, '.ai');
       const aicfDir = join(this.cwd, '.aicf');
@@ -158,21 +156,21 @@ export class InitCommand {
       filesCreated.push(cacheLlmDir, aiDir, aicfDir);
 
       // Step 2: Create .permissions.aicf
-      spinner.text('Creating permission tracking file...');
+      spinner.text = 'Creating permission tracking file...';
       const permissionsFile = join(aicfDir, '.permissions.aicf');
       const permissionsContent = this.generatePermissionsFile();
       writeFileSync(permissionsFile, permissionsContent, 'utf-8');
       filesCreated.push(permissionsFile);
 
       // Step 3: Create .watcher-config.json
-      spinner.text('Creating watcher configuration...');
+      spinner.text = 'Creating watcher configuration...';
       const configFile = join(aicfDir, '.watcher-config.json');
       const configContent = this.generateWatcherConfig();
       writeFileSync(configFile, configContent, 'utf-8');
       filesCreated.push(configFile);
 
       // Step 4: Update .gitignore
-      spinner.text('Updating .gitignore...');
+      spinner.text = 'Updating .gitignore...';
       this.updateGitignore();
 
       spinner.succeed('Automatic mode initialized');
@@ -257,7 +255,7 @@ export class InitCommand {
 
     let content = '';
     if (existsSync(gitignorePath)) {
-      content = require('fs').readFileSync(gitignorePath, 'utf-8');
+      content = readFileSync(gitignorePath, 'utf-8');
     }
 
     for (const entry of entries) {
@@ -269,4 +267,3 @@ export class InitCommand {
     writeFileSync(gitignorePath, content, 'utf-8');
   }
 }
-
