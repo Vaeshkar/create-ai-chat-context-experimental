@@ -17,6 +17,15 @@ graph TB
         KILLCODE["KillCode<br/>(Planned)"]
     end
 
+    subgraph "Shared Utilities"
+        PARSER_UTILS["ParserUtils<br/>cleanContent()<br/>extractStringContent()<br/>extractContentFromBlocks()"]
+        MSG_BUILDER["MessageBuilder<br/>create()<br/>createWithPlatform()<br/>generateId()"]
+        TS_UTILS["TimestampUtils<br/>parseTimestamp()<br/>toISO8601()"]
+        FS_UTILS["FileSystemUtils<br/>listFiles()<br/>readFile()<br/>getLatestFile()"]
+        ERR_UTILS["ErrorUtils<br/>handleError()<br/>wrapResult()"]
+        VAL_UTILS["ValidationUtils<br/>isValidContent()<br/>isValidMessage()"]
+    end
+
     subgraph "Parsers & Watchers"
         AUGMENT_PARSER["AugmentParser<br/>(LevelDB → Message[])"]
         WARP_PARSER["WarpParser<br/>(SQLite → Message[])"]
@@ -57,6 +66,31 @@ graph TB
         CHECKPOINT_CHECK["checkForCheckpoints()<br/>Process checkpoint files"]
         MULTI_CLAUDE_CHECK["checkForMultiClaudeMessages()<br/>Consolidate from all sources"]
     end
+
+    %% Utilities connections
+    PARSER_UTILS -.-> AUGMENT_PARSER
+    PARSER_UTILS -.-> WARP_PARSER
+    PARSER_UTILS -.-> CLAUDE_DESKTOP_PARSER
+    PARSER_UTILS -.-> CLAUDE_CLI_PARSER
+    PARSER_UTILS -.-> CLAUDE_WEB_PARSER
+
+    MSG_BUILDER -.-> AUGMENT_PARSER
+    MSG_BUILDER -.-> WARP_PARSER
+    MSG_BUILDER -.-> CLAUDE_DESKTOP_PARSER
+    MSG_BUILDER -.-> CLAUDE_CLI_PARSER
+    MSG_BUILDER -.-> CLAUDE_WEB_PARSER
+
+    TS_UTILS -.-> CLAUDE_WEB_PARSER
+    FS_UTILS -.-> AUGMENT_WATCHER
+    FS_UTILS -.-> CLAUDE_CLI_WATCHER
+    FS_UTILS -.-> CLAUDE_DESKTOP_WATCHER
+    ERR_UTILS -.-> AUGMENT_PARSER
+    ERR_UTILS -.-> WARP_PARSER
+    ERR_UTILS -.-> CLAUDE_DESKTOP_PARSER
+    ERR_UTILS -.-> CLAUDE_CLI_PARSER
+    ERR_UTILS -.-> AUGMENT_WATCHER
+    ERR_UTILS -.-> CLAUDE_CLI_WATCHER
+    ERR_UTILS -.-> CLAUDE_DESKTOP_WATCHER
 
     %% Data flow
     AUGMENT --> AUGMENT_PARSER
@@ -101,6 +135,13 @@ graph TB
     %% Styling
     style AICF fill:#81c784,stroke:#2e7d32,stroke-width:3px,color:#000
     style BETTER fill:#81c784,stroke:#2e7d32,stroke-width:2px,color:#000
+
+    style PARSER_UTILS fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    style MSG_BUILDER fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    style TS_UTILS fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    style FS_UTILS fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    style ERR_UTILS fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    style VAL_UTILS fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
 
     style AUGMENT fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
     style WARP fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
