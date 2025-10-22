@@ -18,6 +18,7 @@ A system that automatically captures AI conversations from multiple platforms (A
 ## 🚀 Quick Start
 
 ### Installation
+
 ```bash
 npm install create-ai-chat-context
 # or
@@ -25,21 +26,23 @@ pnpm add create-ai-chat-context
 ```
 
 ### Initialize
+
 ```bash
 # Manual mode (for Augment)
-npx create-ai-chat-context init --manual
+npx aic init --manual
 
 # Automatic mode (for Claude Desktop/CLI)
-npx create-ai-chat-context init --automatic
+npx aic init --automatic
 ```
 
 ### Use It
+
 ```bash
 # Manual: Process checkpoint
-npx create-ai-chat-context checkpoint <file>
+npx aic checkpoint <file>
 
 # Automatic: Start watcher
-npx create-ai-chat-context watch
+npx aic watch
 ```
 
 ## 📚 Documentation
@@ -77,14 +80,18 @@ Input Sources (Augment, Claude, Warp)
 ## 💾 Memory Files
 
 ### `.aicf/` Directory (AI-Optimized)
+
 Pipe-delimited structured data, optimized for AI parsing:
+
 - `index.aicf` - Project overview & stats
 - `conversations.aicf` - Conversation history
 - `decisions.aicf` - Key decisions
 - `technical-context.aicf` - Architecture & tech stack
 
 ### `.ai/` Directory (Human-Readable)
+
 Markdown prose for human readability:
+
 - `project-overview.md` - High-level description
 - `conversation-log.md` - Detailed conversation history
 - `technical-decisions.md` - Technical decisions
@@ -93,17 +100,20 @@ Markdown prose for human readability:
 ## 🛠️ Development
 
 ### Build
+
 ```bash
 pnpm build
 ```
 
 ### Test
+
 ```bash
 pnpm test          # Run all tests
 pnpm test src/     # Run specific tests
 ```
 
 ### Lint
+
 ```bash
 pnpm lint          # Run ESLint
 pnpm format        # Format with Prettier
@@ -112,6 +122,7 @@ pnpm format        # Format with Prettier
 ## 📊 Project Status
 
 **Phase 2: TypeScript Rewrite - COMPLETE ✅**
+
 - ✅ Pure TypeScript codebase (0 .js files in src/)
 - ✅ Build passing (0 TypeScript errors, 0 ESLint errors)
 - ✅ 566/587 tests passing
@@ -122,17 +133,20 @@ pnpm format        # Format with Prettier
 ## 🎓 Key Concepts
 
 ### AICF Format
+
 - **Pipe-delimited** structured data
 - **AI-optimized** for fast parsing
 - **Compact** representation
 - **Efficient** token usage
 
 ### Memory Tiers
+
 1. **Immediate** - Current session context
 2. **Short-term** - Recent conversations (7 days)
 3. **Long-term** - Historical decisions & patterns
 
 ### Consolidation Strategy
+
 - **No truncation** - Full conversation history preserved
 - **Aggregation** - Summaries at conversation level
 - **Deduplication** - Avoid storing same info twice
@@ -142,16 +156,16 @@ pnpm format        # Format with Prettier
 
 ```bash
 # Initialize project
-npx create-ai-chat-context init [--manual|--automatic] [--force]
+npx aic init [--manual|--automatic] [--force]
 
 # Process a checkpoint file
-npx create-ai-chat-context checkpoint <file>
+npx aic checkpoint <file>
 
 # Start background watcher
-npx create-ai-chat-context watch [--verbose]
+npx aic watch [--verbose]
 
 # Import Claude exports
-npx create-ai-chat-context import-claude <file>
+npx aic import-claude <file>
 ```
 
 ## 📖 Learn More
@@ -170,5 +184,4 @@ Contributions welcome! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for gu
 
 **Ready to consolidate your AI conversations?** 🚀
 
-Start with: `npx create-ai-chat-context init`
-
+Start with: `npx aic init`

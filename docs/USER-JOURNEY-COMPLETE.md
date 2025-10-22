@@ -1,6 +1,7 @@
 # 🚀 Complete User Journey: How the System Works
 
 ## Overview
+
 This is a **memory consolidation system** that automatically captures AI conversations and consolidates them into structured memory files. It supports multiple AI platforms (Augment, Claude Desktop, Claude CLI, Warp) and uses a hybrid approach: background watchers + git commit hooks.
 
 ---
@@ -8,6 +9,7 @@ This is a **memory consolidation system** that automatically captures AI convers
 ## 📋 Phase 1: Installation & Setup
 
 ### Step 1: Install the Package
+
 ```bash
 npm install create-ai-chat-context
 # or
@@ -15,11 +17,13 @@ pnpm add create-ai-chat-context
 ```
 
 ### Step 2: Initialize Your Project
+
 ```bash
-npx create-ai-chat-context init
+npx aic init
 ```
 
 **What happens:**
+
 - Creates `.aicf/` directory (AI Context Format - machine-readable)
 - Creates `.ai/` directory (human-readable documentation)
 - Creates `.permissions.aicf` file (platform permissions)
@@ -29,17 +33,21 @@ npx create-ai-chat-context init
 ### Step 3: Choose Your Mode
 
 #### **Manual Mode** (Recommended for Augment)
+
 ```bash
-npx create-ai-chat-context init --manual
+npx aic init --manual
 ```
+
 - You manually ask your LLM to update memory files
 - No background processes
 - Full control over when consolidation happens
 
 #### **Automatic Mode** (Recommended for Claude Desktop/CLI)
+
 ```bash
-npx create-ai-chat-context init --automatic
+npx aic init --automatic
 ```
+
 - Background watcher monitors for new conversations
 - Automatically processes and consolidates
 - Requires platform permissions
@@ -51,20 +59,23 @@ npx create-ai-chat-context init --automatic
 ### For Augment Users (Manual Mode)
 
 **Workflow:**
+
 1. Have your conversation with Augment
-2. At the end, ask: *"Please update my memory files with this conversation"*
+2. At the end, ask: _"Please update my memory files with this conversation"_
 3. Augment generates a checkpoint JSON
-4. Run: `npx create-ai-chat-context checkpoint <checkpoint-file>`
+4. Run: `npx aic checkpoint <checkpoint-file>`
 5. System consolidates into `.aicf/` and `.ai/` files
 
 **Example:**
+
 ```bash
-npx create-ai-chat-context checkpoint ~/Downloads/checkpoint-2025-10-22.json
+npx aic checkpoint ~/Downloads/checkpoint-2025-10-22.json
 ```
 
 ### For Claude Desktop/CLI Users (Automatic Mode)
 
 **Workflow:**
+
 1. Have conversations with Claude
 2. Watcher automatically detects new conversations
 3. Parses Claude's database/JSONL files
@@ -72,8 +83,9 @@ npx create-ai-chat-context checkpoint ~/Downloads/checkpoint-2025-10-22.json
 5. Commits changes to git (if enabled)
 
 **Start the watcher:**
+
 ```bash
-npx create-ai-chat-context watch
+npx aic watch
 ```
 
 ---
@@ -81,6 +93,7 @@ npx create-ai-chat-context watch
 ## 📁 Phase 3: Memory File Structure
 
 ### `.aicf/` Directory (AI-Optimized Format)
+
 Pipe-delimited structured data, optimized for AI parsing:
 
 ```
@@ -94,12 +107,14 @@ Pipe-delimited structured data, optimized for AI parsing:
 ```
 
 **Format Example:**
+
 ```
 conversation_id|timestamp|platform|summary|key_decisions|technical_work
 conv-123|2025-10-22T14:00:00Z|augment|Fixed TypeScript errors|3|5
 ```
 
 ### `.ai/` Directory (Human-Readable Format)
+
 Markdown prose for human readability:
 
 ```
@@ -116,17 +131,20 @@ Markdown prose for human readability:
 ## 🔍 Phase 4: Data Processing Pipeline
 
 ### Step 1: Capture
+
 - **Augment**: Checkpoint JSON from LLM
 - **Claude Desktop**: SQLite database (`conversations.db`)
 - **Claude CLI**: JSONL export files
 - **Warp**: Terminal session logs
 
 ### Step 2: Parse
+
 - Extract conversations, messages, metadata
 - Normalize timestamps and IDs
 - Preserve platform-specific data (thinking blocks, token usage, etc.)
 
 ### Step 3: Extract
+
 - **Decisions**: Key decisions made
 - **Actions**: Tasks and next steps
 - **Technical Work**: Code changes, architecture decisions
@@ -135,12 +153,14 @@ Markdown prose for human readability:
 - **Flow**: Conversation flow and structure
 
 ### Step 4: Consolidate
+
 - Merge with existing memory files
 - Avoid duplication
 - Update statistics and summaries
 - Maintain chronological order
 
 ### Step 5: Write
+
 - Update `.aicf/` files (AI-optimized)
 - Update `.ai/` files (human-readable)
 - Commit to git (if enabled)
@@ -150,12 +170,14 @@ Markdown prose for human readability:
 ## 🎯 Phase 5: Using the Memory System
 
 ### For AI Assistants
+
 1. Read `.aicf/` files first (5x faster parsing)
 2. Then read `.ai/` files for detailed context
 3. Use memory to understand project state
 4. Make informed decisions based on history
 
 ### For Humans
+
 1. Read `.ai/` files for project overview
 2. Check `.ai/conversation-log.md` for recent work
 3. Review `.ai/technical-decisions.md` for architecture
@@ -167,16 +189,16 @@ Markdown prose for human readability:
 
 ```bash
 # Initialize project
-npx create-ai-chat-context init [--manual|--automatic] [--force]
+npx aic init [--manual|--automatic] [--force]
 
 # Process a checkpoint file
-npx create-ai-chat-context checkpoint <file>
+npx aic checkpoint <file>
 
 # Start background watcher
-npx create-ai-chat-context watch [--verbose]
+npx aic watch [--verbose]
 
 # Import Claude exports
-npx create-ai-chat-context import-claude <file>
+npx aic import-claude <file>
 ```
 
 ---
@@ -185,13 +207,13 @@ npx create-ai-chat-context import-claude <file>
 
 ```bash
 # 1. Initialize in manual mode
-npx create-ai-chat-context init --manual
+npx aic init --manual
 
 # 2. Have conversation with Augment
 # (Ask Augment to generate checkpoint at end)
 
 # 3. Process the checkpoint
-npx create-ai-chat-context checkpoint ~/Downloads/checkpoint.json
+npx aic checkpoint ~/Downloads/checkpoint.json
 
 # 4. Review memory files
 cat .aicf/index.aicf
@@ -207,17 +229,20 @@ git commit -m "Update memory: Fixed TypeScript errors"
 ## 🎓 Key Concepts
 
 ### AICF Format
+
 - **Pipe-delimited** structured data
 - **AI-optimized** for fast parsing
 - **Compact** representation
 - **Efficient** token usage
 
 ### Memory Tiers
+
 1. **Immediate**: Current session context
 2. **Short-term**: Recent conversations (last 7 days)
 3. **Long-term**: Historical decisions and patterns
 
 ### Consolidation Strategy
+
 - **No truncation**: Full conversation history preserved
 - **Aggregation**: Summaries at conversation level
 - **Deduplication**: Avoid storing same info twice
@@ -228,6 +253,7 @@ git commit -m "Update memory: Fixed TypeScript errors"
 ## ✅ Success Criteria
 
 You've successfully set up the system when:
+
 - ✅ `.aicf/` and `.ai/` directories exist
 - ✅ Memory files are being updated
 - ✅ Conversations are being captured
@@ -249,8 +275,8 @@ You've successfully set up the system when:
 ## 📞 Support
 
 For issues or questions:
+
 1. Check `.ai/known-issues.md` for common problems
 2. Review `.ai/technical-decisions.md` for architecture
 3. Check git history for recent changes
 4. Run tests: `pnpm test`
-
