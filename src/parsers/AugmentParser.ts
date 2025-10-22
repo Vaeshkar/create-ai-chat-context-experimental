@@ -5,9 +5,11 @@
  */
 
 import type { Message } from '../types/index.js';
-import { ExtractionError } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
+import { cleanContent } from '../utils/ParserUtils.js';
+import { MessageBuilder } from '../utils/MessageBuilder.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Parse Augment LevelDB format
@@ -30,8 +32,7 @@ export class AugmentParser {
       const messages = this.extractMessages(rawData, conversationId);
       return Ok(messages);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new ExtractionError(`Failed to parse Augment data: ${message}`, error));
+      return Err(handleError(error, 'Failed to parse Augment data'));
     }
   }
 
@@ -51,15 +52,16 @@ export class AugmentParser {
     while ((requestMatch = requestPattern.exec(rawData)) !== null) {
       const rawContent = requestMatch[1];
       if (rawContent) {
-        const content = this.cleanMessage(rawContent);
+        const content = cleanContent(rawContent);
         if (content && content.length > 5) {
-          messages.push({
-            id: `augment-user-${messageIndex}`,
+          const message = MessageBuilder.create({
+            prefix: 'augment-user',
+            index: messageIndex,
             conversationId,
-            timestamp: new Date().toISOString(),
             role: 'user',
-            content, // ✅ FULL content, not truncated
+            content,
           });
+          messages.push(message);
           messageIndex++;
         }
       }
@@ -71,15 +73,16 @@ export class AugmentParser {
     while ((responseMatch = responsePattern.exec(rawData)) !== null) {
       const rawContent = responseMatch[1];
       if (rawContent) {
-        const content = this.cleanMessage(rawContent);
+        const content = cleanContent(rawContent);
         if (content && content.length > 5) {
-          messages.push({
-            id: `augment-assistant-${messageIndex}`,
+          const message = MessageBuilder.create({
+            prefix: 'augment-assistant',
+            index: messageIndex,
             conversationId,
-            timestamp: new Date().toISOString(),
             role: 'assistant',
-            content, // ✅ FULL content, not truncated
+            content,
           });
+          messages.push(message);
           messageIndex++;
         }
       }
@@ -91,27 +94,6 @@ export class AugmentParser {
       const bIndex = parseInt(b.id.split('-').pop() ?? '0');
       return aIndex - bIndex;
     });
-  }
-
-  /**
-   * Clean message content
-   * @param message - Raw message
-   * @returns Cleaned message
-   */
-  private cleanMessage(message: string): string {
-    // Unescape common escape sequences
-    let cleaned = message
-      .replace(/\\n/g, '\n')
-      .replace(/\\t/g, '\t')
-      .replace(/\\"/g, '"')
-      .replace(/\\\\/g, '\\');
-
-    // Remove control characters (eslint-disable-next-line no-control-regex)
-    // eslint-disable-next-line no-control-regex
-    cleaned = cleaned.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
-
-    // Trim whitespace
-    return cleaned.trim();
   }
 
   /**

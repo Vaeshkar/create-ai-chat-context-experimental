@@ -5,9 +5,10 @@
  */
 
 import type { Message } from '../types/index.js';
-import { ExtractionError } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
+import { MessageBuilder } from '../utils/MessageBuilder.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Warp query structure from SQLite ai_queries table
@@ -43,8 +44,7 @@ export class WarpParser {
       const messages = this.extractMessages(queries, conversationId);
       return Ok(messages);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new ExtractionError(`Failed to parse Warp data: ${message}`, error));
+      return Err(handleError(error, 'Failed to parse Warp data'));
     }
   }
 
@@ -67,19 +67,19 @@ export class WarpParser {
             if (item.Query && item.Query.text) {
               const content = this.cleanContent(item.Query.text);
               if (content && content.length > 0) {
-                messages.push({
-                  id: `warp-user-${messageIndex}`,
+                const message = MessageBuilder.createWithPlatform({
+                  prefix: 'warp-user',
+                  index: messageIndex,
                   conversationId,
                   timestamp: query.start_ts,
                   role: 'user',
                   content,
-                  metadata: {
-                    extractedFrom: 'warp-query',
-                    rawLength: item.Query.text.length,
-                    messageType: 'user_request',
-                    platform: 'warp',
-                  },
+                  platform: 'warp',
+                  extractedFrom: 'warp-query',
+                  messageType: 'user_request',
+                  rawLength: item.Query.text.length,
                 });
+                messages.push(message);
                 messageIndex++;
               }
             }
@@ -88,19 +88,19 @@ export class WarpParser {
             if (item.ActionResult && item.ActionResult.result) {
               const actionContent = this.extractActionResult(item.ActionResult.result);
               if (actionContent && actionContent.length > 0) {
-                messages.push({
-                  id: `warp-action-${messageIndex}`,
+                const message = MessageBuilder.createWithPlatform({
+                  prefix: 'warp-action',
+                  index: messageIndex,
                   conversationId,
                   timestamp: query.start_ts,
                   role: 'assistant',
                   content: actionContent,
-                  metadata: {
-                    extractedFrom: 'warp-action-result',
-                    rawLength: actionContent.length,
-                    messageType: 'ai_response',
-                    platform: 'warp',
-                  },
+                  platform: 'warp',
+                  extractedFrom: 'warp-action-result',
+                  messageType: 'ai_response',
+                  rawLength: actionContent.length,
                 });
+                messages.push(message);
                 messageIndex++;
               }
             }
