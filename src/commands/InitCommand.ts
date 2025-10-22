@@ -203,6 +203,7 @@ export class InitCommand {
     return `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=${new Date().toISOString()}
 @PLATFORM|name=warp|status=inactive|consent=pending|timestamp=${new Date().toISOString()}
+@PLATFORM|name=claude|status=inactive|consent=pending|timestamp=${new Date().toISOString()}
 @PLATFORM|name=claude-desktop|status=inactive|consent=pending|timestamp=${new Date().toISOString()}
 @AUDIT|event=init|timestamp=${new Date().toISOString()}|user=system|action=created_permissions_file
 `;
@@ -226,9 +227,15 @@ export class InitCommand {
             cachePath: '.cache/llm/warp',
             checkInterval: 5000,
           },
-          'claude-desktop': {
+          claude: {
             enabled: false,
             cachePath: '.cache/llm/claude',
+            checkInterval: 0,
+            importMode: true,
+          },
+          'claude-desktop': {
+            enabled: false,
+            cachePath: '.cache/llm/claude-desktop',
             checkInterval: 5000,
           },
         },

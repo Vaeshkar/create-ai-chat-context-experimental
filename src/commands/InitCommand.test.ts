@@ -298,6 +298,7 @@ describe('InitCommand', () => {
         const content = readFileSync(configFile, 'utf-8');
         const config = JSON.parse(content);
         expect(config.platforms.warp.enabled).toBe(false);
+        expect(config.platforms.claude.enabled).toBe(false);
         expect(config.platforms['claude-desktop'].enabled).toBe(false);
       } finally {
         cleanupTestDir(testDir);
@@ -316,7 +317,8 @@ describe('InitCommand', () => {
         const config = JSON.parse(content);
         expect(config.platforms.augment.cachePath).toBe('.cache/llm/augment');
         expect(config.platforms.warp.cachePath).toBe('.cache/llm/warp');
-        expect(config.platforms['claude-desktop'].cachePath).toBe('.cache/llm/claude');
+        expect(config.platforms.claude.cachePath).toBe('.cache/llm/claude');
+        expect(config.platforms['claude-desktop'].cachePath).toBe('.cache/llm/claude-desktop');
       } finally {
         cleanupTestDir(testDir);
       }
@@ -340,6 +342,7 @@ describe('InitCommand', () => {
         expect(content).toContain('@PERMISSIONS|version=1.0|format=aicf');
         expect(content).toContain('@PLATFORM|name=augment');
         expect(content).toContain('@PLATFORM|name=warp');
+        expect(content).toContain('@PLATFORM|name=claude');
         expect(content).toContain('@PLATFORM|name=claude-desktop');
         expect(content).toContain('@AUDIT|event=init');
       } finally {
@@ -374,6 +377,7 @@ describe('InitCommand', () => {
         const content = readFileSync(permissionsFile, 'utf-8');
 
         expect(content).toContain('name=warp|status=inactive');
+        expect(content).toContain('name=claude|status=inactive');
         expect(content).toContain('name=claude-desktop|status=inactive');
       } finally {
         cleanupTestDir(testDir);
