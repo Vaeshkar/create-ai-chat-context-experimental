@@ -30,6 +30,7 @@ export interface ConsolidationServiceOptions {
   enableCli?: boolean;
   enableDesktop?: boolean;
   cliProjectPath?: string;
+  pollingInterval?: number; // milliseconds, default 300000 (5 minutes)
 }
 
 /**
@@ -41,6 +42,8 @@ export class MultiClaudeConsolidationService {
   private orchestrator: MultiClaudeOrchestrator;
   private options: ConsolidationServiceOptions;
   private lastStats: ConsolidationStats | null = null;
+  private lastCheckTime: number = 0;
+  private pollingInterval: number;
 
   constructor(options: ConsolidationServiceOptions = {}) {
     this.cliWatcher = new ClaudeCliWatcher();
@@ -50,8 +53,10 @@ export class MultiClaudeConsolidationService {
       verbose: false,
       enableCli: true,
       enableDesktop: true,
+      pollingInterval: 300000, // 5 minutes default
       ...options,
     };
+    this.pollingInterval = this.options.pollingInterval || 300000;
   }
 
   /**
@@ -79,9 +84,20 @@ export class MultiClaudeConsolidationService {
 
   /**
    * Consolidate messages from all available sources
+   * Respects polling interval to avoid excessive disk I/O
    */
   async consolidate(webMessages: Message[] = []): Promise<Result<Message[]>> {
     try {
+      // Check if enough time has passed since last check
+      const now = Date.now();
+      if (this.lastCheckTime > 0 && now - this.lastCheckTime < this.pollingInterval) {
+        // Not enough time has passed, return empty result
+        return Ok([]);
+      }
+
+      // Update last check time
+      this.lastCheckTime = now;
+
       let cliMessages: Message[] = [];
       let desktopMessages: Message[] = [];
 
@@ -144,7 +160,10 @@ export class MultiClaudeConsolidationService {
   /**
    * Get messages by source
    */
-  getMessagesBySource(messages: Message[], source: 'claude-web' | 'claude-desktop' | 'claude-cli'): Message[] {
+  getMessagesBySource(
+    messages: Message[],
+    source: 'claude-web' | 'claude-desktop' | 'claude-cli'
+  ): Message[] {
     return messages.filter((msg) => {
       const metadata = msg.metadata as any;
       return metadata?.source === source;
@@ -174,7 +193,8 @@ export class MultiClaudeConsolidationService {
       return 'No consolidation data available';
     }
 
-    const { totalMessages, deduplicatedCount, deduplicationRate, sourceBreakdown, conflictCount } = this.lastStats;
+    const { totalMessages, deduplicatedCount, deduplicationRate, sourceBreakdown, conflictCount } =
+      this.lastStats;
 
     return `
 Multi-Claude Consolidation Summary
@@ -193,4 +213,3 @@ Last Updated: ${this.lastStats.timestamp}
     `.trim();
   }
 }
-
