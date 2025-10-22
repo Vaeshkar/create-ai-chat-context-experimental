@@ -109,7 +109,12 @@ export class PermissionManager {
         timestamp: new Date().toISOString(),
       };
 
-      await this.logAudit('permission_granted', 'system', `Granted ${consentType} consent`, platform);
+      await this.logAudit(
+        'permission_granted',
+        'system',
+        `Granted ${consentType} consent`,
+        platform
+      );
       await this.save();
 
       return Ok(undefined);
@@ -166,6 +171,7 @@ export class PermissionManager {
       };
 
       this.data.auditLog.push(entry);
+      await this.save();
       return Ok(undefined);
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
@@ -296,4 +302,3 @@ export class PermissionManager {
     return content;
   }
 }
-
