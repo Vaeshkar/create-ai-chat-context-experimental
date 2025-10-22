@@ -7,13 +7,14 @@
  * Automatically extracts messages and returns them for consolidation
  */
 
-import { existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { ClaudeDesktopParser } from '../parsers/ClaudeDesktopParser.js';
+import { readFile, pathExists, listFilesByExtension } from '../utils/FileSystemUtils.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Watch Claude Desktop for new conversations
@@ -52,8 +53,7 @@ export class ClaudeDesktopWatcher {
 
       return this.parser.parse(dbPath);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new Error(`Failed to get Claude Desktop messages: ${message}`));
+      return Err(handleError(error, 'Failed to get Claude Desktop messages'));
     }
   }
 
@@ -87,8 +87,7 @@ export class ClaudeDesktopWatcher {
       // Database has changed, parse it
       return this.parser.parse(dbPath);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new Error(`Failed to get new Claude Desktop messages: ${message}`));
+      return Err(handleError(error, 'Failed to get new Claude Desktop messages'));
     }
   }
 
@@ -99,7 +98,7 @@ export class ClaudeDesktopWatcher {
    * @returns Path to database file or null if not found
    */
   private findDatabase(): string | null {
-    if (!existsSync(this.claudePath)) {
+    if (!pathExists(this.claudePath)) {
       return null;
     }
 
@@ -115,7 +114,12 @@ export class ClaudeDesktopWatcher {
 
     // Search for database files
     try {
-      const files = readdirSync(this.claudePath);
+      const filesResult = listFilesByExtension(this.claudePath, '');
+      if (!filesResult.ok) {
+        return null;
+      }
+
+      const files = filesResult.value;
 
       // First, check for known names
       for (const name of possibleNames) {
@@ -196,4 +200,3 @@ export class ClaudeDesktopWatcher {
     return this.claudePath;
   }
 }
-

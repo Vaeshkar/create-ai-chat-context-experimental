@@ -7,13 +7,19 @@
  * Automatically extracts messages and returns them for consolidation
  */
 
-import { existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { ClaudeCliParser } from '../parsers/ClaudeCliParser.js';
+import {
+  listFilesByExtension,
+  readFile,
+  getLatestFile,
+  pathExists,
+} from '../utils/FileSystemUtils.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Watch Claude CLI for new sessions
@@ -33,7 +39,7 @@ export class ClaudeCliWatcher {
    * @returns true if ~/.claude/projects exists
    */
   isAvailable(): boolean {
-    return existsSync(this.projectsPath);
+    return pathExists(this.projectsPath);
   }
 
   /**
@@ -46,26 +52,32 @@ export class ClaudeCliWatcher {
     try {
       const fullPath = join(this.projectsPath, projectPath);
 
-      if (!existsSync(fullPath)) {
+      if (!pathExists(fullPath)) {
         return Ok([]); // Project not found, return empty
       }
 
       const allMessages: Message[] = [];
-      const files = readdirSync(fullPath);
-      const jsonlFiles = files.filter((f) => f.endsWith('.jsonl'));
+      const filesResult = listFilesByExtension(fullPath, '.jsonl');
 
-      for (const file of jsonlFiles) {
+      if (!filesResult.ok) {
+        return Ok([]); // No files found
+      }
+
+      for (const file of filesResult.value) {
         const filePath = join(fullPath, file);
         const sessionId = file.replace('.jsonl', '');
 
         try {
-          const content = readFileSync(filePath, 'utf-8');
-          const result = this.parser.parse(content, sessionId);
+          const contentResult = readFile(filePath);
+          if (!contentResult.ok) {
+            continue;
+          }
 
+          const result = this.parser.parse(contentResult.value, sessionId);
           if (result.ok) {
             allMessages.push(...result.value);
           }
-        } catch (error) {
+        } catch {
           // Skip files that can't be read
           continue;
         }
@@ -73,8 +85,7 @@ export class ClaudeCliWatcher {
 
       return Ok(allMessages);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new Error(`Failed to get Claude CLI project sessions: ${message}`));
+      return Err(handleError(error, 'Failed to get Claude CLI project sessions'));
     }
   }
 
@@ -88,27 +99,27 @@ export class ClaudeCliWatcher {
     try {
       const fullPath = join(this.projectsPath, projectPath);
 
-      if (!existsSync(fullPath)) {
+      if (!pathExists(fullPath)) {
         return Ok([]); // Project not found, return empty
       }
 
-      const files = readdirSync(fullPath);
-      const jsonlFiles = files.filter((f) => f.endsWith('.jsonl'));
-
-      if (jsonlFiles.length === 0) {
+      const latestFileResult = getLatestFile(fullPath, '.jsonl');
+      if (!latestFileResult.ok || !latestFileResult.value) {
         return Ok([]); // No sessions found
       }
 
-      // Get most recent file (alphabetically sorted, UUIDs are sortable)
-      const latestFile = jsonlFiles.sort().pop()!;
+      const latestFile = latestFileResult.value;
       const filePath = join(fullPath, latestFile);
       const sessionId = latestFile.replace('.jsonl', '');
 
-      const content = readFileSync(filePath, 'utf-8');
-      return this.parser.parse(content, sessionId);
+      const contentResult = readFile(filePath);
+      if (!contentResult.ok) {
+        return Err(contentResult.error);
+      }
+
+      return this.parser.parse(contentResult.value, sessionId);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new Error(`Failed to get latest Claude CLI session: ${message}`));
+      return Err(handleError(error, 'Failed to get latest Claude CLI session'));
     }
   }
 
@@ -119,25 +130,23 @@ export class ClaudeCliWatcher {
    */
   getAvailableProjects(): Result<string[]> {
     try {
-      if (!existsSync(this.projectsPath)) {
+      if (!pathExists(this.projectsPath)) {
         return Ok([]);
       }
 
-      const items = readdirSync(this.projectsPath);
-      const projects = items.filter((item) => {
+      const filesResult = listFilesByExtension(this.projectsPath, '');
+      if (!filesResult.ok) {
+        return Ok([]);
+      }
+
+      const projects = filesResult.value.filter((item) => {
         const fullPath = join(this.projectsPath, item);
-        // Check if it's a directory
-        try {
-          return existsSync(fullPath);
-        } catch {
-          return false;
-        }
+        return pathExists(fullPath);
       });
 
       return Ok(projects);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new Error(`Failed to get available Claude CLI projects: ${message}`));
+      return Err(handleError(error, 'Failed to get available Claude CLI projects'));
     }
   }
 
