@@ -10,9 +10,10 @@
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import type { Message } from '../types/index.js';
-import { ExtractionError } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
+import { MessageBuilder } from '../utils/MessageBuilder.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Claude Desktop conversation structure from SQLite
@@ -75,8 +76,7 @@ export class ClaudeDesktopParser {
 
       return Ok(allMessages);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new ExtractionError(`Failed to parse Claude Desktop database: ${message}`, error));
+      return Err(handleError(error, 'Failed to parse Claude Desktop database'));
     } finally {
       if (db) {
         try {
@@ -105,7 +105,9 @@ export class ClaudeDesktopParser {
           stmt.get();
 
           // Table exists, use it
-          const rows = db.prepare(`SELECT * FROM ${tableName}`).all() as ClaudeDesktopConversation[];
+          const rows = db
+            .prepare(`SELECT * FROM ${tableName}`)
+            .all() as ClaudeDesktopConversation[];
           return Ok(rows);
         } catch {
           // Table doesn't exist, try next
@@ -128,7 +130,10 @@ export class ClaudeDesktopParser {
    * @param conversationId - Conversation ID
    * @returns Result with Message[] or error
    */
-  private getConversationMessages(db: Database.Database, conversationId: string): Result<Message[]> {
+  private getConversationMessages(
+    db: Database.Database,
+    conversationId: string
+  ): Result<Message[]> {
     try {
       // Try different possible table names
       const tableNames = ['messages', 'chat_messages', 'conversation_messages'];
@@ -142,7 +147,9 @@ export class ClaudeDesktopParser {
           stmt.get(conversationId);
 
           // Table exists and has data, use it
-          messages = db.prepare(`SELECT * FROM ${tableName} WHERE conversation_id = ? ORDER BY created_at ASC`).all(conversationId) as ClaudeDesktopMessage[];
+          messages = db
+            .prepare(`SELECT * FROM ${tableName} WHERE conversation_id = ? ORDER BY created_at ASC`)
+            .all(conversationId) as ClaudeDesktopMessage[];
           found = true;
           break;
         } catch {
@@ -163,20 +170,20 @@ export class ClaudeDesktopParser {
           const content = this.extractContent(msg.content);
 
           if (content && content.length > 0) {
-            result.push({
-              id: msg.id || `claude-desktop-${conversationId}-${randomUUID()}`,
+            const message = MessageBuilder.createWithPlatform({
+              id: msg.id,
               conversationId,
-              timestamp: msg.created_at || new Date().toISOString(),
+              timestamp: msg.created_at,
               role: msg.role === 'assistant' ? 'assistant' : 'user',
               content,
-              metadata: {
-                extractedFrom: 'claude-desktop-sqlite',
-                rawLength: msg.content.length,
-                messageType: msg.role === 'assistant' ? 'ai_response' : 'user_request',
-                platform: 'claude-desktop',
-                ...(msg.metadata && { metadata: msg.metadata }),
-              },
+              platform: 'claude-desktop',
+              extractedFrom: 'claude-desktop-sqlite',
+              messageType: msg.role === 'assistant' ? 'ai_response' : 'user_request',
+              rawLength: msg.content.length,
+              metadata: msg.metadata ? { metadata: msg.metadata } : undefined,
             });
+
+            result.push(message);
           }
         } catch (error) {
           // Skip malformed messages
@@ -222,4 +229,3 @@ export class ClaudeDesktopParser {
     return '';
   }
 }
-

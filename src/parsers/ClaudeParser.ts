@@ -4,11 +4,13 @@
  * October 2025
  */
 
-import { randomUUID } from 'crypto';
 import type { Message } from '../types/index.js';
-import { ExtractionError } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
+import { extractContentFromBlocks } from '../utils/ParserUtils.js';
+import { MessageBuilder } from '../utils/MessageBuilder.js';
+import { parseTimestamp } from '../utils/TimestampUtils.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Claude export JSON structure
@@ -66,15 +68,14 @@ export class ClaudeParser {
 
       // Extract conversation ID from title
       const conversationId = this.generateConversationId(exportData.meta.title);
-      const exportedAt = this.parseTimestamp(exportData.meta.exported_at);
+      const exportedAt = parseTimestamp(exportData.meta.exported_at);
 
       // Parse messages
       const messages = this.extractMessages(exportData.chats, conversationId, exportedAt);
 
       return Ok(messages);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new ExtractionError(`Failed to parse Claude export: ${message}`, error));
+      return Err(handleError(error, 'Failed to parse Claude export'));
     }
   }
 
@@ -96,24 +97,23 @@ export class ClaudeParser {
         }
 
         // Extract content from message blocks
-        const content = this.extractContent(chat.message);
+        const content = extractContentFromBlocks(chat.message);
 
         if (content && content.length > 0) {
           const role = chat.type === 'prompt' ? 'user' : 'assistant';
 
-          messages.push({
-            id: `claude-${chat.type}-${randomUUID()}`,
+          const message = MessageBuilder.createWithPlatform({
             conversationId,
             timestamp: exportedAt,
             role,
             content,
-            metadata: {
-              extractedFrom: 'claude-export',
-              rawLength: content.length,
-              messageType: role === 'user' ? 'user_request' : 'ai_response',
-              platform: 'claude',
-            },
+            platform: 'claude',
+            extractedFrom: 'claude-export',
+            messageType: role === 'user' ? 'user_request' : 'ai_response',
+            rawLength: content.length,
           });
+
+          messages.push(message);
         }
       } catch (error) {
         // Skip malformed messages
@@ -122,55 +122,6 @@ export class ClaudeParser {
     }
 
     return messages;
-  }
-
-  /**
-   * Extract text content from message blocks
-   * Handles paragraphs, code blocks, lists, and tables
-   */
-  private extractContent(blocks: ClaudeMessageBlock[]): string {
-    const parts: string[] = [];
-
-    for (const block of blocks) {
-      if (!block.data) {
-        continue;
-      }
-
-      switch (block.type) {
-        case 'p':
-          // Paragraph
-          parts.push(block.data);
-          break;
-
-        case 'pre':
-          // Code block
-          if (block.language) {
-            parts.push(`\`\`\`${block.language}\n${block.data}\n\`\`\``);
-          } else {
-            parts.push(`\`\`\`\n${block.data}\n\`\`\``);
-          }
-          break;
-
-        case 'ul':
-        case 'ol':
-          // Lists - data contains list items
-          parts.push(block.data);
-          break;
-
-        case 'table':
-          // Tables
-          parts.push(block.data);
-          break;
-
-        default:
-          // Unknown type - include as-is
-          if (block.data) {
-            parts.push(block.data);
-          }
-      }
-    }
-
-    return parts.join('\n\n').trim();
   }
 
   /**
@@ -183,26 +134,5 @@ export class ClaudeParser {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
       .substring(0, 50);
-  }
-
-  /**
-   * Parse timestamp from Claude export format
-   * Converts "2024-03-19 16:03:09" to ISO 8601
-   */
-  private parseTimestamp(timestamp: string): string {
-    try {
-      // Try to parse as "YYYY-MM-DD HH:MM:SS"
-      const date = new Date(timestamp.replace(' ', 'T'));
-
-      if (isNaN(date.getTime())) {
-        // Fallback to current time if parsing fails
-        return new Date().toISOString();
-      }
-
-      return date.toISOString();
-    } catch {
-      // Fallback to current time
-      return new Date().toISOString();
-    }
   }
 }

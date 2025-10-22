@@ -7,11 +7,12 @@
  * Each line is a JSON object representing a message or event
  */
 
-import { randomUUID } from 'crypto';
 import type { Message } from '../types/index.js';
-import { ExtractionError } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
+import { extractStringContent, isValidContent } from '../utils/ParserUtils.js';
+import { MessageBuilder } from '../utils/MessageBuilder.js';
+import { handleError } from '../utils/ErrorUtils.js';
 
 /**
  * Claude CLI message structure from JSONL
@@ -73,31 +74,38 @@ export class ClaudeCliParser {
           }
 
           // Extract content
-          const content = this.extractContent(data.content);
-          if (!content || content.length === 0) {
+          const content = extractStringContent(data.content);
+          if (!isValidContent(content)) {
             continue;
           }
 
           // Create message
-          messages.push({
-            id: data.uuid || `claude-cli-${sessionId}-${messageIndex}`,
+          const rawLength =
+            typeof data.content === 'string'
+              ? data.content.length
+              : JSON.stringify(data.content).length;
+
+          const message = MessageBuilder.createWithPlatform({
+            id: data.uuid,
             conversationId: sessionId,
-            timestamp: data.timestamp || new Date().toISOString(),
+            timestamp: data.timestamp,
             role: data.role === 'assistant' ? 'assistant' : 'user',
             content,
+            platform: 'claude-cli',
+            extractedFrom: 'claude-cli-jsonl',
+            messageType: data.role === 'assistant' ? 'ai_response' : 'user_request',
+            rawLength,
             metadata: {
-              extractedFrom: 'claude-cli-jsonl',
-              rawLength: typeof data.content === 'string' ? data.content.length : JSON.stringify(data.content).length,
-              messageType: data.role === 'assistant' ? 'ai_response' : 'user_request',
-              platform: 'claude-cli',
-              // Store additional metadata
               ...(data.tokenUsage && { tokenUsage: data.tokenUsage }),
               ...(data.thinking && { thinking: data.thinking }),
               ...(data.metadata?.gitBranch && { gitBranch: data.metadata.gitBranch }),
-              ...(data.metadata?.workingDirectory && { workingDirectory: data.metadata.workingDirectory }),
+              ...(data.metadata?.workingDirectory && {
+                workingDirectory: data.metadata.workingDirectory,
+              }),
             },
           });
 
+          messages.push(message);
           messageIndex++;
         } catch (lineError) {
           // Skip malformed JSON lines
@@ -107,36 +115,7 @@ export class ClaudeCliParser {
 
       return Ok(messages);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new ExtractionError(`Failed to parse Claude CLI JSONL: ${message}`, error));
+      return Err(handleError(error, 'Failed to parse Claude CLI JSONL'));
     }
-  }
-
-  /**
-   * Extract content from Claude CLI message
-   * Handles string and structured content
-   *
-   * @param content - Message content (string or object)
-   * @returns Extracted text content
-   */
-  private extractContent(content: string | Record<string, unknown>): string {
-    if (typeof content === 'string') {
-      return content.trim();
-    }
-
-    if (typeof content === 'object' && content !== null) {
-      // Handle structured content
-      if (typeof content.text === 'string') {
-        return content.text.trim();
-      }
-      if (typeof content.message === 'string') {
-        return content.message.trim();
-      }
-      // Fallback: stringify the object
-      return JSON.stringify(content);
-    }
-
-    return '';
   }
 }
-
