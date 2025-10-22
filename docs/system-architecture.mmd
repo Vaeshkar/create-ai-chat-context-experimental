@@ -1,0 +1,117 @@
+graph TB
+    subgraph "External Dependencies"
+        AICF["📦 aicf-core v2.0.0<br/>(npm package)<br/>Pipe-delimited format<br/>AI-optimized"]
+        BETTER["better-sqlite3<br/>(npm package)<br/>SQLite support"]
+    end
+    
+    subgraph "Data Sources"
+        AUGMENT["Augment VSCode<br/>LevelDB storage<br/>~/.cache/llm/augment/"]
+        CLAUDE_DESKTOP["Claude Desktop<br/>SQLite database<br/>~/Library/Application Support/Claude/"]
+        CLAUDE_CLI["Claude CLI<br/>JSONL files<br/>~/.claude/projects/"]
+        CLAUDE_WEB["Claude Web<br/>Browser storage<br/>(manual export)"]
+    end
+    
+    subgraph "Parsers & Watchers"
+        AUGMENT_PARSER["AugmentParser<br/>(LevelDB → Message[])"]
+        CLAUDE_DESKTOP_PARSER["ClaudeDesktopParser<br/>(SQLite → Message[])"]
+        CLAUDE_CLI_PARSER["ClaudeCliParser<br/>(JSONL → Message[])"]
+        CLAUDE_WEB_PARSER["ClaudeParser<br/>(JSON → Message[])"]
+        
+        AUGMENT_WATCHER["AugmentWatcher<br/>(5m polling)"]
+        CLAUDE_DESKTOP_WATCHER["ClaudeDesktopWatcher<br/>(5m polling)"]
+        CLAUDE_CLI_WATCHER["ClaudeCliWatcher<br/>(5m polling)"]
+    end
+    
+    subgraph "Consolidation & Orchestration"
+        MULTI_CLAUDE_ORCH["MultiClaudeOrchestrator<br/>Consolidate all sources<br/>Deduplicate by hash<br/>Track source"]
+        MULTI_CLAUDE_SERVICE["MultiClaudeConsolidationService<br/>Manage all watchers<br/>Enforce polling interval<br/>Calculate statistics"]
+    end
+    
+    subgraph "Checkpoint Processing"
+        CHECKPOINT_PROC["CheckpointProcessor<br/>Read checkpoint JSON<br/>Analyze conversation<br/>Extract context"]
+        CONVERSATION_ORCH["ConversationOrchestrator<br/>Normalize messages<br/>Group by conversation<br/>Generate metadata"]
+    end
+    
+    subgraph "Memory Generation"
+        AICF_WRITER["AICF Writer<br/>(aicf-core)<br/>Pipe-delimited format<br/>AI-optimized"]
+        MD_WRITER["Markdown Writer<br/>Human-readable<br/>Prose format"]
+    end
+    
+    subgraph "Memory Files"
+        AICF_FILES[".aicf/ folder<br/>index.aicf<br/>work-state.aicf<br/>conversations.aicf<br/>decisions.aicf<br/>technical-context.aicf"]
+        MD_FILES[".ai/ folder<br/>conversation-log.md<br/>technical-decisions.md<br/>next-steps.md<br/>known-issues.md"]
+    end
+    
+    subgraph "Main Watcher Loop"
+        WATCHER_CMD["WatcherCommand<br/>(Main Entry Point)<br/>5-second interval"]
+        CHECKPOINT_CHECK["checkForCheckpoints()<br/>Process checkpoint files"]
+        MULTI_CLAUDE_CHECK["checkForMultiClaudeMessages()<br/>Consolidate from all sources"]
+    end
+    
+    %% Data flow
+    AUGMENT --> AUGMENT_PARSER
+    CLAUDE_DESKTOP --> CLAUDE_DESKTOP_PARSER
+    CLAUDE_CLI --> CLAUDE_CLI_PARSER
+    CLAUDE_WEB --> CLAUDE_WEB_PARSER
+    
+    AUGMENT_PARSER --> AUGMENT_WATCHER
+    CLAUDE_DESKTOP_PARSER --> CLAUDE_DESKTOP_WATCHER
+    CLAUDE_CLI_PARSER --> CLAUDE_CLI_WATCHER
+    
+    AUGMENT_WATCHER --> CHECKPOINT_PROC
+    CLAUDE_DESKTOP_WATCHER --> MULTI_CLAUDE_SERVICE
+    CLAUDE_CLI_WATCHER --> MULTI_CLAUDE_SERVICE
+    CLAUDE_WEB_PARSER --> MULTI_CLAUDE_SERVICE
+    
+    MULTI_CLAUDE_SERVICE --> MULTI_CLAUDE_ORCH
+    MULTI_CLAUDE_ORCH --> CHECKPOINT_PROC
+    
+    CHECKPOINT_PROC --> CONVERSATION_ORCH
+    CONVERSATION_ORCH --> AICF_WRITER
+    CONVERSATION_ORCH --> MD_WRITER
+    
+    AICF_WRITER --> AICF_FILES
+    MD_WRITER --> MD_FILES
+    
+    AICF --> AICF_WRITER
+    BETTER --> CLAUDE_DESKTOP_PARSER
+    
+    WATCHER_CMD --> CHECKPOINT_CHECK
+    WATCHER_CMD --> MULTI_CLAUDE_CHECK
+    CHECKPOINT_CHECK --> CHECKPOINT_PROC
+    MULTI_CLAUDE_CHECK --> MULTI_CLAUDE_SERVICE
+    
+    %% Styling
+    style AICF fill:#81c784,stroke:#2e7d32,stroke-width:3px,color:#000
+    style BETTER fill:#81c784,stroke:#2e7d32,stroke-width:2px,color:#000
+    
+    style AUGMENT fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
+    style CLAUDE_DESKTOP fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
+    style CLAUDE_CLI fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
+    style CLAUDE_WEB fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
+    
+    style AUGMENT_PARSER fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+    style CLAUDE_DESKTOP_PARSER fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+    style CLAUDE_CLI_PARSER fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+    style CLAUDE_WEB_PARSER fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+    
+    style AUGMENT_WATCHER fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    style CLAUDE_DESKTOP_WATCHER fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    style CLAUDE_CLI_WATCHER fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    
+    style MULTI_CLAUDE_ORCH fill:#ffeb3b,stroke:#f57f17,stroke-width:2px,color:#000
+    style MULTI_CLAUDE_SERVICE fill:#ffeb3b,stroke:#f57f17,stroke-width:2px,color:#000
+    
+    style CHECKPOINT_PROC fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
+    style CONVERSATION_ORCH fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
+    
+    style AICF_WRITER fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    style MD_WRITER fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    
+    style AICF_FILES fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+    style MD_FILES fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+    
+    style WATCHER_CMD fill:#64b5f6,stroke:#1976d2,stroke-width:3px,color:#000
+    style CHECKPOINT_CHECK fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+    style MULTI_CLAUDE_CHECK fill:#a5d6a7,stroke:#2e7d32,stroke-width:2px
+
