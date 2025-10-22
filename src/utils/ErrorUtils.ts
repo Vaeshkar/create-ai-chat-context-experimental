@@ -1,4 +1,10 @@
 /**
+ * This file is part of create-ai-chat-context-experimental.
+ * Licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
+ * See LICENSE file for details.
+ */
+
+/**
  * Error Utilities
  * Consistent error handling across parsers and watchers
  * October 2025

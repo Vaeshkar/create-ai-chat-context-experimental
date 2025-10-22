@@ -1,4 +1,10 @@
 /**
+ * This file is part of create-ai-chat-context-experimental.
+ * Licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
+ * See LICENSE file for details.
+ */
+
+/**
  * Memory File Writer
  * Writes analysis results to .aicf and .ai memory files
  * Phase 2.4: Integration - October 2025

@@ -1,4 +1,10 @@
 /**
+ * This file is part of create-ai-chat-context-experimental.
+ * Licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
+ * See LICENSE file for details.
+ */
+
+/**
  * Claude Parser Tests
  * October 2025
  */
