@@ -11,6 +11,14 @@ export interface MessageMetadata {
   rawLength: number;
   messageType: 'user_request' | 'ai_response' | 'system';
   platform?: string;
+  // Optional Claude CLI metadata
+  tokenUsage?: {
+    input: number;
+    output: number;
+  };
+  thinking?: string;
+  gitBranch?: string;
+  workingDirectory?: string;
 }
 
 /**

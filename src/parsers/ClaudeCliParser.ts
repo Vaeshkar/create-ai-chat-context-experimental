@@ -101,24 +101,22 @@ export class ClaudeCliParser {
           });
 
           // Add optional metadata fields
-          if (data.tokenUsage) {
-            message.metadata = message.metadata || {};
-            message.metadata.tokenUsage = data.tokenUsage;
-          }
+          if (message.metadata) {
+            if (data.tokenUsage) {
+              message.metadata.tokenUsage = data.tokenUsage;
+            }
 
-          if (data.thinking) {
-            message.metadata = message.metadata || {};
-            message.metadata.thinking = data.thinking;
-          }
+            if (data.thinking) {
+              message.metadata.thinking = data.thinking;
+            }
 
-          if (data.metadata?.gitBranch) {
-            message.metadata = message.metadata || {};
-            message.metadata.gitBranch = data.metadata.gitBranch;
-          }
+            if (data.metadata?.gitBranch) {
+              message.metadata.gitBranch = data.metadata.gitBranch;
+            }
 
-          if (data.metadata?.workingDirectory) {
-            message.metadata = message.metadata || {};
-            message.metadata.workingDirectory = data.metadata.workingDirectory;
+            if (data.metadata?.workingDirectory) {
+              message.metadata.workingDirectory = data.metadata.workingDirectory;
+            }
           }
 
           messages.push(message);

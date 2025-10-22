@@ -5,7 +5,11 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const cjsDir = path.join(__dirname, '../dist/cjs');
 
-function fixExtensions(dir) {
+/**
+ * Fix CJS extensions in compiled output
+ * Converts ESM imports to CJS requires and adds .js extensions to relative imports
+ */
+function fixExtensions(dir: string): void {
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
