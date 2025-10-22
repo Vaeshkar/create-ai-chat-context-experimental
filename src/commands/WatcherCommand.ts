@@ -1,8 +1,9 @@
 /**
  * Watcher Command
  * Phase 3: CLI Integration - October 2025
+ * Phase 5.5: Multi-Claude Support - October 2025
  *
- * Background watcher for automatic checkpoint processing
+ * Background watcher for automatic checkpoint processing and multi-Claude consolidation
  */
 
 import { readdirSync, existsSync, unlinkSync } from 'fs';
@@ -12,6 +13,7 @@ import ora from 'ora';
 import { CheckpointProcessor } from './CheckpointProcessor.js';
 import { WatcherManager } from '../utils/WatcherManager.js';
 import { WatcherLogger } from '../utils/WatcherLogger.js';
+import { MultiClaudeConsolidationService } from '../services/MultiClaudeConsolidationService.js';
 
 interface WatcherCommandOptions {
   interval?: string;
@@ -30,6 +32,7 @@ export class WatcherCommand {
   private processor: CheckpointProcessor;
   private manager: WatcherManager;
   private logger: WatcherLogger;
+  private consolidationService: MultiClaudeConsolidationService;
   private isRunning: boolean = false;
   private processedFiles: Set<string> = new Set();
 
@@ -50,6 +53,11 @@ export class WatcherCommand {
     this.logger = new WatcherLogger({
       verbose: this.verbose,
       logLevel: this.verbose ? 'debug' : 'info',
+    });
+    this.consolidationService = new MultiClaudeConsolidationService({
+      verbose: this.verbose,
+      enableCli: true,
+      enableDesktop: true,
     });
   }
 
@@ -78,6 +86,14 @@ export class WatcherCommand {
     console.log(chalk.gray(`   Verbose: ${this.verbose ? 'enabled' : 'disabled'}`));
     console.log(chalk.gray(`   PID File: ${this.manager.getPidFilePath()}`));
     console.log(chalk.gray(`   Log File: ${this.manager.getLogFilePath()}`));
+
+    // Show multi-Claude status
+    const availableSources = this.consolidationService.getAvailableSources();
+    if (availableSources.length > 0) {
+      console.log(chalk.cyan('\n   📚 Multi-Claude Support Enabled'));
+      console.log(chalk.gray(`   Available Sources: ${availableSources.join(', ')}`));
+    }
+
     console.log(chalk.gray('\n   Press Ctrl+C to stop\n'));
 
     // Handle graceful shutdown
@@ -139,9 +155,12 @@ export class WatcherCommand {
   }
 
   /**
-   * Check for new checkpoint files
+   * Check for new checkpoint files and multi-Claude messages
    */
   private checkForCheckpoints(): void {
+    // Check for multi-Claude messages
+    this.checkForMultiClaudeMessages();
+
     if (!existsSync(this.watchDir)) {
       this.logger.debug('Waiting for checkpoint directory', { dir: this.watchDir });
       if (this.verbose) {
@@ -182,6 +201,52 @@ export class WatcherCommand {
       const errorMsg = error instanceof Error ? error.message : String(error);
       this.logger.error('Error reading checkpoint directory', { error: errorMsg });
       console.error(chalk.red('❌ Error reading checkpoint directory:'), errorMsg);
+    }
+  }
+
+  /**
+   * Check for multi-Claude messages and consolidate
+   */
+  private async checkForMultiClaudeMessages(): Promise<void> {
+    if (!this.consolidationService.isAvailable()) {
+      return;
+    }
+
+    try {
+      const consolidationResult = await this.consolidationService.consolidate([]);
+
+      if (!consolidationResult.ok) {
+        this.logger.debug('Multi-Claude consolidation skipped', {
+          reason: consolidationResult.error.message,
+        });
+        return;
+      }
+
+      const messages = consolidationResult.value;
+      if (messages.length === 0) {
+        return;
+      }
+
+      const stats = this.consolidationService.getLastStats();
+      if (stats && stats.deduplicatedCount > 0) {
+        this.logger.info('Multi-Claude consolidation complete', {
+          totalMessages: stats.totalMessages,
+          deduplicatedCount: stats.deduplicatedCount,
+          sources: stats.sourceBreakdown,
+        });
+
+        if (this.verbose) {
+          console.log(chalk.cyan('   📚 Multi-Claude consolidation:'));
+          console.log(
+            chalk.gray(
+              `      Total: ${stats.totalMessages}, Deduplicated: ${stats.deduplicatedCount}`
+            )
+          );
+        }
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      this.logger.debug('Multi-Claude check error', { error: errorMsg });
     }
   }
 
