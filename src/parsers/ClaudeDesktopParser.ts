@@ -170,8 +170,10 @@ export class ClaudeDesktopParser {
           const content = this.extractContent(msg.content);
 
           if (content && content.length > 0) {
+            const id = msg.id || `claude-desktop-${conversationId}-${randomUUID()}`;
+
             const message = MessageBuilder.createWithPlatform({
-              id: msg.id,
+              id,
               conversationId,
               timestamp: msg.created_at,
               role: msg.role === 'assistant' ? 'assistant' : 'user',

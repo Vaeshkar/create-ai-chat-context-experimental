@@ -13,7 +13,7 @@ import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { ClaudeDesktopParser } from '../parsers/ClaudeDesktopParser.js';
-import { readFile, pathExists, listFilesByExtension } from '../utils/FileSystemUtils.js';
+import { readFile, pathExists, listFiles, listFilesByExtension } from '../utils/FileSystemUtils.js';
 import { handleError } from '../utils/ErrorUtils.js';
 
 /**
@@ -35,7 +35,7 @@ export class ClaudeDesktopWatcher {
    * @returns true if ~/Library/Application Support/Claude exists
    */
   isAvailable(): boolean {
-    return existsSync(this.claudePath);
+    return pathExists(this.claudePath);
   }
 
   /**
@@ -114,7 +114,7 @@ export class ClaudeDesktopWatcher {
 
     // Search for database files
     try {
-      const filesResult = listFilesByExtension(this.claudePath, '');
+      const filesResult = listFiles(this.claudePath);
       if (!filesResult.ok) {
         return null;
       }

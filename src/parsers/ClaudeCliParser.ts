@@ -85,8 +85,10 @@ export class ClaudeCliParser {
               ? data.content.length
               : JSON.stringify(data.content).length;
 
+          const id = data.uuid || `claude-cli-${sessionId}-${messageIndex}`;
+
           const message = MessageBuilder.createWithPlatform({
-            id: data.uuid,
+            id,
             conversationId: sessionId,
             timestamp: data.timestamp,
             role: data.role === 'assistant' ? 'assistant' : 'user',

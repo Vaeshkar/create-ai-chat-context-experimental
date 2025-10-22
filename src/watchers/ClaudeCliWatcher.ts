@@ -14,6 +14,7 @@ import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { ClaudeCliParser } from '../parsers/ClaudeCliParser.js';
 import {
+  listFiles,
   listFilesByExtension,
   readFile,
   getLatestFile,
@@ -134,7 +135,7 @@ export class ClaudeCliWatcher {
         return Ok([]);
       }
 
-      const filesResult = listFilesByExtension(this.projectsPath, '');
+      const filesResult = listFiles(this.projectsPath);
       if (!filesResult.ok) {
         return Ok([]);
       }
@@ -160,17 +161,18 @@ export class ClaudeCliWatcher {
     try {
       const fullPath = join(this.projectsPath, projectPath);
 
-      if (!existsSync(fullPath)) {
+      if (!pathExists(fullPath)) {
         return Ok(0);
       }
 
-      const files = readdirSync(fullPath);
-      const jsonlFiles = files.filter((f) => f.endsWith('.jsonl'));
+      const filesResult = listFilesByExtension(fullPath, '.jsonl');
+      if (!filesResult.ok) {
+        return Ok(0);
+      }
 
-      return Ok(jsonlFiles.length);
+      return Ok(filesResult.value.length);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return Err(new Error(`Failed to get Claude CLI session count: ${message}`));
+      return Err(handleError(error, 'Failed to get Claude CLI session count'));
     }
   }
 }
