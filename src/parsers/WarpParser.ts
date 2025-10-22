@@ -185,13 +185,9 @@ export class WarpParser {
   isWarpData(input: string): boolean {
     try {
       const data = JSON.parse(input);
-      return (
-        Array.isArray(data) &&
-        data.some((item) => item.Query || item.ActionResult)
-      );
+      return Array.isArray(data) && data.some((item) => item.Query || item.ActionResult);
     } catch {
       return false;
     }
   }
 }
-
