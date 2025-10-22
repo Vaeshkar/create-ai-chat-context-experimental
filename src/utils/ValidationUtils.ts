@@ -27,11 +27,11 @@ export function isValidMessage(msg: unknown): msg is Message {
   const m = msg as Record<string, unknown>;
 
   return (
-    typeof m.id === 'string' &&
-    typeof m.conversationId === 'string' &&
-    typeof m.timestamp === 'string' &&
-    (m.role === 'user' || m.role === 'assistant') &&
-    typeof m.content === 'string'
+    typeof m['id'] === 'string' &&
+    typeof m['conversationId'] === 'string' &&
+    typeof m['timestamp'] === 'string' &&
+    (m['role'] === 'user' || m['role'] === 'assistant') &&
+    typeof m['content'] === 'string'
   );
 }
 
@@ -55,4 +55,3 @@ export function isValidObject(obj: unknown): obj is Record<string, unknown> {
 export function isValidString(str: unknown): str is string {
   return typeof str === 'string' && str.trim().length > 0;
 }
-

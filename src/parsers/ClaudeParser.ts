@@ -6,7 +6,7 @@
 
 import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
-import { Ok, Err } from '../types/index.js';
+import { Ok, Err, ExtractionError } from '../types/index.js';
 import { extractContentFromBlocks } from '../utils/ParserUtils.js';
 import { MessageBuilder } from '../utils/MessageBuilder.js';
 import { parseTimestamp } from '../utils/TimestampUtils.js';
@@ -115,7 +115,7 @@ export class ClaudeParser {
 
           messages.push(message);
         }
-      } catch (error) {
+      } catch {
         // Skip malformed messages
         continue;
       }

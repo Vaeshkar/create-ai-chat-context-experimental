@@ -99,11 +99,19 @@ export class AgentRouter {
     // Extract key phrases and classify
     const content = JSON.stringify(conversationData).toLowerCase();
 
-    if (content.includes('decided') || content.includes('decision') || content.includes('we chose')) {
+    if (
+      content.includes('decided') ||
+      content.includes('decision') ||
+      content.includes('we chose')
+    ) {
       classifications.push('decision');
     }
 
-    if (content.includes('architecture') || content.includes('system') || content.includes('technical')) {
+    if (
+      content.includes('architecture') ||
+      content.includes('system') ||
+      content.includes('technical')
+    ) {
       classifications.push('technical_insight');
     }
 
@@ -166,4 +174,3 @@ export class AgentRouter {
     this.chunkTracker.clear();
   }
 }
-

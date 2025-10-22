@@ -63,8 +63,9 @@ export class MultiClaudeConsolidationService {
    * Check if any Claude instance is available
    */
   isAvailable(): boolean {
-    const cliAvailable = this.options.enableCli && this.cliWatcher.isAvailable();
-    const desktopAvailable = this.options.enableDesktop && this.desktopWatcher.isAvailable();
+    const cliAvailable = (this.options.enableCli ?? false) && this.cliWatcher.isAvailable();
+    const desktopAvailable =
+      (this.options.enableDesktop ?? false) && this.desktopWatcher.isAvailable();
     return cliAvailable || desktopAvailable;
   }
 
@@ -134,7 +135,7 @@ export class MultiClaudeConsolidationService {
       }
 
       // Calculate and store statistics
-      const stats = this.orchestrator.getStatistics(consolidationResult.value);
+      this.orchestrator.getStatistics(consolidationResult.value);
       this.lastStats = {
         totalMessages: consolidationResult.value.messages.length,
         deduplicatedCount: consolidationResult.value.deduplicatedCount,
@@ -165,8 +166,8 @@ export class MultiClaudeConsolidationService {
     source: 'claude-web' | 'claude-desktop' | 'claude-cli'
   ): Message[] {
     return messages.filter((msg) => {
-      const metadata = msg.metadata as any;
-      return metadata?.source === source;
+      const metadata = msg.metadata as Record<string, unknown> | undefined;
+      return (metadata as Record<string, unknown> | undefined)?.['source'] === source;
     });
   }
 

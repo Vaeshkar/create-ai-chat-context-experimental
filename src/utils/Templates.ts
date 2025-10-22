@@ -225,4 +225,3 @@ export function getTemplateDir(templateName: string): string {
 export function templateExists(templateName: string): boolean {
   return templateName in TEMPLATES;
 }
-

@@ -46,7 +46,7 @@ export async function countWordsInFile(filePath: string): Promise<number> {
     // Split by whitespace and filter empty strings
     const words = content.split(/\s+/).filter((word) => word.length > 0);
     return words.length;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -139,7 +139,7 @@ export async function getTokenUsage(cwd: string = process.cwd()): Promise<TokenU
 /**
  * Display token usage report
  */
-export async function displayTokenUsage(options: Record<string, any> = {}): Promise<void> {
+export async function displayTokenUsage(options: Record<string, unknown> = {}): Promise<void> {
   const cwd = process.cwd();
 
   console.log(chalk.bold.cyan('\n📊 Token Usage Report\n'));
@@ -161,14 +161,17 @@ export async function displayTokenUsage(options: Record<string, any> = {}): Prom
   };
 
   usage.files.forEach((file) => {
-    if (file.exists) {
-      categories[file.category].files.push(file);
+    if (file.exists && file.category) {
+      const category = categories[file.category];
+      if (category) {
+        category.files.push(file);
+      }
     }
   });
 
   // Display by category
   Object.values(categories).forEach((category) => {
-    if (category.files.length > 0) {
+    if (category && category.files.length > 0) {
       console.log(chalk.bold(`${category.name}:`));
       category.files.forEach((file) => {
         const percentage = ((file.tokens / usage.totalTokens) * 100).toFixed(1);
@@ -220,7 +223,7 @@ export async function displayTokenUsage(options: Record<string, any> = {}): Prom
   ];
 
   // Determine which models to show
-  const showAll = options.all || config.showAllModels;
+  const showAll = options['all'] || config.showAllModels;
   let modelsToShow = allModels;
 
   if (!showAll) {
@@ -302,4 +305,3 @@ export async function displayTokenUsage(options: Record<string, any> = {}): Prom
     console.log(chalk.gray('   - Summarizing history: npx create-ai-chat-context summary\n'));
   }
 }
-

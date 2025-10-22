@@ -76,7 +76,7 @@ export function getLatestFile(dirPath: string, extension?: string): Result<strin
     const filesResult = extension ? listFilesByExtension(dirPath, extension) : listFiles(dirPath);
 
     if (!filesResult.ok) {
-      return filesResult;
+      return filesResult as Result<string | null>;
     }
 
     const files = filesResult.value;
@@ -84,7 +84,7 @@ export function getLatestFile(dirPath: string, extension?: string): Result<strin
       return Ok(null);
     }
 
-    let latestFile = files[0];
+    let latestFile: string | null = files[0] ?? null;
     let latestTime = 0;
 
     for (const file of files) {
@@ -101,7 +101,7 @@ export function getLatestFile(dirPath: string, extension?: string): Result<strin
       }
     }
 
-    return Ok(latestFile);
+    return Ok(latestFile ?? null);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return Err(new Error(`Failed to get latest file: ${message}`));
@@ -121,4 +121,3 @@ export function filterByExtension(files: string[], extension: string): string[] 
 export function pathExists(path: string): boolean {
   return existsSync(path);
 }
-

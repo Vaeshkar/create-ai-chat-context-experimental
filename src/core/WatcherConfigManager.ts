@@ -8,7 +8,8 @@
 
 import { join } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { Result, Ok, Err } from '../types/result.js';
+import type { Result } from '../types/result.js';
+import { Ok, Err } from '../types/result.js';
 
 export type PlatformName = 'augment' | 'warp' | 'claude-desktop' | 'copilot' | 'chatgpt';
 

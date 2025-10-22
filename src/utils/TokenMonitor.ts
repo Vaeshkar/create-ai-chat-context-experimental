@@ -28,7 +28,7 @@ export function estimateTokens(text: string): number {
   // Rough approximation: 1 token ≈ 4 characters for English text
   // This is a simplified estimate - real tokenization varies
   const chars = text.length;
-  let roughTokens = Math.ceil(chars / 4);
+  const roughTokens = Math.ceil(chars / 4);
 
   // Adjust for different content types
   if (text.includes('```')) {

@@ -5,7 +5,7 @@
  */
 
 import { randomUUID } from 'crypto';
-import type { Message } from '../types/index.js';
+import type { Message, MessageMetadata } from '../types/index.js';
 
 export interface MessageCreateOptions {
   id?: string;
@@ -13,7 +13,7 @@ export interface MessageCreateOptions {
   timestamp?: string;
   role: 'user' | 'assistant';
   content: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Partial<MessageMetadata>;
   prefix?: string; // For auto-generated IDs
   index?: number; // For auto-generated IDs
 }
@@ -26,26 +26,31 @@ export class MessageBuilder {
    * Create a message with standard structure
    */
   static create(options: MessageCreateOptions): Message {
-    return {
+    const message: Message = {
       id: options.id || this.generateId(options.prefix, options.index),
       conversationId: options.conversationId,
       timestamp: options.timestamp || new Date().toISOString(),
       role: options.role,
       content: options.content,
-      ...(options.metadata && { metadata: options.metadata }),
     };
+
+    if (options.metadata) {
+      message.metadata = options.metadata as MessageMetadata;
+    }
+
+    return message;
   }
 
   /**
    * Add or merge metadata to a message
    */
-  static withMetadata(message: Message, metadata: Record<string, unknown>): Message {
+  static withMetadata(message: Message, metadata: Partial<MessageMetadata>): Message {
     return {
       ...message,
       metadata: {
         ...message.metadata,
         ...metadata,
-      },
+      } as MessageMetadata,
     };
   }
 
@@ -73,11 +78,11 @@ export class MessageBuilder {
       rawLength?: number;
     }
   ): Message {
-    const metadata: Record<string, unknown> = {
+    const metadata: Partial<MessageMetadata> = {
       platform: options.platform,
       extractedFrom: options.extractedFrom,
       messageType: options.messageType,
-      ...(options.rawLength && { rawLength: options.rawLength }),
+      rawLength: options.rawLength || 0,
       ...options.metadata,
     };
 
@@ -87,4 +92,3 @@ export class MessageBuilder {
     });
   }
 }
-

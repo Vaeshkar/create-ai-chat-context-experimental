@@ -22,7 +22,10 @@ describe('ClaudeCliWatcher', () => {
   afterEach(() => {
     // Clean up test directory
     try {
-      rmSync(join(homedir(), '.claude', 'projects', 'test-project'), { recursive: true, force: true });
+      rmSync(join(homedir(), '.claude', 'projects', 'test-project'), {
+        recursive: true,
+        force: true,
+      });
     } catch {
       // Ignore cleanup errors
     }
@@ -167,8 +170,14 @@ describe('ClaudeCliWatcher', () => {
 
       // Cleanup
       try {
-        rmSync(join(homedir(), '.claude', 'projects', 'test-project-1'), { recursive: true, force: true });
-        rmSync(join(homedir(), '.claude', 'projects', 'test-project-2'), { recursive: true, force: true });
+        rmSync(join(homedir(), '.claude', 'projects', 'test-project-1'), {
+          recursive: true,
+          force: true,
+        });
+        rmSync(join(homedir(), '.claude', 'projects', 'test-project-2'), {
+          recursive: true,
+          force: true,
+        });
       } catch {
         // Ignore
       }
@@ -208,4 +217,3 @@ describe('ClaudeCliWatcher', () => {
     });
   });
 });
-

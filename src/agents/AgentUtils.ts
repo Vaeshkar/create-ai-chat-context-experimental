@@ -93,15 +93,7 @@ export class AgentUtils {
     ],
 
     // Next action patterns
-    nextActions: [
-      /next step/i,
-      /need to/i,
-      /will/i,
-      /plan to/i,
-      /should/i,
-      /todo/i,
-      /next/i,
-    ],
+    nextActions: [/next step/i, /need to/i, /will/i, /plan to/i, /should/i, /todo/i, /next/i],
   };
 
   /**
@@ -274,7 +266,10 @@ export class AgentUtils {
   /**
    * Format content into a structured section
    */
-  static formatSection(title: string, content: string | string[] | Record<string, unknown>): string {
+  static formatSection(
+    title: string,
+    content: string | string[] | Record<string, unknown>
+  ): string {
     const lines: string[] = [];
 
     lines.push(`## ${title}`);
@@ -285,8 +280,10 @@ export class AgentUtils {
       content.forEach((item) => {
         if (typeof item === 'string') {
           lines.push(`- ${item}`);
+        } else if (item !== null && typeof item === 'object') {
+          lines.push(String(item));
         } else {
-          lines.push(item.toString());
+          lines.push(String(item));
         }
       });
     } else if (typeof content === 'object') {
@@ -302,4 +299,3 @@ export class AgentUtils {
     return lines.join('\n');
   }
 }
-

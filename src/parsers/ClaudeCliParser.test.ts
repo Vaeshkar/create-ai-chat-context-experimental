@@ -73,7 +73,9 @@ describe('ClaudeCliParser', () => {
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.value[0].metadata?.gitBranch).toBe('main');
-        expect(result.value[0].metadata?.workingDirectory).toBe('/Users/leeuwen/Programming/project');
+        expect(result.value[0].metadata?.workingDirectory).toBe(
+          '/Users/leeuwen/Programming/project'
+        );
       }
     });
 
@@ -246,4 +248,3 @@ describe('ClaudeCliParser', () => {
     });
   });
 });
-

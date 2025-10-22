@@ -10,8 +10,9 @@
 import { join } from 'path';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import chalk from 'chalk';
-import ora from 'ora';
-import { Result, Ok, Err } from '../types/result.js';
+import ora, { type Ora } from 'ora';
+import type { Result } from '../types/result.js';
+import { Ok, Err } from '../types/result.js';
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -34,13 +35,11 @@ export interface InitResult {
 export class InitCommand {
   private cwd: string;
   private force: boolean;
-  private verbose: boolean;
   private mode: 'manual' | 'automatic';
 
   constructor(options: InitCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.force = options.force || false;
-    this.verbose = options.verbose || false;
     this.mode = options.mode || 'automatic';
   }
 
@@ -100,7 +99,7 @@ export class InitCommand {
    * Initialize manual mode
    * User will use create-ai-chat-context workflow
    */
-  private async initManualMode(spinner: ora.Ora): Promise<Result<InitResult>> {
+  private async initManualMode(spinner: Ora): Promise<Result<InitResult>> {
     spinner.start('Setting up manual mode...');
 
     try {
@@ -137,7 +136,7 @@ export class InitCommand {
    * Initialize automatic mode
    * Creates .cache/llm/, .permissions.aicf, .watcher-config.json
    */
-  private async initAutomaticMode(spinner: ora.Ora): Promise<Result<InitResult>> {
+  private async initAutomaticMode(spinner: Ora): Promise<Result<InitResult>> {
     spinner.start('Setting up automatic mode...');
 
     try {

@@ -11,7 +11,7 @@ import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
-import { Ok, Err } from '../types/index.js';
+import { Ok, Err, ExtractionError } from '../types/index.js';
 import { MessageBuilder } from '../utils/MessageBuilder.js';
 import { handleError } from '../utils/ErrorUtils.js';
 
@@ -182,12 +182,11 @@ export class ClaudeDesktopParser {
               extractedFrom: 'claude-desktop-sqlite',
               messageType: msg.role === 'assistant' ? 'ai_response' : 'user_request',
               rawLength: msg.content.length,
-              metadata: msg.metadata ? { metadata: msg.metadata } : undefined,
             });
 
             result.push(message);
           }
-        } catch (error) {
+        } catch {
           // Skip malformed messages
           continue;
         }
@@ -215,14 +214,14 @@ export class ClaudeDesktopParser {
     if (typeof content === 'object' && content !== null) {
       // Handle structured content
       const obj = content as Record<string, unknown>;
-      if (typeof obj.text === 'string') {
-        return obj.text.trim();
+      if (typeof obj['text'] === 'string') {
+        return (obj['text'] as string).trim();
       }
-      if (typeof obj.message === 'string') {
-        return obj.message.trim();
+      if (typeof obj['message'] === 'string') {
+        return (obj['message'] as string).trim();
       }
-      if (typeof obj.content === 'string') {
-        return obj.content.trim();
+      if (typeof obj['content'] === 'string') {
+        return (obj['content'] as string).trim();
       }
       // Fallback: stringify the object
       return JSON.stringify(content);

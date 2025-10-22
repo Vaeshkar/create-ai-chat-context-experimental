@@ -40,7 +40,7 @@ export async function loadConfig(cwd: string = process.cwd()): Promise<AppConfig
       const config = await fs.readJson(configPath);
       return { ...DEFAULT_CONFIG, ...config };
     }
-  } catch (error) {
+  } catch {
     // If config is corrupted, return defaults
     console.warn(chalk.yellow('⚠️  Config file corrupted, using defaults'));
   }
@@ -85,11 +85,11 @@ export async function getConfigValue(
  */
 export async function setConfigValue(
   key: keyof AppConfig,
-  value: any,
+  value: string | boolean | null,
   cwd: string = process.cwd()
 ): Promise<AppConfig> {
   const config = await loadConfig(cwd);
-  config[key] = value;
+  (config as unknown as Record<string, unknown>)[key] = value;
   await saveConfig(config, cwd);
   return config;
 }

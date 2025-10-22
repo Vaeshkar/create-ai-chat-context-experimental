@@ -65,4 +65,3 @@ export function formatTimestamp(timestamp: string): string {
     return timestamp;
   }
 }
-

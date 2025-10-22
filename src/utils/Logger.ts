@@ -46,14 +46,15 @@ export async function promptMultiLine(
 
   const lines: string[] = [];
 
-  return new Promise((resolve) => {
+  return new Promise<string[]>((resolve) => {
     const promptLine = () => {
       rl.question(chalk.gray('> '), (answer) => {
         if (answer.trim() === '') {
           rl.close();
           if (lines.length === 0 && !allowEmpty) {
             console.log(chalk.yellow('⚠️  At least one entry required.\n'));
-            return promptMultiLine(question, allowEmpty).then(resolve);
+            promptMultiLine(question, allowEmpty).then(resolve);
+            return;
           }
           resolve(lines);
         } else {
@@ -106,7 +107,7 @@ export function formatDate(date: Date = new Date()): string {
 /**
  * Interactive command to add conversation log entry
  */
-export async function addLogEntry(options: Record<string, any> = {}): Promise<void> {
+export async function addLogEntry(_options: Record<string, unknown> = {}): Promise<void> {
   const cwd = process.cwd();
   const aiDir = path.join(cwd, '.ai');
   const conversationLogPath = path.join(aiDir, 'conversation-log.md');
@@ -219,4 +220,3 @@ export async function appendToConversationLog(logPath: string, entry: string): P
 
   await fs.writeFile(logPath, content, 'utf-8');
 }
-

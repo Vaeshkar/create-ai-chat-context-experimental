@@ -9,11 +9,12 @@
 
 import { join } from 'path';
 import { homedir } from 'os';
+import { statSync, readdirSync, openSync, readSync, closeSync } from 'fs';
 import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { ClaudeDesktopParser } from '../parsers/ClaudeDesktopParser.js';
-import { readFile, pathExists, listFiles, listFilesByExtension } from '../utils/FileSystemUtils.js';
+import { pathExists } from '../utils/FileSystemUtils.js';
 import { handleError } from '../utils/ErrorUtils.js';
 
 /**
@@ -114,12 +115,7 @@ export class ClaudeDesktopWatcher {
 
     // Search for database files
     try {
-      const filesResult = listFiles(this.claudePath);
-      if (!filesResult.ok) {
-        return null;
-      }
-
-      const files = filesResult.value;
+      const files = readdirSync(this.claudePath);
 
       // First, check for known names
       for (const name of possibleNames) {
@@ -168,11 +164,10 @@ export class ClaudeDesktopWatcher {
       }
 
       // Check SQLite magic number (first 16 bytes should be "SQLite format 3\0")
-      const fs = require('fs');
       const buffer = Buffer.alloc(16);
-      const fd = fs.openSync(filePath, 'r');
-      fs.readSync(fd, buffer, 0, 16);
-      fs.closeSync(fd);
+      const fd = openSync(filePath, 'r');
+      readSync(fd, buffer, 0, 16, 0);
+      closeSync(fd);
 
       const header = buffer.toString('utf-8', 0, 13);
       return header === 'SQLite format';

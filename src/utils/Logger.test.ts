@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'fs-extra';
 import path from 'path';
-import {
-  getNextChatNumber,
-  formatDate,
-  buildLogEntry,
-  appendToConversationLog,
-} from './Logger';
+import { getNextChatNumber, formatDate, buildLogEntry, appendToConversationLog } from './Logger';
 
 const TEST_DIR = path.join(process.cwd(), '.test-logger');
 
@@ -90,26 +85,14 @@ describe('Logger', () => {
     });
 
     it('should include decisions when provided', () => {
-      const entry = buildLogEntry(
-        1,
-        '2024-01-01',
-        ['- Task 1'],
-        ['- Decision 1'],
-        []
-      );
+      const entry = buildLogEntry(1, '2024-01-01', ['- Task 1'], ['- Decision 1'], []);
 
       expect(entry).toContain('### Key Decisions');
       expect(entry).toContain('- Decision 1');
     });
 
     it('should include next steps when provided', () => {
-      const entry = buildLogEntry(
-        1,
-        '2024-01-01',
-        ['- Task 1'],
-        [],
-        ['- Step 1']
-      );
+      const entry = buildLogEntry(1, '2024-01-01', ['- Task 1'], [], ['- Step 1']);
 
       expect(entry).toContain('### Next Steps');
       expect(entry).toContain('- Step 1');
@@ -147,7 +130,8 @@ describe('Logger', () => {
 
     it('should insert before reminder section if it exists', async () => {
       const logPath = path.join(TEST_DIR, 'conversation-log.md');
-      const existing = '## Chat #1\n\nFirst\n\n---\n\n## 📝 Reminder for AI Assistants\n\nReminder text';
+      const existing =
+        '## Chat #1\n\nFirst\n\n---\n\n## 📝 Reminder for AI Assistants\n\nReminder text';
       const newEntry = '## Chat #2\n\nSecond\n\n---\n\n';
 
       await fs.writeFile(logPath, existing);
@@ -161,4 +145,3 @@ describe('Logger', () => {
     });
   });
 });
-

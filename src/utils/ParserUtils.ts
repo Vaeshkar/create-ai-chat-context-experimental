@@ -27,14 +27,14 @@ export function extractStringContent(content: string | Record<string, unknown>):
 
   if (typeof content === 'object' && content !== null) {
     // Try common property names
-    if (typeof content.text === 'string') {
-      return content.text.trim();
+    if (typeof content['text'] === 'string') {
+      return (content['text'] as string).trim();
     }
-    if (typeof content.message === 'string') {
-      return content.message.trim();
+    if (typeof content['message'] === 'string') {
+      return (content['message'] as string).trim();
     }
-    if (typeof content.content === 'string') {
-      return content.content.trim();
+    if (typeof content['content'] === 'string') {
+      return (content['content'] as string).trim();
     }
     // Fallback: stringify
     return JSON.stringify(content);
@@ -59,24 +59,25 @@ export function extractContentFromBlocks(blocks: unknown[]): string {
     }
 
     const b = block as Record<string, unknown>;
-    if (!b.data) {
+    if (!b['data']) {
       continue;
     }
 
-    const data = String(b.data);
+    const data = String(b['data']);
 
-    switch (b.type) {
+    switch (b['type']) {
       case 'p':
         parts.push(data);
         break;
-      case 'pre':
-        const lang = b.language ? String(b.language) : '';
+      case 'pre': {
+        const lang = b['language'] ? String(b['language']) : '';
         if (lang) {
           parts.push(`\`\`\`${lang}\n${data}\n\`\`\``);
         } else {
           parts.push(`\`\`\`\n${data}\n\`\`\``);
         }
         break;
+      }
       case 'ul':
       case 'ol':
       case 'table':
@@ -104,14 +105,3 @@ export function normalizeWhitespace(content: string): string {
     .replace(/  +/g, ' ') // Collapse multiple spaces
     .trim();
 }
-
-/**
- * Validate content is not empty
- */
-export function isValidContent(content: unknown): boolean {
-  if (typeof content === 'string') {
-    return content.trim().length > 0;
-  }
-  return false;
-}
-

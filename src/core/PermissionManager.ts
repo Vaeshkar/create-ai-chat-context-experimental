@@ -7,8 +7,9 @@
  */
 
 import { join } from 'path';
-import { existsSync, readFileSync, writeFileSync, appendFileSync } from 'fs';
-import { Result, Ok, Err } from '../types/result.js';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import type { Result } from '../types/result.js';
+import { Ok, Err } from '../types/result.js';
 
 export type PlatformName = 'augment' | 'warp' | 'claude-desktop' | 'copilot' | 'chatgpt';
 export type ConsentStatus = 'active' | 'inactive' | 'pending' | 'revoked';
@@ -201,7 +202,7 @@ export class PermissionManager {
    */
   private parsePermissionsFile(content: string): PermissionsData {
     const lines = content.split('\n').filter((line) => line.trim());
-    const platforms: Record<PlatformName, PlatformPermission> = {};
+    const platforms: Partial<Record<PlatformName, PlatformPermission>> = {};
     const auditLog: AuditEntry[] = [];
 
     for (const line of lines) {
@@ -220,7 +221,7 @@ export class PermissionManager {
 
     return {
       version: '1.0',
-      platforms,
+      platforms: platforms as Record<PlatformName, PlatformPermission>,
       auditLog,
     };
   }
@@ -239,14 +240,14 @@ export class PermissionManager {
       }
     }
 
-    if (!data.name) return null;
+    if (!data['name']) return null;
 
     return {
-      name: data.name as PlatformName,
-      status: (data.status as ConsentStatus) || 'inactive',
-      consent: (data.consent as 'implicit' | 'explicit' | 'pending') || 'pending',
-      timestamp: data.timestamp || new Date().toISOString(),
-      revokedAt: data.revokedAt,
+      name: data['name'] as PlatformName,
+      status: (data['status'] as ConsentStatus) || 'inactive',
+      consent: (data['consent'] as 'implicit' | 'explicit' | 'pending') || 'pending',
+      timestamp: data['timestamp'] || new Date().toISOString(),
+      revokedAt: data['revokedAt'],
     };
   }
 
@@ -265,12 +266,12 @@ export class PermissionManager {
     }
 
     return {
-      event: data.event || '',
-      timestamp: data.timestamp || new Date().toISOString(),
-      user: data.user || 'unknown',
-      action: data.action || '',
-      platform: data.platform as PlatformName | undefined,
-      details: data.details,
+      event: data['event'] || '',
+      timestamp: data['timestamp'] || new Date().toISOString(),
+      user: data['user'] || 'unknown',
+      action: data['action'] || '',
+      platform: data['platform'] as PlatformName | undefined,
+      details: data['details'],
     };
   }
 

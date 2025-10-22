@@ -121,7 +121,8 @@ export class MultiClaudeOrchestrator {
           contentHash,
           extractedFrom: msg.metadata?.extractedFrom || 'unknown',
           rawLength: msg.metadata?.rawLength || msg.content.length,
-          messageType: msg.metadata?.messageType || (msg.role === 'user' ? 'user_request' : 'ai_response'),
+          messageType:
+            msg.metadata?.messageType || (msg.role === 'user' ? 'user_request' : 'ai_response'),
           platform: msg.metadata?.platform || source,
         },
       };
@@ -227,7 +228,9 @@ export class MultiClaudeOrchestrator {
    * @returns Sorted messages (oldest first)
    */
   sortByTimestamp(messages: SourcedMessage[]): SourcedMessage[] {
-    return [...messages].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    return [...messages].sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
   }
 
   /**
@@ -255,4 +258,3 @@ export class MultiClaudeOrchestrator {
     };
   }
 }
-

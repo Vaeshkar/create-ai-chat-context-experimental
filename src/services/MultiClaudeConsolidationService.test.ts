@@ -226,4 +226,3 @@ describe('MultiClaudeConsolidationService', () => {
     expect(available).toBe(false);
   });
 });
-

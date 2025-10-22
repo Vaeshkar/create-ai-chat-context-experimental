@@ -9,8 +9,9 @@
 
 import type { Message } from '../types/index.js';
 import type { Result } from '../types/index.js';
-import { Ok, Err } from '../types/index.js';
-import { extractStringContent, isValidContent } from '../utils/ParserUtils.js';
+import { Ok, Err, ExtractionError } from '../types/index.js';
+import { extractStringContent } from '../utils/ParserUtils.js';
+import { isValidContent } from '../utils/ValidationUtils.js';
 import { MessageBuilder } from '../utils/MessageBuilder.js';
 import { handleError } from '../utils/ErrorUtils.js';
 
@@ -97,19 +98,32 @@ export class ClaudeCliParser {
             extractedFrom: 'claude-cli-jsonl',
             messageType: data.role === 'assistant' ? 'ai_response' : 'user_request',
             rawLength,
-            metadata: {
-              ...(data.tokenUsage && { tokenUsage: data.tokenUsage }),
-              ...(data.thinking && { thinking: data.thinking }),
-              ...(data.metadata?.gitBranch && { gitBranch: data.metadata.gitBranch }),
-              ...(data.metadata?.workingDirectory && {
-                workingDirectory: data.metadata.workingDirectory,
-              }),
-            },
           });
+
+          // Add optional metadata fields
+          if (data.tokenUsage) {
+            message.metadata = message.metadata || {};
+            message.metadata.tokenUsage = data.tokenUsage;
+          }
+
+          if (data.thinking) {
+            message.metadata = message.metadata || {};
+            message.metadata.thinking = data.thinking;
+          }
+
+          if (data.metadata?.gitBranch) {
+            message.metadata = message.metadata || {};
+            message.metadata.gitBranch = data.metadata.gitBranch;
+          }
+
+          if (data.metadata?.workingDirectory) {
+            message.metadata = message.metadata || {};
+            message.metadata.workingDirectory = data.metadata.workingDirectory;
+          }
 
           messages.push(message);
           messageIndex++;
-        } catch (lineError) {
+        } catch {
           // Skip malformed JSON lines
           continue;
         }

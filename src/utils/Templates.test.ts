@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  TEMPLATES,
-  getTemplate,
-  listTemplates,
-  getTemplateDir,
-  templateExists,
-} from './Templates';
+import { TEMPLATES, getTemplate, listTemplates, getTemplateDir, templateExists } from './Templates';
 
 describe('Templates', () => {
   describe('TEMPLATES', () => {
@@ -165,4 +159,3 @@ describe('Templates', () => {
     });
   });
 });
-

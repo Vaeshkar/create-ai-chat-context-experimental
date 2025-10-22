@@ -50,31 +50,34 @@ export async function archiveConversations(options: ArchiveOptions = {}): Promis
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
+      if (!line || typeof line !== 'string') continue;
+
+      const lineStr: string = line;
 
       // Check if we're in the chat history section
-      if (line.includes('## 📋 CHAT HISTORY')) {
+      if (lineStr.includes('## 📋 CHAT HISTORY')) {
         inChatHistory = true;
         continue;
       }
 
       // Look for chat entries
-      const chatMatch = line.match(/^## Chat #(\d+)/);
-      if (inChatHistory && chatMatch) {
+      const chatMatch = lineStr.match(/^## Chat #(\d+)/);
+      if (inChatHistory && chatMatch && chatMatch[1]) {
         if (currentEntry) {
           chatEntries.push(currentEntry);
         }
         currentEntry = {
           number: parseInt(chatMatch[1]),
           startLine: i,
-          content: [line],
+          content: [lineStr],
         };
       } else if (currentEntry) {
-        currentEntry.content.push(line);
+        currentEntry.content.push(lineStr);
 
         // Check if next line starts a new chat or section
         if (i + 1 < lines.length) {
           const nextLine = lines[i + 1];
-          if (nextLine.match(/^## /) && !nextLine.match(/^## Chat #/)) {
+          if (nextLine && nextLine.match(/^## /) && !nextLine.match(/^## Chat #/)) {
             // End of chat entries
             chatEntries.push(currentEntry);
             currentEntry = null;
@@ -110,9 +113,17 @@ export async function archiveConversations(options: ArchiveOptions = {}): Promis
     const toArchive = chatEntries.slice(0, chatEntries.length - keepCount);
     const toKeep = chatEntries.slice(chatEntries.length - keepCount);
 
+    const firstEntry = toArchive[0];
+    const lastEntry = toArchive[toArchive.length - 1];
+
+    if (!firstEntry || !lastEntry) {
+      spinner.fail('No entries to archive');
+      return;
+    }
+
     console.log(
       chalk.gray(
-        `   Archiving: ${toArchive.length} entries (Chat #${toArchive[0].number} - #${toArchive[toArchive.length - 1].number})`
+        `   Archiving: ${toArchive.length} entries (Chat #${firstEntry.number} - #${lastEntry.number})`
       )
     );
     console.log(chalk.gray(`   Keeping: ${toKeep.length} most recent entries\n`));
@@ -132,7 +143,7 @@ export async function archiveConversations(options: ArchiveOptions = {}): Promis
       '# Conversation Log Archive',
       '',
       `> Archived on: ${today}`,
-      `> Entries: Chat #${toArchive[0].number} - #${toArchive[toArchive.length - 1].number}`,
+      `> Entries: Chat #${firstEntry.number} - #${lastEntry.number}`,
       '',
       '---',
       '',
@@ -146,7 +157,9 @@ export async function archiveConversations(options: ArchiveOptions = {}): Promis
     spinner.start('Updating conversation-log.md...');
 
     // Find the template section and header
-    const templateStartIndex = lines.findIndex((line) => line.includes('## Template for New Entries'));
+    const templateStartIndex = lines.findIndex((line) =>
+      line.includes('## Template for New Entries')
+    );
     const chatHistoryIndex = lines.findIndex((line) => line.includes('## 📋 CHAT HISTORY'));
 
     const newContent = [
@@ -167,16 +180,19 @@ export async function archiveConversations(options: ArchiveOptions = {}): Promis
     // Summary
     console.log(chalk.bold.green('\n✅ Archive completed successfully!\n'));
     console.log(chalk.bold('Summary:'));
-    console.log(chalk.gray(`   Archived: ${toArchive.length} entries → .ai/archive/${archiveFileName}`));
+    console.log(
+      chalk.gray(`   Archived: ${toArchive.length} entries → .ai/archive/${archiveFileName}`)
+    );
     console.log(chalk.gray(`   Kept: ${toKeep.length} recent entries in conversation-log.md`));
     console.log();
     console.log(chalk.bold('💡 Next steps:'));
     console.log(chalk.gray('   1. Review the archive file if needed'));
-    console.log(chalk.gray('   2. Run "npx create-ai-chat-context tokens" to see updated token usage'));
+    console.log(
+      chalk.gray('   2. Run "npx create-ai-chat-context tokens" to see updated token usage')
+    );
     console.log(chalk.gray('   3. Commit the changes to Git\n'));
   } catch (error) {
     spinner.fail('Failed to archive conversations');
     throw error;
   }
 }
-

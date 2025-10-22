@@ -11,8 +11,9 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { randomUUID } from 'crypto';
 import { ClaudeParser } from '../parsers/ClaudeParser.js';
-import { MemoryFileWriter } from '../writers/MemoryFileWriter.js';
-import { Result, Ok, Err } from '../types/result.js';
+import type { Result } from '../types/result.js';
+import type { Message } from '../types/conversation.js';
+import { Ok, Err } from '../types/result.js';
 
 export interface ImportClaudeCommandOptions {
   cwd?: string;
@@ -34,16 +35,12 @@ export interface ImportClaudeResult {
 export class ImportClaudeCommand {
   private cwd: string;
   private output: string;
-  private verbose: boolean;
   private parser: ClaudeParser;
-  private writer: MemoryFileWriter;
 
   constructor(options: ImportClaudeCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.output = options.output || '.cache/llm/claude';
-    this.verbose = options.verbose || false;
     this.parser = new ClaudeParser();
-    this.writer = new MemoryFileWriter();
   }
 
   /**
@@ -66,7 +63,7 @@ export class ImportClaudeCommand {
 
       try {
         exportData = JSON.parse(fileContent);
-      } catch (error) {
+      } catch {
         spinner.fail('Invalid JSON format');
         return Err(new Error('Claude export file is not valid JSON'));
       }
@@ -104,7 +101,12 @@ export class ImportClaudeCommand {
 
       // Step 5: Generate checkpoint file
       spinner.start('💾 Generating checkpoint file...');
-      const conversationId = messages[0].conversationId;
+      const firstMessage = messages[0];
+      if (!firstMessage) {
+        spinner.fail('❌ No messages to checkpoint');
+        return Err(new Error('No messages extracted'));
+      }
+      const conversationId = firstMessage.conversationId;
       const checkpointId = randomUUID();
       const checkpointFile = join(outputDir, `checkpoint-${checkpointId}.json`);
 
@@ -185,7 +187,7 @@ export class ImportClaudeCommand {
   /**
    * Generate Markdown content
    */
-  private generateMarkdownContent(conversationId: string, messages: any[]): string {
+  private generateMarkdownContent(conversationId: string, messages: Message[]): string {
     const lines: string[] = [];
 
     lines.push(`# ${conversationId}`);
@@ -208,4 +210,3 @@ export class ImportClaudeCommand {
     return lines.join('\n');
   }
 }
-

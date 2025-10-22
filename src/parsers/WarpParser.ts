@@ -106,7 +106,7 @@ export class WarpParser {
             }
           }
         }
-      } catch (parseError) {
+      } catch {
         // If not JSON, treat as plain text query
         const content = this.cleanContent(query.input);
         if (content && content.length > 0) {
@@ -134,27 +134,34 @@ export class WarpParser {
   /**
    * Extract content from Warp action results
    */
-  private extractActionResult(result: any): string {
+  private extractActionResult(result: Record<string, unknown>): string {
     const parts: string[] = [];
 
-    if (result.RequestCommandOutput) {
-      const cmdResult = result.RequestCommandOutput.result;
-      if (cmdResult.Success) {
-        parts.push(`Command: ${cmdResult.Success.command}`);
-        if (cmdResult.Success.output) {
-          parts.push(`Output: ${cmdResult.Success.output}`);
+    if (result['RequestCommandOutput']) {
+      const cmdResult = (result['RequestCommandOutput'] as Record<string, unknown>)['result'];
+      if (cmdResult && typeof cmdResult === 'object' && 'Success' in cmdResult) {
+        const success = (cmdResult as Record<string, unknown>)['Success'] as Record<
+          string,
+          unknown
+        >;
+        parts.push(`Command: ${success['command']}`);
+        if (success['output']) {
+          parts.push(`Output: ${success['output']}`);
         }
       }
-    } else if (result.GetFiles) {
-      const files = result.GetFiles.result;
-      if (files.Success) {
-        const fileNames = files.Success.files.map((f: any) => f.file_name).join(', ');
+    } else if (result['GetFiles']) {
+      const files = (result['GetFiles'] as Record<string, unknown>)['result'];
+      if (files && typeof files === 'object' && 'Success' in files) {
+        const success = (files as Record<string, unknown>)['Success'] as Record<string, unknown>;
+        const fileList = success['files'] as Array<Record<string, unknown>>;
+        const fileNames = fileList.map((f) => f['file_name']).join(', ');
         parts.push(`Files accessed: ${fileNames}`);
       }
-    } else if (result.EditFiles) {
-      const edits = result.EditFiles.result;
-      if (edits.Success) {
-        parts.push(`Files edited: ${edits.Success.length} file(s)`);
+    } else if (result['EditFiles']) {
+      const edits = (result['EditFiles'] as Record<string, unknown>)['result'];
+      if (edits && typeof edits === 'object' && 'Success' in edits) {
+        const success = (edits as Record<string, unknown>)['Success'] as Array<unknown>;
+        parts.push(`Files edited: ${success.length} file(s)`);
       }
     }
 
@@ -168,7 +175,7 @@ export class WarpParser {
   private cleanContent(content: string): string {
     if (!content) return '';
 
-    let cleaned = content
+    const cleaned = content
       .replace(/\\"/g, '"') // Unescape quotes
       .replace(/\\n/g, '\n') // Unescape newlines
       .replace(/\\t/g, '\t') // Unescape tabs
