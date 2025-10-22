@@ -1,22 +1,4 @@
-graph TB
-    subgraph "External Dependencies"
-        AICF["📦 aicf-core v2.0.0<br/>(npm package)<br/>Pipe-delimited format<br/>AI-optimized"]
-        BETTER["better-sqlite3<br/>(npm package)<br/>SQLite support"]
-    end
-
-    subgraph "Data Sources"
-        AUGMENT["Augment VSCode<br/>LevelDB storage<br/>~/.cache/llm/augment/"]
-        WARP["Warp Terminal<br/>SQLite database<br/>~/Library/Group Containers/"]
-        CLAUDE_DESKTOP["Claude Desktop<br/>SQLite database<br/>~/Library/Application Support/Claude/"]
-        CLAUDE_CLI["Claude CLI<br/>JSONL files<br/>~/.claude/projects/"]
-        CLAUDE_WEB["Claude Web<br/>Browser storage<br/>(manual export)"]
-
-        FUTURE["🔮 Future Sources<br/>(To be added)"]
-        GEMINI["Gemini<br/>(Planned)"]
-        COPILOT["GitHub Copilot<br/>(Planned)"]
-        KILLCODE["KillCode<br/>(Planned)"]
-    end
-
+graph LR
     subgraph "Shared Utilities"
         PARSER_UTILS["ParserUtils<br/>cleanContent()<br/>extractStringContent()<br/>extractContentFromBlocks()"]
         MSG_BUILDER["MessageBuilder<br/>create()<br/>createWithPlatform()<br/>generateId()"]
@@ -39,6 +21,24 @@ graph TB
         CLAUDE_CLI_WATCHER["ClaudeCliWatcher<br/>(5m polling)"]
 
         FUTURE_PARSERS["🔮 Future Parsers<br/>(Gemini, Copilot, KillCode)"]
+    end
+
+    subgraph "Data Sources"
+        AUGMENT["Augment VSCode<br/>LevelDB storage<br/>~/.cache/llm/augment/"]
+        WARP["Warp Terminal<br/>SQLite database<br/>~/Library/Group Containers/"]
+        CLAUDE_DESKTOP["Claude Desktop<br/>SQLite database<br/>~/Library/Application Support/Claude/"]
+        CLAUDE_CLI["Claude CLI<br/>JSONL files<br/>~/.claude/projects/"]
+        CLAUDE_WEB["Claude Web<br/>Browser storage<br/>(manual export)"]
+
+        FUTURE["🔮 Future Sources<br/>(To be added)"]
+        GEMINI["Gemini<br/>(Planned)"]
+        COPILOT["GitHub Copilot<br/>(Planned)"]
+        KILLCODE["KillCode<br/>(Planned)"]
+    end
+
+    subgraph "External Dependencies"
+        AICF["📦 aicf-core v2.0.0<br/>(npm package)<br/>Pipe-delimited format<br/>AI-optimized"]
+        BETTER["better-sqlite3<br/>(npm package)<br/>SQLite support"]
     end
 
     subgraph "Consolidation & Orchestration"
@@ -67,32 +67,32 @@ graph TB
         MULTI_CLAUDE_CHECK["checkForMultiClaudeMessages()<br/>Consolidate from all sources"]
     end
 
-    %% Utilities connections
-    PARSER_UTILS -.-> AUGMENT_PARSER
-    PARSER_UTILS -.-> WARP_PARSER
-    PARSER_UTILS -.-> CLAUDE_DESKTOP_PARSER
-    PARSER_UTILS -.-> CLAUDE_CLI_PARSER
-    PARSER_UTILS -.-> CLAUDE_WEB_PARSER
+    %% Utilities connections (from left to right)
+    PARSER_UTILS --> AUGMENT_PARSER
+    PARSER_UTILS --> WARP_PARSER
+    PARSER_UTILS --> CLAUDE_DESKTOP_PARSER
+    PARSER_UTILS --> CLAUDE_CLI_PARSER
+    PARSER_UTILS --> CLAUDE_WEB_PARSER
 
-    MSG_BUILDER -.-> AUGMENT_PARSER
-    MSG_BUILDER -.-> WARP_PARSER
-    MSG_BUILDER -.-> CLAUDE_DESKTOP_PARSER
-    MSG_BUILDER -.-> CLAUDE_CLI_PARSER
-    MSG_BUILDER -.-> CLAUDE_WEB_PARSER
+    MSG_BUILDER --> AUGMENT_PARSER
+    MSG_BUILDER --> WARP_PARSER
+    MSG_BUILDER --> CLAUDE_DESKTOP_PARSER
+    MSG_BUILDER --> CLAUDE_CLI_PARSER
+    MSG_BUILDER --> CLAUDE_WEB_PARSER
 
-    TS_UTILS -.-> CLAUDE_WEB_PARSER
-    FS_UTILS -.-> AUGMENT_WATCHER
-    FS_UTILS -.-> CLAUDE_CLI_WATCHER
-    FS_UTILS -.-> CLAUDE_DESKTOP_WATCHER
-    ERR_UTILS -.-> AUGMENT_PARSER
-    ERR_UTILS -.-> WARP_PARSER
-    ERR_UTILS -.-> CLAUDE_DESKTOP_PARSER
-    ERR_UTILS -.-> CLAUDE_CLI_PARSER
-    ERR_UTILS -.-> AUGMENT_WATCHER
-    ERR_UTILS -.-> CLAUDE_CLI_WATCHER
-    ERR_UTILS -.-> CLAUDE_DESKTOP_WATCHER
+    TS_UTILS --> CLAUDE_WEB_PARSER
+    FS_UTILS --> AUGMENT_WATCHER
+    FS_UTILS --> CLAUDE_CLI_WATCHER
+    FS_UTILS --> CLAUDE_DESKTOP_WATCHER
+    ERR_UTILS --> AUGMENT_PARSER
+    ERR_UTILS --> WARP_PARSER
+    ERR_UTILS --> CLAUDE_DESKTOP_PARSER
+    ERR_UTILS --> CLAUDE_CLI_PARSER
+    ERR_UTILS --> AUGMENT_WATCHER
+    ERR_UTILS --> CLAUDE_CLI_WATCHER
+    ERR_UTILS --> CLAUDE_DESKTOP_WATCHER
 
-    %% Data flow
+    %% Data flow (left to right)
     AUGMENT --> AUGMENT_PARSER
     WARP --> WARP_PARSER
     CLAUDE_DESKTOP --> CLAUDE_DESKTOP_PARSER
