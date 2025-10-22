@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "aicf-core": "^2.0.0",
+    "better-sqlite3": "^12.4.1",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "ora": "^8.1.1"
