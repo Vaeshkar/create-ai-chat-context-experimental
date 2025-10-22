@@ -16,6 +16,7 @@ import { WatcherLogger } from '../utils/WatcherLogger.js';
 interface WatcherCommandOptions {
   interval?: string;
   dir?: string;
+  output?: string;
   verbose?: boolean;
 }
 
@@ -37,7 +38,7 @@ export class WatcherCommand {
     this.watchDir = options.dir || './checkpoints';
     this.verbose = options.verbose || false;
     this.processor = new CheckpointProcessor({
-      output: '.aicf',
+      output: options.output || '.aicf',
       verbose: this.verbose,
       backup: true,
     });

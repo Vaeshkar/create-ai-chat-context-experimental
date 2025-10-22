@@ -102,6 +102,7 @@ describe('WatcherCommand', () => {
     const watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
+      output: outputDir,
       verbose: false,
     });
 
@@ -131,6 +132,7 @@ describe('WatcherCommand', () => {
     const watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
+      output: outputDir,
       verbose: false,
     });
 
@@ -154,6 +156,7 @@ describe('WatcherCommand', () => {
     const watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
+      output: outputDir,
       verbose: true,
     });
 
@@ -180,6 +183,7 @@ describe('WatcherCommand', () => {
     const watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
+      output: outputDir,
       verbose: false,
     });
 
@@ -210,6 +214,7 @@ describe('WatcherCommand', () => {
     const watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
+      output: outputDir,
       verbose: false,
     });
 
@@ -233,6 +238,7 @@ describe('WatcherCommand', () => {
     const watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
+      output: outputDir,
       verbose: false,
     });
 
