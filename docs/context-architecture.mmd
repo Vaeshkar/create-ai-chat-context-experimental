@@ -1,0 +1,52 @@
+graph TB
+    A["🎯 Context Architecture<br/>Augment & Claude"]
+    
+    B["Augment<br/>5-minute polling"]
+    C["Claude<br/>5-minute polling"]
+    
+    B1["Development<br/>Workflow Context"]
+    C1["Deliberate<br/>Conversation Context"]
+    
+    D["Unified Memory<br/>(.aicf/ and .ai/)"]
+    
+    E["AI Context-Memory<br/>Complete Picture"]
+    
+    F["Key Features"]
+    F1["✅ Same polling interval"]
+    F2["✅ Low disk I/O"]
+    F3["✅ Complementary"]
+    F4["✅ Independent"]
+    F5["✅ Efficient"]
+    
+    A --> B
+    A --> C
+    
+    B --> B1
+    C --> C1
+    
+    B1 --> D
+    C1 --> D
+    
+    D --> E
+    
+    A --> F
+    F --> F1
+    F --> F2
+    F --> F3
+    F --> F4
+    F --> F5
+    
+    style A fill:#81c784,stroke:#2e7d32,stroke-width:4px,color:#000
+    style B fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
+    style C fill:#64b5f6,stroke:#1976d2,stroke-width:2px,color:#000
+    style B1 fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    style C1 fill:#81c784,stroke:#2e7d32,stroke-width:2px
+    style D fill:#ffeb3b,stroke:#f57f17,stroke-width:3px,color:#000
+    style E fill:#81c784,stroke:#2e7d32,stroke-width:3px,color:#000
+    style F fill:#ffeb3b,stroke:#f57f17,stroke-width:2px,color:#000
+    style F1 fill:#a5d6a7,stroke:#2e7d32
+    style F2 fill:#a5d6a7,stroke:#2e7d32
+    style F3 fill:#a5d6a7,stroke:#2e7d32
+    style F4 fill:#a5d6a7,stroke:#2e7d32
+    style F5 fill:#a5d6a7,stroke:#2e7d32
+
