@@ -1,8 +1,8 @@
 /**
  * Session Dump Manager - Handles JSON session dump lifecycle
- * 
+ *
  * Manages the complete lifecycle of session dumps:
- * - Storage organization 
+ * - Storage organization
  * - AICF extraction triggers
  * - Cleanup scheduling
  * - Human file updates for major sessions
@@ -17,15 +17,15 @@ class SessionDumpManager {
     this.name = 'SessionDumpManager';
     this.version = '1.0.0';
     this.projectRoot = options.projectRoot || process.cwd();
-    
+
     // Storage paths
     this.paths = {
-      sessionDumps: path.join(this.projectRoot, '.meta/session-dumps'),
-      archive: path.join(this.projectRoot, '.meta/session-dumps/archive'),
+      sessionDumps: path.join(this.projectRoot, '.cache/llm/augment/.meta/session-dumps'),
+      archive: path.join(this.projectRoot, '.cache/llm/augment/.meta/session-dumps/archive'),
       aicf: path.join(this.projectRoot, '.aicf'),
-      ai: path.join(this.projectRoot, '.ai')
+      ai: path.join(this.projectRoot, '.ai'),
     };
-    
+
     // Initialize memory lifecycle manager
     this.lifecycleManager = new MemoryLifecycleManager(options);
   }
@@ -45,7 +45,9 @@ class SessionDumpManager {
 
       // Determine processing strategy
       const strategy = this.determineProcessingStrategy(sessionData);
-      console.log(`📊 Processing strategy: ${strategy.type} (significance: ${strategy.significance})`);
+      console.log(
+        `📊 Processing strategy: ${strategy.type} (significance: ${strategy.significance})`
+      );
 
       const results = [];
 
@@ -63,7 +65,7 @@ class SessionDumpManager {
         }
       }
 
-      // 3. Schedule cleanup (if needed) 
+      // 3. Schedule cleanup (if needed)
       if (await this.shouldScheduleCleanup()) {
         await this.scheduleCleanup();
         results.push('Cleanup: scheduled');
@@ -75,9 +77,8 @@ class SessionDumpManager {
         success: true,
         strategy,
         results,
-        sessionId: sessionData.session_id
+        sessionId: sessionData.session_id,
       };
-
     } catch (error) {
       console.error(`❌ ${this.name} error:`, error.message);
       return { success: false, error: error.message };
@@ -91,7 +92,7 @@ class SessionDumpManager {
     try {
       const content = await fs.readFile(filePath, 'utf-8');
       const data = JSON.parse(content);
-      
+
       // Basic validation
       if (!data.session_id || !data.conversation_dump) {
         return null;
@@ -109,7 +110,7 @@ class SessionDumpManager {
    */
   determineProcessingStrategy(sessionData) {
     const { conversation_dump, processing_info } = sessionData;
-    
+
     // Check significance markers
     const significance = processing_info?.session_significance || 'NORMAL';
     const userInputs = conversation_dump?.user_inputs?.length || 0;
@@ -118,7 +119,7 @@ class SessionDumpManager {
     const insights = conversation_dump?.insights?.length || 0;
 
     // Determine if major session (should update human files)
-    const isMajorSession = 
+    const isMajorSession =
       significance === 'CRITICAL' ||
       significance === 'CRITICAL_ARCHITECTURAL_BREAKTHROUGH' ||
       decisions >= 3 ||
@@ -130,7 +131,7 @@ class SessionDumpManager {
       type: isMajorSession ? 'MAJOR_SESSION' : 'REGULAR_SESSION',
       significance,
       updateHumanFiles: isMajorSession,
-      metrics: { userInputs, decisions, technicalWork, insights }
+      metrics: { userInputs, decisions, technicalWork, insights },
     };
   }
 
@@ -142,13 +143,13 @@ class SessionDumpManager {
       // Use existing SessionDumpProcessor
       const SessionDumpProcessor = require('./session-dump-processor');
       const processor = new SessionDumpProcessor();
-      
+
       const result = await processor.processSessionDump(sessionData);
-      
+
       return {
         success: result.success,
         filesUpdated: result.filesUpdated || [],
-        sessionId: result.sessionId
+        sessionId: result.sessionId,
       };
     } catch (error) {
       return { success: false, error: error.message };
@@ -185,9 +186,9 @@ class SessionDumpManager {
   async updateConversationLog(sessionData) {
     const logPath = path.join(this.paths.ai, 'conversation-log.md');
     const { session_id, timestamp, conversation_dump } = sessionData;
-    
+
     const date = new Date(timestamp).toISOString().split('T')[0];
-    
+
     // Create entry
     const entry = `
 ### ${session_id}
@@ -198,19 +199,24 @@ class SessionDumpManager {
 
 **Key Accomplishments:**
 
-${conversation_dump.technical_work?.map(work => `- ✅ **${work.task}** - ${work.details}`).join('\n') || ''}
+${conversation_dump.technical_work?.map((work) => `- ✅ **${work.task}** - ${work.details}`).join('\n') || ''}
 
 **Major Decisions:**
 
-${conversation_dump.decisions?.map(decision => `- **${decision.decision}**: ${decision.rationale} (Impact: ${decision.impact})`).join('\n') || ''}
+${conversation_dump.decisions?.map((decision) => `- **${decision.decision}**: ${decision.rationale} (Impact: ${decision.impact})`).join('\n') || ''}
 
 **Critical Insights:**
 
-${conversation_dump.insights?.filter(i => i.importance === 'CRITICAL').map(insight => `- **${insight.insight}** (${insight.importance})`).join('\n') || ''}
+${
+  conversation_dump.insights
+    ?.filter((i) => i.importance === 'CRITICAL')
+    .map((insight) => `- **${insight.insight}** (${insight.importance})`)
+    .join('\n') || ''
+}
 
 **Next Steps:**
 
-${conversation_dump.next_steps?.map(step => `- ${step}`).join('\n') || ''}
+${conversation_dump.next_steps?.map((step) => `- ${step}`).join('\n') || ''}
 
 ---
 
@@ -227,7 +233,8 @@ ${conversation_dump.next_steps?.map(step => `- ${step}`).join('\n') || ''}
     // Find insertion point (after "Most Recent First" header)
     const insertPoint = existingContent.indexOf('---\n\n### ');
     if (insertPoint > -1) {
-      const newContent = existingContent.slice(0, insertPoint + 5) + entry + existingContent.slice(insertPoint + 5);
+      const newContent =
+        existingContent.slice(0, insertPoint + 5) + entry + existingContent.slice(insertPoint + 5);
       await fs.writeFile(logPath, newContent);
     } else {
       // Fallback: append to end
@@ -250,8 +257,8 @@ ${conversation_dump.next_steps?.map(step => `- ${step}`).join('\n') || ''}
   async shouldScheduleCleanup() {
     try {
       const files = await fs.readdir(this.paths.sessionDumps);
-      const jsonFiles = files.filter(f => f.endsWith('.json'));
-      
+      const jsonFiles = files.filter((f) => f.endsWith('.json'));
+
       // Schedule cleanup if more than 10 session dumps
       return jsonFiles.length > 10;
     } catch (error) {
@@ -273,8 +280,8 @@ ${conversation_dump.next_steps?.map(step => `- ${step}`).join('\n') || ''}
   async getStatistics() {
     try {
       const files = await fs.readdir(this.paths.sessionDumps);
-      const jsonFiles = files.filter(f => f.endsWith('.json'));
-      
+      const jsonFiles = files.filter((f) => f.endsWith('.json'));
+
       let totalSize = 0;
       for (const file of jsonFiles) {
         const stats = await fs.stat(path.join(this.paths.sessionDumps, file));
@@ -284,7 +291,7 @@ ${conversation_dump.next_steps?.map(step => `- ${step}`).join('\n') || ''}
       return {
         totalDumps: jsonFiles.length,
         totalSizeBytes: totalSize,
-        estimatedTokens: Math.ceil(totalSize / 4)
+        estimatedTokens: Math.ceil(totalSize / 4),
       };
     } catch (error) {
       return { error: error.message };

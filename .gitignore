@@ -44,8 +44,8 @@ temp/
 .aicf/test-*.aicf.tmp
 
 # Augment LevelDB Cache (source data for watcher)
-.meta/
-.conversations/
+# Organized under .cache/llm/augment/ for scalability
+.cache/
 
 # Augment Memory Watcher runtime files
 .aicf/.meta
