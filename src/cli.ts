@@ -10,6 +10,7 @@ import chalk from 'chalk';
 import { CheckpointProcessor } from './commands/CheckpointProcessor.js';
 import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
+import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 
 // Version from package.json
 const VERSION = '3.0.0-alpha';
@@ -83,6 +84,40 @@ program
     try {
       const watcher = new WatcherCommand(options);
       await watcher.start();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Import Claude command
+program
+  .command('import-claude <file>')
+  .description('Import Claude conversation export and generate memory files')
+  .option(
+    '-o, --output <dir>',
+    'Output directory for memory files (default: .cache/llm/claude)',
+    '.cache/llm/claude'
+  )
+  .option('-v, --verbose', 'Enable verbose output')
+  .action(async (file, options) => {
+    try {
+      const cmd = new ImportClaudeCommand({
+        output: options.output,
+        verbose: options.verbose,
+      });
+
+      const result = await cmd.execute(file);
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
+
+      console.log(chalk.green('✅ Import successful'));
+      console.log(chalk.dim(`   Conversation: ${result.value.conversationId}`));
+      console.log(chalk.dim(`   Messages: ${result.value.messageCount}`));
+      console.log(chalk.dim(`   Output: ${result.value.outputPath}`));
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
