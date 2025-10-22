@@ -9,16 +9,47 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { CheckpointProcessor } from './commands/CheckpointProcessor.js';
 import { WatcherCommand } from './commands/WatcherCommand.js';
+import { InitCommand } from './commands/InitCommand.js';
 
 // Version from package.json
 const VERSION = '3.0.0-alpha';
 
 const program = new Command();
 
+program.name('aicf').description('AI Chat Context & Memory System - aicf-watcher').version(VERSION);
+
+// Init command
 program
-  .name('create-ai-chat-context')
-  .description('AI Chat Context & Memory System - TypeScript Edition')
-  .version(VERSION);
+  .command('init')
+  .description('Initialize aicf-watcher in a project')
+  .option('-f, --force', 'Overwrite existing files')
+  .option('-v, --verbose', 'Show detailed output')
+  .option('-m, --mode <mode>', 'Mode: manual or automatic (default: automatic)', 'automatic')
+  .action(async (options) => {
+    try {
+      const initCmd = new InitCommand({
+        force: options.force,
+        verbose: options.verbose,
+        mode: options.mode as 'manual' | 'automatic',
+      });
+
+      const result = await initCmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
+
+      if (result.value.mode === 'manual') {
+        console.log(chalk.blue('ℹ️  Manual Mode:'));
+        console.log(chalk.dim('   Use create-ai-chat-context for manual memory updates'));
+        console.log(chalk.dim('   Link: https://github.com/Vaeshkar/create-ai-chat-context'));
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
 
 // Checkpoint processing command
 program
