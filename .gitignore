@@ -43,6 +43,10 @@ temp/
 .aicf/test-*.aicf.backup
 .aicf/test-*.aicf.tmp
 
+# Augment LevelDB Cache (source data for watcher)
+.meta/
+.conversations/
+
 # Augment Memory Watcher runtime files
 .aicf/.meta
 .aicf/.watcher-state.json
