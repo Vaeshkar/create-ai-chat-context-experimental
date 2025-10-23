@@ -48,6 +48,21 @@ npx aice watch
 # Watch specific platforms
 npx aice watch --augment
 npx aice watch --augment --warp --claude-desktop
+
+# Watch in daemon mode (background)
+npx aice watch --daemon
+
+# Watch in foreground with minimal feedback (default)
+npx aice watch --foreground
+
+# View knowledge base statistics
+npx aice stats
+
+# Check token usage (top 4 models)
+npx aice tokens
+
+# Check token usage (all 16 models)
+npx aice tokens --all
 ```
 
 ## 📚 Documentation

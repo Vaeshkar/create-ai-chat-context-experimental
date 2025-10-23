@@ -27,6 +27,8 @@ interface WatcherCommandOptions {
   dir?: string;
   output?: string;
   verbose?: boolean;
+  daemon?: boolean;
+  foreground?: boolean;
   augment?: boolean;
   warp?: boolean;
   claudeDesktop?: boolean;
@@ -42,6 +44,8 @@ export class WatcherCommand {
   private interval: number;
   private watchDir: string;
   private verbose: boolean;
+  private _daemon: boolean; // eslint-disable-line @typescript-eslint/no-unused-vars
+  private _foreground: boolean; // eslint-disable-line @typescript-eslint/no-unused-vars
   private processor: CheckpointProcessor;
   private manager: WatcherManager;
   private logger: WatcherLogger;
@@ -55,6 +59,8 @@ export class WatcherCommand {
     this.interval = parseInt(options.interval || '5000', 10);
     this.watchDir = options.dir || './checkpoints';
     this.verbose = options.verbose || false;
+    this._daemon = options.daemon || false;
+    this._foreground = options.foreground !== false; // Default to foreground
     this.processor = new CheckpointProcessor({
       output: options.output || '.aicf',
       verbose: this.verbose,
@@ -140,6 +146,9 @@ export class WatcherCommand {
     console.log(chalk.gray(`   Watch Directory: ${this.watchDir}`));
     console.log(chalk.gray(`   Check Interval: ${this.interval}ms`));
     console.log(chalk.gray(`   Verbose: ${this.verbose ? 'enabled' : 'disabled'}`));
+    console.log(
+      chalk.gray(`   Mode: ${this._daemon ? 'daemon' : this._foreground ? 'foreground' : 'auto'}`)
+    );
     console.log(chalk.gray(`   PID File: ${this.manager.getPidFilePath()}`));
     console.log(chalk.gray(`   Log File: ${this.manager.getLogFilePath()}`));
 

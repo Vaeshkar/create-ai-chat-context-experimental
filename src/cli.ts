@@ -107,7 +107,7 @@ program
 // Watcher command
 program
   .command('watch')
-  .description('Start background watcher for automatic checkpoint processing')
+  .description('Start watcher for automatic checkpoint processing')
   .option('-i, --interval <ms>', 'Check interval in milliseconds (default: 5000)', '5000')
   .option(
     '-d, --dir <path>',
@@ -115,6 +115,8 @@ program
     './checkpoints'
   )
   .option('-v, --verbose', 'Enable verbose output')
+  .option('--daemon', 'Run in background (daemon mode)')
+  .option('--foreground', 'Run in foreground with minimal feedback (default)')
   .option('--augment', 'Enable Augment platform')
   .option('--warp', 'Enable Warp platform')
   .option('--claude-desktop', 'Enable Claude Desktop platform')
@@ -127,6 +129,8 @@ program
         interval: options.interval,
         dir: options.dir,
         verbose: options.verbose,
+        daemon: options.daemon,
+        foreground: options.foreground,
         augment: options.augment,
         warp: options.warp,
         claudeDesktop: options.claudeDesktop,
@@ -169,6 +173,56 @@ program
       console.log(chalk.dim(`   Conversation: ${result.value.conversationId}`));
       console.log(chalk.dim(`   Messages: ${result.value.messageCount}`));
       console.log(chalk.dim(`   Output: ${result.value.outputPath}`));
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Stats command
+program
+  .command('stats')
+  .description('Show knowledge base statistics and insights')
+  .action(async () => {
+    try {
+      const cwd = process.cwd();
+      const { getKnowledgeBaseStats } = await import('./utils/StatsUtils.js');
+      const stats = await getKnowledgeBaseStats(cwd);
+
+      console.log(chalk.bold.cyan('\n📊 Knowledge Base Statistics\n'));
+      console.log(chalk.bold('📝 Content:'));
+      console.log(`   Total files:              ${stats.totalFiles}`);
+      console.log(`   Total lines:              ${stats.totalLines.toLocaleString()}`);
+      console.log(`   Total words:              ${stats.totalWords.toLocaleString()}`);
+      console.log(`   Estimated tokens:         ~${stats.estimatedTokens.toLocaleString()}`);
+      console.log(`   Conversation entries:     ${stats.conversationEntries}`);
+      console.log();
+
+      console.log(chalk.bold('📂 Directory Breakdown:'));
+      console.log(`   .aicf/ files:             ${stats.aicfFiles}`);
+      console.log(`   .ai/ files:               ${stats.aiFiles}`);
+      console.log();
+
+      console.log(chalk.bold('⏱️  Timestamps:'));
+      console.log(`   Oldest entry:             ${stats.oldestEntry || 'N/A'}`);
+      console.log(`   Newest entry:             ${stats.newestEntry || 'N/A'}`);
+      console.log();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Tokens command
+program
+  .command('tokens')
+  .description('Show token usage breakdown of knowledge base')
+  .option('-a, --all', 'Show all AI models (default: show top 4)')
+  .action(async (options) => {
+    try {
+      const cwd = process.cwd();
+      const { displayTokenUsage } = await import('./utils/TokenDisplayUtils.js');
+      await displayTokenUsage(cwd, options.all);
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
