@@ -162,7 +162,7 @@ interface ContentBlock {
 2. User opens browser console
 3. User pastes claude-export script
 4. User downloads JSON export
-5. User runs: `npx aicf import-claude <file.json>`
+5. User runs: `npx aice import-claude <file.json>`
 6. System processes and generates memory files
 
 ### Future (If Claude API Adds History)

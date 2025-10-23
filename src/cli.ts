@@ -23,7 +23,10 @@ const VERSION = '3.0.0-alpha';
 
 const program = new Command();
 
-program.name('aicf').description('AI Chat Context & Memory System - aicf-watcher').version(VERSION);
+program
+  .name('aice')
+  .description('AI Chat Context Experimental - Automatic mode with watchers')
+  .version(VERSION);
 
 // Init command
 program

@@ -185,7 +185,7 @@ export class InitCommand {
       console.log(chalk.dim('Next steps:'));
       console.log(chalk.dim('  1. Review .aicf/.permissions.aicf'));
       console.log(chalk.dim('  2. Review .aicf/.watcher-config.json'));
-      console.log(chalk.dim('  3. Run: npx aicf watch'));
+      console.log(chalk.dim('  3. Run: npx aice watch'));
       console.log(chalk.dim('  4. Commit changes to git'));
       console.log();
 

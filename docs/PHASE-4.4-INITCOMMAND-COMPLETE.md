@@ -186,16 +186,16 @@ interface WatcherSettings {
 **Usage:**
 ```bash
 # Automatic mode (default)
-npx aicf init
+npx aice init
 
 # Manual mode
-npx aicf init --mode manual
+npx aice init --mode manual
 
 # Force overwrite
-npx aicf init --force
+npx aice init --force
 
 # Verbose output
-npx aicf init --verbose
+npx aice init --verbose
 ```
 
 **Output:**
@@ -221,7 +221,7 @@ Automatic Mode:
 Next steps:
   1. Review .aicf/.permissions.aicf
   2. Review .aicf/.watcher-config.json
-  3. Run: npx aicf watch
+  3. Run: npx aice watch
   4. Commit changes to git
 ```
 

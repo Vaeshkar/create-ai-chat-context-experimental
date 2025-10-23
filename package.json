@@ -14,8 +14,7 @@
     }
   },
   "bin": {
-    "create-ai-chat-context": "./dist/esm/cli.js",
-    "aic": "./dist/esm/cli.js"
+    "aice": "./dist/esm/cli.js"
   },
   "scripts": {
     "build": "pnpm run clean && pnpm run build:esm && pnpm run build:cjs && pnpm run copy:templates",

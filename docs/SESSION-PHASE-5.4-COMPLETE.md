@@ -109,13 +109,13 @@
 
 ```bash
 # Basic import
-npx aicf import-claude export.json
+npx aice import-claude export.json
 
 # Custom output
-npx aicf import-claude export.json -o .custom/output
+npx aice import-claude export.json -o .custom/output
 
 # Verbose mode
-npx aicf import-claude export.json -v
+npx aice import-claude export.json -v
 ```
 
 ---

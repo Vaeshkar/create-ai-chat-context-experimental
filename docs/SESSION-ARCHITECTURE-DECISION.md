@@ -72,7 +72,7 @@ User: git commit
 ### Automatic Mode (aicf-watcher)
 
 ```bash
-$ npx aicf init --automatic
+$ npx aice init --automatic
 → Runs create-ai-chat-context init
 → Creates .cache/llm/, .permissions.aicf, .watcher-config.json
 → Starts watcher
@@ -89,7 +89,7 @@ Checkpoints: Automatically update conversation
 User has been using manual mode for a while
 User: "I want automatic mode now"
 
-$ npx aicf init --automatic
+$ npx aice init --automatic
 → Watcher starts
 → Existing .ai/ and .aicf/ files preserved
 → .cache/llm/ is created
