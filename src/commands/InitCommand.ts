@@ -80,6 +80,18 @@ export class InitCommand {
 
       // Step 1: Check if already initialized
       if (!this.force) {
+        // Check if we need to migrate (existing .ai and .aicf but no .permissions.aicf)
+        const aicfDir = join(this.cwd, '.aicf');
+        const aiDir = join(this.cwd, '.ai');
+        const permissionsFile = join(this.cwd, '.aicf', '.permissions.aicf');
+
+        if (existsSync(aicfDir) && existsSync(aiDir) && !existsSync(permissionsFile)) {
+          // Existing setup from base package - migrate it
+          spinner.info('Found existing memory files. Switching to migration workflow...');
+          return await this.migrateExistingSetup(spinner);
+        }
+
+        // Check for other initialization issues
         const checkResult = this.checkNotInitialized();
         if (!checkResult.ok) {
           return checkResult;
@@ -127,6 +139,44 @@ export class InitCommand {
     }
 
     return Ok(undefined);
+  }
+
+  /**
+   * Migrate existing setup from base package to experimental
+   * Adds missing files and asks for mode preference
+   */
+  private async migrateExistingSetup(spinner: Ora): Promise<Result<InitResult>> {
+    spinner.stop();
+
+    try {
+      console.log();
+      console.log(chalk.cyan('🔄 Upgrading to automatic mode support...'));
+      console.log();
+
+      // Create missing directories
+      const aicfDir = join(this.cwd, '.aicf');
+      const aiDir = join(this.cwd, '.ai');
+      const cacheLlmDir = join(this.cwd, '.cache', 'llm');
+
+      spinner.start('Creating directory structure...');
+      mkdirSync(aicfDir, { recursive: true });
+      mkdirSync(aiDir, { recursive: true });
+      mkdirSync(cacheLlmDir, { recursive: true });
+      spinner.succeed('Directory structure ready');
+
+      // Now ask for mode
+      console.log();
+      const mode = await this.askMode();
+
+      if (mode === 'manual') {
+        return await this.initManualMode(spinner);
+      } else {
+        return await this.initAutomaticMode(spinner);
+      }
+    } catch (error) {
+      spinner.fail('Failed to migrate setup');
+      return Err(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**
@@ -408,11 +458,22 @@ export class InitCommand {
         console.log(chalk.dim(`  ✓ ${p}`));
       });
       console.log();
+      console.log(chalk.cyan('📁 Library Data Scanning'));
+      console.log(chalk.dim('The watcher will automatically scan your LLM library folders for:'));
+      platformAnswers.platforms.forEach((p: string) => {
+        if (p === 'claude-cli') {
+          console.log(chalk.dim(`  • Claude CLI: ~/.claude/projects/`));
+        } else if (p === 'claude-desktop') {
+          console.log(chalk.dim(`  • Claude Desktop: ~/Library/Application Support/Claude/`));
+        } else if (p === 'augment') {
+          console.log(chalk.dim(`  • Augment: Augment LevelDB format`));
+        }
+      });
+      console.log();
       console.log(chalk.dim('Next steps:'));
-      console.log(chalk.dim('  1. Review .aicf/.permissions.aicf'));
-      console.log(chalk.dim('  2. Review .aicf/.watcher-config.json'));
-      console.log(chalk.dim('  3. Run: npx aice watch'));
-      console.log(chalk.dim('  4. Commit changes to git'));
+      console.log(chalk.dim('  1. Run: npx aice watch'));
+      console.log(chalk.dim('  2. For more options: npx aice watch --help'));
+      console.log(chalk.dim('  3. Commit changes to git'));
       console.log();
 
       return Ok({

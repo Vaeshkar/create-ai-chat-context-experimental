@@ -204,6 +204,7 @@ npm test || exit 1
 echo "✅ All checks passed!"
 ```
 
+
 **This ensures:**
 
 - ✅ Code is properly formatted
