@@ -84,9 +84,24 @@ export class InitCommand {
   private checkNotInitialized(): Result<void> {
     const aicfDir = join(this.cwd, '.aicf');
     const aiDir = join(this.cwd, '.ai');
+    const permissionsFile = join(this.cwd, '.aicf', '.permissions.aicf');
 
-    if (existsSync(aicfDir) || existsSync(aiDir)) {
-      return Err(new Error('Project already initialized. Use --force to overwrite.'));
+    // If both .ai and .aicf exist AND .permissions.aicf exists, it's already in automatic mode
+    if (existsSync(aicfDir) && existsSync(aiDir) && existsSync(permissionsFile)) {
+      return Err(
+        new Error('Project already initialized in automatic mode. Use --force to overwrite.')
+      );
+    }
+
+    // If only .ai and .aicf exist (from base package), suggest migration
+    if (existsSync(aicfDir) && existsSync(aiDir)) {
+      return Err(
+        new Error(
+          'Project has existing memory files from create-ai-chat-context.\n' +
+            'To upgrade to automatic mode, run: npx aice migrate\n' +
+            'Or use --force to reinitialize from scratch.'
+        )
+      );
     }
 
     return Ok(undefined);

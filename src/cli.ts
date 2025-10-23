@@ -18,6 +18,7 @@ import chalk from 'chalk';
 import { CheckpointProcessor } from './commands/CheckpointProcessor.js';
 import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
+import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 
 // Version from package.json
@@ -56,6 +57,29 @@ program
         console.log(chalk.blue('ℹ️  Manual Mode:'));
         console.log(chalk.dim('   Use create-ai-chat-context for manual memory updates'));
         console.log(chalk.dim('   Link: https://github.com/Vaeshkar/create-ai-chat-context'));
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Migrate command
+program
+  .command('migrate')
+  .description('Migrate from create-ai-chat-context to automatic mode')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const migrateCmd = new MigrateCommand({
+        verbose: options.verbose,
+      });
+
+      const result = await migrateCmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
       }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
