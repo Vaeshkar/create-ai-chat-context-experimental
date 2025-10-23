@@ -8,7 +8,8 @@ A system that automatically captures AI conversations from multiple platforms (A
 
 ## ✨ Key Features
 
-- **Multi-Platform Support** - Augment, Claude Desktop, Claude CLI, Warp
+- **Multi-Platform Support** - Augment, Claude Desktop, Claude CLI, Warp, Copilot, ChatGPT
+- **Platform Selection** - Choose which LLM platforms to monitor
 - **Automatic Capture** - Background watchers monitor for new conversations
 - **Smart Consolidation** - Extracts decisions, actions, technical work, and context
 - **Dual Format Storage** - AI-optimized (AICF) + Human-readable (Markdown)
@@ -29,20 +30,24 @@ pnpm add create-ai-chat-context
 
 ```bash
 # Manual mode (for Augment)
-npx aic init --manual
+npx aice init --manual
 
 # Automatic mode (for Claude Desktop/CLI)
-npx aic init --automatic
+npx aice init --automatic
 ```
 
 ### Use It
 
 ```bash
 # Manual: Process checkpoint
-npx aic checkpoint <file>
+npx aice checkpoint <file>
 
-# Automatic: Start watcher
-npx aic watch
+# Automatic: Start watcher (all enabled platforms)
+npx aice watch
+
+# Watch specific platforms
+npx aice watch --augment
+npx aice watch --augment --warp --claude-desktop
 ```
 
 ## 📚 Documentation
@@ -154,18 +159,76 @@ pnpm format        # Format with Prettier
 
 ## 📞 CLI Commands
 
+### Initialize
+
 ```bash
-# Initialize project
-npx aic init [--manual|--automatic] [--force]
+# Manual mode (for Augment)
+npx aice init --manual
 
+# Automatic mode (for Claude Desktop/CLI)
+npx aice init --automatic
+
+# Force overwrite existing setup
+npx aice init --automatic --force
+```
+
+### Process Conversations
+
+```bash
 # Process a checkpoint file
-npx aic checkpoint <file>
-
-# Start background watcher
-npx aic watch [--verbose]
+npx aice checkpoint <file>
 
 # Import Claude exports
-npx aic import-claude <file>
+npx aice import-claude <file>
+```
+
+### Watch for New Conversations
+
+```bash
+# Watch all enabled platforms (default)
+npx aice watch
+
+# Watch specific platforms
+npx aice watch --augment
+npx aice watch --warp
+npx aice watch --claude-desktop
+npx aice watch --claude-cli
+npx aice watch --copilot
+npx aice watch --chatgpt
+
+# Watch multiple platforms
+npx aice watch --augment --warp --claude-desktop
+
+# Verbose output
+npx aice watch --augment --verbose
+```
+
+### Migrate Existing Projects
+
+```bash
+# Upgrade from v2.0.1 to experimental
+npx aice migrate
+```
+
+## 🎯 Platform Selection
+
+Choose which LLM platforms to monitor based on what you use:
+
+| Platform           | Flag               | Use Case                 |
+| ------------------ | ------------------ | ------------------------ |
+| **Augment**        | `--augment`        | Augment VSCode extension |
+| **Warp**           | `--warp`           | Warp terminal AI         |
+| **Claude Desktop** | `--claude-desktop` | Claude desktop app       |
+| **Claude CLI**     | `--claude-cli`     | Claude command-line tool |
+| **Copilot**        | `--copilot`        | GitHub Copilot           |
+| **ChatGPT**        | `--chatgpt`        | ChatGPT web interface    |
+
+**Default behavior:** If no flags specified, uses platforms enabled in `.watcher-config.json` (defaults to Augment).
+
+**Example:** If you use Augment and Claude Desktop:
+
+```bash
+npx aice watch --augment --claude-desktop
 ```
 
 ## 📖 Learn More

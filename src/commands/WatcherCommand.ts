@@ -154,11 +154,16 @@ export class WatcherCommand {
       console.log(chalk.yellow('\n   ⚠️  No platforms enabled'));
     }
 
-    // Show multi-Claude status
-    const availableSources = this.consolidationService.getAvailableSources();
-    if (availableSources.length > 0) {
-      console.log(chalk.cyan('\n   📚 Multi-Claude Support Enabled'));
-      console.log(chalk.gray(`   Available Sources: ${availableSources.join(', ')}`));
+    // Show multi-Claude status only if Claude platforms are enabled
+    const claudePlatformsEnabled = this.enabledPlatforms.some((p) =>
+      ['claude-desktop', 'claude-cli'].includes(p)
+    );
+    if (claudePlatformsEnabled) {
+      const availableSources = this.consolidationService.getAvailableSources();
+      if (availableSources.length > 0) {
+        console.log(chalk.cyan('\n   📚 Multi-Claude Support Enabled'));
+        console.log(chalk.gray(`   Available Sources: ${availableSources.join(', ')}`));
+      }
     }
 
     console.log(chalk.gray('\n   Press Ctrl+C to stop\n'));
