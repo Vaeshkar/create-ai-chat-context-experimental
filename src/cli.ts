@@ -22,7 +22,7 @@ import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 
 // Version - automatically updated during build
-const VERSION = '3.0.0-alpha.10';
+const VERSION = '3.0.0-alpha.11';
 
 const program = new Command();
 
