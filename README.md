@@ -200,7 +200,7 @@ npx aice import-claude <file>
 ### Watch for New Conversations
 
 ```bash
-# Watch all enabled platforms (default)
+# Watch all enabled platforms (default, checks every 5 minutes)
 npx aice watch
 
 # Watch specific platforms
@@ -214,8 +214,18 @@ npx aice watch --chatgpt
 # Watch multiple platforms
 npx aice watch --augment --warp --claude-desktop
 
+# Custom check interval (in milliseconds)
+npx aice watch --interval 60000  # Check every 60 seconds
+npx aice watch --interval 300000 # Check every 5 minutes (default)
+
 # Verbose output
 npx aice watch --augment --verbose
+
+# Run in background (daemon mode)
+npx aice watch --daemon
+
+# Run in foreground with minimal feedback (default)
+npx aice watch --foreground
 ```
 
 ### Migrate Existing Projects

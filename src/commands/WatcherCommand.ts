@@ -56,7 +56,7 @@ export class WatcherCommand {
   private enabledPlatforms: PlatformName[] = [];
 
   constructor(options: WatcherCommandOptions = {}) {
-    this.interval = parseInt(options.interval || '5000', 10);
+    this.interval = parseInt(options.interval || '300000', 10);
     this.watchDir = options.dir || './checkpoints';
     this.verbose = options.verbose || false;
     this._daemon = options.daemon || false;

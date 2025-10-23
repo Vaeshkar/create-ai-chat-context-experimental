@@ -108,7 +108,11 @@ program
 program
   .command('watch')
   .description('Start watcher for automatic checkpoint processing')
-  .option('-i, --interval <ms>', 'Check interval in milliseconds (default: 5000)', '5000')
+  .option(
+    '-i, --interval <ms>',
+    'Check interval in milliseconds (default: 300000 / 5 minutes)',
+    '300000'
+  )
   .option(
     '-d, --dir <path>',
     'Directory to watch for checkpoints (default: ./checkpoints)',
