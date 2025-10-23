@@ -63,12 +63,12 @@
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vaeshkar/create-ai-chat-context.git"
+    "url": "git+https://github.com/Vaeshkar/create-ai-chat-context-experimental.git"
   },
   "bugs": {
-    "url": "https://github.com/Vaeshkar/create-ai-chat-context/issues"
+    "url": "https://github.com/Vaeshkar/create-ai-chat-context-experimental/issues"
   },
-  "homepage": "https://github.com/Vaeshkar/create-ai-chat-context#readme",
+  "homepage": "https://github.com/Vaeshkar/create-ai-chat-context-experimental#readme",
   "engines": {
     "node": ">=20.0.0"
   },

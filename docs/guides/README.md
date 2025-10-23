@@ -10,6 +10,7 @@
 > **🚧 EXPERIMENTAL v3.0.0** - **Advanced AICF Research & Development** 🧪 Revolutionary concepts in development! This is the experimental branch for next-generation AI context management.
 
 **🔬 CURRENT DEVELOPMENT STATUS:**
+
 - **🕐 Detection-Hourglass-System** - 🚧 **IN DEVELOPMENT** - Concept for auto-detecting conversation boundaries
 - **🎯 Universal AI compatibility** - ✅ **PROVEN** - Works with Claude, ChatGPT, Copilot, Cursor (via .ai/.aicf files)
 - **⚡ Dynamic chunk processing** - 🚧 **RESEARCH PHASE** - Investigating natural conversation segments
@@ -26,24 +27,31 @@ Advanced research into next-generation AI context management. Exploring revoluti
 
 ## 🚨 EXPERIMENTAL BRANCH NOTICE 🚨
 
-**⚠️ This is the experimental development branch!** 
+**⚠️ This is the experimental development branch!**
 
 **For stable, production-ready version:**
+
 - **NPM Package:** `npx create-ai-chat-context init` (4,400+ weekly downloads)
 - **Stable Repository:** [create-ai-chat-context](https://github.com/Vaeshkar/create-ai-chat-context)
 - **What works:** .ai and .aicf file creation, templates, all documented features
 
+**For experimental research (this repo):**
+
+- **NPM Package:** `npx create-ai-chat-context-experimental@alpha`
+- **Experimental Repository:** [create-ai-chat-context-experimental](https://github.com/Vaeshkar/create-ai-chat-context-experimental)
+- **What's new:** Platform selection, automatic watchers, multi-LLM support
+
 **This experimental branch contains:**
+
 - 🧪 Advanced AICF 3.0 research (95.5% compression - PROVEN)
 - 🚧 Detection-Hourglass-System concepts (IN DEVELOPMENT)
 - 🔬 Next-generation AI automation features (RESEARCH PHASE)
 - 📊 Revolutionary partnership documentation (COMPLETED)
 
-**Use experimental branch if:** You want cutting-edge research and don't mind beta features  
+**Use experimental branch if:** You want cutting-edge research and don't mind beta features
 **Use stable branch if:** You want reliable, production-tested AI context management
 
 ---
-
 
 ## The Problem
 
@@ -56,11 +64,13 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 **Research Goal:** Next-generation AI context management through:
 
 **✅ PROVEN: AICF 3.0 Format**
+
 - Revolutionary 95.5% compression with zero semantic loss
 - Structured semantic tags optimized for AI consumption
 - Cross-AI compatibility (Claude, GPT, Copilot, Cursor, etc.)
 
 **🚧 IN DEVELOPMENT: Advanced Features**
+
 - Automated conversation boundary detection
 - Zero-cost logic agent processing
 - Real-time context preservation
@@ -73,12 +83,12 @@ Unlike other AI context tools that focus on project planning and rules, `create-
 
 **Experimental additions:** Enhanced with revolutionary AICF 3.0 format research and next-generation automation concepts.
 
-
 ## Experimental Setup
 
 **⚠️ For stable, production use: `npx create-ai-chat-context init`**
 
 **For experimental research:**
+
 ```bash
 # Clone experimental branch
 git clone https://github.com/Vaeshkar/create-ai-chat-context-experimental.git
@@ -98,6 +108,7 @@ cat BIRTH_OF_AICF_HISTORIC_CONVERSATION.md
 ## 🧪 What's Here (Research Only)
 
 **This repository contains:**
+
 - AICF 3.0 format research and examples (see `.aicf/` folder)
 - Revolutionary compression techniques (95.5% proven)
 - Historic partnership documentation (`BIRTH_OF_AICF_HISTORIC_CONVERSATION.md`)
