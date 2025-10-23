@@ -115,9 +115,25 @@ program
     './checkpoints'
   )
   .option('-v, --verbose', 'Enable verbose output')
+  .option('--augment', 'Enable Augment platform')
+  .option('--warp', 'Enable Warp platform')
+  .option('--claude-desktop', 'Enable Claude Desktop platform')
+  .option('--claude-cli', 'Enable Claude CLI platform')
+  .option('--copilot', 'Enable Copilot platform')
+  .option('--chatgpt', 'Enable ChatGPT platform')
   .action(async (options) => {
     try {
-      const watcher = new WatcherCommand(options);
+      const watcher = new WatcherCommand({
+        interval: options.interval,
+        dir: options.dir,
+        verbose: options.verbose,
+        augment: options.augment,
+        warp: options.warp,
+        claudeDesktop: options.claudeDesktop,
+        claudeCli: options.claudeCli,
+        copilot: options.copilot,
+        chatgpt: options.chatgpt,
+      });
       await watcher.start();
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));

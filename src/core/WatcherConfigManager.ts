@@ -17,7 +17,13 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 
-export type PlatformName = 'augment' | 'warp' | 'claude-desktop' | 'copilot' | 'chatgpt';
+export type PlatformName =
+  | 'augment'
+  | 'warp'
+  | 'claude-desktop'
+  | 'claude-cli'
+  | 'copilot'
+  | 'chatgpt';
 
 export interface PlatformConfig {
   enabled: boolean;
@@ -57,7 +63,10 @@ export class WatcherConfigManager {
   /**
    * Load configuration from file
    */
-  async load(): Promise<Result<WatcherConfigData>> {
+  /**
+   * Load config synchronously
+   */
+  loadSync(): Result<WatcherConfigData> {
     try {
       if (!existsSync(this.configFile)) {
         return Err(new Error('Watcher config file not found'));
@@ -70,6 +79,10 @@ export class WatcherConfigManager {
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
     }
+  }
+
+  async load(): Promise<Result<WatcherConfigData>> {
+    return this.loadSync();
   }
 
   /**

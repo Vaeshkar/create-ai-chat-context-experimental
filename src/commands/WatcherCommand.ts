@@ -20,12 +20,19 @@ import { CheckpointProcessor } from './CheckpointProcessor.js';
 import { WatcherManager } from '../utils/WatcherManager.js';
 import { WatcherLogger } from '../utils/WatcherLogger.js';
 import { MultiClaudeConsolidationService } from '../services/MultiClaudeConsolidationService.js';
+import { WatcherConfigManager, type PlatformName } from '../core/WatcherConfigManager.js';
 
 interface WatcherCommandOptions {
   interval?: string;
   dir?: string;
   output?: string;
   verbose?: boolean;
+  augment?: boolean;
+  warp?: boolean;
+  claudeDesktop?: boolean;
+  claudeCli?: boolean;
+  copilot?: boolean;
+  chatgpt?: boolean;
 }
 
 /**
@@ -39,8 +46,10 @@ export class WatcherCommand {
   private manager: WatcherManager;
   private logger: WatcherLogger;
   private consolidationService: MultiClaudeConsolidationService;
+  private configManager: WatcherConfigManager;
   private isRunning: boolean = false;
   private processedFiles: Set<string> = new Set();
+  private enabledPlatforms: PlatformName[] = [];
 
   constructor(options: WatcherCommandOptions = {}) {
     this.interval = parseInt(options.interval || '5000', 10);
@@ -60,11 +69,51 @@ export class WatcherCommand {
       verbose: this.verbose,
       logLevel: this.verbose ? 'debug' : 'info',
     });
+    this.configManager = new WatcherConfigManager();
     this.consolidationService = new MultiClaudeConsolidationService({
       verbose: this.verbose,
-      enableCli: true,
-      enableDesktop: true,
+      enableCli: options.claudeCli ?? true,
+      enableDesktop: options.claudeDesktop ?? true,
     });
+
+    // Determine which platforms to enable
+    this.enabledPlatforms = this.determinePlatforms(options);
+  }
+
+  /**
+   * Determine which platforms to enable based on CLI options or config
+   */
+  private determinePlatforms(options: WatcherCommandOptions): PlatformName[] {
+    const selectedPlatforms: PlatformName[] = [];
+
+    // Check if any platform flags were explicitly set
+    const hasExplicitFlags =
+      options.augment !== undefined ||
+      options.warp !== undefined ||
+      options.claudeDesktop !== undefined ||
+      options.claudeCli !== undefined ||
+      options.copilot !== undefined ||
+      options.chatgpt !== undefined;
+
+    if (hasExplicitFlags) {
+      // Use only explicitly enabled platforms
+      if (options.augment) selectedPlatforms.push('augment');
+      if (options.warp) selectedPlatforms.push('warp');
+      if (options.claudeDesktop) selectedPlatforms.push('claude-desktop');
+      if (options.claudeCli) selectedPlatforms.push('claude-cli');
+      if (options.copilot) selectedPlatforms.push('copilot');
+      if (options.chatgpt) selectedPlatforms.push('chatgpt');
+    } else {
+      // Use all enabled platforms from config (or defaults if config not found)
+      const configResult = this.configManager.loadSync();
+      if (configResult.ok) {
+        return this.configManager.getEnabledPlatforms();
+      }
+      // Default: enable Augment if no config found
+      selectedPlatforms.push('augment');
+    }
+
+    return selectedPlatforms;
   }
 
   /**
@@ -84,14 +133,26 @@ export class WatcherCommand {
       watchDir: this.watchDir,
       interval: this.interval,
       verbose: this.verbose,
+      platforms: this.enabledPlatforms,
     });
 
-    console.log(chalk.cyan('\n🔍 Starting checkpoint watcher...\n'));
+    console.log(chalk.cyan('\n🔍 Starting watcher...\n'));
     console.log(chalk.gray(`   Watch Directory: ${this.watchDir}`));
     console.log(chalk.gray(`   Check Interval: ${this.interval}ms`));
     console.log(chalk.gray(`   Verbose: ${this.verbose ? 'enabled' : 'disabled'}`));
     console.log(chalk.gray(`   PID File: ${this.manager.getPidFilePath()}`));
     console.log(chalk.gray(`   Log File: ${this.manager.getLogFilePath()}`));
+
+    // Show enabled platforms
+    if (this.enabledPlatforms.length > 0) {
+      console.log(chalk.cyan('\n   🤖 Enabled Platforms:'));
+      this.enabledPlatforms.forEach((platform) => {
+        const platformEmoji = this.getPlatformEmoji(platform);
+        console.log(chalk.gray(`      ${platformEmoji} ${platform}`));
+      });
+    } else {
+      console.log(chalk.yellow('\n   ⚠️  No platforms enabled'));
+    }
 
     // Show multi-Claude status
     const availableSources = this.consolidationService.getAvailableSources();
@@ -109,6 +170,21 @@ export class WatcherCommand {
 
     // Start watching
     this.watch();
+  }
+
+  /**
+   * Get emoji for platform
+   */
+  private getPlatformEmoji(platform: PlatformName): string {
+    const emojis: Record<PlatformName, string> = {
+      augment: '🔧',
+      warp: '⚡',
+      'claude-desktop': '🖥️',
+      'claude-cli': '💻',
+      copilot: '🤖',
+      chatgpt: '🌐',
+    };
+    return emojis[platform];
   }
 
   /**
