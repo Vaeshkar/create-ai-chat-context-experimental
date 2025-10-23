@@ -20,17 +20,9 @@ import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
 
-// Version from package.json
-let VERSION = '3.0.0-alpha.9';
-try {
-  const packageJson = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf-8'));
-  VERSION = packageJson.version;
-} catch {
-  // Fallback to hardcoded version if reading fails
-}
+// Version - automatically updated during build
+const VERSION = '3.0.0-alpha.10';
 
 const program = new Command();
 
