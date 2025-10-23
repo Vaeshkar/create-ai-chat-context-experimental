@@ -9,10 +9,18 @@
  * Phase 4.7: CLI Integration - October 2025
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mkdirSync, rmSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { InitCommand } from './InitCommand.js';
+import inquirer from 'inquirer';
+
+// Mock inquirer
+vi.mock('inquirer', () => ({
+  default: {
+    prompt: vi.fn(),
+  },
+}));
 
 describe('InitCommand', () => {
   let testDirCounter = 0;
@@ -30,6 +38,15 @@ describe('InitCommand', () => {
   }
 
   describe('execute', () => {
+    beforeEach(() => {
+      // Mock inquirer responses
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        mode: 'manual',
+        llm: 'augment',
+        platforms: ['augment'],
+      });
+    });
+
     it('should initialize in manual mode', async () => {
       const testDir = createTestDir();
       try {
@@ -47,6 +64,10 @@ describe('InitCommand', () => {
     it('should initialize in automatic mode', async () => {
       const testDir = createTestDir();
       try {
+        vi.mocked(inquirer.prompt).mockResolvedValueOnce({
+          platforms: ['augment'],
+        });
+
         const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
         const result = await cmd.execute();
 
@@ -65,6 +86,10 @@ describe('InitCommand', () => {
     it('should return error if already initialized', async () => {
       const testDir = createTestDir();
       try {
+        vi.mocked(inquirer.prompt).mockResolvedValueOnce({
+          platforms: ['augment'],
+        });
+
         // Initialize first time
         let cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
         let result = await cmd.execute();
@@ -83,6 +108,10 @@ describe('InitCommand', () => {
     it('should allow force overwrite', async () => {
       const testDir = createTestDir();
       try {
+        vi.mocked(inquirer.prompt).mockResolvedValue({
+          platforms: ['augment'],
+        });
+
         // Initialize first time
         let cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
         let result = await cmd.execute();
@@ -99,6 +128,12 @@ describe('InitCommand', () => {
   });
 
   describe('manual mode', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        llm: 'augment',
+      });
+    });
+
     it('should create .ai directory', async () => {
       const testDir = createTestDir();
       try {
@@ -141,6 +176,12 @@ describe('InitCommand', () => {
   });
 
   describe('automatic mode', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should create .cache/llm directory', async () => {
       const testDir = createTestDir();
       try {
@@ -304,7 +345,7 @@ describe('InitCommand', () => {
         const content = readFileSync(configFile, 'utf-8');
         const config = JSON.parse(content);
         expect(config.platforms.warp.enabled).toBe(false);
-        expect(config.platforms.claude.enabled).toBe(false);
+        expect(config.platforms['claude-cli'].enabled).toBe(false);
         expect(config.platforms['claude-desktop'].enabled).toBe(false);
       } finally {
         cleanupTestDir(testDir);
@@ -323,7 +364,7 @@ describe('InitCommand', () => {
         const config = JSON.parse(content);
         expect(config.platforms.augment.cachePath).toBe('.cache/llm/augment');
         expect(config.platforms.warp.cachePath).toBe('.cache/llm/warp');
-        expect(config.platforms.claude.cachePath).toBe('.cache/llm/claude');
+        expect(config.platforms['claude-cli'].cachePath).toBe('.cache/llm/claude-cli');
         expect(config.platforms['claude-desktop'].cachePath).toBe('.cache/llm/claude-desktop');
       } finally {
         cleanupTestDir(testDir);
@@ -332,6 +373,12 @@ describe('InitCommand', () => {
   });
 
   describe('permissions file', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should have correct AICF format', async () => {
       const testDir = createTestDir();
       try {
@@ -348,7 +395,7 @@ describe('InitCommand', () => {
         expect(content).toContain('@PERMISSIONS|version=1.0|format=aicf');
         expect(content).toContain('@PLATFORM|name=augment');
         expect(content).toContain('@PLATFORM|name=warp');
-        expect(content).toContain('@PLATFORM|name=claude');
+        expect(content).toContain('@PLATFORM|name=claude-cli');
         expect(content).toContain('@PLATFORM|name=claude-desktop');
         expect(content).toContain('@AUDIT|event=init');
       } finally {
@@ -383,7 +430,7 @@ describe('InitCommand', () => {
         const content = readFileSync(permissionsFile, 'utf-8');
 
         expect(content).toContain('name=warp|status=inactive');
-        expect(content).toContain('name=claude|status=inactive');
+        expect(content).toContain('name=claude-cli|status=inactive');
         expect(content).toContain('name=claude-desktop|status=inactive');
       } finally {
         cleanupTestDir(testDir);
@@ -392,6 +439,12 @@ describe('InitCommand', () => {
   });
 
   describe('error handling', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should handle invalid cwd gracefully', async () => {
       const cmd = new InitCommand({ cwd: '/nonexistent/path/that/does/not/exist' });
       const result = await cmd.execute();

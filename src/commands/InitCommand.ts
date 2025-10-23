@@ -17,6 +17,7 @@ import { join } from 'path';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
+import inquirer from 'inquirer';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 
@@ -32,6 +33,17 @@ export interface InitResult {
   projectPath: string;
   filesCreated: string[];
   message: string;
+  platforms?: string[];
+  llmPrompt?: string;
+}
+
+export interface PlatformSelection {
+  augment: boolean;
+  warp: boolean;
+  claudeDesktop: boolean;
+  claudeCli: boolean;
+  copilot: boolean;
+  chatgpt: boolean;
 }
 
 /**
@@ -42,6 +54,14 @@ export class InitCommand {
   private cwd: string;
   private force: boolean;
   private mode: 'manual' | 'automatic';
+  private selectedPlatforms: PlatformSelection = {
+    augment: false,
+    warp: false,
+    claudeDesktop: false,
+    claudeCli: false,
+    copilot: false,
+    chatgpt: false,
+  };
 
   constructor(options: InitCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
@@ -111,9 +131,32 @@ export class InitCommand {
    * Ask user for mode: manual or automatic
    */
   private async askMode(): Promise<'manual' | 'automatic'> {
-    // Return the mode set in constructor
-    // TODO: Implement interactive prompt using inquirer if mode not specified
-    return this.mode;
+    // If mode was explicitly set via CLI flag, use it
+    if (this.mode !== 'automatic') {
+      return this.mode;
+    }
+
+    console.log();
+    const answers = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'mode',
+        message: 'How do you want to capture conversations?',
+        choices: [
+          {
+            name: 'Manual - I will ask my LLM to update memory files',
+            value: 'manual',
+          },
+          {
+            name: 'Automatic - Watch for new conversations automatically',
+            value: 'automatic',
+          },
+        ],
+        default: 'automatic',
+      },
+    ]);
+
+    return answers.mode as 'manual' | 'automatic';
   }
 
   /**
@@ -121,9 +164,31 @@ export class InitCommand {
    * User will use create-ai-chat-context workflow
    */
   private async initManualMode(spinner: Ora): Promise<Result<InitResult>> {
-    spinner.start('Setting up manual mode...');
+    spinner.stop();
 
     try {
+      // Ask which LLM they use
+      console.log();
+      const llmAnswers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'llm',
+          message: 'Which LLM do you use?',
+          choices: [
+            { name: 'Augment', value: 'augment' },
+            { name: 'Claude (Web)', value: 'claude-web' },
+            { name: 'Claude Desktop', value: 'claude-desktop' },
+            { name: 'Claude CLI', value: 'claude-cli' },
+            { name: 'ChatGPT', value: 'chatgpt' },
+            { name: 'Copilot', value: 'copilot' },
+            { name: 'Warp', value: 'warp' },
+          ],
+          default: 'augment',
+        },
+      ]);
+
+      spinner.start('Setting up manual mode...');
+
       // Create .ai and .aicf directories
       const aiDir = join(this.cwd, '.ai');
       const aicfDir = join(this.cwd, '.aicf');
@@ -131,21 +196,32 @@ export class InitCommand {
       mkdirSync(aiDir, { recursive: true });
       mkdirSync(aicfDir, { recursive: true });
 
+      // Generate LLM prompt
+      const llmPrompt = this.generateLLMPrompt(llmAnswers.llm);
+
       spinner.succeed('Manual mode initialized');
       console.log();
       console.log(chalk.green('✅ Manual Mode Setup Complete'));
       console.log();
+      console.log(chalk.cyan('📋 Use this prompt with your LLM:'));
+      console.log(chalk.gray('─'.repeat(80)));
+      console.log(llmPrompt);
+      console.log(chalk.gray('─'.repeat(80)));
+      console.log();
       console.log(chalk.dim('Next steps:'));
-      console.log(chalk.dim('  1. Run: npx create-ai-chat-context init'));
-      console.log(chalk.dim('  2. Ask your LLM to update memory files'));
-      console.log(chalk.dim('  3. Commit changes to git'));
+      console.log(chalk.dim('  1. Copy the prompt above'));
+      console.log(chalk.dim('  2. Paste it into your ' + llmAnswers.llm + ' conversation'));
+      console.log(chalk.dim('  3. Follow the LLM instructions to update memory files'));
+      console.log(chalk.dim('  4. Commit changes to git'));
       console.log();
 
       return Ok({
         mode: 'manual',
         projectPath: this.cwd,
         filesCreated: [aiDir, aicfDir],
-        message: 'Manual mode initialized. Use create-ai-chat-context workflow.',
+        message: 'Manual mode initialized. Use the prompt above to trigger LLM updates.',
+        platforms: [llmAnswers.llm],
+        llmPrompt,
       });
     } catch (error) {
       spinner.fail('Failed to initialize manual mode');
@@ -158,9 +234,35 @@ export class InitCommand {
    * Creates .cache/llm/, .permissions.aicf, .watcher-config.json
    */
   private async initAutomaticMode(spinner: Ora): Promise<Result<InitResult>> {
-    spinner.start('Setting up automatic mode...');
+    spinner.stop();
 
     try {
+      // Ask which platforms they use
+      console.log();
+      const platformAnswers = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'platforms',
+          message: 'Which LLM platforms do you use? (Select all that apply)',
+          choices: [
+            { name: 'Augment', value: 'augment', checked: true },
+            { name: 'Warp', value: 'warp' },
+            { name: 'Claude Desktop', value: 'claude-desktop' },
+            { name: 'Claude CLI', value: 'claude-cli' },
+            { name: 'Copilot', value: 'copilot' },
+            { name: 'ChatGPT', value: 'chatgpt' },
+          ],
+          validate: (answer) => {
+            if (answer.length === 0) {
+              return 'Please select at least one platform';
+            }
+            return true;
+          },
+        },
+      ]);
+
+      spinner.start('Setting up automatic mode...');
+
       const filesCreated: string[] = [];
 
       // Step 1: Create directory structure
@@ -174,6 +276,16 @@ export class InitCommand {
       mkdirSync(aicfDir, { recursive: true });
 
       filesCreated.push(cacheLlmDir, aiDir, aicfDir);
+
+      // Store selected platforms
+      this.selectedPlatforms = {
+        augment: platformAnswers.platforms.includes('augment'),
+        warp: platformAnswers.platforms.includes('warp'),
+        claudeDesktop: platformAnswers.platforms.includes('claude-desktop'),
+        claudeCli: platformAnswers.platforms.includes('claude-cli'),
+        copilot: platformAnswers.platforms.includes('copilot'),
+        chatgpt: platformAnswers.platforms.includes('chatgpt'),
+      };
 
       // Step 2: Create .permissions.aicf
       spinner.text = 'Creating permission tracking file...';
@@ -197,6 +309,11 @@ export class InitCommand {
       console.log();
       console.log(chalk.green('✅ Automatic Mode Setup Complete'));
       console.log();
+      console.log(chalk.cyan('📊 Enabled Platforms:'));
+      platformAnswers.platforms.forEach((p: string) => {
+        console.log(chalk.dim(`  ✓ ${p}`));
+      });
+      console.log();
       console.log(chalk.dim('Next steps:'));
       console.log(chalk.dim('  1. Review .aicf/.permissions.aicf'));
       console.log(chalk.dim('  2. Review .aicf/.watcher-config.json'));
@@ -209,6 +326,7 @@ export class InitCommand {
         projectPath: this.cwd,
         filesCreated,
         message: 'Automatic mode initialized. Watcher is ready to start.',
+        platforms: platformAnswers.platforms,
       });
     } catch (error) {
       spinner.fail('Failed to initialize automatic mode');
@@ -217,14 +335,82 @@ export class InitCommand {
   }
 
   /**
+   * Generate LLM prompt for manual mode
+   */
+  private generateLLMPrompt(llm: string): string {
+    const projectPath = this.cwd;
+    const timestamp = new Date().toISOString();
+
+    return `You are helping me maintain an AI Context Format (AICF) memory system for my project.
+
+📁 Project Path: ${projectPath}
+🤖 LLM Platform: ${llm}
+⏰ Initialized: ${timestamp}
+
+Your task is to help me consolidate our conversation into structured memory files.
+
+## What to do:
+
+1. **Read the existing memory files** (if they exist):
+   - \`.aicf/\` - Machine-readable AICF format files
+   - \`.ai/\` - Human-readable markdown documentation
+
+2. **Extract from our conversation**:
+   - Key decisions we made
+   - Technical work completed
+   - Problems we solved
+   - Next steps and action items
+   - Important context for future sessions
+
+3. **Update the memory files**:
+   - Create/update \`.aicf/index.aicf\` with structured data
+   - Create/update \`.ai/conversation-log.md\` with detailed notes
+   - Create/update \`.ai/technical-decisions.md\` if we made technical choices
+   - Create/update \`.ai/next-steps.md\` with planned work
+
+4. **Format guidelines**:
+   - AICF files use pipe-delimited format: \`@SECTION|key=value|key=value\`
+   - Markdown files use standard markdown with clear sections
+   - Be concise but comprehensive
+   - Preserve all important context
+
+5. **When you're done**:
+   - Show me the updated files
+   - I'll review and commit them to git
+
+## Example AICF format:
+\`\`\`
+@CONVERSATION:C1-CP1
+timestamp_start=2025-10-23T10:00:00Z
+timestamp_end=2025-10-23T11:00:00Z
+messages=50
+tokens=12345
+
+@DECISIONS
+decision_name|reasoning|impact=HIGH
+\`\`\`
+
+Ready to help! Just ask me to "update memory files" when you want me to consolidate our conversation.`;
+  }
+
+  /**
    * Generate permissions file content
    */
   private generatePermissionsFile(): string {
+    const platformStatuses = Object.entries(this.selectedPlatforms)
+      .map(([platform, enabled]) => {
+        const platformName = platform
+          .replace(/([A-Z])/g, '-$1')
+          .toLowerCase()
+          .replace(/^-/, '');
+        const status = enabled ? 'active' : 'inactive';
+        const consent = enabled ? 'explicit' : 'pending';
+        return `@PLATFORM|name=${platformName}|status=${status}|consent=${consent}|timestamp=${new Date().toISOString()}`;
+      })
+      .join('\n');
+
     return `@PERMISSIONS|version=1.0|format=aicf
-@PLATFORM|name=augment|status=active|consent=implicit|timestamp=${new Date().toISOString()}
-@PLATFORM|name=warp|status=inactive|consent=pending|timestamp=${new Date().toISOString()}
-@PLATFORM|name=claude|status=inactive|consent=pending|timestamp=${new Date().toISOString()}
-@PLATFORM|name=claude-desktop|status=inactive|consent=pending|timestamp=${new Date().toISOString()}
+${platformStatuses}
 @AUDIT|event=init|timestamp=${new Date().toISOString()}|user=system|action=created_permissions_file
 `;
   }
@@ -238,24 +424,34 @@ export class InitCommand {
         version: '1.0',
         platforms: {
           augment: {
-            enabled: true,
+            enabled: this.selectedPlatforms.augment,
             cachePath: '.cache/llm/augment',
             checkInterval: 5000,
           },
           warp: {
-            enabled: false,
+            enabled: this.selectedPlatforms.warp,
             cachePath: '.cache/llm/warp',
             checkInterval: 5000,
           },
-          claude: {
-            enabled: false,
-            cachePath: '.cache/llm/claude',
+          'claude-cli': {
+            enabled: this.selectedPlatforms.claudeCli,
+            cachePath: '.cache/llm/claude-cli',
             checkInterval: 0,
             importMode: true,
           },
           'claude-desktop': {
-            enabled: false,
+            enabled: this.selectedPlatforms.claudeDesktop,
             cachePath: '.cache/llm/claude-desktop',
+            checkInterval: 5000,
+          },
+          copilot: {
+            enabled: this.selectedPlatforms.copilot,
+            cachePath: '.cache/llm/copilot',
+            checkInterval: 5000,
+          },
+          chatgpt: {
+            enabled: this.selectedPlatforms.chatgpt,
+            cachePath: '.cache/llm/chatgpt',
             checkInterval: 5000,
           },
         },

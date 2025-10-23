@@ -10,12 +10,20 @@
  * October 2025
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mkdirSync, rmSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { InitCommand } from './commands/InitCommand.js';
 import { PermissionManager } from './core/PermissionManager.js';
 import { WatcherConfigManager } from './core/WatcherConfigManager.js';
+import inquirer from 'inquirer';
+
+// Mock inquirer
+vi.mock('inquirer', () => ({
+  default: {
+    prompt: vi.fn(),
+  },
+}));
 
 describe('Phase 4 Integration Tests', () => {
   let testDirCounter = 0;
@@ -33,6 +41,12 @@ describe('Phase 4 Integration Tests', () => {
   }
 
   describe('Manual Mode Workflow', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        llm: 'augment',
+      });
+    });
+
     it('should initialize project in manual mode', async () => {
       const testDir = createTestDir();
       try {
@@ -67,6 +81,12 @@ describe('Phase 4 Integration Tests', () => {
   });
 
   describe('Automatic Mode Workflow', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should initialize project in automatic mode', async () => {
       const testDir = createTestDir();
       try {
@@ -144,6 +164,12 @@ describe('Phase 4 Integration Tests', () => {
   });
 
   describe('Permission Management Workflow', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should grant and revoke permissions', async () => {
       const testDir = createTestDir();
       try {
@@ -196,6 +222,12 @@ describe('Phase 4 Integration Tests', () => {
   });
 
   describe('Watcher Configuration Workflow', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should enable/disable platforms via config manager', async () => {
       const testDir = createTestDir();
       try {
@@ -276,6 +308,12 @@ describe('Phase 4 Integration Tests', () => {
   });
 
   describe('Full Initialization Workflow', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
     it('should complete full automatic mode setup', async () => {
       const testDir = createTestDir();
       try {
