@@ -20,6 +20,8 @@ import ora, { type Ora } from 'ora';
 import inquirer from 'inquirer';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
+import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
+import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -160,6 +162,90 @@ export class InitCommand {
   }
 
   /**
+   * Ask permission to scan library folders
+   */
+  private async askPermissionToScan(): Promise<boolean> {
+    console.log();
+    console.log(chalk.cyan('📁 Data Discovery'));
+    console.log(chalk.dim('To set up automatic mode, we need to scan your LLM library folders.'));
+    console.log(chalk.dim('This helps us find existing conversations to import.'));
+    console.log();
+
+    const answers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'allowScan',
+        message: 'Can we scan your library folders for existing conversations?',
+        default: true,
+      },
+    ]);
+
+    return answers.allowScan;
+  }
+
+  /**
+   * Scan for available conversation data
+   */
+  private async scanForData(platforms: string[]): Promise<Map<string, number>> {
+    const dataMap = new Map<string, number>();
+
+    for (const platform of platforms) {
+      try {
+        if (platform === 'claude-cli') {
+          const watcher = new ClaudeCliWatcher();
+          if (watcher.isAvailable()) {
+            const projectsResult = watcher.getAvailableProjects();
+            if (projectsResult.ok) {
+              dataMap.set('claude-cli', projectsResult.value.length);
+            }
+          }
+        } else if (platform === 'claude-desktop') {
+          const watcher = new ClaudeDesktopWatcher();
+          if (watcher.isAvailable()) {
+            // For now, just mark as available
+            dataMap.set('claude-desktop', 1);
+          }
+        }
+      } catch {
+        // Silently skip if watcher fails
+      }
+    }
+
+    return dataMap;
+  }
+
+  /**
+   * Show data discovery results
+   */
+  private async showDataDiscovery(platforms: string[]): Promise<void> {
+    const spinner = ora('Scanning for existing conversations...').start();
+
+    try {
+      const dataMap = await this.scanForData(platforms);
+
+      spinner.succeed('Scan complete');
+      console.log();
+      console.log(chalk.cyan('📊 Found Data:'));
+
+      if (dataMap.size === 0) {
+        console.log(chalk.dim('  No existing conversations found (this is normal for new setups)'));
+      } else {
+        for (const [platform, count] of dataMap) {
+          console.log(chalk.green(`  ✓ ${platform}: ${count} project(s)/database(s)`));
+        }
+      }
+
+      console.log();
+      console.log(chalk.dim('These will be imported when you run: npx aice watch'));
+      console.log();
+    } catch {
+      spinner.fail('Error scanning for data');
+      console.log(chalk.dim('(This is optional - you can continue without scanning)'));
+      console.log();
+    }
+  }
+
+  /**
    * Initialize manual mode
    * User will use create-ai-chat-context workflow
    */
@@ -260,6 +346,14 @@ export class InitCommand {
           },
         },
       ]);
+
+      // Ask permission to scan for existing data
+      const allowScan = await this.askPermissionToScan();
+
+      // Show data discovery results if permission granted
+      if (allowScan) {
+        await this.showDataDiscovery(platformAnswers.platforms);
+      }
 
       spinner.start('Setting up automatic mode...');
 
