@@ -15,14 +15,25 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { CheckpointProcessor } from './commands/CheckpointProcessor.js';
 import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 
-// Version - automatically updated during build
-const VERSION = '3.0.0-alpha.16';
+// Read version from package.json
+let VERSION = '3.0.0-alpha.0'; // fallback
+
+try {
+  // Try to read from package.json in the current directory
+  const packageJsonPath = join(process.cwd(), 'package.json');
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+  VERSION = packageJson.version;
+} catch {
+  // Use fallback version if package.json cannot be read
+}
 
 const program = new Command();
 
