@@ -599,6 +599,7 @@ ${platformStatuses}
    * Generate watcher config content
    */
   private generateWatcherConfig(): string {
+    const FIVE_MINUTES = 300000; // 5 minutes in milliseconds
     return JSON.stringify(
       {
         version: '1.0',
@@ -606,12 +607,12 @@ ${platformStatuses}
           augment: {
             enabled: this.selectedPlatforms.augment,
             cachePath: '.cache/llm/augment',
-            checkInterval: 5000,
+            checkInterval: FIVE_MINUTES,
           },
           warp: {
             enabled: this.selectedPlatforms.warp,
             cachePath: '.cache/llm/warp',
-            checkInterval: 5000,
+            checkInterval: FIVE_MINUTES,
           },
           'claude-cli': {
             enabled: this.selectedPlatforms.claudeCli,
@@ -622,21 +623,21 @@ ${platformStatuses}
           'claude-desktop': {
             enabled: this.selectedPlatforms.claudeDesktop,
             cachePath: '.cache/llm/claude-desktop',
-            checkInterval: 5000,
+            checkInterval: FIVE_MINUTES,
           },
           copilot: {
             enabled: this.selectedPlatforms.copilot,
             cachePath: '.cache/llm/copilot',
-            checkInterval: 5000,
+            checkInterval: FIVE_MINUTES,
           },
           chatgpt: {
             enabled: this.selectedPlatforms.chatgpt,
             cachePath: '.cache/llm/chatgpt',
-            checkInterval: 5000,
+            checkInterval: FIVE_MINUTES,
           },
         },
         watcher: {
-          interval: 5000,
+          interval: FIVE_MINUTES,
           verbose: false,
           daemonMode: true,
           pidFile: '.watcher.pid',

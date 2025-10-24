@@ -156,7 +156,7 @@ describe('Phase 4 Integration Tests', () => {
 
         const settings = configMgr.getWatcherSettings();
         expect(settings.ok).toBe(true);
-        expect(settings.value.interval).toBe(5000);
+        expect(settings.value.interval).toBe(300000); // 5 minutes
       } finally {
         cleanupTestDir(testDir);
       }

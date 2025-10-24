@@ -22,6 +22,7 @@ import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
+import { PermissionsCommand } from './commands/PermissionsCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -251,6 +252,25 @@ program
       const cwd = process.cwd();
       const { displayTokenUsage } = await import('./utils/TokenDisplayUtils.js');
       await displayTokenUsage(cwd, options.all);
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Permissions command
+program
+  .command('permissions <action> [platform]')
+  .description('Manage platform permissions (list, grant, revoke)')
+  .action(async (action, platform) => {
+    try {
+      const cmd = new PermissionsCommand({ cwd: process.cwd() });
+      const result = await cmd.execute(action, platform);
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
