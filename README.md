@@ -33,9 +33,9 @@ A system that automatically captures AI conversations from multiple platforms (A
 ### Installation
 
 ```bash
-npm install create-ai-chat-context
+npm install create-ai-chat-context-experimental@latest
 # or
-pnpm add create-ai-chat-context
+pnpm add create-ai-chat-context-experimental@latest
 ```
 
 ### Initialize
