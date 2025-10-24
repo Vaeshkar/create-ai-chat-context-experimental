@@ -22,7 +22,7 @@ import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
-import { WatcherCommand } from './WatcherCommand.js';
+import { BackgroundService } from '../services/BackgroundService.js';
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -473,18 +473,22 @@ export class InitCommand {
         }
       });
       console.log();
-      console.log(chalk.cyan('🚀 Starting automatic watcher...'));
+      console.log(chalk.cyan('🚀 Starting background service...'));
       console.log();
 
-      // Start the watcher automatically
-      const watcherCmd = new WatcherCommand({
+      // Start the background service automatically
+      const bgService = new BackgroundService({
         cwd: this.cwd,
         verbose: this.verbose,
-        daemon: false,
-        foreground: true,
+        interval: 5 * 60 * 1000, // 5 minutes
       });
 
-      await watcherCmd.start();
+      const startResult = await bgService.start();
+      if (!startResult.ok) {
+        console.log(
+          chalk.yellow(`⚠️  Background service failed to start: ${startResult.error.message}`)
+        );
+      }
 
       return Ok({
         mode: 'automatic',

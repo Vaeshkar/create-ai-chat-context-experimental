@@ -12,9 +12,12 @@
  */
 
 import chalk from 'chalk';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join } from 'path';
 import { AugmentLevelDBReader } from '../readers/AugmentLevelDBReader.js';
 import { AugmentParser } from '../parsers/AugmentParser.js';
 import { ConversationOrchestrator } from '../orchestrators/ConversationOrchestrator.js';
+import { MemoryFileWriter } from '../writers/MemoryFileWriter.js';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 import type { Conversation } from '../types/conversation.js';
@@ -39,15 +42,22 @@ export class BackgroundService {
   private augmentReader: AugmentLevelDBReader;
   private augmentParser: AugmentParser;
   private orchestrator: ConversationOrchestrator;
+  private memoryWriter: MemoryFileWriter;
+  private aicfDir: string;
+  private aiDir: string;
 
   constructor(options: BackgroundServiceOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.interval = options.interval || 5 * 60 * 1000; // 5 minutes default
     this.verbose = options.verbose || false;
 
+    this.aicfDir = join(this.cwd, '.aicf');
+    this.aiDir = join(this.cwd, '.ai');
+
     this.augmentReader = new AugmentLevelDBReader();
     this.augmentParser = new AugmentParser();
     this.orchestrator = new ConversationOrchestrator();
+    this.memoryWriter = new MemoryFileWriter();
   }
 
   /**
@@ -161,19 +171,57 @@ export class BackgroundService {
 
         if (analysisResult.ok) {
           // Generate memory files
-          // TODO: Write to disk
-          // const aicf = this.memoryWriter.generateAICF(analysisResult.value, conv.conversationId);
-          // const markdown = this.memoryWriter.generateMarkdown(analysisResult.value, conv.conversationId);
+          const aicf = this.memoryWriter.generateAICF(analysisResult.value, conv.conversationId);
+          const markdown = this.memoryWriter.generateMarkdown(
+            analysisResult.value,
+            conv.conversationId
+          );
 
-          this.lastProcessedConversations.add(convKey);
+          // Write to disk
+          const writeResult = this.writeMemoryFiles(conv.conversationId, aicf, markdown);
 
-          if (this.verbose) {
-            console.log(chalk.green(`✅ Processed conversation ${conv.conversationId}`));
+          if (writeResult.ok) {
+            this.lastProcessedConversations.add(convKey);
+
+            if (this.verbose) {
+              console.log(chalk.green(`✅ Processed conversation ${conv.conversationId}`));
+            }
+          } else if (this.verbose) {
+            console.log(chalk.yellow(`⚠️  Failed to write files for ${conv.conversationId}`));
           }
         }
       }
     } catch (error) {
       console.error(chalk.red('❌ Poll error:'), error);
+    }
+  }
+
+  /**
+   * Write memory files to disk
+   */
+  private writeMemoryFiles(conversationId: string, aicf: string, markdown: string): Result<void> {
+    try {
+      // Ensure directories exist
+      if (!existsSync(this.aicfDir)) {
+        mkdirSync(this.aicfDir, { recursive: true });
+      }
+      if (!existsSync(this.aiDir)) {
+        mkdirSync(this.aiDir, { recursive: true });
+      }
+
+      // Write AICF file
+      const aicfPath = join(this.aicfDir, `${conversationId}.aicf`);
+      writeFileSync(aicfPath, aicf, 'utf-8');
+
+      // Write markdown file
+      const mdPath = join(this.aiDir, `${conversationId}.md`);
+      writeFileSync(mdPath, markdown, 'utf-8');
+
+      return Ok(undefined);
+    } catch (error) {
+      return Err(
+        error instanceof Error ? error : new Error(`Failed to write memory files: ${String(error)}`)
+      );
     }
   }
 

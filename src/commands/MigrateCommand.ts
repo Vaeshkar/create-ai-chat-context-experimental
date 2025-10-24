@@ -17,7 +17,7 @@ import ora from 'ora';
 import inquirer from 'inquirer';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
-import { WatcherCommand } from './WatcherCommand.js';
+import { BackgroundService } from '../services/BackgroundService.js';
 
 export interface MigrateCommandOptions {
   cwd?: string;
@@ -127,18 +127,22 @@ export class MigrateCommand {
       console.log(chalk.dim('Created:'));
       filesCreated.forEach((f) => console.log(chalk.dim(`  ✓ ${f}`)));
       console.log();
-      console.log(chalk.cyan('🚀 Starting automatic watcher...'));
+      console.log(chalk.cyan('🚀 Starting background service...'));
       console.log();
 
-      // Start the watcher automatically
-      const watcherCmd = new WatcherCommand({
+      // Start the background service automatically
+      const bgService = new BackgroundService({
         cwd: this.cwd,
         verbose: this.verbose,
-        daemon: false,
-        foreground: true,
+        interval: 5 * 60 * 1000, // 5 minutes
       });
 
-      await watcherCmd.start();
+      const startResult = await bgService.start();
+      if (!startResult.ok) {
+        console.log(
+          chalk.yellow(`⚠️  Background service failed to start: ${startResult.error.message}`)
+        );
+      }
 
       return Ok({
         projectPath: this.cwd,
