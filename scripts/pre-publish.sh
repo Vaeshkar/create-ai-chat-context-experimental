@@ -4,8 +4,6 @@
 # Run this before every npm publish to ensure package integrity
 # Usage: bash scripts/pre-publish.sh
 
-set -e  # Exit on first error
-
 echo ""
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║           🔍 PRE-PUBLISH VERIFICATION CHECKS                  ║"
@@ -26,7 +24,7 @@ CHECKS_FAILED=0
 check_file() {
   local file=$1
   local description=$2
-  
+
   if [ -f "$file" ]; then
     echo -e "${GREEN}✅${NC} $description"
     ((CHECKS_PASSED++))
@@ -40,11 +38,12 @@ check_file() {
 run_check() {
   local description=$1
   local command=$2
-  
+
   echo -n "⏳ $description... "
   if eval "$command" > /dev/null 2>&1; then
     echo -e "${GREEN}✅${NC}"
     ((CHECKS_PASSED++))
+    return 0
   else
     echo -e "${RED}❌${NC}"
     ((CHECKS_FAILED++))
@@ -67,10 +66,10 @@ echo ""
 # ============================================================================
 echo "🏗️  Building and testing..."
 
-run_check "Clean build" "pnpm run clean && pnpm run build" || exit 1
-run_check "All tests passing" "pnpm test" || exit 1
-run_check "No TypeScript errors" "pnpm run typecheck" || exit 1
-run_check "No linting errors" "pnpm run lint" || exit 1
+run_check "Clean build" "pnpm run clean && pnpm run build"
+run_check "All tests passing" "pnpm test"
+run_check "No TypeScript errors" "pnpm run typecheck"
+run_check "No linting errors" "pnpm run lint"
 echo ""
 
 # ============================================================================
@@ -91,8 +90,8 @@ echo "📝 Checking package metadata..."
 VERSION=$(grep '"version"' package.json | head -1 | sed 's/.*"version": "\([^"]*\)".*/\1/')
 echo "   Version: $VERSION"
 
-# Check if version is valid semver
-if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+# Check if version is valid semver (including pre-release versions like alpha, beta, rc)
+if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
   echo -e "${GREEN}✅${NC} Version format is valid"
   ((CHECKS_PASSED++))
 else
@@ -188,4 +187,3 @@ else
   echo ""
   exit 1
 fi
-

@@ -39,10 +39,7 @@ function fixExtensions(dir: string): void {
       );
 
       // Fix relative imports to add .js extension
-      content = content.replace(
-        /require\(['"](\.[^'"]+)(?<!\.js)['"]\)/g,
-        'require("$1.js")'
-      );
+      content = content.replace(/require\(['"](\.[^'"]+)(?<!\.js)['"]\)/g, 'require("$1.js")');
 
       fs.writeFileSync(filePath, content, 'utf-8');
     }
@@ -51,6 +48,22 @@ function fixExtensions(dir: string): void {
 
 if (fs.existsSync(cjsDir)) {
   fixExtensions(cjsDir);
+
+  // Rename index.js to index.cjs for proper CommonJS entry point
+  const indexJsPath = path.join(cjsDir, 'index.js');
+  const indexCjsPath = path.join(cjsDir, 'index.cjs');
+
+  if (fs.existsSync(indexJsPath)) {
+    fs.renameSync(indexJsPath, indexCjsPath);
+  }
+
+  // Also rename the source map
+  const mapJsPath = path.join(cjsDir, 'index.js.map');
+  const mapCjsPath = path.join(cjsDir, 'index.cjs.map');
+
+  if (fs.existsSync(mapJsPath)) {
+    fs.renameSync(mapJsPath, mapCjsPath);
+  }
+
   console.log('✅ Fixed CJS extensions');
 }
-
