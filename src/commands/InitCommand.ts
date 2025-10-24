@@ -680,6 +680,7 @@ ${platformStatuses}
 
   /**
    * Copy template files from dist/templates to project directories
+   * Smart merge: Only copies missing files or updates if template is newer
    */
   private copyTemplateFiles(): void {
     try {
@@ -704,23 +705,34 @@ ${platformStatuses}
         }
       }
 
-      // Copy .ai/ template files
+      // Copy .ai/ template files (smart merge for critical files)
       const aiTemplateDir = join(templatesDir, 'ai');
       if (existsSync(aiTemplateDir)) {
         const aiDir = join(this.cwd, '.ai');
         mkdirSync(aiDir, { recursive: true });
 
         const aiFiles = readdirSync(aiTemplateDir);
+        const criticalFiles = ['code-style.md', 'design-system.md', 'npm-publishing-checklist.md'];
+
         for (const file of aiFiles) {
           const srcFile = join(aiTemplateDir, file);
           const destFile = join(aiDir, file);
+
           if (!existsSync(destFile)) {
+            // File doesn't exist - copy template
             copyFileSync(srcFile, destFile);
+          } else if (criticalFiles.includes(file)) {
+            // Critical file exists - check if identical
+            const isSame = this.filesAreIdentical(srcFile, destFile);
+            if (!isSame && this.verbose) {
+              console.log(`⏭️  Skipped ${file} (user customized)`);
+            }
+            // Keep user's version if different
           }
         }
       }
 
-      // Copy .aicf/ template files
+      // Copy .aicf/ template files (only if they don't exist)
       const aicfTemplateDir = join(templatesDir, 'aicf');
       if (existsSync(aicfTemplateDir)) {
         const aicfDir = join(this.cwd, '.aicf');
@@ -740,6 +752,19 @@ ${platformStatuses}
       if (this.verbose) {
         console.warn('Warning: Could not copy template files:', error);
       }
+    }
+  }
+
+  /**
+   * Check if two files are identical (byte-for-byte)
+   */
+  private filesAreIdentical(file1: string, file2: string): boolean {
+    try {
+      const content1 = readFileSync(file1, 'utf-8');
+      const content2 = readFileSync(file2, 'utf-8');
+      return content1 === content2;
+    } catch {
+      return false;
     }
   }
 }
