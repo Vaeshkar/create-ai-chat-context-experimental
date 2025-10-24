@@ -2,6 +2,18 @@
 
 **Automatic memory consolidation for AI conversations across multiple platforms.**
 
+## 🔐 Privacy First
+
+**This tool reads your private LLM conversations locally on your machine. It does NOT send data anywhere. It does NOT upload to cloud. It does NOT share with third parties.**
+
+- ✅ All processing happens on your computer
+- ✅ You explicitly grant permission for each platform
+- ✅ You can revoke access anytime
+- ✅ You can delete all data anytime
+- ✅ Complete audit trail of all access
+
+**[Read our Privacy Policy →](PRIVACY.md) | [Read our Security Policy →](SECURITY.md)**
+
 ## 🎯 What Is This?
 
 A system that automatically captures AI conversations from multiple platforms (Augment, Claude Desktop, Claude CLI, Warp) and consolidates them into structured memory files for persistent context.
@@ -66,6 +78,14 @@ npx aice tokens --all
 ```
 
 ## 📚 Documentation
+
+### Essential Reading (Start Here)
+
+- **[PRIVACY.md](PRIVACY.md)** - Privacy policy & data handling ⭐ **READ THIS FIRST**
+- **[SECURITY.md](SECURITY.md)** - Security architecture & audit logging
+- **[CLI-COMMANDS.md](CLI-COMMANDS.md)** - Complete command reference
+
+### Additional Documentation
 
 All documentation is in the `/docs/` folder:
 
@@ -174,66 +194,45 @@ pnpm format        # Format with Prettier
 
 ## 📞 CLI Commands
 
-### Initialize
+**For complete command reference, see [CLI-COMMANDS.md](CLI-COMMANDS.md)**
+
+### Quick Reference
 
 ```bash
-# Manual mode (for Augment)
-npx aice init --manual
+# Initialize project (interactive setup)
+aice init
 
-# Automatic mode (for Claude Desktop/CLI)
-npx aice init --automatic
+# Automatic mode (reads LLM data automatically)
+aice init --automatic
 
-# Force overwrite existing setup
-npx aice init --automatic --force
-```
+# Manual mode (you ask LLM to update memory files)
+aice init --manual
 
-### Process Conversations
-
-```bash
-# Process a checkpoint file
-npx aice checkpoint <file>
-
-# Import Claude exports
-npx aice import-claude <file>
-```
-
-### Watch for New Conversations
-
-```bash
-# Watch all enabled platforms (default, checks every 5 minutes)
-npx aice watch
+# Watch for new conversations (checks every 5 minutes)
+aice watch
 
 # Watch specific platforms
-npx aice watch --augment
-npx aice watch --warp
-npx aice watch --claude-desktop
-npx aice watch --claude-cli
-npx aice watch --copilot
-npx aice watch --chatgpt
+aice watch --augment --claude-desktop
 
-# Watch multiple platforms
-npx aice watch --augment --warp --claude-desktop
+# Manage permissions
+aice permissions list
+aice permissions revoke <platform>
+aice permissions grant <platform>
 
-# Custom check interval (in milliseconds)
-npx aice watch --interval 60000  # Check every 60 seconds
-npx aice watch --interval 300000 # Check every 5 minutes (default)
+# Process checkpoint file
+aice checkpoint <file>
 
-# Verbose output
-npx aice watch --augment --verbose
+# Import Claude exports
+aice import-claude <file>
 
-# Run in background (daemon mode)
-npx aice watch --daemon
+# View statistics
+aice stats
 
-# Run in foreground with minimal feedback (default)
-npx aice watch --foreground
+# Check token usage
+aice tokens
 ```
 
-### Migrate Existing Projects
-
-```bash
-# Upgrade from v2.0.1 to experimental
-npx aice migrate
-```
+**[See full CLI documentation →](CLI-COMMANDS.md)**
 
 ## 🎯 Platform Selection
 
