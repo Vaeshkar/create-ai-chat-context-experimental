@@ -23,16 +23,29 @@ import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 
-// Read version from package.json
-let VERSION = '3.0.0-alpha.0'; // fallback
+/**
+ * Get version dynamically from package.json
+ * Tries multiple locations to find package.json
+ */
+function getVersion(): string {
+  const possiblePaths = [
+    join(process.cwd(), 'package.json'),
+    join(process.cwd(), '..', 'package.json'),
+    join(process.cwd(), '..', '..', 'package.json'),
+  ];
 
-try {
-  // Try to read from package.json in the current directory
-  const packageJsonPath = join(process.cwd(), 'package.json');
-  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-  VERSION = packageJson.version;
-} catch {
-  // Use fallback version if package.json cannot be read
+  for (const path of possiblePaths) {
+    try {
+      const packageJson = JSON.parse(readFileSync(path, 'utf-8'));
+      if (packageJson.name === 'create-ai-chat-context-experimental') {
+        return packageJson.version;
+      }
+    } catch {
+      // Continue to next path
+    }
+  }
+
+  return 'unknown';
 }
 
 const program = new Command();
@@ -40,7 +53,7 @@ const program = new Command();
 program
   .name('aice')
   .description('AI Chat Context Experimental - Automatic mode with watchers')
-  .version(VERSION);
+  .version(getVersion());
 
 // Init command
 program

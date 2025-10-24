@@ -32,6 +32,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "typecheck": "tsc --noEmit",
+    "cli": "node dist/esm/cli.js",
+    "cli:version": "node dist/esm/cli.js --version",
     "prepublishOnly": "pnpm run build && pnpm run test && pnpm run lint",
     "prepare": "husky"
   },
