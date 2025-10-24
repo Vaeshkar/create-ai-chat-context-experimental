@@ -16,7 +16,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { CheckpointProcessor } from './commands/CheckpointProcessor.js';
 import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
@@ -29,7 +29,34 @@ import { PermissionsCommand } from './commands/PermissionsCommand.js';
  * Tries multiple locations to find package.json
  */
 function getVersion(): string {
+  let moduleDir = process.cwd();
+
+  // Try to get the module directory from import.meta.url (ESM only)
+  try {
+    // @ts-expect-error - import.meta is only available in ESM
+    const __filename = new URL(import.meta.url).pathname;
+    moduleDir = dirname(__filename);
+    if (process.env['DEBUG_AICE'])
+      console.error('[DEBUG] Got moduleDir from import.meta.url:', moduleDir);
+  } catch (e) {
+    // Fallback for CJS - use process.cwd()
+    if (process.env['DEBUG_AICE'])
+      console.error(
+        '[DEBUG] Failed to get import.meta.url:',
+        e instanceof Error ? e.message : String(e)
+      );
+  }
+
   const possiblePaths = [
+    // Try common global install paths FIRST (most reliable)
+    '/opt/homebrew/lib/node_modules/create-ai-chat-context-experimental/package.json',
+    '/usr/local/lib/node_modules/create-ai-chat-context-experimental/package.json',
+    '/usr/lib/node_modules/create-ai-chat-context-experimental/package.json',
+    // For compiled ESM: dist/esm/cli.js -> dist/esm -> dist -> package.json
+    join(moduleDir, '..', '..', 'package.json'),
+    // For compiled CJS: dist/cjs/cli.js -> dist/cjs -> dist -> package.json
+    join(moduleDir, '..', '..', 'package.json'),
+    // Fallback: try from current working directory
     join(process.cwd(), 'package.json'),
     join(process.cwd(), '..', 'package.json'),
     join(process.cwd(), '..', '..', 'package.json'),
@@ -39,13 +66,15 @@ function getVersion(): string {
     try {
       const packageJson = JSON.parse(readFileSync(path, 'utf-8'));
       if (packageJson.name === 'create-ai-chat-context-experimental') {
+        if (process.env['DEBUG_AICE']) console.error('[DEBUG] Found version at:', path);
         return packageJson.version;
       }
     } catch {
-      // Continue to next path
+      // Continue
     }
   }
 
+  if (process.env['DEBUG_AICE']) console.error('[DEBUG] No package.json found');
   return 'unknown';
 }
 
