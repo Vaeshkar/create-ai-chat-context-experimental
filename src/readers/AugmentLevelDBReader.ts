@@ -109,7 +109,19 @@ export class AugmentLevelDBReader {
   ): Promise<Result<AugmentConversation[]>> {
     try {
       const db = new ClassicLevel(workspacePath);
-      await db.open();
+
+      // Add timeout to prevent hanging on locked databases
+      const openPromise = db.open();
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Database open timeout')), 5000)
+      );
+
+      try {
+        await Promise.race([openPromise, timeoutPromise]);
+      } catch {
+        // Database is likely locked or inaccessible, return empty
+        return Ok([]);
+      }
 
       const conversations: AugmentConversation[] = [];
       const now = new Date().toISOString();
@@ -136,16 +148,17 @@ export class AugmentLevelDBReader {
           }
         }
       } finally {
-        await db.close();
+        try {
+          await db.close();
+        } catch {
+          // Ignore close errors
+        }
       }
 
       return Ok(conversations);
-    } catch (error) {
-      return Err(
-        error instanceof Error
-          ? error
-          : new Error(`Failed to read workspace ${workspaceId}: ${String(error)}`)
-      );
+    } catch {
+      // Return empty array instead of error to allow graceful degradation
+      return Ok([]);
     }
   }
 
