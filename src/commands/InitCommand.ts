@@ -192,6 +192,8 @@ export class InitCommand {
     }
 
     console.log();
+    console.log(chalk.cyan('🔐 Conversation Capture Mode'));
+    console.log();
     const answers = await inquirer.prompt([
       {
         type: 'list',
@@ -203,7 +205,7 @@ export class InitCommand {
             value: 'manual',
           },
           {
-            name: 'Automatic - Watch for new conversations automatically',
+            name: 'Automatic - Read conversations from my LLM libraries automatically',
             value: 'automatic',
           },
         ],
@@ -376,6 +378,15 @@ export class InitCommand {
     spinner.stop();
 
     try {
+      // Show consent information
+      console.log();
+      console.log(chalk.cyan('📁 Data Discovery'));
+      console.log(chalk.dim('To set up automatic mode, we need your permission to:'));
+      console.log(chalk.dim('  • Read conversations from your LLM library folders'));
+      console.log(chalk.dim('  • Extract and consolidate them into memory files'));
+      console.log(chalk.dim('  • Store them locally in .aicf/ and .ai/ directories'));
+      console.log();
+
       // Ask which platforms they use
       console.log();
       const platformAnswers = await inquirer.prompt([
