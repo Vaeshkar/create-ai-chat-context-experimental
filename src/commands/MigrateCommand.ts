@@ -316,7 +316,12 @@ export class MigrateCommand {
         mkdirSync(aiDir, { recursive: true });
 
         const aiFiles = readdirSync(aiTemplateDir);
-        const criticalFiles = ['code-style.md', 'design-system.md', 'npm-publishing-checklist.md'];
+        const criticalFiles = [
+          'code-style.md',
+          'design-system.md',
+          'npm-publishing-checklist.md',
+          'conversation-log.md',
+        ];
 
         for (const file of aiFiles) {
           const srcFile = join(aiTemplateDir, file);
