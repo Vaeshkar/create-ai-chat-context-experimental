@@ -76,6 +76,7 @@
     "aicf-core": "^2.0.0",
     "better-sqlite3": "^12.4.1",
     "chalk": "^5.3.0",
+    "classic-level": "^3.0.0",
     "commander": "^12.1.0",
     "fs-extra": "^11.3.2",
     "inquirer": "^12.10.0",
