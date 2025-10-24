@@ -35,6 +35,7 @@ interface WatcherCommandOptions {
   claudeCli?: boolean;
   copilot?: boolean;
   chatgpt?: boolean;
+  cwd?: string;
 }
 
 /**
@@ -56,19 +57,20 @@ export class WatcherCommand {
   private enabledPlatforms: PlatformName[] = [];
 
   constructor(options: WatcherCommandOptions = {}) {
+    const cwd = options.cwd || process.cwd();
     this.interval = parseInt(options.interval || '300000', 10);
-    this.watchDir = options.dir || './checkpoints';
+    this.watchDir = options.dir || join(cwd, './checkpoints');
     this.verbose = options.verbose || false;
     this._daemon = options.daemon || false;
     this._foreground = options.foreground !== false; // Default to foreground
     this.processor = new CheckpointProcessor({
-      output: options.output || '.aicf',
+      output: options.output || join(cwd, '.aicf'),
       verbose: this.verbose,
       backup: true,
     });
     this.manager = new WatcherManager({
-      pidFile: '.watcher.pid',
-      logFile: '.watcher.log',
+      pidFile: join(cwd, '.watcher.pid'),
+      logFile: join(cwd, '.watcher.log'),
       verbose: this.verbose,
     });
     this.logger = new WatcherLogger({

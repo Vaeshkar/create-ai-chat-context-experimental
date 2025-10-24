@@ -9544,3 +9544,2043 @@ blockers=no current blockers
 next_action=continue development
 progress={"score":85,"completed_tasks":1,"total_tasks":1}
 ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T19:52:36.260Z
+timestamp_end=2025-10-23T19:52:36.531Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T19:57:36.298Z
+timestamp_end=2025-10-23T19:57:36.573Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:02:36.302Z
+timestamp_end=2025-10-23T20:02:36.571Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:07:36.302Z
+timestamp_end=2025-10-23T20:07:36.594Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:12:36.425Z
+timestamp_end=2025-10-23T20:12:36.753Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:17:36.310Z
+timestamp_end=2025-10-23T20:17:36.584Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:22:36.300Z
+timestamp_end=2025-10-23T20:22:36.566Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:27:36.300Z
+timestamp_end=2025-10-23T20:27:36.568Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:32:36.292Z
+timestamp_end=2025-10-23T20:32:36.563Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:37:36.292Z
+timestamp_end=2025-10-23T20:37:36.581Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:42:36.305Z
+timestamp_end=2025-10-23T20:42:36.640Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:47:36.303Z
+timestamp_end=2025-10-23T20:47:36.568Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:52:36.307Z
+timestamp_end=2025-10-23T20:52:36.656Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T20:57:36.341Z
+timestamp_end=2025-10-23T20:57:36.604Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:02:36.347Z
+timestamp_end=2025-10-23T21:02:36.615Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:07:36.367Z
+timestamp_end=2025-10-23T21:07:36.635Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:12:36.380Z
+timestamp_end=2025-10-23T21:12:36.676Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:17:36.396Z
+timestamp_end=2025-10-23T21:17:36.664Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:22:36.402Z
+timestamp_end=2025-10-23T21:22:36.668Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:27:36.414Z
+timestamp_end=2025-10-23T21:27:36.681Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:32:36.390Z
+timestamp_end=2025-10-23T21:32:36.658Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:37:36.390Z
+timestamp_end=2025-10-23T21:37:36.659Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:42:36.396Z
+timestamp_end=2025-10-23T21:42:36.679Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:47:36.394Z
+timestamp_end=2025-10-23T21:47:36.664Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:52:36.408Z
+timestamp_end=2025-10-23T21:52:36.685Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T21:57:36.410Z
+timestamp_end=2025-10-23T21:57:36.685Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:02:36.412Z
+timestamp_end=2025-10-23T22:02:36.679Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:07:36.429Z
+timestamp_end=2025-10-23T22:07:36.703Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:12:36.423Z
+timestamp_end=2025-10-23T22:12:36.774Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:17:36.404Z
+timestamp_end=2025-10-23T22:17:36.691Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:22:36.415Z
+timestamp_end=2025-10-23T22:22:36.681Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:27:36.412Z
+timestamp_end=2025-10-23T22:27:36.674Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:32:36.437Z
+timestamp_end=2025-10-23T22:32:36.699Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:37:36.439Z
+timestamp_end=2025-10-23T22:37:36.735Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:42:36.442Z
+timestamp_end=2025-10-23T22:42:36.707Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:47:36.436Z
+timestamp_end=2025-10-23T22:47:36.704Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:52:36.440Z
+timestamp_end=2025-10-23T22:52:36.705Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T22:57:36.454Z
+timestamp_end=2025-10-23T22:57:36.719Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:02:36.461Z
+timestamp_end=2025-10-23T23:02:36.724Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:07:36.471Z
+timestamp_end=2025-10-23T23:07:36.735Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:12:36.483Z
+timestamp_end=2025-10-23T23:12:36.823Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:17:36.437Z
+timestamp_end=2025-10-23T23:17:36.721Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:22:36.451Z
+timestamp_end=2025-10-23T23:22:36.798Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:27:36.448Z
+timestamp_end=2025-10-23T23:27:36.713Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:32:36.440Z
+timestamp_end=2025-10-23T23:32:36.706Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:37:36.447Z
+timestamp_end=2025-10-23T23:37:36.714Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:42:36.448Z
+timestamp_end=2025-10-23T23:42:36.750Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:47:36.443Z
+timestamp_end=2025-10-23T23:47:36.705Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:52:36.453Z
+timestamp_end=2025-10-23T23:52:36.723Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-23T23:57:36.439Z
+timestamp_end=2025-10-23T23:57:36.702Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:02:36.456Z
+timestamp_end=2025-10-24T00:02:36.721Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:07:36.449Z
+timestamp_end=2025-10-24T00:07:36.713Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:12:36.462Z
+timestamp_end=2025-10-24T00:12:36.805Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:17:36.452Z
+timestamp_end=2025-10-24T00:17:36.722Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:22:36.441Z
+timestamp_end=2025-10-24T00:22:36.733Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:27:36.446Z
+timestamp_end=2025-10-24T00:27:36.711Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:32:36.450Z
+timestamp_end=2025-10-24T00:32:36.715Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:37:36.396Z
+timestamp_end=2025-10-24T00:37:36.656Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:42:36.397Z
+timestamp_end=2025-10-24T00:42:36.662Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:47:36.394Z
+timestamp_end=2025-10-24T00:47:36.656Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:52:36.391Z
+timestamp_end=2025-10-24T00:52:36.655Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T00:57:36.382Z
+timestamp_end=2025-10-24T00:57:36.646Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:02:36.410Z
+timestamp_end=2025-10-24T01:02:36.673Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:07:36.383Z
+timestamp_end=2025-10-24T01:07:36.728Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:12:36.376Z
+timestamp_end=2025-10-24T01:12:36.640Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:17:36.390Z
+timestamp_end=2025-10-24T01:17:36.660Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:22:36.499Z
+timestamp_end=2025-10-24T01:22:36.765Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:27:36.537Z
+timestamp_end=2025-10-24T01:27:36.814Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:32:36.524Z
+timestamp_end=2025-10-24T01:32:36.786Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:37:36.563Z
+timestamp_end=2025-10-24T01:37:36.830Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:42:36.551Z
+timestamp_end=2025-10-24T01:42:36.885Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:47:36.548Z
+timestamp_end=2025-10-24T01:47:36.836Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:52:36.634Z
+timestamp_end=2025-10-24T01:52:36.911Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T01:57:36.552Z
+timestamp_end=2025-10-24T01:57:36.818Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:02:36.608Z
+timestamp_end=2025-10-24T02:02:36.878Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:07:36.593Z
+timestamp_end=2025-10-24T02:07:36.855Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:12:36.637Z
+timestamp_end=2025-10-24T02:12:36.907Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:17:36.620Z
+timestamp_end=2025-10-24T02:17:36.882Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:22:36.632Z
+timestamp_end=2025-10-24T02:22:36.901Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:27:36.664Z
+timestamp_end=2025-10-24T02:27:36.931Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:32:36.678Z
+timestamp_end=2025-10-24T02:32:37.017Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:37:36.688Z
+timestamp_end=2025-10-24T02:37:36.950Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:42:36.672Z
+timestamp_end=2025-10-24T02:42:36.936Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:47:36.682Z
+timestamp_end=2025-10-24T02:47:36.949Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:52:36.687Z
+timestamp_end=2025-10-24T02:52:36.954Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T02:57:36.606Z
+timestamp_end=2025-10-24T02:57:36.868Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:02:36.616Z
+timestamp_end=2025-10-24T03:02:36.877Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:07:36.615Z
+timestamp_end=2025-10-24T03:07:36.875Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:12:36.807Z
+timestamp_end=2025-10-24T03:12:37.147Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:17:36.762Z
+timestamp_end=2025-10-24T03:17:37.025Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:22:36.747Z
+timestamp_end=2025-10-24T03:22:37.020Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:27:36.748Z
+timestamp_end=2025-10-24T03:27:37.009Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:32:36.758Z
+timestamp_end=2025-10-24T03:32:37.020Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:37:36.755Z
+timestamp_end=2025-10-24T03:37:37.020Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:42:36.761Z
+timestamp_end=2025-10-24T03:42:37.103Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:47:36.769Z
+timestamp_end=2025-10-24T03:47:37.045Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:52:36.766Z
+timestamp_end=2025-10-24T03:52:37.030Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T03:57:36.792Z
+timestamp_end=2025-10-24T03:57:37.153Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:02:36.787Z
+timestamp_end=2025-10-24T04:02:37.051Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:07:36.784Z
+timestamp_end=2025-10-24T04:07:37.051Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:12:36.802Z
+timestamp_end=2025-10-24T04:12:37.159Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:17:36.799Z
+timestamp_end=2025-10-24T04:17:37.065Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:22:36.801Z
+timestamp_end=2025-10-24T04:22:37.066Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:27:36.805Z
+timestamp_end=2025-10-24T04:27:37.067Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:32:36.804Z
+timestamp_end=2025-10-24T04:32:37.066Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:37:36.762Z
+timestamp_end=2025-10-24T04:37:37.053Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:42:36.784Z
+timestamp_end=2025-10-24T04:42:37.281Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:47:36.725Z
+timestamp_end=2025-10-24T04:47:36.987Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:52:36.714Z
+timestamp_end=2025-10-24T04:52:36.978Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T04:57:36.703Z
+timestamp_end=2025-10-24T04:57:36.967Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:02:36.707Z
+timestamp_end=2025-10-24T05:02:36.997Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:07:36.700Z
+timestamp_end=2025-10-24T05:07:36.959Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:12:36.709Z
+timestamp_end=2025-10-24T05:12:37.043Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:17:36.804Z
+timestamp_end=2025-10-24T05:17:37.095Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:22:36.807Z
+timestamp_end=2025-10-24T05:22:37.074Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:27:36.812Z
+timestamp_end=2025-10-24T05:27:37.073Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:32:36.842Z
+timestamp_end=2025-10-24T05:32:37.105Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:37:36.826Z
+timestamp_end=2025-10-24T05:37:37.092Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:42:36.838Z
+timestamp_end=2025-10-24T05:42:37.101Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:47:36.839Z
+timestamp_end=2025-10-24T05:47:37.103Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:52:36.845Z
+timestamp_end=2025-10-24T05:52:37.108Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T05:57:36.852Z
+timestamp_end=2025-10-24T05:57:37.113Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:02:36.856Z
+timestamp_end=2025-10-24T06:02:37.122Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:07:36.869Z
+timestamp_end=2025-10-24T06:07:37.135Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:12:36.861Z
+timestamp_end=2025-10-24T06:12:37.129Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:17:36.855Z
+timestamp_end=2025-10-24T06:17:37.123Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:22:36.871Z
+timestamp_end=2025-10-24T06:22:37.136Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:27:36.876Z
+timestamp_end=2025-10-24T06:27:37.141Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:32:36.877Z
+timestamp_end=2025-10-24T06:32:37.155Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:37:37.000Z
+timestamp_end=2025-10-24T06:37:37.268Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:42:36.949Z
+timestamp_end=2025-10-24T06:42:37.753Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:47:36.900Z
+timestamp_end=2025-10-24T06:47:37.229Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:52:36.888Z
+timestamp_end=2025-10-24T06:52:37.166Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T06:57:36.903Z
+timestamp_end=2025-10-24T06:57:37.175Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T07:02:36.904Z
+timestamp_end=2025-10-24T07:02:37.202Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown
+@CONVERSATION:c70c4ac9-7e2c-462d-a-CP1
+timestamp_start=2025-10-24T07:07:36.905Z
+timestamp_end=2025-10-24T07:07:37.189Z
+messages=211
+tokens=6075
+
+@FLOW
+user_general_inquiry|session_completed_successfully
+
+@STATE
+working_on=development
+blockers=no current blockers
+next_action=continue development
+progress={"score":85,"completed_tasks":1,"total_tasks":1}
+ai_platform=unknown

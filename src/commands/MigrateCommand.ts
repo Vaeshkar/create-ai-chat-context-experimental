@@ -17,6 +17,7 @@ import ora from 'ora';
 import inquirer from 'inquirer';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
+import { WatcherCommand } from './WatcherCommand.js';
 
 export interface MigrateCommandOptions {
   cwd?: string;
@@ -41,6 +42,7 @@ interface PlatformSelection {
 
 export class MigrateCommand {
   private cwd: string;
+  private verbose: boolean;
   private selectedPlatforms: PlatformSelection = {
     augment: true,
     warp: false,
@@ -52,6 +54,7 @@ export class MigrateCommand {
 
   constructor(options: MigrateCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
+    this.verbose = options.verbose || false;
   }
 
   async execute(): Promise<Result<MigrateResult>> {
@@ -124,12 +127,18 @@ export class MigrateCommand {
       console.log(chalk.dim('Created:'));
       filesCreated.forEach((f) => console.log(chalk.dim(`  ✓ ${f}`)));
       console.log();
-      console.log(chalk.dim('Next steps:'));
-      console.log(chalk.dim('  1. Review .aicf/.permissions.aicf'));
-      console.log(chalk.dim('  2. Review .watcher-config.json'));
-      console.log(chalk.dim('  3. Run: npx aice watch'));
-      console.log(chalk.dim('  4. Commit changes to git'));
+      console.log(chalk.cyan('🚀 Starting automatic watcher...'));
       console.log();
+
+      // Start the watcher automatically
+      const watcherCmd = new WatcherCommand({
+        cwd: this.cwd,
+        verbose: this.verbose,
+        daemon: false,
+        foreground: true,
+      });
+
+      await watcherCmd.start();
 
       return Ok({
         projectPath: this.cwd,

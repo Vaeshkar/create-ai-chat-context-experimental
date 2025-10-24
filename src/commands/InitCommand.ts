@@ -22,6 +22,7 @@ import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
+import { WatcherCommand } from './WatcherCommand.js';
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -55,6 +56,7 @@ export interface PlatformSelection {
 export class InitCommand {
   private cwd: string;
   private force: boolean;
+  private verbose: boolean;
   private mode: 'manual' | 'automatic';
   private selectedPlatforms: PlatformSelection = {
     augment: false,
@@ -68,6 +70,7 @@ export class InitCommand {
   constructor(options: InitCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.force = options.force || false;
+    this.verbose = options.verbose || false;
     this.mode = options.mode || 'automatic';
   }
 
@@ -470,11 +473,18 @@ export class InitCommand {
         }
       });
       console.log();
-      console.log(chalk.dim('Next steps:'));
-      console.log(chalk.dim('  1. Run: npx aice watch'));
-      console.log(chalk.dim('  2. For more options: npx aice watch --help'));
-      console.log(chalk.dim('  3. Commit changes to git'));
+      console.log(chalk.cyan('🚀 Starting automatic watcher...'));
       console.log();
+
+      // Start the watcher automatically
+      const watcherCmd = new WatcherCommand({
+        cwd: this.cwd,
+        verbose: this.verbose,
+        daemon: false,
+        foreground: true,
+      });
+
+      await watcherCmd.start();
 
       return Ok({
         mode: 'automatic',
