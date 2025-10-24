@@ -320,7 +320,8 @@ export class MigrateCommand {
           'code-style.md',
           'design-system.md',
           'npm-publishing-checklist.md',
-          'conversation-log.md',
+          'testing-philosophy.md',
+          'README.md',
         ];
 
         for (const file of aiFiles) {
