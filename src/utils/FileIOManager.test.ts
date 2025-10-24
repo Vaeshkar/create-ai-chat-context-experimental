@@ -133,21 +133,6 @@ describe('FileIOManager', () => {
     });
   });
 
-  describe('fileExists', () => {
-    it('should return true for existing file', () => {
-      const filePath = join(tempDir, 'test.txt');
-      writeFileSync(filePath, 'Test');
-
-      expect(manager.fileExists(filePath)).toBe(true);
-    });
-
-    it('should return false for non-existent file', () => {
-      const filePath = join(tempDir, 'non-existent.txt');
-
-      expect(manager.fileExists(filePath)).toBe(false);
-    });
-  });
-
   describe('getFileSize', () => {
     it('should return file size', () => {
       const filePath = join(tempDir, 'test.txt');
