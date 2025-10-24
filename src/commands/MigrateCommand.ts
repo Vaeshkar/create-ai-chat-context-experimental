@@ -326,12 +326,29 @@ export class MigrateCommand {
             // File doesn't exist - copy template
             copyFileSync(srcFile, destFile);
           } else if (criticalFiles.includes(file)) {
-            // Critical file exists - check if template is newer
+            // Critical file exists - check if identical
             const isSame = this.filesAreIdentical(srcFile, destFile);
-            if (!isSame && this.verbose) {
-              console.log(`⏭️  Skipped ${file} (user customized)`);
+
+            if (isSame) {
+              // Files are identical - no action needed
+              continue;
             }
-            // Keep user's version if different
+
+            // Files differ - check if template is newer
+            const templateNewer = this.isTemplateNewer(srcFile, destFile);
+
+            if (templateNewer) {
+              // Template is newer - update user file with template
+              copyFileSync(srcFile, destFile);
+              if (this.verbose) {
+                console.log(`📦 Updated ${file} (template is newer)`);
+              }
+            } else {
+              // User file is newer or same version - preserve it
+              if (this.verbose) {
+                console.log(`⏭️  Skipped ${file} (user version is newer or customized)`);
+              }
+            }
           }
         }
       }
@@ -370,5 +387,77 @@ export class MigrateCommand {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Extract version/date from file header
+   * Looks for patterns like:
+   * - "Last Updated: 2025-10-21"
+   * - "Last Updated: October 13, 2025"
+   * - "Date: 2025-10-24"
+   * - "version: 2.0.0"
+   */
+  private extractFileVersion(filePath: string): { date?: Date; version?: string } {
+    try {
+      const content = readFileSync(filePath, 'utf-8');
+      const lines = content.split('\n').slice(0, 20); // Check first 20 lines
+
+      let date: Date | undefined;
+      let version: string | undefined;
+
+      for (const line of lines) {
+        // Try to extract date (ISO format: YYYY-MM-DD)
+        const isoMatch = line.match(/(\d{4})-(\d{2})-(\d{2})/);
+        if (isoMatch && !date) {
+          date = new Date(`${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`);
+        }
+
+        // Try to extract version (v1.0.0 or 1.0.0)
+        const versionMatch = line.match(/v?(\d+\.\d+\.\d+)/);
+        if (versionMatch && !version) {
+          version = versionMatch[1];
+        }
+
+        // Try to extract month-based date (October 13, 2025)
+        const monthMatch = line.match(
+          /(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})/i
+        );
+        if (monthMatch && !date) {
+          date = new Date(`${monthMatch[1]} ${monthMatch[2]}, ${monthMatch[3]}`);
+        }
+      }
+
+      return { date, version };
+    } catch {
+      return {};
+    }
+  }
+
+  /**
+   * Check if template file is newer than user file
+   */
+  private isTemplateNewer(templatePath: string, userPath: string): boolean {
+    const templateInfo = this.extractFileVersion(templatePath);
+    const userInfo = this.extractFileVersion(userPath);
+
+    // If both have dates, compare them
+    if (templateInfo.date && userInfo.date) {
+      return templateInfo.date > userInfo.date;
+    }
+
+    // If both have versions, compare them
+    if (templateInfo.version && userInfo.version) {
+      const templateVer = templateInfo.version.split('.').map(Number);
+      const userVer = userInfo.version.split('.').map(Number);
+
+      for (let i = 0; i < Math.min(3, templateVer.length, userVer.length); i++) {
+        const tVal = templateVer[i] ?? 0;
+        const uVal = userVer[i] ?? 0;
+        if (tVal > uVal) return true;
+        if (tVal < uVal) return false;
+      }
+    }
+
+    return false;
   }
 }
