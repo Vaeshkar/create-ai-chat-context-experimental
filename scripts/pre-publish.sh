@@ -155,8 +155,9 @@ echo ""
 # ============================================================================
 echo "📦 Testing package creation..."
 
-if run_check "Package can be packed" "pnpm pack --dry-run"; then
-  echo "   (Use 'pnpm pack' to create actual .tgz file for testing)"
+# Check if pnpm pack would work by using --json flag
+if run_check "Package can be packed" "pnpm pack --json > /dev/null 2>&1"; then
+  echo "   ✓ Package structure is valid"
 fi
 
 echo ""
