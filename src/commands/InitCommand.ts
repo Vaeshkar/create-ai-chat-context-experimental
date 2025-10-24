@@ -14,7 +14,7 @@
  */
 
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'fs';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
 import inquirer from 'inquirer';
@@ -337,6 +337,9 @@ export class InitCommand {
       mkdirSync(aiDir, { recursive: true });
       mkdirSync(aicfDir, { recursive: true });
 
+      // Copy template files
+      this.copyTemplateFiles();
+
       // Generate LLM prompt
       const llmPrompt = this.generateLLMPrompt(llmAnswers.llm);
 
@@ -462,6 +465,10 @@ export class InitCommand {
       // Step 4: Update .gitignore
       spinner.text = 'Updating .gitignore...';
       this.updateGitignore();
+
+      // Step 5: Copy template files
+      spinner.text = 'Copying template files...';
+      this.copyTemplateFiles();
 
       spinner.succeed('Automatic mode initialized');
       console.log();
@@ -669,5 +676,70 @@ ${platformStatuses}
     }
 
     writeFileSync(gitignorePath, content, 'utf-8');
+  }
+
+  /**
+   * Copy template files from dist/templates to project directories
+   */
+  private copyTemplateFiles(): void {
+    try {
+      // Get the templates directory - it's in dist/templates after build
+      const templatesDir = join(__dirname, '../templates');
+
+      // Copy ai-instructions.md if it exists
+      const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
+      if (existsSync(aiInstructionsTemplate)) {
+        const aiInstructionsPath = join(this.cwd, '.ai-instructions');
+        if (!existsSync(aiInstructionsPath)) {
+          copyFileSync(aiInstructionsTemplate, aiInstructionsPath);
+        }
+      }
+
+      // Copy NEW_CHAT_PROMPT.md if it exists
+      const newChatPromptTemplate = join(templatesDir, 'NEW_CHAT_PROMPT.md');
+      if (existsSync(newChatPromptTemplate)) {
+        const newChatPromptPath = join(this.cwd, 'NEW_CHAT_PROMPT.md');
+        if (!existsSync(newChatPromptPath)) {
+          copyFileSync(newChatPromptTemplate, newChatPromptPath);
+        }
+      }
+
+      // Copy .ai/ template files
+      const aiTemplateDir = join(templatesDir, 'ai');
+      if (existsSync(aiTemplateDir)) {
+        const aiDir = join(this.cwd, '.ai');
+        mkdirSync(aiDir, { recursive: true });
+
+        const aiFiles = readdirSync(aiTemplateDir);
+        for (const file of aiFiles) {
+          const srcFile = join(aiTemplateDir, file);
+          const destFile = join(aiDir, file);
+          if (!existsSync(destFile)) {
+            copyFileSync(srcFile, destFile);
+          }
+        }
+      }
+
+      // Copy .aicf/ template files
+      const aicfTemplateDir = join(templatesDir, 'aicf');
+      if (existsSync(aicfTemplateDir)) {
+        const aicfDir = join(this.cwd, '.aicf');
+        mkdirSync(aicfDir, { recursive: true });
+
+        const aicfFiles = readdirSync(aicfTemplateDir);
+        for (const file of aicfFiles) {
+          const srcFile = join(aicfTemplateDir, file);
+          const destFile = join(aicfDir, file);
+          if (!existsSync(destFile)) {
+            copyFileSync(srcFile, destFile);
+          }
+        }
+      }
+    } catch (error) {
+      // Silently fail if templates don't exist (e.g., in development)
+      if (this.verbose) {
+        console.warn('Warning: Could not copy template files:', error);
+      }
+    }
   }
 }
