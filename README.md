@@ -127,6 +127,8 @@ Pipe-delimited structured data, optimized for AI parsing:
 - `conversations.aicf` - Conversation history
 - `decisions.aicf` - Key decisions
 - `technical-context.aicf` - Architecture & tech stack
+- `work-state.aicf` - Recent sessions & active tasks
+- `design-system.aicf` - UI/UX rules & design decisions
 
 ### `.ai/` Directory (Human-Readable)
 
@@ -136,6 +138,9 @@ Markdown prose for human readability:
 - `conversation-log.md` - Detailed conversation history
 - `technical-decisions.md` - Technical decisions
 - `next-steps.md` - Planned work & priorities
+- `design-system.md` - UI/UX design rules & patterns
+- `npm-publishing-checklist.md` - Pre-publication validation checklist
+- `known-issues.md` - Current bugs & limitations
 
 ## 🛠️ Development
 
