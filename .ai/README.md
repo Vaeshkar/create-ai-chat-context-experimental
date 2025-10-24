@@ -1,6 +1,6 @@
 # AI Knowledge Base - create-ai-chat-context
 
-> **📦 Version 3.1.1 - TypeScript Rewrite Complete**
+> **📦 Version 3.1.2 - TypeScript Rewrite Complete**
 > **Last Updated:** 2025-10-24
 > **Status:** Production Ready
 
@@ -11,7 +11,7 @@
 **Project:** create-ai-chat-context-experimental
 **Type:** CLI Tool / NPM Package
 **Language:** TypeScript / Node.js
-**Status:** v3.1.1 - Production Ready
+**Status:** v3.1.2 - Production Ready
 
 **What it does (one sentence):**
 A CLI tool that automatically captures AI conversations from 8+ LLM platforms and consolidates them into structured memory files (.ai/ for humans, .aicf/ for AI optimization).
@@ -49,7 +49,7 @@ Phase 2 complete: Full TypeScript rewrite with multi-platform support, version-a
 ## 📚 Project Evolution Timeline
 
 **Last Updated:** 2025-10-24
-**Current Version:** 3.1.1
+**Current Version:** 3.1.2
 **Test Coverage:** 567 tests passing (6.8 seconds)
 
 ### Key Development Phases
@@ -58,7 +58,7 @@ Phase 2 complete: Full TypeScript rewrite with multi-platform support, version-a
 2. **v2.0.x** - AICF format introduction
 3. **v3.0.x** - Multi-platform support (8 LLM platforms)
 4. **v3.1.0** - Version-aware smart merge implementation
-5. **v3.1.1** - Testing philosophy documentation + comprehensive audit
+5. **v3.1.2** - Testing philosophy documentation + comprehensive audit
 
 ### User Principles
 
