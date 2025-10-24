@@ -45,8 +45,8 @@ export class WatcherCommand {
   private interval: number;
   private watchDir: string;
   private verbose: boolean;
-  private _daemon: boolean; // eslint-disable-line @typescript-eslint/no-unused-vars
-  private _foreground: boolean; // eslint-disable-line @typescript-eslint/no-unused-vars
+  private _daemon: boolean;
+  private _foreground: boolean;
   private processor: CheckpointProcessor;
   private manager: WatcherManager;
   private logger: WatcherLogger;
