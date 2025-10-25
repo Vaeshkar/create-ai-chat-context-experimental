@@ -28,6 +28,10 @@ interface ClaudeCliMessage {
   type: string;
   role?: 'user' | 'assistant';
   content?: string | Record<string, unknown>;
+  message?: {
+    role?: 'user' | 'assistant';
+    content?: string | Record<string, unknown>[];
+  };
   timestamp?: string;
   uuid?: string;
   sessionId?: string;
@@ -71,26 +75,46 @@ export class ClaudeCliParser {
           const data = JSON.parse(line) as ClaudeCliMessage;
 
           // Skip non-message types (events, metadata, etc.)
-          if (data.type !== 'message') {
+          // Type can be 'message', 'user', 'assistant', or other event types
+          if (!['message', 'user', 'assistant'].includes(data.type)) {
             continue;
           }
 
+          // Get role and content - they can be at top level or nested in 'message'
+          const role = data.role || data.message?.role;
+          let rawContent = data.content || data.message?.content;
+
           // Skip if no role or content
-          if (!data.role || !data.content) {
+          if (!role || !rawContent) {
             continue;
+          }
+
+          // Handle array content (Claude CLI format has content as array of blocks)
+          if (Array.isArray(rawContent)) {
+            // Extract text from array of content blocks
+            const textParts: string[] = [];
+            for (const block of rawContent) {
+              if (typeof block === 'object' && block !== null) {
+                const b = block as Record<string, unknown>;
+                if (typeof b['text'] === 'string') {
+                  textParts.push(b['text']);
+                } else if (typeof b['content'] === 'string') {
+                  textParts.push(b['content']);
+                }
+              }
+            }
+            rawContent = textParts.join('\n');
           }
 
           // Extract content
-          const content = extractStringContent(data.content);
+          const content = extractStringContent(rawContent as string | Record<string, unknown>);
           if (!isValidContent(content)) {
             continue;
           }
 
           // Create message
           const rawLength =
-            typeof data.content === 'string'
-              ? data.content.length
-              : JSON.stringify(data.content).length;
+            typeof rawContent === 'string' ? rawContent.length : JSON.stringify(rawContent).length;
 
           const id = data.uuid || `claude-cli-${sessionId}-${messageIndex}`;
 

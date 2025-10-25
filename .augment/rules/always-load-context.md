@@ -8,32 +8,37 @@ Before responding to ANY user request, you MUST read these files in this exact o
 
 **Priority: CRITICAL - Read these FIRST for fast context loading**
 
-Read in this order:
+**NEW ARCHITECTURE (Phase 6 - Cache-First):**
 
-1. `.aicf/index.aicf` - Project overview, current state, quick stats
-2. `.aicf/work-state.aicf` - Recent sessions, current work, active tasks
-3. `.aicf/conversations.aicf` - Conversation history (pipe-delimited format)
-4. `.aicf/decisions.aicf` - Key decisions with impact scores
-5. `.aicf/technical-context.aicf` - Architecture, patterns, tech stack
-6. `.aicf/design-system.aicf` - UI/UX rules and design decisions
+All conversations are stored in individual files in `.aicf/recent/`:
 
-**Format:** These files use AICF format (AI Context Format by Digital Liquids) - pipe-delimited structured data optimized for AI-to-AI communication.
+- `.aicf/recent/{date}_{conversationId}.aicf` - Individual conversation files
+
+Read the most recent files to understand current context.
+
+**Format:** These files use AICF format (AI Context Format) - pipe-delimited structured data optimized for AI-to-AI communication.
 
 **Why First:** AICF files are 5x more efficient to parse than markdown (100 tokens vs 500 tokens for same information).
 
-## 2️⃣ Read Human-Readable Documentation (.ai/ folder)
+**Note:** Old unified files (`.aicf/conversations.aicf`, `.aicf/technical-context.aicf`, etc.) have been moved to `legacy_aicf/` and are no longer used.
 
-**Priority: HIGH - Read these for detailed context**
+## 2️⃣ Read Protected AI Documentation (.ai/ folder)
+
+**Priority: HIGH - Read these for thinking and decision-making**
+
+**CRITICAL:** These 5 files are OFF-LIMITS for automatic systems. They are AI thinking space only.
 
 Read as needed:
 
-- `.ai/project-overview.md` - High-level project description
-- `.ai/conversation-log.md` - Detailed conversation history (human-readable)
-- `.ai/technical-decisions.md` - Technical decisions
-- `.ai/next-steps.md` - Planned work and priorities
-- `.ai/known-issues.md` - Current bugs and limitations
+- `.ai/project-overview.md` - High-level project description and architecture
+- `.ai/code-style.md` - Code style reference and guidelines
+- `.ai/design-system.md` - Design system reference and UI/UX rules
+- `.ai/npm-publishing-checklist.md` - Publishing checklist and release procedures
+- `.ai/Testing-philosophy.md` - Testing philosophy and test strategy
 
-**Format:** Standard markdown prose for human readability.
+**Format:** Standard markdown prose for AI thinking and reference.
+
+**Important:** These files are for YOUR thinking, working, and decision-making. Automatic systems (MemoryFileWriter, CacheConsolidationAgent, etc.) must NEVER modify these files. See `.augment/rules/protected-ai-files.md` for enforcement rules.
 
 ## 3️⃣ Read Phase Documentation
 
@@ -57,9 +62,9 @@ Read as needed:
 
 ### **At END of session:**
 
-1. 🚨 **MANDATORY:** Update `.aicf/` files with new conversation, decisions, insights
-2. 🚨 **MANDATORY:** Update `.ai/conversation-log.md` with detailed session summary
-3. 🚨 **MANDATORY:** Update other `.ai/` files if architecture/design/issues changed
+1. ✅ **AUTOMATIC:** Cache-First Architecture automatically captures conversations to `.aicf/recent/`
+2. ❌ **NEVER:** Modify the 5 protected `.ai/` files (code-style, design-system, npm-publishing-checklist, project-overview, Testing-philosophy)
+3. ❌ **NEVER:** Manually write to `.aicf/` files - all writes are automatic via CacheConsolidationAgent
 
 ---
 
@@ -75,9 +80,12 @@ Read as needed:
 
 ### **Memory Management**
 
-- `.aicf/` = AI-to-AI communication (fast, structured, pipe-delimited)
-- `.ai/` = AI-to-Human communication (detailed, prose, markdown)
-- Both systems must be kept in sync at end of every session
+- `.aicf/` = 100% conversation memory (fast, structured, pipe-delimited AICF format)
+- `.ai/` = Static documentation only (5 protected files for AI thinking space)
+- `.aicf/recent/` = New conversations (0-7 days)
+- `.aicf/medium/` = Medium conversations (7-30 days) - managed by MemoryDropoffAgent
+- `.aicf/old/` = Old conversations (30-90 days) - managed by MemoryDropoffAgent
+- `.aicf/archive/` = Ancient conversations (90+ days) - managed by MemoryDropoffAgent
 
 ### **User Context**
 
@@ -102,4 +110,3 @@ If you cannot answer these questions, **STOP and read the files above.**
 ---
 
 **This rule ensures continuous memory across all AI sessions in this experimental project!** 🚀
-

@@ -79,8 +79,8 @@ export type {
 // Service Exports
 // ============================================================================
 
-// Background Service - for automatic conversation capture
-export { BackgroundService } from './services/BackgroundService.js';
+// BackgroundService removed - using Cache-First Architecture (Phase 6)
+// See: src/writers/AugmentCacheWriter.ts, src/agents/CacheConsolidationAgent.ts
 
 // Multi-Claude Consolidation Service
 export { MultiClaudeConsolidationService } from './services/MultiClaudeConsolidationService.js';
@@ -183,6 +183,21 @@ export { ClaudeDesktopWatcher } from './watchers/ClaudeDesktopWatcher.js';
 // Agent utilities for multi-Claude coordination
 export { AgentRouter } from './agents/AgentRouter.js';
 export { AgentUtils } from './agents/AgentUtils.js';
+
+// Cache consolidation agent (Phase 6)
+export { CacheConsolidationAgent } from './agents/CacheConsolidationAgent.js';
+
+// Memory dropoff agent (Phase 7)
+export { MemoryDropoffAgent } from './agents/MemoryDropoffAgent.js';
+export type { DropoffStats, SessionAge } from './agents/MemoryDropoffAgent.js';
+
+// Session consolidation agent (Phase 6.5)
+export { SessionConsolidationAgent } from './agents/SessionConsolidationAgent.js';
+export type {
+  ConversationEssentials,
+  Session,
+  ConsolidationStats,
+} from './agents/SessionConsolidationAgent.js';
 
 // ============================================================================
 // Package Version

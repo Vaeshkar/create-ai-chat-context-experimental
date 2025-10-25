@@ -21,6 +21,11 @@ import { WatcherManager } from '../utils/WatcherManager.js';
 import { WatcherLogger } from '../utils/WatcherLogger.js';
 import { MultiClaudeConsolidationService } from '../services/MultiClaudeConsolidationService.js';
 import { WatcherConfigManager, type PlatformName } from '../core/WatcherConfigManager.js';
+import { AugmentCacheWriter } from '../writers/AugmentCacheWriter.js';
+import { ClaudeCacheWriter } from '../writers/ClaudeCacheWriter.js';
+import { CacheConsolidationAgent } from '../agents/CacheConsolidationAgent.js';
+import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js';
+import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
 
 interface WatcherCommandOptions {
   interval?: string;
@@ -52,25 +57,31 @@ export class WatcherCommand {
   private logger: WatcherLogger;
   private consolidationService: MultiClaudeConsolidationService;
   private configManager: WatcherConfigManager;
+  private augmentCacheWriter: AugmentCacheWriter;
+  private claudeCacheWriter: ClaudeCacheWriter;
+  private cacheConsolidationAgent: CacheConsolidationAgent;
+  private sessionConsolidationAgent: SessionConsolidationAgent;
+  private memoryDropoffAgent: MemoryDropoffAgent;
   private isRunning: boolean = false;
   private processedFiles: Set<string> = new Set();
   private enabledPlatforms: PlatformName[] = [];
+  private cwd: string;
 
   constructor(options: WatcherCommandOptions = {}) {
-    const cwd = options.cwd || process.cwd();
+    this.cwd = options.cwd || process.cwd();
     this.interval = parseInt(options.interval || '300000', 10);
-    this.watchDir = options.dir || join(cwd, './checkpoints');
+    this.watchDir = options.dir || join(this.cwd, './checkpoints');
     this.verbose = options.verbose || false;
     this._daemon = options.daemon || false;
     this._foreground = options.foreground !== false; // Default to foreground
     this.processor = new CheckpointProcessor({
-      output: options.output || join(cwd, '.aicf'),
+      output: options.output || join(this.cwd, '.aicf'),
       verbose: this.verbose,
       backup: true,
     });
     this.manager = new WatcherManager({
-      pidFile: join(cwd, '.watcher.pid'),
-      logFile: join(cwd, '.watcher.log'),
+      pidFile: join(this.cwd, '.watcher.pid'),
+      logFile: join(this.cwd, '.watcher.log'),
       verbose: this.verbose,
     });
     this.logger = new WatcherLogger({
@@ -83,6 +94,11 @@ export class WatcherCommand {
       enableCli: options.claudeCli ?? true,
       enableDesktop: options.claudeDesktop ?? true,
     });
+    this.augmentCacheWriter = new AugmentCacheWriter(this.cwd);
+    this.claudeCacheWriter = new ClaudeCacheWriter(this.cwd);
+    this.cacheConsolidationAgent = new CacheConsolidationAgent(this.cwd);
+    this.sessionConsolidationAgent = new SessionConsolidationAgent(this.cwd);
+    this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd);
 
     // Determine which platforms to enable
     this.enabledPlatforms = this.determinePlatforms(options);
@@ -256,9 +272,144 @@ export class WatcherCommand {
    * Check for new checkpoint files and multi-Claude messages
    */
   private checkForCheckpoints(): void {
-    // Check for multi-Claude messages
-    this.checkForMultiClaudeMessages();
+    // Phase 6: Cache-First Pipeline
+    // 1. Write LLM data to cache
+    this.writeLLMDataToCache();
 
+    // 2. Consolidate cache chunks into individual conversation files
+    this.consolidateCacheChunks();
+
+    // 3. Consolidate individual files into session files (Phase 6.5)
+    this.consolidateSessionFiles();
+
+    // 4. Run memory dropoff (Phase 7) - compress sessions by age
+    this.runMemoryDropoff();
+
+    // 4. Process manual checkpoints (legacy support)
+    this.processManualCheckpoints();
+  }
+
+  /**
+   * Write LLM data to cache (Augment and Claude)
+   */
+  private writeLLMDataToCache(): void {
+    // Write Augment data to cache
+    if (this.enabledPlatforms.includes('augment')) {
+      this.augmentCacheWriter.write().then((result) => {
+        if (result.ok) {
+          this.logger.debug('Augment cache written', {
+            newChunks: result.value.newChunksWritten,
+            skipped: result.value.chunksSkipped,
+          });
+        } else {
+          this.logger.error('Failed to write Augment cache', { error: result.error.message });
+        }
+      });
+    }
+
+    // Write Claude data to cache
+    if (
+      this.enabledPlatforms.includes('claude-cli') ||
+      this.enabledPlatforms.includes('claude-desktop')
+    ) {
+      this.claudeCacheWriter.write().then((result) => {
+        if (result.ok) {
+          this.logger.debug('Claude cache written', {
+            newChunks: result.value.newChunksWritten,
+            skipped: result.value.chunksSkipped,
+          });
+        } else {
+          this.logger.error('Failed to write Claude cache', { error: result.error.message });
+        }
+      });
+    }
+  }
+
+  /**
+   * Consolidate cache chunks into .aicf and .ai files
+   */
+  private consolidateCacheChunks(): void {
+    this.cacheConsolidationAgent.consolidate().then((result) => {
+      if (result.ok) {
+        this.logger.info('Cache consolidation complete', {
+          processed: result.value.totalChunksProcessed,
+          consolidated: result.value.chunksConsolidated,
+          duplicated: result.value.chunksDuplicated,
+          filesWritten: result.value.filesWritten,
+        });
+        if (this.verbose) {
+          console.log(chalk.green(`✅ Consolidated ${result.value.chunksConsolidated} chunks`));
+        }
+      } else {
+        this.logger.error('Cache consolidation failed', { error: result.error.message });
+      }
+    });
+  }
+
+  /**
+   * Consolidate individual conversation files into session files (Phase 6.5)
+   * Groups conversations by date and creates clean, AI-readable session files
+   */
+  private consolidateSessionFiles(): void {
+    this.sessionConsolidationAgent.consolidate().then((result) => {
+      if (result.ok) {
+        const stats = result.value;
+        this.logger.info('Session consolidation complete', {
+          totalFiles: stats.totalFiles,
+          totalConversations: stats.totalConversations,
+          sessionsCreated: stats.sessionsCreated,
+          uniqueConversations: stats.uniqueConversations,
+          duplicatesRemoved: stats.duplicatesRemoved,
+          storageReduction: stats.storageReduction,
+          tokenReduction: stats.tokenReduction,
+        });
+        if (this.verbose && stats.sessionsCreated > 0) {
+          console.log(
+            chalk.cyan(
+              `📋 Consolidated ${stats.totalConversations} conversations into ${stats.sessionsCreated} sessions`
+            )
+          );
+          console.log(
+            chalk.gray(`   Storage: ${stats.storageReduction}, Tokens: ${stats.tokenReduction}`)
+          );
+        }
+      } else {
+        this.logger.error('Session consolidation failed', { error: result.error.message });
+      }
+    });
+  }
+
+  /**
+   * Run memory dropoff agent (Phase 7)
+   * Move and compress conversations by age
+   */
+  private runMemoryDropoff(): void {
+    this.memoryDropoffAgent.dropoff().then((result) => {
+      if (result.ok) {
+        const stats = result.value;
+        this.logger.info('Memory dropoff complete', {
+          sessions: stats.sessionFiles,
+          medium: stats.mediumFiles,
+          old: stats.oldFiles,
+          archive: stats.archiveFiles,
+          movedToMedium: stats.movedToMedium,
+          movedToOld: stats.movedToOld,
+          movedToArchive: stats.movedToArchive,
+          compressed: stats.compressed,
+        });
+        if (this.verbose && stats.compressed > 0) {
+          console.log(chalk.cyan(`🗜️  Compressed ${stats.compressed} conversations`));
+        }
+      } else {
+        this.logger.error('Memory dropoff failed', { error: result.error.message });
+      }
+    });
+  }
+
+  /**
+   * Process manual checkpoint files (legacy support)
+   */
+  private processManualCheckpoints(): void {
     if (!existsSync(this.watchDir)) {
       this.logger.debug('Waiting for checkpoint directory', { dir: this.watchDir });
       if (this.verbose) {
@@ -299,52 +450,6 @@ export class WatcherCommand {
       const errorMsg = error instanceof Error ? error.message : String(error);
       this.logger.error('Error reading checkpoint directory', { error: errorMsg });
       console.error(chalk.red('❌ Error reading checkpoint directory:'), errorMsg);
-    }
-  }
-
-  /**
-   * Check for multi-Claude messages and consolidate
-   */
-  private async checkForMultiClaudeMessages(): Promise<void> {
-    if (!this.consolidationService.isAvailable()) {
-      return;
-    }
-
-    try {
-      const consolidationResult = await this.consolidationService.consolidate([]);
-
-      if (!consolidationResult.ok) {
-        this.logger.debug('Multi-Claude consolidation skipped', {
-          reason: consolidationResult.error.message,
-        });
-        return;
-      }
-
-      const messages = consolidationResult.value;
-      if (messages.length === 0) {
-        return;
-      }
-
-      const stats = this.consolidationService.getLastStats();
-      if (stats && stats.deduplicatedCount > 0) {
-        this.logger.info('Multi-Claude consolidation complete', {
-          totalMessages: stats.totalMessages,
-          deduplicatedCount: stats.deduplicatedCount,
-          sources: stats.sourceBreakdown,
-        });
-
-        if (this.verbose) {
-          console.log(chalk.cyan('   📚 Multi-Claude consolidation:'));
-          console.log(
-            chalk.gray(
-              `      Total: ${stats.totalMessages}, Deduplicated: ${stats.deduplicatedCount}`
-            )
-          );
-        }
-      }
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      this.logger.debug('Multi-Claude check error', { error: errorMsg });
     }
   }
 

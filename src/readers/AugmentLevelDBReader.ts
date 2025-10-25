@@ -14,14 +14,16 @@
 
 import { ClassicLevel } from 'classic-level';
 import { join } from 'path';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, cpSync, rmSync } from 'fs';
 import { homedir } from 'os';
+import { tmpdir } from 'os';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 
 export interface AugmentConversation {
   conversationId: string;
   workspaceId: string;
+  workspaceName: string; // Added: workspace folder name for filtering
   rawData: string;
   timestamp: string;
   lastModified: string;
@@ -32,23 +34,34 @@ export interface AugmentConversation {
  */
 export class AugmentLevelDBReader {
   private vscodeStoragePath: string;
+  private currentProjectPath: string;
 
-  constructor() {
+  constructor(projectPath: string = process.cwd()) {
     this.vscodeStoragePath = join(
       homedir(),
       'Library/Application Support/Code/User/workspaceStorage'
     );
+    this.currentProjectPath = projectPath;
   }
 
   /**
-   * Find all Augment workspace directories
+   * Get the current project's folder name
+   * Used to automatically filter to this workspace's conversations
    */
-  private findAugmentWorkspaces(): string[] {
+  private getCurrentProjectName(): string {
+    // Extract just the folder name from the project path
+    return this.currentProjectPath.split('/').pop() || 'unknown';
+  }
+
+  /**
+   * Find all Augment workspace directories with their names
+   */
+  private findAugmentWorkspaces(): Array<{ path: string; name: string }> {
     if (!existsSync(this.vscodeStoragePath)) {
       return [];
     }
 
-    const workspaces: string[] = [];
+    const workspaces: Array<{ path: string; name: string }> = [];
     const workspaceIds = readdirSync(this.vscodeStoragePath);
 
     for (const workspaceId of workspaceIds) {
@@ -60,7 +73,36 @@ export class AugmentLevelDBReader {
       );
 
       if (existsSync(augmentPath)) {
-        workspaces.push(augmentPath);
+        // Try to read workspace name from workspace.json
+        const workspaceJsonPath = join(this.vscodeStoragePath, workspaceId, 'workspace.json');
+        let workspaceName = workspaceId; // fallback to ID
+
+        try {
+          if (existsSync(workspaceJsonPath)) {
+            const workspaceJson = JSON.parse(readFileSync(workspaceJsonPath, 'utf-8'));
+            // Handle both single folder and multi-folder workspaces
+            let folderPath: string | undefined;
+
+            if (workspaceJson.folder) {
+              // Single folder workspace: "folder": "file:///path/to/folder"
+              folderPath = workspaceJson.folder;
+            } else if (workspaceJson.folders && workspaceJson.folders.length > 0) {
+              // Multi-folder workspace: "folders": [{"path": "/path/to/folder"}]
+              folderPath = workspaceJson.folders[0].path;
+            }
+
+            if (folderPath) {
+              // Remove file:// protocol if present
+              folderPath = folderPath.replace(/^file:\/\//, '');
+              // Extract just the folder name from the path
+              workspaceName = folderPath.split('/').pop() || workspaceId;
+            }
+          }
+        } catch {
+          // Use workspaceId as fallback
+        }
+
+        workspaces.push({ path: augmentPath, name: workspaceName });
       }
     }
 
@@ -69,8 +111,10 @@ export class AugmentLevelDBReader {
 
   /**
    * Read all conversations from Augment LevelDB
+   * Automatically filters to the current project's workspace
+   * Optionally override with a different workspace name
    */
-  async readAllConversations(): Promise<Result<AugmentConversation[]>> {
+  async readAllConversations(filterWorkspaceName?: string): Promise<Result<AugmentConversation[]>> {
     try {
       const workspaces = this.findAugmentWorkspaces();
 
@@ -79,11 +123,22 @@ export class AugmentLevelDBReader {
       }
 
       const conversations: AugmentConversation[] = [];
+      // Use provided filter or default to current project name
+      const targetWorkspace = filterWorkspaceName || this.getCurrentProjectName();
 
-      for (const workspacePath of workspaces) {
-        const pathParts = workspacePath.split('/');
+      for (const workspace of workspaces) {
+        // Filter by workspace name - automatically uses current project if no filter provided
+        if (!workspace.name.includes(targetWorkspace)) {
+          continue;
+        }
+
+        const pathParts = workspace.path.split('/');
         const workspaceId = pathParts[pathParts.length - 4] || 'unknown';
-        const result = await this.readWorkspaceConversations(workspacePath, workspaceId);
+        const result = await this.readWorkspaceConversations(
+          workspace.path,
+          workspaceId,
+          workspace.name
+        );
 
         if (result.ok) {
           conversations.push(...result.value);
@@ -102,63 +157,122 @@ export class AugmentLevelDBReader {
 
   /**
    * Read conversations from a specific workspace
+   * Uses a copy of the database to avoid lock conflicts with VSCode
    */
   private async readWorkspaceConversations(
     workspacePath: string,
-    workspaceId: string
+    workspaceId: string,
+    workspaceName: string
   ): Promise<Result<AugmentConversation[]>> {
+    let tempDbPath: string | null = null;
+
     try {
-      const db = new ClassicLevel(workspacePath);
+      // Create a temporary copy of the database to avoid lock conflicts
+      tempDbPath = join(tmpdir(), `augment-leveldb-copy-${Date.now()}`);
 
-      // Add timeout to prevent hanging on locked databases
-      const openPromise = db.open();
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Database open timeout')), 5000)
-      );
-
-      try {
-        await Promise.race([openPromise, timeoutPromise]);
-      } catch {
-        // Database is likely locked or inaccessible, return empty
-        return Ok([]);
+      if (process.env['DEBUG_AUGMENT']) {
+        console.error(`[DEBUG] Copying database from ${workspacePath} to ${tempDbPath}...`);
       }
 
-      const conversations: AugmentConversation[] = [];
-      const now = new Date().toISOString();
+      cpSync(workspacePath, tempDbPath, { recursive: true });
+
+      if (process.env['DEBUG_AUGMENT']) {
+        console.error(`[DEBUG] Database copied successfully`);
+      }
+
+      // Open the copied database (no lock conflicts)
+      const db = new ClassicLevel(tempDbPath);
 
       try {
-        for await (const [key, value] of db.iterator()) {
-          const keyStr = key.toString();
-          const valueStr = value.toString();
+        if (process.env['DEBUG_AUGMENT']) {
+          console.error(`[DEBUG] Opening copied database...`);
+        }
 
-          // Look for conversation-related keys
-          if (
-            keyStr.includes('conversation') ||
-            keyStr.includes('message') ||
-            keyStr.includes('request') ||
-            keyStr.includes('response')
-          ) {
-            conversations.push({
-              conversationId: keyStr,
-              workspaceId,
-              rawData: valueStr,
-              timestamp: now,
-              lastModified: now,
-            });
+        await db.open();
+
+        if (process.env['DEBUG_AUGMENT']) {
+          console.error(`[DEBUG] Database opened successfully`);
+        }
+
+        const conversations: AugmentConversation[] = [];
+        const now = new Date().toISOString();
+        let totalKeys = 0;
+
+        try {
+          for await (const [key, value] of db.iterator()) {
+            const keyStr = key.toString();
+            const valueStr = value.toString();
+            totalKeys++;
+
+            // Look for conversation-related keys
+            // Augment stores data with keys like:
+            // - exchange:conversationId:messageId
+            // - history:conversationId
+            // - history-metadata:conversationId
+            // - tooluse:conversationId:messageId;toolId
+            // - metadata:conversationId
+            if (
+              keyStr.startsWith('exchange:') ||
+              keyStr.startsWith('history:') ||
+              keyStr.startsWith('history-metadata:') ||
+              keyStr.startsWith('tooluse:') ||
+              keyStr.startsWith('metadata:')
+            ) {
+              conversations.push({
+                conversationId: keyStr,
+                workspaceId,
+                workspaceName,
+                rawData: valueStr,
+                timestamp: now,
+                lastModified: now,
+              });
+            }
+          }
+
+          if (process.env['DEBUG_AUGMENT']) {
+            console.error(
+              `[DEBUG] Workspace ${workspaceName}: ${totalKeys} total keys, ${conversations.length} conversations`
+            );
+          }
+        } finally {
+          try {
+            await db.close();
+          } catch {
+            // Ignore close errors
           }
         }
-      } finally {
-        try {
-          await db.close();
-        } catch {
-          // Ignore close errors
-        }
+
+        return Ok(conversations);
+      } catch (error) {
+        return Err(
+          error instanceof Error ? error : new Error(`Failed to read workspace: ${String(error)}`)
+        );
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+
+      if (process.env['DEBUG_AUGMENT']) {
+        console.error(`[DEBUG] Error reading workspace: ${errorMsg}`);
       }
 
-      return Ok(conversations);
-    } catch {
-      // Return empty array instead of error to allow graceful degradation
-      return Ok([]);
+      return Err(
+        error instanceof Error ? error : new Error(`Failed to read workspace: ${String(error)}`)
+      );
+    } finally {
+      // Clean up temporary database copy
+      if (tempDbPath && existsSync(tempDbPath)) {
+        try {
+          rmSync(tempDbPath, { recursive: true, force: true });
+          if (process.env['DEBUG_AUGMENT']) {
+            console.error(`[DEBUG] Cleaned up temporary database at ${tempDbPath}`);
+          }
+        } catch (cleanupError) {
+          console.warn(
+            `Warning: Failed to clean up temporary database at ${tempDbPath}:`,
+            cleanupError
+          );
+        }
+      }
     }
   }
 

@@ -22,7 +22,7 @@ import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
-import { BackgroundService } from '../services/BackgroundService.js';
+// BackgroundService removed - using Cache-First Architecture (Phase 6)
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -491,22 +491,11 @@ export class InitCommand {
         }
       });
       console.log();
-      console.log(chalk.cyan('🚀 Starting background service...'));
+      console.log(chalk.cyan('✅ Automatic mode initialized'));
       console.log();
-
-      // Start the background service automatically
-      const bgService = new BackgroundService({
-        cwd: this.cwd,
-        verbose: this.verbose,
-        interval: 5 * 60 * 1000, // 5 minutes
-      });
-
-      const startResult = await bgService.start();
-      if (!startResult.ok) {
-        console.log(
-          chalk.yellow(`⚠️  Background service failed to start: ${startResult.error.message}`)
-        );
-      }
+      console.log(chalk.dim('To start watching for conversations, run:'));
+      console.log(chalk.cyan('  aice watch'));
+      console.log();
 
       return Ok({
         mode: 'automatic',

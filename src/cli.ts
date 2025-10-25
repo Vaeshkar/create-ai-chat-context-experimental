@@ -33,7 +33,8 @@ function getVersion(): string {
 
   // Try to get the module directory from import.meta.url (ESM only)
   try {
-    // @ts-expect-error - import.meta is only available in ESM
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - import.meta is only available in ESM, not in CommonJS
     const __filename = new URL(import.meta.url).pathname;
     moduleDir = dirname(__filename);
     if (process.env['DEBUG_AICE'])
