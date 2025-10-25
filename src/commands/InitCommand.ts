@@ -708,47 +708,86 @@ ${platformStatuses}
    */
   private copyTemplateFiles(): void {
     try {
-      // Find templates directory by searching up from cwd
-      // The templates are in the package's dist/templates directory
-      let searchDir = this.cwd;
+      // Find templates directory
+      // The templates are in dist/templates/ relative to the package root
+      // This file is in dist/esm/commands/ or dist/cjs/commands/
+      // So templates are at ../../templates/ relative to this file
+
       let templatesDir: string | undefined;
 
-      // Search up to 10 levels
-      for (let i = 0; i < 10; i++) {
-        // Try dist/templates in current directory
-        const distTemplates = join(searchDir, 'dist', 'templates');
-        if (existsSync(distTemplates)) {
-          templatesDir = distTemplates;
-          break;
-        }
+      // Strategy 1: Use require.resolve to find the package root
+      // This works in both ESM and CJS
+      try {
+        // Find the package.json of create-ai-chat-context-experimental
+        const packageJsonPath = require.resolve('create-ai-chat-context-experimental/package.json');
+        const packageRoot = dirname(packageJsonPath);
+        const possibleTemplatesDir = join(packageRoot, 'dist', 'templates');
 
-        // Try node_modules/create-ai-chat-context-experimental/dist/templates
-        const nodeModulesTemplates = join(
-          searchDir,
-          'node_modules',
-          'create-ai-chat-context-experimental',
-          'dist',
-          'templates'
-        );
-        if (existsSync(nodeModulesTemplates)) {
-          templatesDir = nodeModulesTemplates;
-          break;
-        }
+        console.log(`🔍 DEBUG: Found package root via require.resolve: ${packageRoot}`);
+        console.log(`🔍 DEBUG: Checking templates at: ${possibleTemplatesDir}`);
 
-        // Go up one level
-        const parentDir = dirname(searchDir);
-        if (parentDir === searchDir) break; // Hit root
-        searchDir = parentDir;
+        if (existsSync(possibleTemplatesDir)) {
+          templatesDir = possibleTemplatesDir;
+          console.log(`🔍 DEBUG: ✅ Found templates via require.resolve!`);
+        }
+      } catch {
+        console.log(`🔍 DEBUG: require.resolve failed, trying alternative methods`);
+      }
+
+      // Strategy 2: Search up from cwd (fallback for development)
+      if (!templatesDir) {
+        let searchDir = this.cwd;
+        console.log(`🔍 DEBUG: Starting search from cwd = ${this.cwd}`);
+
+        // Search up to 10 levels
+        for (let i = 0; i < 10; i++) {
+          console.log(`🔍 DEBUG: Searching level ${i}: ${searchDir}`);
+
+          // Try dist/templates in current directory
+          const distTemplates = join(searchDir, 'dist', 'templates');
+          console.log(`  Trying: ${distTemplates} - exists? ${existsSync(distTemplates)}`);
+          if (existsSync(distTemplates)) {
+            templatesDir = distTemplates;
+            break;
+          }
+
+          // Try node_modules/create-ai-chat-context-experimental/dist/templates
+          const nodeModulesTemplates = join(
+            searchDir,
+            'node_modules',
+            'create-ai-chat-context-experimental',
+            'dist',
+            'templates'
+          );
+          console.log(
+            `  Trying: ${nodeModulesTemplates} - exists? ${existsSync(nodeModulesTemplates)}`
+          );
+          if (existsSync(nodeModulesTemplates)) {
+            templatesDir = nodeModulesTemplates;
+            break;
+          }
+
+          // Go up one level
+          const parentDir = dirname(searchDir);
+          if (parentDir === searchDir) {
+            console.log(`  Hit root directory, stopping search`);
+            break; // Hit root
+          }
+          searchDir = parentDir;
+        }
       }
 
       if (!templatesDir) {
+        console.error(
+          '❌ ERROR: Could not find templates directory after searching from:',
+          this.cwd
+        );
         console.warn('⚠️  Warning: Could not find templates directory');
         return;
       }
 
       // DEBUG: Log template directory resolution
-      console.log(`🔍 DEBUG: cwd = ${this.cwd}`);
-      console.log(`🔍 DEBUG: templatesDir = ${templatesDir}`);
+      console.log(`🔍 DEBUG: ✅ Found templatesDir = ${templatesDir}`);
       console.log(`🔍 DEBUG: templatesDir exists? ${existsSync(templatesDir)}`);
 
       // Copy ai-instructions.md if it exists
