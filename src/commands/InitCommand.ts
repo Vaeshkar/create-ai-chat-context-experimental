@@ -13,7 +13,7 @@
  * If Automatic: Creates .cache/llm/, .permissions.aicf, .watcher-config.json
  */
 
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'fs';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
@@ -708,9 +708,48 @@ ${platformStatuses}
    */
   private copyTemplateFiles(): void {
     try {
-      // Get the templates directory - it's in dist/templates after build
-      // __dirname is dist/esm/commands, so we need to go up to dist/templates
-      const templatesDir = join(__dirname, '../../templates');
+      // Find templates directory by searching up from cwd
+      // The templates are in the package's dist/templates directory
+      let searchDir = this.cwd;
+      let templatesDir: string | undefined;
+
+      // Search up to 10 levels
+      for (let i = 0; i < 10; i++) {
+        // Try dist/templates in current directory
+        const distTemplates = join(searchDir, 'dist', 'templates');
+        if (existsSync(distTemplates)) {
+          templatesDir = distTemplates;
+          break;
+        }
+
+        // Try node_modules/create-ai-chat-context-experimental/dist/templates
+        const nodeModulesTemplates = join(
+          searchDir,
+          'node_modules',
+          'create-ai-chat-context-experimental',
+          'dist',
+          'templates'
+        );
+        if (existsSync(nodeModulesTemplates)) {
+          templatesDir = nodeModulesTemplates;
+          break;
+        }
+
+        // Go up one level
+        const parentDir = dirname(searchDir);
+        if (parentDir === searchDir) break; // Hit root
+        searchDir = parentDir;
+      }
+
+      if (!templatesDir) {
+        console.warn('⚠️  Warning: Could not find templates directory');
+        return;
+      }
+
+      // DEBUG: Log template directory resolution
+      console.log(`🔍 DEBUG: cwd = ${this.cwd}`);
+      console.log(`🔍 DEBUG: templatesDir = ${templatesDir}`);
+      console.log(`🔍 DEBUG: templatesDir exists? ${existsSync(templatesDir)}`);
 
       // Copy ai-instructions.md if it exists
       const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
@@ -732,11 +771,20 @@ ${platformStatuses}
 
       // Copy .ai/ template files (smart merge for critical files)
       const aiTemplateDir = join(templatesDir, 'ai');
+
+      // DEBUG: Log .ai/ template directory
+      console.log(`🔍 DEBUG: aiTemplateDir = ${aiTemplateDir}`);
+      console.log(`🔍 DEBUG: aiTemplateDir exists? ${existsSync(aiTemplateDir)}`);
+
       if (existsSync(aiTemplateDir)) {
         const aiDir = join(this.cwd, '.ai');
         mkdirSync(aiDir, { recursive: true });
 
         const aiFiles = readdirSync(aiTemplateDir);
+
+        // DEBUG: Log files found
+        console.log(`🔍 DEBUG: Found ${aiFiles.length} files in aiTemplateDir:`, aiFiles);
+
         const criticalFiles = [
           'code-style.md',
           'design-system.md',
@@ -750,9 +798,17 @@ ${platformStatuses}
           const srcFile = join(aiTemplateDir, file);
           const destFile = join(aiDir, file);
 
+          // DEBUG: Log each file processing
+          console.log(`🔍 DEBUG: Processing ${file}`);
+          console.log(`  srcFile: ${srcFile}`);
+          console.log(`  destFile: ${destFile}`);
+          console.log(`  destFile exists? ${existsSync(destFile)}`);
+
           if (!existsSync(destFile)) {
             // File doesn't exist - copy template
+            console.log(`  📝 Copying ${file}...`);
             copyFileSync(srcFile, destFile);
+            console.log(`  ✅ Copied ${file}`);
           } else if (criticalFiles.includes(file)) {
             // Critical file exists - check if identical
             const isSame = this.filesAreIdentical(srcFile, destFile);
@@ -797,6 +853,8 @@ ${platformStatuses}
         }
       }
     } catch (error) {
+      // DEBUG: Always log errors for now
+      console.error('❌ ERROR in copyTemplateFiles:', error);
       // Silently fail if templates don't exist (e.g., in development)
       if (this.verbose) {
         console.warn('Warning: Could not copy template files:', error);
