@@ -92,12 +92,15 @@ program
   .option('-f, --force', 'Overwrite existing files')
   .option('-v, --verbose', 'Show detailed output')
   .option('-m, --mode <mode>', 'Mode: manual or automatic (default: automatic)', 'automatic')
+  .option('-a, --automatic', 'Use automatic mode (alias for --mode automatic)')
   .action(async (options) => {
+    // Handle --automatic flag as alias for --mode automatic
+    const mode = options.automatic ? 'automatic' : options.mode;
     try {
       const initCmd = new InitCommand({
         force: options.force,
         verbose: options.verbose,
-        mode: options.mode as 'manual' | 'automatic',
+        mode: mode as 'manual' | 'automatic',
       });
 
       const result = await initCmd.execute();

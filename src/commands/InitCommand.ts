@@ -740,7 +740,8 @@ ${platformStatuses}
           'code-style.md',
           'design-system.md',
           'npm-publishing-checklist.md',
-          'testing-philosophy.md',
+          'Testing-philosophy.md',
+          'project-overview.md',
           'README.md',
         ];
 
