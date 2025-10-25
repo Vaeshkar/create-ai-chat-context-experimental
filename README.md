@@ -51,10 +51,7 @@ npx aice init --automatic
 ### Use It
 
 ```bash
-# Manual: Process checkpoint
-npx aice checkpoint <file>
-
-# Automatic: Start watcher (all enabled platforms)
+# Start automatic watcher (all enabled platforms)
 npx aice watch
 
 # Watch specific platforms
@@ -67,14 +64,16 @@ npx aice watch --daemon
 # Watch in foreground with minimal feedback (default)
 npx aice watch --foreground
 
-# View knowledge base statistics
-npx aice stats
+# Manage platform permissions
+npx aice permissions list
+npx aice permissions grant augment
+npx aice permissions revoke warp
 
-# Check token usage (top 4 models)
-npx aice tokens
+# Import Claude conversation exports
+npx aice import-claude conversation.json
 
-# Check token usage (all 16 models)
-npx aice tokens --all
+# Migrate from v2.0.1 to v3.x
+npx aice migrate
 ```
 
 ## 📚 Documentation

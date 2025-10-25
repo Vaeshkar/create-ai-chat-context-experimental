@@ -14,7 +14,7 @@ export type { Result } from './result.js';
 export { Ok, Err, isOk, isErr } from './result.js';
 
 // Conversation types
-export type { Message, MessageMetadata, Conversation, CheckpointDump } from './conversation.js';
+export type { Message, MessageMetadata, Conversation } from './conversation.js';
 export type { ConversationSource } from './conversation.js';
 
 // Summary types

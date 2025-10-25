@@ -230,14 +230,14 @@ export class SessionConsolidationAgent {
       }
 
       // Extract title from response_text or request_message
-      const responseText = String(parsedData.response_text || '');
+      const responseText = String(parsedData['response_text'] || '');
       const title = this.extractTitle(responseText);
 
       // Extract summary
       const summary = this.extractSummary(responseText);
 
       // Extract AI model
-      const aiModel = this.extractAIModel(String(parsedData.model_id || ''));
+      const aiModel = this.extractAIModel(String(parsedData['model_id'] || ''));
 
       // Extract decisions (from response text)
       const decisions = this.extractDecisions(responseText);
@@ -246,14 +246,14 @@ export class SessionConsolidationAgent {
       const actions = this.extractActions(responseText);
 
       // Determine status
-      const status = parsedData.status === 'success' ? 'COMPLETED' : 'ONGOING';
+      const status = parsedData['status'] === 'success' ? 'COMPLETED' : 'ONGOING';
 
       // Generate content hash for deduplication
       const contentHash = this.hashContent(responseText);
 
       return {
         id: conversationId,
-        timestamp: parsedData.timestamp || timestamp || `${date}T00:00:00Z`,
+        timestamp: String(parsedData['timestamp'] || timestamp || `${date}T00:00:00Z`),
         title,
         summary,
         aiModel,

@@ -9,6 +9,15 @@
  * Phase 5.4: Import Command Implementation - October 2025
  *
  * Imports Claude conversation exports and generates memory files
+ *
+ * TODO: Future Enhancement (Phase 5.5+)
+ * After writing to cache, trigger consolidation pipeline:
+ * 1. CacheConsolidationAgent.consolidate() → .aicf/recent/
+ * 2. SessionConsolidationAgent.consolidate() → .aicf/sessions/
+ * 3. MemoryDropoffAgent.dropoff() → .aicf/medium/old/archive/
+ *
+ * Current behavior: Writes to .cache/llm/claude/ only (cache-first approach ✅)
+ * Missing: Automatic consolidation trigger (requires WatcherCommand integration)
  */
 
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';

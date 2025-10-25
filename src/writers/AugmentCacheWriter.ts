@@ -13,7 +13,7 @@
  * LLM Data → Cache → Consolidation Agent → .aicf/.ai/
  */
 
-import { writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
+import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { AugmentLevelDBReader, type AugmentConversation } from '../readers/AugmentLevelDBReader.js';
 import type { Result } from '../types/result.js';

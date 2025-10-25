@@ -25,7 +25,6 @@ export type {
   Message,
   MessageMetadata,
   Conversation,
-  CheckpointDump,
   ConversationSource,
 } from './types/conversation.js';
 

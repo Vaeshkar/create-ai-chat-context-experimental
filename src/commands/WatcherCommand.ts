@@ -12,11 +12,8 @@
  * Background watcher for automatic checkpoint processing and multi-Claude consolidation
  */
 
-import { readdirSync, existsSync, unlinkSync } from 'fs';
-import { join, extname } from 'path';
+import { join } from 'path';
 import chalk from 'chalk';
-import ora from 'ora';
-import { CheckpointProcessor } from './CheckpointProcessor.js';
 import { WatcherManager } from '../utils/WatcherManager.js';
 import { WatcherLogger } from '../utils/WatcherLogger.js';
 import { MultiClaudeConsolidationService } from '../services/MultiClaudeConsolidationService.js';
@@ -52,7 +49,6 @@ export class WatcherCommand {
   private verbose: boolean;
   private _daemon: boolean;
   private _foreground: boolean;
-  private processor: CheckpointProcessor;
   private manager: WatcherManager;
   private logger: WatcherLogger;
   private consolidationService: MultiClaudeConsolidationService;
@@ -63,7 +59,6 @@ export class WatcherCommand {
   private sessionConsolidationAgent: SessionConsolidationAgent;
   private memoryDropoffAgent: MemoryDropoffAgent;
   private isRunning: boolean = false;
-  private processedFiles: Set<string> = new Set();
   private enabledPlatforms: PlatformName[] = [];
   private cwd: string;
 
@@ -74,11 +69,6 @@ export class WatcherCommand {
     this.verbose = options.verbose || false;
     this._daemon = options.daemon || false;
     this._foreground = options.foreground !== false; // Default to foreground
-    this.processor = new CheckpointProcessor({
-      output: options.output || join(this.cwd, '.aicf'),
-      verbose: this.verbose,
-      backup: true,
-    });
     this.manager = new WatcherManager({
       pidFile: join(this.cwd, '.watcher.pid'),
       logFile: join(this.cwd, '.watcher.log'),
@@ -284,9 +274,6 @@ export class WatcherCommand {
 
     // 4. Run memory dropoff (Phase 7) - compress sessions by age
     this.runMemoryDropoff();
-
-    // 4. Process manual checkpoints (legacy support)
-    this.processManualCheckpoints();
   }
 
   /**
@@ -404,95 +391,5 @@ export class WatcherCommand {
         this.logger.error('Memory dropoff failed', { error: result.error.message });
       }
     });
-  }
-
-  /**
-   * Process manual checkpoint files (legacy support)
-   */
-  private processManualCheckpoints(): void {
-    if (!existsSync(this.watchDir)) {
-      this.logger.debug('Waiting for checkpoint directory', { dir: this.watchDir });
-      if (this.verbose) {
-        console.log(chalk.gray(`⏳ Waiting for checkpoint directory: ${this.watchDir}`));
-      }
-      return;
-    }
-
-    try {
-      const files = readdirSync(this.watchDir);
-      const checkpointFiles = files.filter((file) => extname(file) === '.json');
-
-      if (checkpointFiles.length === 0) {
-        this.logger.debug('No checkpoint files found');
-        if (this.verbose) {
-          console.log(chalk.gray('⏳ No checkpoint files found'));
-        }
-        return;
-      }
-
-      this.logger.info('Found checkpoint files', { count: checkpointFiles.length });
-
-      for (const file of checkpointFiles) {
-        const filePath = join(this.watchDir, file);
-
-        // Skip if already processed
-        if (this.processedFiles.has(filePath)) {
-          continue;
-        }
-
-        // Mark as processed
-        this.processedFiles.add(filePath);
-
-        // Process checkpoint
-        this.processCheckpoint(filePath);
-      }
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      this.logger.error('Error reading checkpoint directory', { error: errorMsg });
-      console.error(chalk.red('❌ Error reading checkpoint directory:'), errorMsg);
-    }
-  }
-
-  /**
-   * Process a checkpoint file
-   */
-  private async processCheckpoint(filePath: string): Promise<void> {
-    const spinner = ora();
-
-    try {
-      spinner.start(`📂 Processing: ${filePath}`);
-      this.logger.info('Processing checkpoint', { file: filePath });
-
-      await this.processor.process(filePath);
-
-      spinner.succeed(`✅ Processed: ${filePath}`);
-      this.logger.success('Checkpoint processed', { file: filePath });
-      this.manager.recordSuccess();
-
-      // Delete processed file
-      try {
-        unlinkSync(filePath);
-        this.logger.debug('Deleted checkpoint file', { file: filePath });
-        if (this.verbose) {
-          console.log(chalk.gray(`   Deleted checkpoint file: ${filePath}`));
-        }
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : String(error);
-        this.logger.warning('Could not delete checkpoint file', {
-          file: filePath,
-          error: errorMsg,
-        });
-        console.warn(chalk.yellow(`   ⚠️  Could not delete checkpoint file: ${filePath}`));
-      }
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      spinner.fail(`❌ Failed to process: ${filePath}`);
-      this.logger.error('Failed to process checkpoint', { file: filePath, error: errorMsg });
-      console.error(chalk.red('   Error:'), errorMsg);
-      this.manager.recordError(errorMsg);
-
-      // Remove from processed set so it can be retried
-      this.processedFiles.delete(filePath);
-    }
   }
 }

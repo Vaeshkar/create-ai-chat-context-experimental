@@ -22,11 +22,11 @@ aice --help
 
 ---
 
-## 🔧 Core Commands
+## 🔧 Core Commands (4 Total)
 
 ### 1. Initialize Project
 
-**Purpose:** Set up automatic or manual conversation capture
+**Purpose:** Set up automatic conversation capture in your project
 
 ```bash
 # Interactive setup (recommended)
@@ -35,58 +35,67 @@ aice init
 # Automatic mode (reads LLM data automatically)
 aice init --automatic
 
-# Manual mode (you ask LLM to update memory files)
-aice init --manual
-
 # Force overwrite existing setup
 aice init --automatic --force
+
+# Verbose output
+aice init --automatic --verbose
 ```
 
 **What It Does:**
-- Creates `.aicf/` directory for AI-optimized memory files
-- Creates `.ai/` directory for human-readable documentation
+
+- Creates `.aicf/` directory structure (recent, sessions, medium, old, archive)
+- Creates `.ai/` directory with 5 protected files
 - Creates `.watcher-config.json` with platform settings
 - Creates `.aicf/.permissions.aicf` with consent audit trail
-- Starts background watcher (automatic mode only)
+- Asks which LLM platforms you use (only Augment works currently)
 
 **Output:**
+
 ```
 ✅ Project initialized in automatic mode
-📁 Memory files created in .aicf/ and .ai/
+📁 Created .aicf/ with Phase 6-8 structure
+📁 Created .ai/ with 5 protected files
 🔐 Permissions recorded in .aicf/.permissions.aicf
-⏰ Watcher started (checks every 5 minutes)
+💡 Run 'aice watch' to start capturing conversations
 ```
 
 ---
 
 ### 2. Migrate Existing Project
 
-**Purpose:** Upgrade from v2.0.1 to experimental version
+**Purpose:** Upgrade from v2.0.1 to v3.x automatic mode
 
 ```bash
 aice migrate
+
+# Verbose output
+aice migrate --verbose
 ```
 
 **What It Does:**
-- Detects existing setup from v2.0.1
-- Migrates configuration to new format
-- Preserves existing memory files
-- Updates permissions
-- Restarts watcher
+
+- Detects old v2.0.1 files in `.aicf/`
+- Moves them to `legacy_memory/` folder (preserves data)
+- Creates new Phase 6-8 structure (recent, sessions, medium, old, archive)
+- Updates permissions to automatic mode
+- Asks which LLM platforms you use (only Augment works currently)
 
 **Output:**
+
 ```
 ✅ Migration complete
-📁 Existing memory files preserved
+📁 Old files moved to legacy_memory/ (preserved)
+📁 Created new Phase 6-8 structure
 🔐 Permissions updated
-⏰ Watcher restarted
+💡 Run 'aice watch' to start capturing conversations
 ```
 
 ---
 
 ### 3. Watch for New Conversations
 
-**Purpose:** Monitor LLM platforms for new conversations
+**Purpose:** Monitor LLM platforms for new conversations (automatic mode)
 
 ```bash
 # Watch all enabled platforms (default)
@@ -94,14 +103,7 @@ aice watch
 
 # Watch specific platforms
 aice watch --augment
-aice watch --warp
-aice watch --claude-desktop
-aice watch --claude-cli
-aice watch --copilot
-aice watch --chatgpt
-
-# Watch multiple platforms
-aice watch --augment --warp --claude-desktop
+aice watch --warp --claude-desktop --claude-cli
 
 # Custom check interval (milliseconds)
 aice watch --interval 60000    # Check every 60 seconds
@@ -118,24 +120,30 @@ aice watch --foreground
 ```
 
 **What It Does:**
+
 - Scans enabled LLM platforms for new conversations
-- Extracts conversation data
-- Processes and consolidates information
-- Updates `.aicf/` and `.ai/` memory files
-- Commits changes to git
+- Extracts conversation data from LLM libraries
+- Runs full consolidation pipeline:
+  1. **Cache-First** → Writes to `.cache/llm/`
+  2. **CacheConsolidationAgent** → Consolidates to `.aicf/recent/`
+  3. **SessionConsolidationAgent** → Groups by date to `.aicf/sessions/`
+  4. **MemoryDropoffAgent** → Compresses by age to `.aicf/medium/old/archive/`
 - Runs every 5 minutes (configurable)
 
 **Output:**
+
 ```
 ⏰ Checking platforms...
 ✅ Augment: 3 new conversations
-✅ Warp: 1 new conversation
-✅ Claude Desktop: 2 new conversations
 📝 Processing conversations...
-💾 Writing memory files...
-📦 Committing to git...
-✅ Done (5 conversations processed)
+💾 Cache → Recent → Sessions → Dropoff
+✅ Done (3 conversations processed)
 ```
+
+**Currently Working:**
+
+- ✅ Augment (fully working)
+- 🔒 Warp, Claude Desktop, Claude CLI, Copilot, ChatGPT (coming soon)
 
 ---
 
@@ -147,241 +155,114 @@ aice watch --foreground
 # List all permissions
 aice permissions list
 
-# Revoke access to a platform
-aice permissions revoke augment
-aice permissions revoke warp
-aice permissions revoke claude-desktop
-aice permissions revoke claude-cli
-aice permissions revoke copilot
-aice permissions revoke chatgpt
-
 # Grant access to a platform
 aice permissions grant augment
 aice permissions grant warp
-aice permissions grant claude-desktop
-aice permissions grant claude-cli
-aice permissions grant copilot
-aice permissions grant chatgpt
+
+# Revoke access to a platform
+aice permissions revoke augment
+aice permissions revoke warp
 ```
 
 **What It Does:**
+
 - Lists all platforms and their permission status
-- Revokes access to specific platforms
 - Grants access to specific platforms
+- Revokes access to specific platforms
 - Updates `.aicf/.permissions.aicf` with audit trail
-- Logs all permission changes
+- Logs all permission changes with timestamps
 
 **Output:**
+
 ```
 📋 Platform Permissions
 
 ✅ augment         active     (explicit)
+   Granted at: 2025-10-25T10:00:00.000Z
 ❌ warp            revoked    (explicit)
-   Revoked at: 2025-10-24T11:39:12.081Z
-✅ claude-desktop  active     (explicit)
-✅ claude-cli      active     (explicit)
-✅ copilot         active     (explicit)
-✅ chatgpt         active     (explicit)
+   Revoked at: 2025-10-25T11:00:00.000Z
 ```
 
 ---
 
-### 5. Process Checkpoint File
+## 🔮 Future Enhancement (1 Total)
 
-**Purpose:** Manually process a checkpoint file (manual mode)
+### 5. Import Claude Exports
 
-```bash
-aice checkpoint <file>
-```
-
-**Example:**
-```bash
-aice checkpoint ./checkpoint.json
-```
-
-**What It Does:**
-- Reads checkpoint file
-- Extracts conversation data
-- Processes and consolidates information
-- Updates `.aicf/` and `.ai/` memory files
-- Commits changes to git
-
-**Output:**
-```
-📖 Processing checkpoint...
-✅ Extracted 5 conversations
-📝 Processing conversations...
-💾 Writing memory files...
-📦 Committing to git...
-✅ Done
-```
-
----
-
-### 6. Import Claude Exports
-
-**Purpose:** Import exported Claude conversations
+**Purpose:** Import exported Claude conversations (future enhancement)
 
 ```bash
 aice import-claude <file>
-```
 
-**Example:**
-```bash
-aice import-claude ./claude-export.json
+# With custom output directory
+aice import-claude ./claude-export.json --output .cache/llm/claude
+
+# Verbose output
+aice import-claude ./claude-export.json --verbose
 ```
 
 **What It Does:**
-- Reads Claude export file
+
+- Reads Claude export file (JSON format)
 - Parses conversation format
-- Extracts conversation data
-- Updates memory files
-- Commits to git
+- Writes to `.cache/llm/claude/` (cache-first approach ✅)
+- ⚠️ **Does NOT trigger consolidation** (future enhancement needed)
+
+**Future Enhancement Needed:**
+
+After writing to cache, should trigger:
+
+1. `CacheConsolidationAgent.consolidate()` → `.aicf/recent/`
+2. `SessionConsolidationAgent.consolidate()` → `.aicf/sessions/`
+3. `MemoryDropoffAgent.dropoff()` → `.aicf/medium/old/archive/`
+
+**Current Workaround:**
+
+After running `aice import-claude`, run `aice watch` to trigger consolidation.
 
 **Output:**
+
 ```
 📖 Importing Claude conversations...
 ✅ Parsed 10 conversations
-📝 Processing conversations...
-💾 Writing memory files...
-📦 Committing to git...
-✅ Done
+💾 Written to .cache/llm/claude/
+💡 Run 'aice watch' to consolidate into memory files
 ```
-
----
-
-### 7. View Statistics
-
-**Purpose:** See knowledge base statistics
-
-```bash
-aice stats
-```
-
-**What It Does:**
-- Counts total conversations
-- Counts total decisions
-- Counts total actions
-- Shows memory file sizes
-- Shows git commit count
-
-**Output:**
-```
-📊 Knowledge Base Statistics
-
-Conversations: 42
-Decisions: 156
-Actions: 89
-Technical Work Items: 234
-
-Memory Files:
-  .aicf/conversations.aicf: 245 KB
-  .aicf/decisions.aicf: 89 KB
-  .ai/conversation-log.md: 512 KB
-
-Git Commits: 127
-```
-
----
-
-### 8. Check Token Usage
-
-**Purpose:** See token usage across models
-
-```bash
-# Top 4 models (default)
-aice tokens
-
-# All 16 models
-aice tokens --all
-```
-
-**What It Does:**
-- Analyzes all conversations
-- Counts tokens per model
-- Shows usage statistics
-- Identifies most-used models
-
-**Output:**
-```
-🔢 Token Usage (Top 4 Models)
-
-1. Claude 3.5 Sonnet:  1,234,567 tokens
-2. Claude 3 Opus:        987,654 tokens
-3. GPT-4 Turbo:          654,321 tokens
-4. Claude 3 Haiku:       456,789 tokens
-
-Total: 3,333,331 tokens
-```
-
----
-
-## 🔐 Permission Management
-
-### View Permissions
-
-```bash
-aice permissions list
-```
-
-Shows all platforms with their permission status:
-- ✅ **active** - Tool can access this platform
-- ❌ **revoked** - Tool cannot access this platform
-- ⏳ **pending** - Awaiting user decision
-
-### Revoke Access
-
-```bash
-aice permissions revoke warp
-```
-
-**Effect:**
-- Warp platform will no longer be monitored
-- Existing data is preserved
-- Can be re-enabled anytime
-
-### Grant Access
-
-```bash
-aice permissions grant warp
-```
-
-**Effect:**
-- Warp platform will be monitored again
-- Next `aice watch` will include this platform
-- Audit trail updated
 
 ---
 
 ## 🎯 Common Workflows
 
-### Workflow 1: Initial Setup
+### Workflow 1: Initial Setup (New Project)
 
 ```bash
 # 1. Initialize project
 aice init
 
-# 2. Select platforms
-# (Choose which LLM platforms you use)
+# 2. Select platforms (only Augment works currently)
+# (Interactive prompt will ask)
 
-# 3. Watcher starts automatically
-# (Checks every 5 minutes)
+# 3. Start watcher
+aice watch
 
-# 4. Check status
+# 4. Check permissions
 aice permissions list
 ```
 
-### Workflow 2: Manual Monitoring
+### Workflow 2: Migrate from v2.0.1
 
 ```bash
-# 1. Run watcher manually
+# 1. Migrate existing project
+aice migrate
+
+# 2. Old files moved to legacy_memory/
+# 3. New Phase 6-8 structure created
+
+# 4. Start watcher
 aice watch
 
-# 2. Or watch specific platforms
-aice watch --augment --claude-desktop
-
-# 3. Check statistics
-aice stats
+# 5. Verify permissions
+aice permissions list
 ```
 
 ### Workflow 3: Revoke Platform Access
@@ -391,7 +272,7 @@ aice stats
 aice permissions list
 
 # 2. Revoke platform
-aice permissions revoke warp
+aice permissions revoke augment
 
 # 3. Verify revocation
 aice permissions list
@@ -401,13 +282,13 @@ aice permissions list
 
 ```bash
 # 1. Grant permission
-aice permissions grant warp
+aice permissions grant augment
 
 # 2. Run watcher
-aice watch --warp
+aice watch --augment
 
-# 3. Verify data captured
-aice stats
+# 3. Verify permissions
+aice permissions list
 ```
 
 ---
@@ -468,4 +349,3 @@ aice watch --daemon
 ---
 
 **Ready to capture your conversations? Start with: `aice init` 🚀**
-

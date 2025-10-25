@@ -8,16 +8,15 @@
 
 /**
  * CLI Entry Point
- * Phase 3: CLI Integration - October 2025
+ * Phase 6-8: Cache-First Architecture - October 2025
  *
- * Main CLI interface for checkpoint processing and memory file generation
+ * Main CLI interface for automatic conversation capture and memory consolidation
  */
 
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
-import { CheckpointProcessor } from './commands/CheckpointProcessor.js';
 import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
@@ -142,27 +141,10 @@ program
     }
   });
 
-// Checkpoint processing command
-program
-  .command('checkpoint <file>')
-  .description('Process checkpoint file and generate memory files (.aicf and .ai)')
-  .option('-o, --output <dir>', 'Output directory for memory files (default: .aicf/)', '.aicf')
-  .option('-v, --verbose', 'Enable verbose output')
-  .option('--no-backup', 'Skip creating backup of existing files')
-  .action(async (file, options) => {
-    try {
-      const processor = new CheckpointProcessor(options);
-      await processor.process(file);
-    } catch (error) {
-      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
-      process.exit(1);
-    }
-  });
-
 // Watcher command
 program
   .command('watch')
-  .description('Start watcher for automatic checkpoint processing')
+  .description('Start watcher for automatic conversation capture and consolidation')
   .option(
     '-i, --interval <ms>',
     'Check interval in milliseconds (default: 300000 / 5 minutes)',
@@ -170,8 +152,8 @@ program
   )
   .option(
     '-d, --dir <path>',
-    'Directory to watch for checkpoints (default: ./checkpoints)',
-    './checkpoints'
+    'Directory to watch for LLM data (default: current directory)',
+    process.cwd()
   )
   .option('-v, --verbose', 'Enable verbose output')
   .option('--daemon', 'Run in background (daemon mode)')
