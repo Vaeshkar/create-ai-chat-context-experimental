@@ -240,11 +240,11 @@ export class MigrateCommand {
         message: 'Which LLM platforms do you use? (Select all that apply)',
         choices: [
           { name: 'Augment', value: 'augment', checked: true },
-          { name: 'Warp', value: 'warp' },
-          { name: 'Claude Desktop', value: 'claude-desktop' },
-          { name: 'Claude CLI', value: 'claude-cli' },
-          { name: 'Copilot', value: 'copilot' },
-          { name: 'ChatGPT', value: 'chatgpt' },
+          { name: 'Warp - Coming Soon', value: 'warp', disabled: true },
+          { name: 'Claude Desktop - Coming Soon', value: 'claude-desktop', disabled: true },
+          { name: 'Claude CLI - Coming Soon', value: 'claude-cli', disabled: true },
+          { name: 'Copilot - Coming Soon', value: 'copilot', disabled: true },
+          { name: 'ChatGPT - Coming Soon', value: 'chatgpt', disabled: true },
         ],
         validate: (answer) => {
           if (answer.length === 0) {
