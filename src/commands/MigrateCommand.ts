@@ -11,7 +11,16 @@
  */
 
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'fs';
+import {
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  copyFileSync,
+  readdirSync,
+  statSync,
+  renameSync,
+} from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
 import inquirer from 'inquirer';
@@ -84,6 +93,12 @@ export class MigrateCommand {
       mkdirSync(cacheLlmDir, { recursive: true });
       filesCreated.push(cacheLlmDir);
 
+      // Migrate legacy data from v2.0.1 to Phase 6-8 structure
+      const movedFiles = this.migrateLegacyData();
+      if (movedFiles.length > 0) {
+        filesPreserved.push(join(this.cwd, 'legacy_memory'));
+      }
+
       // Create .permissions.aicf if it doesn't exist
       const permissionsFile = join(aicfDir, '.permissions.aicf');
       if (!existsSync(permissionsFile)) {
@@ -124,6 +139,16 @@ export class MigrateCommand {
       console.log();
       console.log(chalk.green('✅ Migration to Automatic Mode Complete'));
       console.log();
+
+      // Show legacy data migration info
+      if (movedFiles.length > 0) {
+        console.log(chalk.yellow('📦 Legacy Data Migration'));
+        console.log(chalk.dim(`  Moved ${movedFiles.length} files to legacy_memory/`));
+        console.log(chalk.dim('  Your old memory files are preserved'));
+        console.log(chalk.dim('  Run "aice watch" to re-extract from library data'));
+        console.log();
+      }
+
       console.log(chalk.dim('Preserved:'));
       filesPreserved.forEach((f) => console.log(chalk.dim(`  ✓ ${f}`)));
       console.log();
@@ -145,6 +170,59 @@ export class MigrateCommand {
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
     }
+  }
+
+  /**
+   * Migrate legacy data from v2.0.1 to Phase 6-8 structure
+   * Moves old .aicf files to legacy_memory/ folder
+   * Creates new Phase 6-8 directory structure
+   */
+  private migrateLegacyData(): string[] {
+    const aicfDir = join(this.cwd, '.aicf');
+    const legacyDir = join(this.cwd, 'legacy_memory');
+    const movedFiles: string[] = [];
+
+    // Check if .aicf/ has files directly in it (old structure)
+    const files = readdirSync(aicfDir).filter((f) => {
+      const fullPath = join(aicfDir, f);
+      const stat = statSync(fullPath);
+      // Skip directories and new config files
+      return (
+        !stat.isDirectory() &&
+        f !== '.permissions.aicf' &&
+        f !== '.watcher-config.json' &&
+        f !== 'README.md' &&
+        f !== 'config.json'
+      );
+    });
+
+    if (files.length > 0) {
+      // Create legacy_memory folder
+      mkdirSync(legacyDir, { recursive: true });
+
+      // Move old files
+      for (const file of files) {
+        const srcPath = join(aicfDir, file);
+        const destPath = join(legacyDir, file);
+        renameSync(srcPath, destPath);
+        movedFiles.push(file);
+      }
+    }
+
+    // Create new Phase 6-8 structure
+    const recentDir = join(aicfDir, 'recent');
+    const sessionsDir = join(aicfDir, 'sessions');
+    const mediumDir = join(aicfDir, 'medium');
+    const oldDir = join(aicfDir, 'old');
+    const archiveDir = join(aicfDir, 'archive');
+
+    mkdirSync(recentDir, { recursive: true });
+    mkdirSync(sessionsDir, { recursive: true });
+    mkdirSync(mediumDir, { recursive: true });
+    mkdirSync(oldDir, { recursive: true });
+    mkdirSync(archiveDir, { recursive: true });
+
+    return movedFiles;
   }
 
   private async askPlatforms(): Promise<void> {

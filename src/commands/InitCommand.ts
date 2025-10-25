@@ -337,6 +337,19 @@ export class InitCommand {
       mkdirSync(aiDir, { recursive: true });
       mkdirSync(aicfDir, { recursive: true });
 
+      // Create Phase 6-8 directory structure
+      const recentDir = join(aicfDir, 'recent');
+      const sessionsDir = join(aicfDir, 'sessions');
+      const mediumDir = join(aicfDir, 'medium');
+      const oldDir = join(aicfDir, 'old');
+      const archiveDir = join(aicfDir, 'archive');
+
+      mkdirSync(recentDir, { recursive: true });
+      mkdirSync(sessionsDir, { recursive: true });
+      mkdirSync(mediumDir, { recursive: true });
+      mkdirSync(oldDir, { recursive: true });
+      mkdirSync(archiveDir, { recursive: true });
+
       // Copy template files
       this.copyTemplateFiles();
 
@@ -362,7 +375,7 @@ export class InitCommand {
       return Ok({
         mode: 'manual',
         projectPath: this.cwd,
-        filesCreated: [aiDir, aicfDir],
+        filesCreated: [aiDir, aicfDir, recentDir, sessionsDir, mediumDir, oldDir, archiveDir],
         message: 'Manual mode initialized. Use the prompt above to trigger LLM updates.',
         platforms: [llmAnswers.llm],
         llmPrompt,
@@ -436,7 +449,29 @@ export class InitCommand {
       mkdirSync(aiDir, { recursive: true });
       mkdirSync(aicfDir, { recursive: true });
 
-      filesCreated.push(cacheLlmDir, aiDir, aicfDir);
+      // Create Phase 6-8 directory structure
+      const recentDir = join(aicfDir, 'recent');
+      const sessionsDir = join(aicfDir, 'sessions');
+      const mediumDir = join(aicfDir, 'medium');
+      const oldDir = join(aicfDir, 'old');
+      const archiveDir = join(aicfDir, 'archive');
+
+      mkdirSync(recentDir, { recursive: true });
+      mkdirSync(sessionsDir, { recursive: true });
+      mkdirSync(mediumDir, { recursive: true });
+      mkdirSync(oldDir, { recursive: true });
+      mkdirSync(archiveDir, { recursive: true });
+
+      filesCreated.push(
+        cacheLlmDir,
+        aiDir,
+        aicfDir,
+        recentDir,
+        sessionsDir,
+        mediumDir,
+        oldDir,
+        archiveDir
+      );
 
       // Store selected platforms
       this.selectedPlatforms = {

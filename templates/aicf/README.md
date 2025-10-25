@@ -1,85 +1,151 @@
-# .aicf Directory - AI-Optimized Context Files
+# .aicf Directory - AI Memory System
 
-This directory contains **AI-optimized structured files** that complement the human-readable `.ai/` files.
+**Phase 6-8 Architecture** - Automatic conversation capture and intelligent memory dropoff
 
-## 📋 What's Here
+This directory contains **AI-optimized memory files** that are automatically generated from your LLM conversations.
 
-| File | Purpose | Human Equivalent |
-|------|---------|------------------|
-| **conversations.aicf** | Structured conversation history | `.ai/conversation-log.md` |
-| **decisions.aicf** | Technical decisions in structured format | `.ai/technical-decisions.md` |
-| **tasks.aicf** | Project tasks and priorities | `.ai/next-steps.md` |
-| **issues.aicf** | Known issues and solutions | `.ai/known-issues.md` |
-| **technical-context.aicf** | Technical stack and architecture | `.ai/project-overview.md` |
+---
 
-## 🎯 Why Both .ai/ and .aicf/?
+## 📁 Directory Structure
 
-**`.ai/` files** (Human-readable):
-- ✅ Easy to read and edit by humans
-- ✅ Good for AI assistants that prefer natural language
-- ✅ Version control friendly (clear diffs)
+```
+.aicf/
+├── recent/          # Recent conversations (0-2 days) - FULL detail
+├── sessions/        # Daily session files (2-7 days) - FULL detail
+├── medium/          # Medium-term memory (7-14 days) - SUMMARY
+├── old/             # Old memory (14-30 days) - KEY_POINTS
+├── archive/         # Archive (30+ days) - SINGLE_LINE
+├── config.json      # Configuration file
+├── README.md        # This file
+├── .permissions.aicf       # Permission tracking (automatic mode)
+└── .watcher-config.json    # Watcher configuration (automatic mode)
+```
 
-**`.aicf/` files** (AI-optimized):
-- ⚡ **90% fewer tokens** - structured data is more efficient
-- 🔍 **Better searchability** - structured format enables precise queries
-- 📊 **Data analysis** - enables trends, statistics, and insights
-- 🤖 **AI processing** - easier for AI to parse and update systematically
+---
+
+## 🔄 How It Works
+
+### **Phase 6: Cache-First Architecture**
+
+Every 5 minutes, the watcher:
+
+1. Reads conversations from your LLM library (Augment, Claude, etc.)
+2. Writes to `.cache/llm/{platform}/chunk-*.json`
+3. Consolidates chunks into `.aicf/recent/{date}_{id}.aicf`
+
+### **Phase 6.5: Session Consolidation**
+
+Every 5 minutes, the consolidator:
+
+1. Reads all files in `.aicf/recent/`
+2. Groups by date
+3. Writes to `.aicf/sessions/{date}-session.aicf`
+
+### **Phase 7: Memory Dropoff Strategy**
+
+Every 5 minutes, the dropoff agent:
+
+1. Checks age of session files
+2. Compresses by age:
+   - **0-2 days** → `.aicf/sessions/` (FULL detail)
+   - **2-7 days** → `.aicf/sessions/` (FULL detail)
+   - **7-14 days** → `.aicf/medium/` (SUMMARY)
+   - **14-30 days** → `.aicf/old/` (KEY_POINTS)
+   - **30+ days** → `.aicf/archive/` (SINGLE_LINE)
+
+---
 
 ## 📖 AICF Format
 
-AICF (AI Context Format) uses a simple structured format:
+AICF (AI Context Format) uses pipe-delimited structured data:
 
 ```
-@SECTION_NAME
-@SCHEMA
-Field1|Field2|Field3|Field4
-
-@DATA
-Value1|Value2|Value3|Value4
-Value1|Value2|Value3|Value4
+@CONVERSATION|id=C1|date=2025-10-25|messages=50|tokens=12345
+@USER|timestamp=2025-10-25T10:00:00Z|content=How do I implement feature X?
+@ASSISTANT|timestamp=2025-10-25T10:01:00Z|content=Here's how to implement feature X...
+@DECISION|name=Use TypeScript|reasoning=Better type safety|impact=HIGH
 ```
 
 **Benefits:**
-- **Readable** by both humans and AI
-- **Compact** (pipe-separated values)
-- **Extensible** (add new fields easily)
-- **Structured** (enables queries and analysis)
 
-## 🔄 Keeping Files in Sync
+- ⚡ **5x more efficient** than markdown (100 tokens vs 500 tokens)
+- 🔍 **Structured** - enables precise queries and analysis
+- 🤖 **AI-optimized** - easier for AI to parse and process
+- 📊 **Compact** - pipe-separated values save space
 
-Both `.ai/` and `.aicf/` files should be updated together:
+---
 
-1. **After each AI session**, ask your AI assistant:
-   ```
-   "Can you update both .ai/ and .aicf/ files based on our conversation?"
-   ```
+## 🎯 Why Both .ai/ and .aicf/?
 
-2. **Manual updates** - if you edit `.ai/` files manually, update corresponding `.aicf/` files
+**`.ai/` files** (Human-readable, manual):
 
-3. **Use the migrate command** to sync missing information:
+- ✅ Static documentation (code-style, design-system, etc.)
+- ✅ Protected from automatic systems
+- ✅ Manual updates only
+
+**`.aicf/` files** (AI-optimized, automatic):
+
+- ⚡ Automatic conversation capture
+- 🔄 Intelligent memory dropoff
+- 📊 Structured data for analysis
+- 🤖 AI-to-AI communication
+
+---
+
+## 🚀 Getting Started
+
+### **Automatic Mode** (Recommended)
+
+1. Initialize with automatic mode:
+
    ```bash
-   npx aic migrate
+   aice init --automatic
    ```
+
+2. Start the watcher:
+
+   ```bash
+   aice watch
+   ```
+
+3. The system automatically:
+   - Captures conversations from your LLM
+   - Consolidates into session files
+   - Applies intelligent memory dropoff
+
+### **Manual Mode**
+
+1. Initialize with manual mode:
+
+   ```bash
+   aice init --manual
+   ```
+
+2. Ask your LLM to update memory files after each session
+
+---
 
 ## 💡 Tips
 
-- **Start with .ai/ files** - they're easier to read and edit
-- **Let AI maintain .aicf/ files** - they're optimized for AI processing  
-- **Both are committed to Git** - they're part of your project's knowledge base
-- **Search both formats** - use `npx aic search` to find information across all files
+- **Automatic mode** - Set it and forget it! The watcher handles everything.
+- **Check sessions/** - Review daily session files to see what was captured
+- **Legacy data** - If you migrated from v2.0.1, check `legacy_memory/` folder
+- **Commit to Git** - Session files are gitignored, but you can commit important ones
+
+---
 
 ## 🤖 For AI Assistants
 
 When reading this project's context:
 
-1. **Read .ai/README.md first** for overview
-2. **Use .aicf/ files for structured queries**:
-   - Recent decisions from `decisions.aicf`
-   - Current tasks from `tasks.aicf` 
-   - Open issues from `issues.aicf`
-   - Technical context from `technical-context.aicf`
-3. **Update both formats** when project context changes
+1. **Read `.ai/` files first** for static documentation
+2. **Read `.aicf/sessions/` for recent conversations** (last 7 days)
+3. **Read `.aicf/medium/` for older context** (7-14 days)
+4. **Read `.aicf/old/` for historical context** (14-30 days)
+5. **Skip `.aicf/archive/`** unless specifically needed
+
+**Priority order:** `.ai/` → `sessions/` → `medium/` → `old/` → `archive/`
 
 ---
 
-**Generated by create-ai-chat-context** - Keep AI assistants informed across sessions!
+**Generated by create-ai-chat-context-experimental v3.x** - Automatic AI memory system!

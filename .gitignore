@@ -54,3 +54,15 @@ temp/
 .aicf/.watcher.log
 .aicf/.watcher-events.aicf
 .watcher.pid
+.watcher.log
+
+# Phase 6-8 memory files (auto-generated, not committed)
+.aicf/recent/
+.aicf/sessions/
+.aicf/medium/
+.aicf/old/
+.aicf/archive/
+
+# Legacy memory (preserved from v2.0.1 migration)
+# NOTE: legacy_memory/ is NOT ignored - users should commit this folder
+# to preserve their old memory files from v2.0.1
