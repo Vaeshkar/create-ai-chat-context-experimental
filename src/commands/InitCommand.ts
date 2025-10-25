@@ -14,7 +14,15 @@
  */
 
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'fs';
+import {
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  copyFileSync,
+  readdirSync,
+  statSync,
+} from 'fs';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
 import inquirer from 'inquirer';
@@ -760,6 +768,11 @@ ${platformStatuses}
           const srcFile = join(aiTemplateDir, file);
           const destFile = join(aiDir, file);
 
+          // Skip directories - handle them separately
+          if (statSync(srcFile).isDirectory()) {
+            continue;
+          }
+
           if (!existsSync(destFile)) {
             // File doesn't exist - copy template
             copyFileSync(srcFile, destFile);
@@ -788,6 +801,26 @@ ${platformStatuses}
               // User file is newer or same version - preserve it
               if (this.verbose) {
                 console.log(`⏭️  Skipped ${file} (user version is newer or customized)`);
+              }
+            }
+          }
+        }
+
+        // Copy .ai/rules/ directory
+        const aiRulesTemplateDir = join(aiTemplateDir, 'rules');
+        if (existsSync(aiRulesTemplateDir)) {
+          const aiRulesDir = join(aiDir, 'rules');
+          mkdirSync(aiRulesDir, { recursive: true });
+
+          const ruleFiles = readdirSync(aiRulesTemplateDir);
+          for (const file of ruleFiles) {
+            const srcFile = join(aiRulesTemplateDir, file);
+            const destFile = join(aiRulesDir, file);
+
+            if (!existsSync(destFile)) {
+              copyFileSync(srcFile, destFile);
+              if (this.verbose) {
+                console.log(`📝 Copied rules/${file}`);
               }
             }
           }
