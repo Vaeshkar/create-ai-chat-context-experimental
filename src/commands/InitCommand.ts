@@ -318,9 +318,9 @@ export class InitCommand {
           message: 'Which LLM do you use?',
           choices: [
             { name: 'Augment', value: 'augment' },
+            { name: 'Claude CLI', value: 'claude-cli' },
+            { name: 'Claude Desktop', value: 'claude-desktop' },
             { name: 'Claude (Web) - Coming Soon', value: 'claude-web', disabled: true },
-            { name: 'Claude Desktop - Coming Soon', value: 'claude-desktop', disabled: true },
-            { name: 'Claude CLI - Coming Soon', value: 'claude-cli', disabled: true },
             { name: 'ChatGPT - Coming Soon', value: 'chatgpt', disabled: true },
             { name: 'Copilot - Coming Soon', value: 'copilot', disabled: true },
             { name: 'Warp - Coming Soon', value: 'warp', disabled: true },
@@ -413,9 +413,9 @@ export class InitCommand {
           message: 'Which LLM platforms do you use? (Select all that apply)',
           choices: [
             { name: 'Augment', value: 'augment', checked: true },
+            { name: 'Claude CLI', value: 'claude-cli' },
+            { name: 'Claude Desktop', value: 'claude-desktop' },
             { name: 'Warp - Coming Soon', value: 'warp', disabled: true },
-            { name: 'Claude Desktop - Coming Soon', value: 'claude-desktop', disabled: true },
-            { name: 'Claude CLI - Coming Soon', value: 'claude-cli', disabled: true },
             { name: 'Copilot - Coming Soon', value: 'copilot', disabled: true },
             { name: 'ChatGPT - Coming Soon', value: 'chatgpt', disabled: true },
           ],

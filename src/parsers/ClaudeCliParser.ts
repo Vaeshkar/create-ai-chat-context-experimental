@@ -122,11 +122,11 @@ export class ClaudeCliParser {
             id,
             conversationId: sessionId,
             timestamp: data.timestamp,
-            role: data.role === 'assistant' ? 'assistant' : 'user',
+            role: role === 'assistant' ? 'assistant' : 'user',
             content,
             platform: 'claude-cli',
             extractedFrom: 'claude-cli-jsonl',
-            messageType: data.role === 'assistant' ? 'ai_response' : 'user_request',
+            messageType: role === 'assistant' ? 'ai_response' : 'user_request',
             rawLength,
           });
 
