@@ -709,7 +709,8 @@ ${platformStatuses}
   private copyTemplateFiles(): void {
     try {
       // Get the templates directory - it's in dist/templates after build
-      const templatesDir = join(__dirname, '../templates');
+      // __dirname is dist/esm/commands, so we need to go up to dist/templates
+      const templatesDir = join(__dirname, '../../templates');
 
       // Copy ai-instructions.md if it exists
       const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
@@ -740,7 +741,7 @@ ${platformStatuses}
           'code-style.md',
           'design-system.md',
           'npm-publishing-checklist.md',
-          'Testing-philosophy.md',
+          'testing-philosophy.md',
           'project-overview.md',
           'README.md',
         ];
