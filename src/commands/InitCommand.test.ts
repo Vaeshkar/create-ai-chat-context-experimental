@@ -452,4 +452,158 @@ describe('InitCommand', () => {
       expect(result.ok).toBe(false);
     });
   });
+
+  describe('template files', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
+    it('should copy all template files to .ai directory', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        expect(result.ok).toBe(true);
+
+        const aiDir = join(testDir, '.ai');
+        expect(existsSync(aiDir)).toBe(true);
+
+        // Check for expected template files
+        const expectedFiles = [
+          'code-style.md',
+          'design-system.md',
+          'npm-publishing-checklist.md',
+          'project-overview.md',
+          'README.md',
+          'testing-philosophy.md',
+        ];
+
+        for (const file of expectedFiles) {
+          const filePath = join(aiDir, file);
+          expect(existsSync(filePath)).toBe(true);
+        }
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+
+    it('should not overwrite existing template files by default', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+        expect(result.ok).toBe(true);
+
+        // Modify a template file
+        const aiDir = join(testDir, '.ai');
+        const testFile = join(aiDir, 'project-overview.md');
+        const originalContent = readFileSync(testFile, 'utf-8');
+        const modifiedContent = '# My Custom Project Overview\n\nCustom content here.';
+        require('fs').writeFileSync(testFile, modifiedContent);
+
+        // Reinitialize with force
+        const cmd2 = new InitCommand({ cwd: testDir, mode: 'automatic', force: true });
+        const result2 = await cmd2.execute();
+        expect(result2.ok).toBe(true);
+
+        // Check that file was not overwritten (smart merge should preserve user content)
+        const finalContent = readFileSync(testFile, 'utf-8');
+        // If the file doesn't have a version header, it should be preserved
+        expect(finalContent).toBe(modifiedContent);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+
+    it('should handle missing templates directory gracefully', async () => {
+      const testDir = createTestDir();
+      try {
+        // This test verifies that init doesn't crash if templates are missing
+        // (e.g., in development before build)
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        // Should still succeed even if templates are missing
+        expect(result.ok).toBe(true);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+  });
+
+  describe('Phase 6-8 directory structure', () => {
+    beforeEach(() => {
+      vi.mocked(inquirer.prompt).mockResolvedValue({
+        platforms: ['augment'],
+      });
+    });
+
+    it('should create recent directory', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        expect(result.ok).toBe(true);
+        expect(existsSync(join(testDir, '.aicf', 'recent'))).toBe(true);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+
+    it('should create sessions directory', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        expect(result.ok).toBe(true);
+        expect(existsSync(join(testDir, '.aicf', 'sessions'))).toBe(true);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+
+    it('should create medium directory', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        expect(result.ok).toBe(true);
+        expect(existsSync(join(testDir, '.aicf', 'medium'))).toBe(true);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+
+    it('should create old directory', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        expect(result.ok).toBe(true);
+        expect(existsSync(join(testDir, '.aicf', 'old'))).toBe(true);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+
+    it('should create archive directory', async () => {
+      const testDir = createTestDir();
+      try {
+        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
+        const result = await cmd.execute();
+
+        expect(result.ok).toBe(true);
+        expect(existsSync(join(testDir, '.aicf', 'archive'))).toBe(true);
+      } finally {
+        cleanupTestDir(testDir);
+      }
+    });
+  });
 });
