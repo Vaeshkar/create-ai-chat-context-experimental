@@ -13,7 +13,7 @@
  * If Automatic: Creates .cache/llm/, .permissions.aicf, .watcher-config.json
  */
 
-import { join, dirname } from 'path';
+import { join } from 'path';
 import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'fs';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
@@ -22,6 +22,7 @@ import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
+import { getTemplatesDir } from '../utils/PackageRoot.js';
 // BackgroundService removed - using Cache-First Architecture (Phase 6)
 
 export interface InitCommandOptions {
@@ -708,87 +709,16 @@ ${platformStatuses}
    */
   private copyTemplateFiles(): void {
     try {
-      // Find templates directory
-      // The templates are in dist/templates/ relative to the package root
-      // This file is in dist/esm/commands/ or dist/cjs/commands/
-      // So templates are at ../../templates/ relative to this file
+      // Find templates directory using PackageRoot utility
+      // This works in both development and production, ESM and CJS
+      const templatesDir = getTemplatesDir();
 
-      let templatesDir: string | undefined;
-
-      // Strategy 1: Use require.resolve to find the package root
-      // This works in both ESM and CJS
-      try {
-        // Find the package.json of create-ai-chat-context-experimental
-        const packageJsonPath = require.resolve('create-ai-chat-context-experimental/package.json');
-        const packageRoot = dirname(packageJsonPath);
-        const possibleTemplatesDir = join(packageRoot, 'dist', 'templates');
-
-        console.log(`🔍 DEBUG: Found package root via require.resolve: ${packageRoot}`);
-        console.log(`🔍 DEBUG: Checking templates at: ${possibleTemplatesDir}`);
-
-        if (existsSync(possibleTemplatesDir)) {
-          templatesDir = possibleTemplatesDir;
-          console.log(`🔍 DEBUG: ✅ Found templates via require.resolve!`);
+      if (!existsSync(templatesDir)) {
+        if (this.verbose) {
+          console.warn('⚠️  Warning: Could not find templates directory at:', templatesDir);
         }
-      } catch {
-        console.log(`🔍 DEBUG: require.resolve failed, trying alternative methods`);
-      }
-
-      // Strategy 2: Search up from cwd (fallback for development)
-      if (!templatesDir) {
-        let searchDir = this.cwd;
-        console.log(`🔍 DEBUG: Starting search from cwd = ${this.cwd}`);
-
-        // Search up to 10 levels
-        for (let i = 0; i < 10; i++) {
-          console.log(`🔍 DEBUG: Searching level ${i}: ${searchDir}`);
-
-          // Try dist/templates in current directory
-          const distTemplates = join(searchDir, 'dist', 'templates');
-          console.log(`  Trying: ${distTemplates} - exists? ${existsSync(distTemplates)}`);
-          if (existsSync(distTemplates)) {
-            templatesDir = distTemplates;
-            break;
-          }
-
-          // Try node_modules/create-ai-chat-context-experimental/dist/templates
-          const nodeModulesTemplates = join(
-            searchDir,
-            'node_modules',
-            'create-ai-chat-context-experimental',
-            'dist',
-            'templates'
-          );
-          console.log(
-            `  Trying: ${nodeModulesTemplates} - exists? ${existsSync(nodeModulesTemplates)}`
-          );
-          if (existsSync(nodeModulesTemplates)) {
-            templatesDir = nodeModulesTemplates;
-            break;
-          }
-
-          // Go up one level
-          const parentDir = dirname(searchDir);
-          if (parentDir === searchDir) {
-            console.log(`  Hit root directory, stopping search`);
-            break; // Hit root
-          }
-          searchDir = parentDir;
-        }
-      }
-
-      if (!templatesDir) {
-        console.error(
-          '❌ ERROR: Could not find templates directory after searching from:',
-          this.cwd
-        );
-        console.warn('⚠️  Warning: Could not find templates directory');
         return;
       }
-
-      // DEBUG: Log template directory resolution
-      console.log(`🔍 DEBUG: ✅ Found templatesDir = ${templatesDir}`);
-      console.log(`🔍 DEBUG: templatesDir exists? ${existsSync(templatesDir)}`);
 
       // Copy ai-instructions.md if it exists
       const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
@@ -811,18 +741,11 @@ ${platformStatuses}
       // Copy .ai/ template files (smart merge for critical files)
       const aiTemplateDir = join(templatesDir, 'ai');
 
-      // DEBUG: Log .ai/ template directory
-      console.log(`🔍 DEBUG: aiTemplateDir = ${aiTemplateDir}`);
-      console.log(`🔍 DEBUG: aiTemplateDir exists? ${existsSync(aiTemplateDir)}`);
-
       if (existsSync(aiTemplateDir)) {
         const aiDir = join(this.cwd, '.ai');
         mkdirSync(aiDir, { recursive: true });
 
         const aiFiles = readdirSync(aiTemplateDir);
-
-        // DEBUG: Log files found
-        console.log(`🔍 DEBUG: Found ${aiFiles.length} files in aiTemplateDir:`, aiFiles);
 
         const criticalFiles = [
           'code-style.md',
@@ -837,17 +760,12 @@ ${platformStatuses}
           const srcFile = join(aiTemplateDir, file);
           const destFile = join(aiDir, file);
 
-          // DEBUG: Log each file processing
-          console.log(`🔍 DEBUG: Processing ${file}`);
-          console.log(`  srcFile: ${srcFile}`);
-          console.log(`  destFile: ${destFile}`);
-          console.log(`  destFile exists? ${existsSync(destFile)}`);
-
           if (!existsSync(destFile)) {
             // File doesn't exist - copy template
-            console.log(`  📝 Copying ${file}...`);
             copyFileSync(srcFile, destFile);
-            console.log(`  ✅ Copied ${file}`);
+            if (this.verbose) {
+              console.log(`📝 Copied ${file}`);
+            }
           } else if (criticalFiles.includes(file)) {
             // Critical file exists - check if identical
             const isSame = this.filesAreIdentical(srcFile, destFile);
@@ -892,8 +810,6 @@ ${platformStatuses}
         }
       }
     } catch (error) {
-      // DEBUG: Always log errors for now
-      console.error('❌ ERROR in copyTemplateFiles:', error);
       // Silently fail if templates don't exist (e.g., in development)
       if (this.verbose) {
         console.warn('Warning: Could not copy template files:', error);
