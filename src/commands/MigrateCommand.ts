@@ -26,6 +26,7 @@ import ora from 'ora';
 import inquirer from 'inquirer';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
+import { getTemplatesDir } from '../utils/PackageRoot.js';
 // BackgroundService removed - using Cache-First Architecture (Phase 6)
 
 export interface MigrateCommandOptions {
@@ -355,8 +356,16 @@ export class MigrateCommand {
    */
   private copyTemplateFiles(): void {
     try {
-      // Get the templates directory - it's in dist/templates after build
-      const templatesDir = join(__dirname, '../templates');
+      // Get the templates directory using PackageRoot utility
+      // This works in both development and production, ESM and CJS
+      const templatesDir = getTemplatesDir();
+
+      if (!existsSync(templatesDir)) {
+        if (this.verbose) {
+          console.warn('⚠️  Warning: Could not find templates directory at:', templatesDir);
+        }
+        return;
+      }
 
       // Copy ai-instructions.md if it exists
       const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
