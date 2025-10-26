@@ -1,6 +1,6 @@
 # 🧠 Create AI Chat Context - Memory Consolidation System
 
-**Automatic memory consolidation for AI conversations across multiple platforms.**
+**Automatic memory consolidation for AI conversations from Augment (more platforms coming soon).**
 
 ## 🔐 Privacy First
 
@@ -16,15 +16,15 @@
 
 ## 🎯 What Is This?
 
-A system that automatically captures AI conversations from multiple platforms (Augment, Claude Desktop, Claude CLI, Warp) and consolidates them into structured memory files for persistent context.
+A system that automatically captures AI conversations from Augment and consolidates them into structured memory files for persistent context.
 
 ## ✨ Key Features
 
-- **Multi-Platform Support** - Augment, Claude Desktop, Claude CLI, Warp, Copilot, ChatGPT
-- **Platform Selection** - Choose which LLM platforms to monitor
-- **Automatic Capture** - Background watchers monitor for new conversations
+- **Augment Support** - Automatic capture from Augment VSCode extension (other platforms in development)
+- **Universal AI Rules** - `.ai/rules/` work across all LLM platforms (Augment, Claude, Cursor, Warp, Copilot, ChatGPT)
+- **Automatic Capture** - Background watcher monitors for new conversations
 - **Smart Consolidation** - Extracts decisions, actions, technical work, and context
-- **Dual Format Storage** - AI-optimized (AICF) + Human-readable (Markdown)
+- **AICF Format** - AI-optimized pipe-delimited format for efficient parsing
 - **Git Integration** - Automatic commits for version control
 - **Type-Safe** - Pure TypeScript with 100% type coverage
 
@@ -41,22 +41,18 @@ pnpm add create-ai-chat-context-experimental@latest
 ### Initialize
 
 ```bash
-# Manual mode (for Augment)
-npx aice init --manual
-
-# Automatic mode (for Claude Desktop/CLI)
+# Initialize with automatic capture (Augment)
 npx aice init --automatic
+
+# Initialize with manual mode (you update memory files manually)
+npx aice init --manual
 ```
 
 ### Use It
 
 ```bash
-# Start automatic watcher (all enabled platforms)
+# Start automatic watcher (Augment)
 npx aice watch
-
-# Watch specific platforms
-npx aice watch --augment
-npx aice watch --augment --warp --claude-desktop
 
 # Watch in daemon mode (background)
 npx aice watch --daemon
@@ -67,9 +63,9 @@ npx aice watch --foreground
 # Manage platform permissions
 npx aice permissions list
 npx aice permissions grant augment
-npx aice permissions revoke warp
+npx aice permissions revoke augment
 
-# Import Claude conversation exports
+# Import Claude conversation exports (manual fallback)
 npx aice import-claude conversation.json
 
 # Migrate from v2.0.1 to v3.x
@@ -96,20 +92,18 @@ All documentation is in the `/docs/` folder:
 
 ## 🏗️ Architecture
 
-```
-Input Sources (Augment, Claude, Warp)
+```text
+Input Sources (Augment)
          ↓
     Watchers/Triggers
          ↓
     Parser (Extract conversations)
          ↓
-    Extractor (Extract decisions, actions, etc.)
-         ↓
-    Orchestrator (Merge & consolidate)
+    Consolidation Agents (Cache → Sessions → Memory Dropoff)
          ↓
     Writer (Update memory files)
          ↓
-    Memory Storage (.aicf/ + .ai/)
+    Memory Storage (.aicf/)
          ↓
     Git Commit (Track changes)
          ↓
@@ -122,24 +116,32 @@ Input Sources (Augment, Claude, Warp)
 
 Pipe-delimited structured data, optimized for AI parsing:
 
-- `index.aicf` - Project overview & stats
-- `conversations.aicf` - Conversation history
-- `decisions.aicf` - Key decisions
-- `technical-context.aicf` - Architecture & tech stack
-- `work-state.aicf` - Recent sessions & active tasks
-- `design-system.aicf` - UI/UX rules & design decisions
+**Cache Layer:**
 
-### `.ai/` Directory (Human-Readable)
+- `cache/augment/*.aicf` - Raw conversation chunks from Augment
 
-Markdown prose for human readability:
+**Recent Layer:**
 
-- `project-overview.md` - High-level description
-- `conversation-log.md` - Detailed conversation history
-- `technical-decisions.md` - Technical decisions
-- `next-steps.md` - Planned work & priorities
+- `recent/*.aicf` - Consolidated conversations (last 2 days)
+
+**Session Layer:**
+
+- `sessions/*.aicf` - Daily session files (0-2 days old)
+- `medium/*.aicf` - Summarized sessions (2-7 days old)
+- `old/*.aicf` - Key points only (7-14 days old)
+- `archive/*.aicf` - Single line per conversation (14+ days old)
+
+### `.ai/` Directory (Universal AI Rules)
+
+Markdown rules that work across all LLM platforms:
+
+- `README.md` - Universal AI context instructions
+- `rules/always-load-context.md` - Context loading instructions
+- `rules/cleanup-after-completion.md` - Cleanup rules
+- `rules/protected-ai-files.md` - File protection rules
+- `code-style.md` - Code style guidelines
 - `design-system.md` - UI/UX design rules & patterns
 - `npm-publishing-checklist.md` - Pre-publication validation checklist
-- `known-issues.md` - Current bugs & limitations
 
 ## 🛠️ Development
 
@@ -165,14 +167,22 @@ pnpm format        # Format with Prettier
 
 ## 📊 Project Status
 
-**Phase 2: TypeScript Rewrite - COMPLETE ✅**
+### Current Version: v3.2.0
 
 - ✅ Pure TypeScript codebase (0 .js files in src/)
 - ✅ Build passing (0 TypeScript errors, 0 ESLint errors)
-- ✅ 566/587 tests passing
-- ✅ Comprehensive documentation
+- ✅ 624 tests passing (25 skipped)
+- ✅ Universal AI rules (`.ai/rules/`)
+- ✅ Full consolidation pipeline (Cache → Sessions → Memory Dropoff)
+- ✅ Augment support (automatic capture)
 
-**Next: Phase 3 - Fix Remaining Tests**
+### Platforms In Development
+
+- 🚧 Claude Desktop support (Phase 5.5b)
+- 🚧 Claude CLI support (Phase 5.5a)
+- 🚧 Warp support (Phase 5.6)
+- 🚧 Copilot support (Phase 5.7)
+- 🚧 ChatGPT support (Phase 5.8)
 
 ## 🎓 Key Concepts
 
@@ -215,9 +225,6 @@ aice init --manual
 # Watch for new conversations (checks every 5 minutes)
 aice watch
 
-# Watch specific platforms
-aice watch --augment --claude-desktop
-
 # Manage permissions
 aice permissions list
 aice permissions revoke <platform>
@@ -238,25 +245,30 @@ aice tokens
 
 **[See full CLI documentation →](CLI-COMMANDS.md)**
 
-## 🎯 Platform Selection
+## 🎯 Platform Support
 
-Choose which LLM platforms to monitor based on what you use:
+### Currently Supported
 
-| Platform           | Flag               | Use Case                 |
-| ------------------ | ------------------ | ------------------------ |
-| **Augment**        | `--augment`        | Augment VSCode extension |
-| **Warp**           | `--warp`           | Warp terminal AI         |
-| **Claude Desktop** | `--claude-desktop` | Claude desktop app       |
-| **Claude CLI**     | `--claude-cli`     | Claude command-line tool |
-| **Copilot**        | `--copilot`        | GitHub Copilot           |
-| **ChatGPT**        | `--chatgpt`        | ChatGPT web interface    |
+| Platform    | Status | Flag        | Use Case                 |
+| ----------- | ------ | ----------- | ------------------------ |
+| **Augment** | ✅     | `--augment` | Augment VSCode extension |
 
-**Default behavior:** If no flags specified, uses platforms enabled in `.watcher-config.json` (defaults to Augment).
+### In Development
 
-**Example:** If you use Augment and Claude Desktop:
+| Platform           | Status | Flag               | Use Case                 |
+| ------------------ | ------ | ------------------ | ------------------------ |
+| **Claude Desktop** | 🚧     | `--claude-desktop` | Claude desktop app       |
+| **Claude CLI**     | 🚧     | `--claude-cli`     | Claude command-line tool |
+| **Warp**           | 🚧     | `--warp`           | Warp terminal AI         |
+| **Copilot**        | 🚧     | `--copilot`        | GitHub Copilot           |
+| **ChatGPT**        | 🚧     | `--chatgpt`        | ChatGPT web interface    |
+
+**Default behavior:** Currently only Augment is supported. Other platforms are in active development.
+
+**Example:** Start watching Augment conversations:
 
 ```bash
-npx aice watch --augment --claude-desktop
+npx aice watch
 ```
 
 ## 📖 Learn More
