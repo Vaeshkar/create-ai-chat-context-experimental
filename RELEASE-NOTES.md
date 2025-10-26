@@ -1,10 +1,121 @@
-# 📦 Release Notes - Version 3.0.0
-
-**Release Date:** October 24, 2025
+# 📦 Release Notes
 
 ---
 
-## 🎉 What's New in v3.0.0
+## Version 3.2.0
+
+**Release Date:** October 26, 2025
+
+### 🎉 What's New in v3.2.0
+
+This release adds **universal AI rules** that work across all LLM platforms, comprehensive **unit test coverage** for consolidation agents, and significant **repository cleanup**.
+
+### ✨ Features
+
+#### 1. 🌍 Universal AI Rules (`.ai/rules/`)
+
+**NEW:** AI rules now work across **all LLM platforms**, not just Augment!
+
+- ✅ **`.ai/rules/`** - Universal rules folder (works for Claude, Cursor, Warp, Copilot, ChatGPT, etc.)
+- ✅ **`.augment/rules/`** - Pointer file for Augment (auto-loads universal rules)
+- ✅ **`.ai/README.md`** - Instructions for AI assistants and users
+- ✅ **3 core rules:**
+  - `always-load-context.md` - Context loading instructions
+  - `cleanup-after-completion.md` - Planning doc cleanup rules
+  - `protected-ai-files.md` - File protection rules
+
+**Platform Support:**
+
+- **Augment:** Automatic (reads `.augment/rules/always-load-context.md`)
+- **Cursor:** Add to `.cursorrules`: "Load .ai/rules/ before every task"
+- **Warp:** Add to `warp.md`: "Read .ai/rules/ at session start"
+- **Claude/Copilot/ChatGPT:** User says: "Read .ai/rules/ first"
+
+#### 2. 🧪 Unit Test Coverage for Consolidation Agents
+
+**NEW:** Added 36 comprehensive unit tests for critical pipeline agents!
+
+- ✅ **CacheConsolidationAgent** (10 tests)
+  - Chunk processing from multiple platforms
+  - Deduplication logic
+  - Invalid JSON handling
+  - Multi-platform support (Augment + Claude)
+
+- ✅ **SessionConsolidationAgent** (12 tests)
+  - Session grouping by date
+  - AICF format parsing
+  - Storage/token reduction calculation
+  - Large file handling (100+ conversations)
+
+- ✅ **MemoryDropoffAgent** (14 tests)
+  - Age-based dropoff (0-2, 2-7, 7-14, 14+ days)
+  - Folder management (sessions/medium/old/archive)
+  - Compression tracking
+  - Multiple session handling
+
+**Test Results:**
+
+- ✅ **624 tests passing** (25 skipped)
+- ✅ No regressions
+- ✅ All agents now have proper test coverage
+
+#### 3. 🧹 Repository Cleanup
+
+**IMPROVED:** Cleaner, more organized repository structure!
+
+- ✅ Moved 12 architecture/design docs from root → `docs/`
+- ✅ Deleted 5 manual test scripts from root
+- ✅ Root now has only **4 essential .md files**:
+  - `README.md`
+  - `PRIVACY.md`
+  - `SECURITY.md`
+  - `RELEASE-NOTES.md`
+- ✅ Added `.test-tmp/` to `.gitignore`
+
+### 🐛 Bug Fixes
+
+- ✅ Fixed `.ai/rules/` support in `MigrateCommand`
+- ✅ Fixed `.ai/rules/` support in `InitCommand`
+- ✅ Both commands now properly copy universal rules during setup
+
+### 📝 Commits Since v3.1.2
+
+```text
+677b42d test: add unit tests for consolidation agents and cleanup root
+8a1a4d9 chore: cleanup planning docs after universal rules migration
+bcd67bd fix: add .ai/rules/ support to MigrateCommand
+20b7efd feat: extract all Augment conversation history from LevelDB
+```
+
+### 🚀 Upgrade Instructions
+
+**From v3.1.2:**
+
+```bash
+npm install -g create-ai-chat-context-experimental@3.2.0
+```
+
+**New projects:**
+
+```bash
+aice init --automatic
+```
+
+**Existing projects:**
+
+```bash
+aice migrate
+```
+
+Both commands will now create the `.ai/rules/` folder with universal AI rules.
+
+---
+
+## Version 3.0.0
+
+**Release Date:** October 24, 2025
+
+### 🎉 What's New in v3.0.0
 
 This is the **first stable release** of the experimental memory consolidation system. All features are production-ready with comprehensive privacy and security documentation.
 
@@ -28,6 +139,7 @@ aice permissions grant warp
 ```
 
 **Features:**
+
 - ✅ Explicit opt-in for each platform
 - ✅ Revoke access anytime
 - ✅ Complete audit trail in `.aicf/.permissions.aicf`
@@ -95,14 +207,14 @@ To set up automatic mode, we need your permission to:
 
 All 6 platforms fully supported:
 
-| Platform | Status | Location |
-|----------|--------|----------|
-| **Augment** | ✅ Supported | `.cache/llm/augment/` |
-| **Warp** | ✅ Supported | `~/Library/Group Containers/.../warp.sqlite` |
-| **Claude Desktop** | ✅ Supported | `~/Library/Application Support/Claude/` |
-| **Claude CLI** | ✅ Supported | `~/.claude/projects/` |
-| **Copilot** | ✅ Supported | `~/AppData/Local/Microsoft/Copilot/` |
-| **ChatGPT** | ✅ Supported | Browser storage |
+| Platform           | Status       | Location                                     |
+| ------------------ | ------------ | -------------------------------------------- |
+| **Augment**        | ✅ Supported | `.cache/llm/augment/`                        |
+| **Warp**           | ✅ Supported | `~/Library/Group Containers/.../warp.sqlite` |
+| **Claude Desktop** | ✅ Supported | `~/Library/Application Support/Claude/`      |
+| **Claude CLI**     | ✅ Supported | `~/.claude/projects/`                        |
+| **Copilot**        | ✅ Supported | `~/AppData/Local/Microsoft/Copilot/`         |
+| **ChatGPT**        | ✅ Supported | Browser storage                              |
 
 ---
 
@@ -171,12 +283,14 @@ aice migrate
 ## 📊 Project Status
 
 ### Phase 2: TypeScript Rewrite
+
 - ✅ **COMPLETE** - Pure TypeScript codebase
 - ✅ **567 tests passing** - 100% pass rate
 - ✅ **0 errors** - TypeScript strict mode
 - ✅ **Comprehensive docs** - Privacy, security, CLI reference
 
 ### Phase 5.5: Multi-Platform Architecture
+
 - ✅ **COMPLETE** - All 6 platforms supported
 - ✅ **Automatic capture** - Background watcher
 - ✅ **Manual mode** - User-controlled updates
@@ -279,4 +393,3 @@ See [LICENSE](LICENSE) file for details.
 **Ready to consolidate your AI conversations? Start with: `aice init` 🚀**
 
 **First time? Read [PRIVACY.md](PRIVACY.md) first! 🔐**
-
