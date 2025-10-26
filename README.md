@@ -178,11 +178,12 @@ pnpm format        # Format with Prettier
 
 ### Platforms In Development
 
-- 🚧 Claude Desktop support (Phase 5.5b)
-- 🚧 Claude CLI support (Phase 5.5a)
+- 🚧 Claude Desktop support (Phase 5.5b) - Parser implemented, needs testing
+- 🚧 Claude CLI support (Phase 5.5a) - Parser implemented, needs watcher integration
+- ✅ Claude Manual Import - `aice import-claude <file>` works for exported conversations
 - 🚧 Warp support (Phase 5.6)
 - 🚧 Copilot support (Phase 5.7)
-- 🚧 ChatGPT support (Phase 5.8)
+- ❌ ChatGPT support - Not possible (Keychain encrypted storage)
 
 ## 🎓 Key Concepts
 
@@ -255,13 +256,14 @@ aice tokens
 
 ### In Development
 
-| Platform           | Status | Flag               | Use Case                 |
-| ------------------ | ------ | ------------------ | ------------------------ |
-| **Claude Desktop** | 🚧     | `--claude-desktop` | Claude desktop app       |
-| **Claude CLI**     | 🚧     | `--claude-cli`     | Claude command-line tool |
-| **Warp**           | 🚧     | `--warp`           | Warp terminal AI         |
-| **Copilot**        | 🚧     | `--copilot`        | GitHub Copilot           |
-| **ChatGPT**        | 🚧     | `--chatgpt`        | ChatGPT web interface    |
+| Platform           | Status | Flag               | Use Case                                  |
+| ------------------ | ------ | ------------------ | ----------------------------------------- |
+| **Claude Desktop** | 🚧     | `--claude-desktop` | Claude desktop app (parser ready)         |
+| **Claude CLI**     | 🚧     | `--claude-cli`     | Claude command-line tool (parser ready)   |
+| **Claude Import**  | ✅     | N/A                | Manual import via `aice import-claude`    |
+| **Warp**           | 🚧     | `--warp`           | Warp terminal AI                          |
+| **Copilot**        | 🚧     | `--copilot`        | GitHub Copilot                            |
+| **ChatGPT**        | ❌     | N/A                | Not possible (Keychain encrypted storage) |
 
 **Default behavior:** Currently only Augment is supported. Other platforms are in active development.
 
