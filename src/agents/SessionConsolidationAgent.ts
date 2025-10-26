@@ -32,8 +32,8 @@ export interface ConversationEssentials {
   title: string; // First user message or extracted title
   summary: string; // 1-2 sentence summary
   aiModel: string; // Claude Haiku 4.5, etc.
-  decisions: string; // Key decisions made
-  actions: string; // Code written, files changed
+  decisions: string[]; // Key decisions made
+  actions: string[]; // Code written, files changed
   status: 'COMPLETED' | 'ONGOING' | 'PAUSED' | 'CANCELLED';
   contentHash: string; // For deduplication
 }
@@ -179,7 +179,16 @@ export class SessionConsolidationAgent {
   }
 
   /**
+   * Unescape AICF format special characters
+   * Replaces \\n with newlines and \\| with pipes
+   */
+  private unescapeAICF(text: string): string {
+    return text.replace(/\\n/g, '\n').replace(/\\\|/g, '|');
+  }
+
+  /**
    * Extract essential information from conversation file
+   * NEW FORMAT: Reads extracted analysis results directly from AICF file
    */
   private extractEssentials(content: string, filePath: string): ConversationEssentials | null {
     try {
@@ -192,10 +201,12 @@ export class SessionConsolidationAgent {
 
       const date = dateMatch[1];
 
-      // Parse AICF format
+      // Parse AICF format - new extracted format
       let conversationId = '';
       let timestamp = '';
-      let rawData = '';
+      const userIntents: string[] = [];
+      const aiActions: string[] = [];
+      const decisions: string[] = [];
 
       for (const line of lines) {
         if (line.startsWith('conversationId|')) {
@@ -203,62 +214,87 @@ export class SessionConsolidationAgent {
         } else if (line.startsWith('timestamp|')) {
           timestamp = line.split('|')[1] || '';
         } else if (line.startsWith('userIntents|')) {
-          // Extract rawData from userIntents
-          const parts = line.split('|');
-          if (parts.length >= 3) {
-            const thirdPart = parts[2];
-            if (thirdPart) {
-              try {
-                const jsonData = JSON.parse(thirdPart);
-                rawData = jsonData.rawData || '';
-              } catch {
-                // Skip if can't parse
+          // Format: userIntents|timestamp|intent|confidence;timestamp|intent|confidence;...
+          const intentData = line.substring('userIntents|'.length);
+          if (intentData) {
+            // Split by semicolon to get individual intents
+            const intentEntries = intentData.split(';');
+            for (const entry of intentEntries) {
+              const parts = entry.split('|');
+              if (parts.length >= 2 && parts[1]) {
+                const intent = this.unescapeAICF(parts[1]); // timestamp|intent|confidence
+                if (intent && intent.length > 5) {
+                  userIntents.push(intent);
+                }
+              }
+            }
+          }
+        } else if (line.startsWith('aiActions|')) {
+          // Format: aiActions|timestamp|type|details;timestamp|type|details;...
+          const actionData = line.substring('aiActions|'.length);
+          if (actionData) {
+            const actionEntries = actionData.split(';');
+            for (const entry of actionEntries) {
+              const parts = entry.split('|');
+              if (parts.length >= 3 && parts[2]) {
+                const details = this.unescapeAICF(parts[2]); // timestamp|type|details
+                if (details && details.length > 5) {
+                  aiActions.push(details);
+                }
+              }
+            }
+          }
+        } else if (line.startsWith('decisions|')) {
+          // Format: decisions|timestamp|decision|impact;timestamp|decision|impact;...
+          const decisionData = line.substring('decisions|'.length);
+          if (decisionData) {
+            const decisionEntries = decisionData.split(';');
+            for (const entry of decisionEntries) {
+              const parts = entry.split('|');
+              if (parts.length >= 2 && parts[1]) {
+                const decision = this.unescapeAICF(parts[1]); // timestamp|decision|impact
+                if (decision && decision.length > 5) {
+                  decisions.push(decision);
+                }
               }
             }
           }
         }
       }
 
-      if (!conversationId || !rawData) return null;
+      if (!conversationId) return null;
 
-      // Parse rawData to extract conversation details
-      let parsedData: Record<string, unknown> = {};
-      try {
-        parsedData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
-      } catch {
+      // If no extracted data, skip this conversation
+      if (userIntents.length === 0 && aiActions.length === 0) {
         return null;
       }
 
-      // Extract title from response_text or request_message
-      const responseText = String(parsedData['response_text'] || '');
-      const title = this.extractTitle(responseText);
+      // Combine all content for title and summary
+      const allContent = [...userIntents, ...aiActions].join('\n\n');
 
-      // Extract summary
-      const summary = this.extractSummary(responseText);
+      // Extract title from first user intent or AI action
+      const title = this.extractTitle(allContent);
 
-      // Extract AI model
-      const aiModel = this.extractAIModel(String(parsedData['model_id'] || ''));
+      // Extract summary from all content
+      const summary = this.extractSummary(allContent);
 
-      // Extract decisions (from response text)
-      const decisions = this.extractDecisions(responseText);
+      // AI model is 'augment' by default (can be enhanced later)
+      const aiModel = 'augment';
 
-      // Extract actions (from response text)
-      const actions = this.extractActions(responseText);
-
-      // Determine status
-      const status = parsedData['status'] === 'success' ? 'COMPLETED' : 'ONGOING';
+      // Status is always COMPLETED for now
+      const status = 'COMPLETED';
 
       // Generate content hash for deduplication
-      const contentHash = this.hashContent(responseText);
+      const contentHash = this.hashContent(allContent);
 
       return {
         id: conversationId,
-        timestamp: String(parsedData['timestamp'] || timestamp || `${date}T00:00:00Z`),
+        timestamp: timestamp || `${date}T00:00:00Z`,
         title,
         summary,
         aiModel,
         decisions,
-        actions,
+        actions: aiActions,
         status,
         contentHash,
       };
@@ -370,126 +406,6 @@ export class SessionConsolidationAgent {
     }
 
     return 'No summary available';
-  }
-
-  /**
-   * Extract AI model name
-   */
-  private extractAIModel(modelId: string): string {
-    const modelMap: Record<string, string> = {
-      'claude-haiku-4-5': 'Claude Haiku 4.5',
-      'claude-sonnet-4-5': 'Claude Sonnet 4.5',
-      'claude-opus-4': 'Claude Opus 4',
-      'gpt-4': 'GPT-4',
-      'gpt-4-turbo': 'GPT-4 Turbo',
-    };
-
-    return modelMap[modelId] || modelId || 'Unknown';
-  }
-
-  /**
-   * Extract decisions from response text
-   * Improved: Look for decision patterns, commitments, and architectural choices
-   */
-  private extractDecisions(text: string): string {
-    if (!text) return 'No explicit decisions';
-
-    // Decision patterns (more comprehensive)
-    const decisionPatterns = [
-      // Direct decisions
-      /(?:decided|decision|chose|selected|will use|approach|strategy|plan)[\s:]+([^\n.!?]{10,100})/i,
-      // Commitments
-      /(?:let's|we'll|i'll|going to|will)[\s]+([^\n.!?]{10,100})/i,
-      // Architectural choices
-      /(?:use|implement|build|create|design)[\s]+([^\n.!?]{10,100})/i,
-      // Preferences
-      /(?:prefer|better to|should|must|need to)[\s]+([^\n.!?]{10,100})/i,
-      // Rejections (also decisions!)
-      /(?:won't|shouldn't|avoid|skip|remove)[\s]+([^\n.!?]{10,100})/i,
-    ];
-
-    // Try each pattern
-    for (const pattern of decisionPatterns) {
-      const match = text.match(pattern);
-      if (match && match[1]) {
-        const decision = match[1].trim();
-        return decision.length > 100 ? decision.substring(0, 97) + '...' : decision;
-      }
-    }
-
-    // Fallback: Look for bullet points or numbered lists (often contain decisions)
-    const lines = text.split('\n');
-    for (const line of lines) {
-      if (/^[\s]*[-*•]\s+/.test(line) || /^[\s]*\d+\.\s+/.test(line)) {
-        const cleaned = line.replace(/^[\s]*[-*•\d.]+\s+/, '').trim();
-        if (cleaned.length > 10) {
-          return cleaned.length > 100 ? cleaned.substring(0, 97) + '...' : cleaned;
-        }
-      }
-    }
-
-    return 'No explicit decisions';
-  }
-
-  /**
-   * Extract actions from response text
-   * Improved: Look for action patterns, file changes, and concrete work
-   */
-  private extractActions(text: string): string {
-    if (!text) return 'No explicit actions';
-
-    // Action patterns (more comprehensive)
-    const actionPatterns = [
-      // Past tense actions (completed work)
-      /(?:created|implemented|fixed|updated|modified|added|removed|refactored|built|wrote|changed)[\s]+([^\n.!?]{10,100})/i,
-      // File operations
-      /(?:file|files|code|function|class|method|component)[\s:]+([^\n.!?]{10,100})/i,
-      // Tool usage
-      /(?:using|with|via|through)[\s]+([a-zA-Z]+(?:Agent|Service|Writer|Reader|Parser|Extractor))/i,
-      // Imperative actions (commands)
-      /(?:check|verify|test|run|build|compile|deploy|install)[\s]+([^\n.!?]{10,100})/i,
-      // Results
-      /(?:result|output|generated|produced)[\s:]+([^\n.!?]{10,100})/i,
-    ];
-
-    // Try each pattern
-    for (const pattern of actionPatterns) {
-      const match = text.match(pattern);
-      if (match && match[1]) {
-        const action = match[1].trim();
-        return action.length > 100 ? action.substring(0, 97) + '...' : action;
-      }
-    }
-
-    // Fallback: Look for file paths or code references
-    const filePathMatch = text.match(/(?:src\/|test\/|\.ts|\.js|\.json)([^\s\n]{5,50})/);
-    if (filePathMatch) {
-      return `Modified ${filePathMatch[0]}`;
-    }
-
-    // Fallback: Look for tool calls
-    const toolMatch = text.match(
-      /(str-replace-editor|save-file|launch-process|view|codebase-retrieval)/
-    );
-    if (toolMatch) {
-      return `Used ${toolMatch[1]} tool`;
-    }
-
-    // Fallback: Look for bullet points or numbered lists (often contain actions)
-    const lines = text.split('\n');
-    for (const line of lines) {
-      if (/^[\s]*[-*•]\s+/.test(line) || /^[\s]*\d+\.\s+/.test(line)) {
-        const cleaned = line.replace(/^[\s]*[-*•\d.]+\s+/, '').trim();
-        if (
-          cleaned.length > 10 &&
-          /(?:created|implemented|fixed|updated|added|removed|built|wrote)/i.test(cleaned)
-        ) {
-          return cleaned.length > 100 ? cleaned.substring(0, 97) + '...' : cleaned;
-        }
-      }
-    }
-
-    return 'No explicit actions';
   }
 
   /**
@@ -677,8 +593,8 @@ export class SessionConsolidationAgent {
         this.escapeField(conv.title),
         this.escapeField(conv.summary),
         conv.aiModel,
-        this.escapeField(conv.decisions),
-        this.escapeField(conv.actions),
+        this.escapeField(conv.decisions.join('; ')),
+        this.escapeField(conv.actions.join('; ')),
         conv.status,
       ].join('|');
 

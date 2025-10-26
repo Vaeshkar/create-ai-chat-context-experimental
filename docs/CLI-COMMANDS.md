@@ -22,7 +22,7 @@ aice --help
 
 ---
 
-## 🔧 Core Commands (4 Total)
+## 🔧 Core Commands (6 Total)
 
 ### 1. Initialize Project
 
@@ -147,7 +147,79 @@ aice watch --foreground
 
 ---
 
-### 4. Manage Permissions
+### 4. Stop Watcher Daemon
+
+**Purpose:** Stop the background watcher daemon
+
+```bash
+# Stop the daemon
+aice stop
+
+# Verbose output
+aice stop --verbose
+```
+
+**What It Does:**
+
+- Checks if watcher daemon is running
+- Stops the daemon gracefully
+- Shows PID of stopped daemon
+- Provides restart instructions
+
+**Output:**
+
+```
+✅ Watcher daemon stopped (PID: 12345)
+
+✅ Watcher Stopped
+
+To restart the watcher, run:
+  aice watch
+```
+
+---
+
+### 5. Check Watcher Status
+
+**Purpose:** Check if watcher daemon is running
+
+```bash
+# Check status
+aice status
+
+# Verbose output
+aice status --verbose
+```
+
+**What It Does:**
+
+- Checks if watcher daemon is running
+- Shows PID if running
+- Shows uptime and last check time
+- Provides start instructions if not running
+
+**Output (Running):**
+
+```
+✅ Watcher daemon is running
+
+PID: 12345
+Uptime: 2 hours 15 minutes
+Last check: 2025-10-26T20:00:00.000Z
+```
+
+**Output (Not Running):**
+
+```
+ℹ No watcher daemon running
+
+To start the watcher, run:
+  aice watch
+```
+
+---
+
+### 6. Manage Permissions
 
 **Purpose:** View, grant, or revoke platform access
 

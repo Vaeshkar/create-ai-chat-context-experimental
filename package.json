@@ -1,7 +1,7 @@
 {
   "name": "create-ai-chat-context-experimental",
-  "version": "3.2.0",
-  "description": "Phase 2: TypeScript rewrite - AI Chat Context & Memory System with conversation extraction and AICF format support.",
+  "version": "3.2.1",
+  "description": "Phase 2: TypeScript rewrite - AI Chat Context & Memory System with conversation extraction and AICF format support (powered by aicf-core v2.1.0).",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.js",
@@ -75,11 +75,12 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "aicf-core": "^2.0.0",
+    "aicf-core": "^2.1.0",
     "better-sqlite3": "^12.4.1",
     "chalk": "^5.3.0",
     "classic-level": "^3.0.0",
     "commander": "^12.1.0",
+    "create-ai-chat-context-experimental": "^3.2.0",
     "fs-extra": "^11.3.2",
     "inquirer": "^12.10.0",
     "ora": "^8.1.1"

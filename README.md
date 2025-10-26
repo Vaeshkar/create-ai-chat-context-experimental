@@ -24,7 +24,8 @@ A system that automatically captures AI conversations from Augment and consolida
 - **Universal AI Rules** - `.ai/rules/` work across all LLM platforms (Augment, Claude, Cursor, Warp, Copilot, ChatGPT)
 - **Automatic Capture** - Background watcher monitors for new conversations
 - **Smart Consolidation** - Extracts decisions, actions, technical work, and context
-- **AICF Format** - AI-optimized pipe-delimited format for efficient parsing
+- **AICF Format** - AI-optimized pipe-delimited format powered by [aicf-core v2.1.0](https://www.npmjs.com/package/aicf-core)
+- **Proper Escaping** - Handles multi-line content and special characters correctly
 - **Git Integration** - Automatic commits for version control
 - **Type-Safe** - Pure TypeScript with 100% type coverage
 
@@ -59,6 +60,12 @@ npx aice watch --daemon
 
 # Watch in foreground with minimal feedback (default)
 npx aice watch --foreground
+
+# Stop the background watcher daemon
+npx aice stop
+
+# Check watcher daemon status
+npx aice status
 
 # Manage platform permissions
 npx aice permissions list
@@ -114,7 +121,13 @@ Input Sources (Augment)
 
 ### `.aicf/` Directory (AI-Optimized)
 
-Pipe-delimited structured data, optimized for AI parsing:
+Pipe-delimited structured data, optimized for AI parsing using [aicf-core v2.1.0](https://www.npmjs.com/package/aicf-core):
+
+**Format Features:**
+
+- Proper escaping of newlines (`\n` → `\\n`) and pipes (`|` → `\\|`)
+- Structured sections: userIntents, aiActions, technicalWork, decisions, flow, workingState
+- Single source of truth for AICF format (maintained in aicf-core package)
 
 **Cache Layer:**
 
@@ -225,6 +238,15 @@ aice init --manual
 
 # Watch for new conversations (checks every 5 minutes)
 aice watch
+
+# Watch in daemon mode (background)
+aice watch --daemon
+
+# Stop the background watcher daemon
+aice stop
+
+# Check watcher daemon status
+aice status
 
 # Manage permissions
 aice permissions list

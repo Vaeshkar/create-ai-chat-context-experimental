@@ -8,58 +8,41 @@
  * Memory File Writer
  * Writes analysis results to .aicf and .ai memory files
  * Phase 2.4: Integration - October 2025
- * Phase 8: Enhanced with aicf-core integration - October 2025
+ * Phase 8: Enhanced with aicf-core v2.1.0 integration - October 2025
+ *
+ * NOW USES aicf-core v2.1.0 MemoryFileWriter:
+ * - Proper AICF escaping (newlines and pipes)
+ * - Enterprise-grade file operations
+ * - Backward compatible with existing code
  */
 
+import { MemoryFileWriter as CoreMemoryFileWriter } from 'aicf-core';
 import type { AnalysisResult, Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
-import { mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
-import { AICFWriter } from 'aicf-core';
 
 /**
  * Writer for memory files (.aicf and .ai formats)
- * Now uses aicf-core for enterprise-grade file operations
+ * Delegates AICF generation to aicf-core v2.1.0
+ * Keeps markdown generation local (not in aicf-core)
  */
 export class MemoryFileWriter {
-  private aicfWriter: AICFWriter;
+  private coreWriter: CoreMemoryFileWriter;
   private cwd: string;
 
   constructor(cwd: string = process.cwd()) {
     this.cwd = cwd;
-    this.aicfWriter = new AICFWriter(join(cwd, '.aicf'));
+    this.coreWriter = new CoreMemoryFileWriter(cwd);
   }
+
   /**
-   * Generate AICF format content
+   * Generate AICF format content using aicf-core v2.1.0
    * @param analysis - Analysis result
    * @param conversationId - Conversation ID
    * @returns AICF content as string
    */
   generateAICF(analysis: AnalysisResult, conversationId: string): string {
-    const timestamp = new Date().toISOString();
-
-    // Serialize each component
-    const userIntents = this.serializeUserIntents(analysis.userIntents);
-    const aiActions = this.serializeAIActions(analysis.aiActions);
-    const technicalWork = this.serializeTechnicalWork(analysis.technicalWork);
-    const decisions = this.serializeDecisions(analysis.decisions);
-    const flow = this.serializeFlow(analysis.flow);
-    const workingState = this.serializeWorkingState(analysis.workingState);
-
-    // Build AICF content (pipe-delimited)
-    const lines = [
-      `version|3.0.0-alpha`,
-      `timestamp|${timestamp}`,
-      `conversationId|${conversationId}`,
-      `userIntents|${userIntents}`,
-      `aiActions|${aiActions}`,
-      `technicalWork|${technicalWork}`,
-      `decisions|${decisions}`,
-      `flow|${flow}`,
-      `workingState|${workingState}`,
-    ];
-
-    return lines.join('\n');
+    // Delegate to aicf-core's MemoryFileWriter
+    return this.coreWriter.generateAICF(analysis, conversationId);
   }
 
   /**
@@ -93,51 +76,9 @@ export class MemoryFileWriter {
     return sections.join('\n');
   }
 
-  /**
-   * Serialize user intents to pipe-delimited format
-   */
-  private serializeUserIntents(intents: AnalysisResult['userIntents']): string {
-    if (intents.length === 0) return '';
-    return intents.map((i) => `${i.timestamp}|${i.intent}|${i.confidence}`).join(';');
-  }
-
-  /**
-   * Serialize AI actions to pipe-delimited format
-   */
-  private serializeAIActions(actions: AnalysisResult['aiActions']): string {
-    if (actions.length === 0) return '';
-    return actions.map((a) => `${a.timestamp}|${a.type}|${a.details}`).join(';');
-  }
-
-  /**
-   * Serialize technical work to pipe-delimited format
-   */
-  private serializeTechnicalWork(work: AnalysisResult['technicalWork']): string {
-    if (work.length === 0) return '';
-    return work.map((w) => `${w.timestamp}|${w.type}|${w.work}`).join(';');
-  }
-
-  /**
-   * Serialize decisions to pipe-delimited format
-   */
-  private serializeDecisions(decisions: AnalysisResult['decisions']): string {
-    if (decisions.length === 0) return '';
-    return decisions.map((d) => `${d.timestamp}|${d.decision}|${d.impact}`).join(';');
-  }
-
-  /**
-   * Serialize flow to pipe-delimited format
-   */
-  private serializeFlow(flow: AnalysisResult['flow']): string {
-    return `${flow.turns}|${flow.dominantRole}|${flow.sequence.join(',')}`;
-  }
-
-  /**
-   * Serialize working state to pipe-delimited format
-   */
-  private serializeWorkingState(state: AnalysisResult['workingState']): string {
-    return `${state.currentTask}|${state.blockers.join(',')}|${state.nextAction}`;
-  }
+  // ============================================================================
+  // Markdown Generation (Local - Not in aicf-core)
+  // ============================================================================
 
   /**
    * Generate markdown for user intents
@@ -206,12 +147,10 @@ export class MemoryFileWriter {
    * MemoryDropoffAgent will move them to medium/old/archive based on age
    * Filename format: {date}_{conversationId}.aicf (e.g., 2025-10-24_abc123.aicf)
    *
-   * NOW USES aicf-core FOR ENTERPRISE-GRADE WRITES:
-   * - Thread-safe file locking (prevents corruption)
+   * NOW USES aicf-core v2.1.0 FOR ENTERPRISE-GRADE WRITES:
+   * - Proper AICF escaping (newlines and pipes)
+   * - Thread-safe file operations
    * - Atomic writes (all-or-nothing)
-   * - Input validation (schema-based)
-   * - PII redaction (if enabled)
-   * - Error recovery (corrupted file detection)
    */
   async writeAICF(
     conversationId: string,
@@ -220,29 +159,8 @@ export class MemoryFileWriter {
     timestamp?: string
   ): Promise<Result<void>> {
     try {
-      // Ensure directory exists
-      const aicfDir = join(cwd, '.aicf', 'recent');
-      if (!existsSync(aicfDir)) {
-        mkdirSync(aicfDir, { recursive: true });
-      }
-
-      // Use conversation timestamp if provided, otherwise use today
-      // This is CRITICAL for historical conversations to be placed in correct age bucket
-      const conversationDate = timestamp
-        ? new Date(timestamp).toISOString().split('T')[0]
-        : new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-
-      // Build relative file path for aicf-core
-      const fileName = `recent/${conversationDate}_${conversationId}.aicf`;
-
-      // Use aicf-core's appendLine for enterprise-grade writes
-      // This gives us: thread-safe locking, validation, PII redaction, error recovery
-      const result = await this.aicfWriter.appendLine(fileName, content);
-
-      if (!result.ok) {
-        return Err(new Error(`Failed to write AICF file: ${result.error.message}`));
-      }
-
+      // Delegate to aicf-core's writeAICF
+      await this.coreWriter.writeAICF(conversationId, content, cwd, timestamp);
       return Ok(undefined);
     } catch (error) {
       return Err(
@@ -262,23 +180,8 @@ export class MemoryFileWriter {
     cwd: string = this.cwd,
     timestamp?: string
   ): void {
-    const aicfDir = join(cwd, '.aicf', 'recent');
-    if (!existsSync(aicfDir)) {
-      mkdirSync(aicfDir, { recursive: true });
-    }
-    const conversationDate = timestamp
-      ? new Date(timestamp).toISOString().split('T')[0]
-      : new Date().toISOString().split('T')[0];
-    const fileName = `recent/${conversationDate}_${conversationId}.aicf`;
-
-    // Note: This bypasses aicf-core's safety features
-    // Use async writeAICF() for enterprise-grade writes
-    const result = this.aicfWriter.appendLine(fileName, content);
-
-    // Block until promise resolves (not ideal, but needed for sync API)
-    if (result instanceof Promise) {
-      throw new Error('Cannot use sync write with async aicf-core. Use writeAICF() instead.');
-    }
+    // Delegate to aicf-core's writeAICFSync
+    this.coreWriter.writeAICFSync(conversationId, content, cwd, timestamp);
   }
 
   /**
