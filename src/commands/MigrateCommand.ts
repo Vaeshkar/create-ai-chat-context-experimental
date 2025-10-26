@@ -21,6 +21,7 @@ import {
   statSync,
   renameSync,
 } from 'fs';
+import { spawn } from 'child_process';
 import chalk from 'chalk';
 import ora from 'ora';
 import inquirer from 'inquirer';
@@ -158,15 +159,33 @@ export class MigrateCommand {
       console.log();
       console.log(chalk.cyan('✅ Migration complete'));
       console.log();
-      console.log(chalk.dim('To start watching for conversations, run:'));
-      console.log(chalk.cyan('  aice watch'));
-      console.log();
+
+      // Auto-start watcher in background
+      console.log(chalk.cyan('🚀 Starting watcher in background...'));
+      const watcherStarted = await this.startWatcherDaemon();
+
+      if (watcherStarted) {
+        console.log(chalk.green('✅ Watcher started successfully'));
+        console.log();
+        console.log(chalk.dim('To check watcher status, run:'));
+        console.log(chalk.cyan('  aice status'));
+        console.log();
+        console.log(chalk.dim('To stop the watcher, run:'));
+        console.log(chalk.cyan('  aice stop'));
+        console.log();
+      } else {
+        console.log(chalk.yellow('⚠️  Failed to start watcher automatically'));
+        console.log();
+        console.log(chalk.dim('To start the watcher manually, run:'));
+        console.log(chalk.cyan('  aice watch'));
+        console.log();
+      }
 
       return Ok({
         projectPath: this.cwd,
         filesCreated,
         filesPreserved,
-        message: 'Successfully migrated to automatic mode',
+        message: 'Successfully migrated to automatic mode. Watcher is running in background.',
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
@@ -566,5 +585,32 @@ export class MigrateCommand {
     }
 
     return false;
+  }
+
+  /**
+   * Start watcher daemon in background
+   */
+  private async startWatcherDaemon(): Promise<boolean> {
+    try {
+      // Spawn aice watch as a detached background process
+      const child = spawn('aice', ['watch'], {
+        detached: true,
+        stdio: 'ignore',
+        cwd: this.cwd,
+      });
+
+      // Detach the child process so it continues running after parent exits
+      child.unref();
+
+      // Wait a bit to see if it starts successfully
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      return true;
+    } catch (error) {
+      if (this.verbose) {
+        console.error(chalk.red('Failed to start watcher:'), error);
+      }
+      return false;
+    }
   }
 }

@@ -22,6 +22,8 @@ import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 import { PermissionsCommand } from './commands/PermissionsCommand.js';
+import { StopCommand } from './commands/StopCommand.js';
+import { StatusCommand } from './commands/StatusCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -183,6 +185,52 @@ program
         chatgpt: options.chatgpt,
       });
       await watcher.start();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Stop command
+program
+  .command('stop')
+  .description('Stop the background watcher daemon')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const stopCmd = new StopCommand({
+        verbose: options.verbose,
+      });
+
+      const result = await stopCmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Status command
+program
+  .command('status')
+  .description('Show watcher daemon status')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const statusCmd = new StatusCommand({
+        verbose: options.verbose,
+      });
+
+      const result = await statusCmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

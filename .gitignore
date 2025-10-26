@@ -67,3 +67,5 @@ temp/
 # Legacy memory (preserved from v2.0.1 migration)
 # NOTE: legacy_memory/ is NOT ignored - users should commit this folder
 # to preserve their old memory files from v2.0.1
+
+.watcher-config.json

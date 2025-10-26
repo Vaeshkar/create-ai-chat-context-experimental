@@ -173,7 +173,8 @@ export class CacheConsolidationAgent {
       };
 
       // Analyze with orchestrator
-      const analysisResult = this.orchestrator.analyze(conversation, JSON.stringify(chunk));
+      // Pass chunk.rawData (the messages array) instead of the entire chunk JSON
+      const analysisResult = this.orchestrator.analyze(conversation, chunk.rawData);
 
       if (!analysisResult.ok) {
         return Err(new Error('Analysis failed'));

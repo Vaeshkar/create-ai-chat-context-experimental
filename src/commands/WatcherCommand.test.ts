@@ -86,18 +86,25 @@ describe('WatcherCommand', () => {
       verbose: false,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher with timeout
     const startPromise = watcher.start();
     await new Promise((resolve) => setTimeout(resolve, 200));
 
+    // The watcher should start without crashing, even if directory doesn't exist
+    // It will just not find any files to process
+    expect(process.exit).not.toHaveBeenCalled();
+
     // Stop watcher
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
   });
 
   it('should detect checkpoint files in watch directory', async () => {
@@ -112,9 +119,11 @@ describe('WatcherCommand', () => {
       verbose: false,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher with timeout
     const startPromise = watcher.start();
@@ -124,6 +133,7 @@ describe('WatcherCommand', () => {
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
 
     // Verify checkpoint was processed (file should be deleted)
     // Note: This is a simplified test - in real scenario, we'd verify the output files
@@ -142,9 +152,11 @@ describe('WatcherCommand', () => {
       verbose: false,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher
     const startPromise = watcher.start();
@@ -154,6 +166,7 @@ describe('WatcherCommand', () => {
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
 
     expect(watcher).toBeDefined();
   });
@@ -166,9 +179,11 @@ describe('WatcherCommand', () => {
       verbose: true,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher with timeout
     const startPromise = watcher.start();
@@ -178,6 +193,7 @@ describe('WatcherCommand', () => {
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
 
     expect(watcher).toBeDefined();
   });
@@ -193,9 +209,11 @@ describe('WatcherCommand', () => {
       verbose: false,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher with timeout
     const startPromise = watcher.start();
@@ -205,6 +223,7 @@ describe('WatcherCommand', () => {
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
 
     expect(watcher).toBeDefined();
   });
@@ -224,9 +243,11 @@ describe('WatcherCommand', () => {
       verbose: false,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher with timeout
     const startPromise = watcher.start();
@@ -236,6 +257,7 @@ describe('WatcherCommand', () => {
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
 
     expect(watcher).toBeDefined();
   });
@@ -248,9 +270,11 @@ describe('WatcherCommand', () => {
       verbose: false,
     });
 
-    // Mock process.on to prevent actual signal handling
+    // Mock process.on and process.exit to prevent actual signal handling and exit
     const originalOn = process.on;
+    const originalExit = process.exit;
     process.on = vi.fn();
+    process.exit = vi.fn() as any;
 
     // Start watcher
     const startPromise = watcher.start();
@@ -260,6 +284,7 @@ describe('WatcherCommand', () => {
     process.emit('SIGINT');
 
     process.on = originalOn;
+    process.exit = originalExit;
 
     expect(watcher).toBeDefined();
   });

@@ -23,6 +23,7 @@ import { ClaudeCacheWriter } from '../writers/ClaudeCacheWriter.js';
 import { CacheConsolidationAgent } from '../agents/CacheConsolidationAgent.js';
 import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js';
 import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
+import { DaemonManager } from '../utils/DaemonManager.js';
 
 interface WatcherCommandOptions {
   interval?: string;
@@ -134,12 +135,40 @@ export class WatcherCommand {
    * Start the watcher
    */
   async start(): Promise<void> {
+    // Check if daemon is already running
+    const daemonManager = new DaemonManager(this.cwd);
+    const statusResult = daemonManager.getStatus();
+
+    if (statusResult.ok && statusResult.value.running) {
+      console.log();
+      console.log(chalk.red('❌ Watcher already running'));
+      console.log();
+      console.log(chalk.yellow('Status:'), chalk.green('Running ✓'));
+      console.log(chalk.yellow('PID:'), statusResult.value.pid);
+      console.log(chalk.yellow('Uptime:'), statusResult.value.uptime);
+      console.log();
+      console.log(chalk.dim('To stop the watcher, run:'));
+      console.log(chalk.cyan('  aice stop'));
+      console.log();
+      console.log(chalk.dim('To check status, run:'));
+      console.log(chalk.cyan('  aice status'));
+      console.log();
+      process.exit(1);
+    }
+
     this.isRunning = true;
 
     // Initialize manager
     const initResult = this.manager.initialize();
     if (!initResult.ok) {
       console.error(chalk.red('❌ Failed to initialize watcher:'), initResult.error);
+      process.exit(1);
+    }
+
+    // Write PID file
+    const pidResult = daemonManager.writePidFile(process.pid);
+    if (!pidResult.ok) {
+      console.error(chalk.red('❌ Failed to write PID file:'), pidResult.error.message);
       process.exit(1);
     }
 
@@ -225,6 +254,13 @@ export class WatcherCommand {
     const cleanupResult = this.manager.cleanup();
     if (!cleanupResult.ok) {
       console.error(chalk.red('❌ Failed to cleanup watcher:'), cleanupResult.error);
+    }
+
+    // Clean up PID file
+    const daemonManager = new DaemonManager(this.cwd);
+    const deletePidResult = daemonManager.deletePidFile();
+    if (!deletePidResult.ok) {
+      console.error(chalk.red('❌ Failed to delete PID file:'), deletePidResult.error.message);
     }
 
     console.log(chalk.yellow('\n\n🛑 Watcher stopped\n'));

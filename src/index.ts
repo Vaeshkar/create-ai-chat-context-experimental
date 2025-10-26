@@ -152,6 +152,8 @@ export * from './utils/Templates.js';
 export * from './utils/TimestampUtils.js';
 export * from './utils/ValidationUtils.js';
 export { WatcherManager } from './utils/WatcherManager.js';
+export { DaemonManager } from './utils/DaemonManager.js';
+export type { DaemonStatus, DaemonInfo } from './utils/DaemonManager.js';
 
 // ============================================================================
 // Writer Exports

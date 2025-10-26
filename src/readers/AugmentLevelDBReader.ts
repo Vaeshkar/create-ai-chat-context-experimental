@@ -199,6 +199,9 @@ export class AugmentLevelDBReader {
         let totalKeys = 0;
 
         try {
+          // Group all keys by conversation ID
+          const conversationMap = new Map<string, Array<{ key: string; value: string }>>();
+
           for await (const [key, value] of db.iterator()) {
             const keyStr = key.toString();
             const valueStr = value.toString();
@@ -218,20 +221,77 @@ export class AugmentLevelDBReader {
               keyStr.startsWith('tooluse:') ||
               keyStr.startsWith('metadata:')
             ) {
+              // Extract conversation ID from key
+              const parts = keyStr.split(':');
+              if (parts.length >= 2 && parts[1]) {
+                const conversationId = parts[1]; // The actual conversation ID
+
+                if (!conversationMap.has(conversationId)) {
+                  conversationMap.set(conversationId, []);
+                }
+                const entries = conversationMap.get(conversationId);
+                if (entries) {
+                  entries.push({ key: keyStr, value: valueStr });
+                }
+              }
+            }
+          }
+
+          // Convert grouped data into conversations
+          for (const [conversationId, entries] of conversationMap.entries()) {
+            // Parse exchange entries to extract messages
+            const messages: Array<{ role: string; content: string; timestamp: string }> = [];
+
+            for (const entry of entries) {
+              if (entry.key.startsWith('exchange:')) {
+                try {
+                  const exchangeData = JSON.parse(entry.value);
+
+                  // Extract user message from request_message
+                  if (exchangeData.request_message) {
+                    messages.push({
+                      role: 'user',
+                      content: exchangeData.request_message,
+                      timestamp: exchangeData.timestamp || now,
+                    });
+                  }
+
+                  // Extract assistant message from response_text
+                  if (exchangeData.response_text) {
+                    messages.push({
+                      role: 'assistant',
+                      content: exchangeData.response_text,
+                      timestamp: exchangeData.timestamp || now,
+                    });
+                  }
+                } catch (parseError) {
+                  // Skip malformed exchange data
+                  console.warn(`Failed to parse exchange data for ${entry.key}:`, parseError);
+                }
+              }
+            }
+
+            // Only add conversation if it has messages
+            if (messages.length > 0) {
+              // Sort messages by timestamp to get correct start/end dates
+              messages.sort(
+                (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+              );
+
               conversations.push({
-                conversationId: keyStr,
+                conversationId,
                 workspaceId,
                 workspaceName,
-                rawData: valueStr,
-                timestamp: now,
-                lastModified: now,
+                rawData: JSON.stringify(messages),
+                timestamp: messages[0]?.timestamp || now,
+                lastModified: messages[messages.length - 1]?.timestamp || now,
               });
             }
           }
 
           if (process.env['DEBUG_AUGMENT']) {
             console.error(
-              `[DEBUG] Workspace ${workspaceName}: ${totalKeys} total keys, ${conversations.length} conversations`
+              `[DEBUG] Workspace ${workspaceName}: ${totalKeys} total keys, ${conversationMap.size} conversations`
             );
           }
         } finally {
