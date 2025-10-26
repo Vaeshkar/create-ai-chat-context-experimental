@@ -26,6 +26,7 @@ Thumbs.db
 # Temporary
 tmp/
 temp/
+.test-tmp/
 
 # Chat-finish state (local only, not shared)
 .ai/.chat-finish-state.json
