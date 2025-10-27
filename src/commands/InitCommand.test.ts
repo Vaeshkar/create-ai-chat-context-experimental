@@ -10,8 +10,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { mkdirSync, rmSync, existsSync, readFileSync } from 'fs';
+import { mkdirSync, rmSync, existsSync, readFileSync, mkdtempSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { InitCommand } from './InitCommand.js';
 import inquirer from 'inquirer';
 
@@ -23,12 +24,10 @@ vi.mock('inquirer', () => ({
 }));
 
 describe('InitCommand', () => {
-  let testDirCounter = 0;
   const testDirsToCleanup: string[] = [];
 
   function createTestDir(): string {
-    const testDir = join(process.cwd(), `.test-init-command-${testDirCounter++}`);
-    mkdirSync(testDir, { recursive: true });
+    const testDir = mkdtempSync(join(tmpdir(), 'test-init-command-'));
     testDirsToCleanup.push(testDir);
     return testDir;
   }

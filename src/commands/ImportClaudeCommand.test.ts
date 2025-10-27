@@ -10,17 +10,16 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdirSync, rmSync, existsSync, readFileSync, writeFileSync } from 'fs';
+import { mkdirSync, rmSync, existsSync, readFileSync, writeFileSync, mkdtempSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { ImportClaudeCommand } from './ImportClaudeCommand.js';
 
 describe('ImportClaudeCommand', () => {
-  let testDirCounter = 0;
   const testDirsToCleanup: string[] = [];
 
   function createTestDir(): string {
-    const testDir = join(process.cwd(), `.test-import-claude-${testDirCounter++}`);
-    mkdirSync(testDir, { recursive: true });
+    const testDir = mkdtempSync(join(tmpdir(), 'test-import-claude-'));
     testDirsToCleanup.push(testDir);
     return testDir;
   }

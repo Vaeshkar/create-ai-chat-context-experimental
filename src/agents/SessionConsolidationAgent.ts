@@ -155,6 +155,7 @@ export class SessionConsolidationAgent {
 
   /**
    * Parse conversations from files
+   * Option B: Each file may produce multiple ConversationEssentials (one per day)
    */
   private parseConversations(files: string[]): ConversationEssentials[] {
     const conversations: ConversationEssentials[] = [];
@@ -162,9 +163,9 @@ export class SessionConsolidationAgent {
     for (const file of files) {
       try {
         const content = readFileSync(file, 'utf-8');
-        const essentials = this.extractEssentials(content, file);
-        if (essentials) {
-          conversations.push(essentials);
+        const essentialsArray = this.extractEssentials(content, file);
+        if (essentialsArray && essentialsArray.length > 0) {
+          conversations.push(...essentialsArray);
         }
       } catch (error) {
         // Skip files that can't be parsed
@@ -186,17 +187,11 @@ export class SessionConsolidationAgent {
   /**
    * Extract essential information from conversation file
    * NEW FORMAT: Reads extracted analysis results directly from AICF file
+   * Option B: Returns array of ConversationEssentials (one per day for multi-day conversations)
    */
-  private extractEssentials(content: string, filePath: string): ConversationEssentials | null {
+  private extractEssentials(content: string, _filePath: string): ConversationEssentials[] {
     try {
       const lines = content.split('\n');
-
-      // Extract timestamp from filename
-      const fileName = filePath.split('/').pop() || '';
-      const dateMatch = fileName.match(/^(\d{4}-\d{2}-\d{2})_/);
-      if (!dateMatch) return null;
-
-      const date = dateMatch[1];
 
       // Parse AICF format - new extracted format
       let conversationId = '';
@@ -205,7 +200,39 @@ export class SessionConsolidationAgent {
       const aiActions: string[] = [];
       const decisions: string[] = [];
 
+      // Extract actual message timestamps from @CONVERSATION section
+      // Group by date for multi-day conversations
+      const messagesByDate = new Map<string, string[]>();
+      let inConversationSection = false;
+
       for (const line of lines) {
+        // Track @CONVERSATION section
+        if (line.startsWith('@CONVERSATION')) {
+          inConversationSection = true;
+          continue;
+        } else if (line.startsWith('@')) {
+          inConversationSection = false;
+        }
+
+        // Extract timestamps and group messages by date
+        if (inConversationSection && line.includes('|')) {
+          const parts = line.split('|');
+          // Format: timestamp|role|content
+          if (parts.length >= 3 && parts[0]) {
+            const ts = parts[0].trim();
+            // Validate ISO timestamp format
+            if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(ts)) {
+              const date = ts.split('T')[0]; // Extract YYYY-MM-DD
+              if (date) {
+                if (!messagesByDate.has(date)) {
+                  messagesByDate.set(date, []);
+                }
+                messagesByDate.get(date)?.push(ts);
+              }
+            }
+          }
+        }
+
         if (line.startsWith('conversationId|')) {
           conversationId = line.split('|')[1] || '';
         } else if (line.startsWith('timestamp|')) {
@@ -259,11 +286,11 @@ export class SessionConsolidationAgent {
         }
       }
 
-      if (!conversationId) return null;
+      if (!conversationId) return [];
 
       // If no extracted data, skip this conversation
       if (userIntents.length === 0 && aiActions.length === 0) {
-        return null;
+        return [];
       }
 
       // Combine all content for title and summary
@@ -284,19 +311,44 @@ export class SessionConsolidationAgent {
       // Generate content hash for deduplication
       const contentHash = this.hashContent(allContent);
 
-      return {
-        id: conversationId,
-        timestamp: timestamp || `${date}T00:00:00Z`,
-        title,
-        summary,
-        aiModel,
-        decisions,
-        actions: aiActions,
-        status,
-        contentHash,
-      };
+      // Option B: Create one ConversationEssentials per date
+      // This allows multi-day conversations to appear in multiple session files
+      const results: ConversationEssentials[] = [];
+
+      if (messagesByDate.size > 0) {
+        // Multi-day conversation: create one entry per date
+        for (const [date, timestamps] of messagesByDate.entries()) {
+          const earliestTimestamp = timestamps.sort()[0] || `${date}T00:00:00Z`;
+          results.push({
+            id: conversationId,
+            timestamp: earliestTimestamp,
+            title: `${title} (${date})`, // Add date suffix for multi-day conversations
+            summary,
+            aiModel,
+            decisions,
+            actions: aiActions,
+            status,
+            contentHash: `${contentHash}-${date}`, // Unique hash per date
+          });
+        }
+      } else {
+        // No message timestamps found, fall back to conversation timestamp
+        results.push({
+          id: conversationId,
+          timestamp: timestamp || new Date().toISOString(),
+          title,
+          summary,
+          aiModel,
+          decisions,
+          actions: aiActions,
+          status,
+          contentHash,
+        });
+      }
+
+      return results;
     } catch {
-      return null;
+      return [];
     }
   }
 

@@ -10,8 +10,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { writeFileSync, mkdirSync, rmSync, existsSync } from 'fs';
+import { writeFileSync, mkdirSync, rmSync, existsSync, mkdtempSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { WatcherCommand } from './WatcherCommand.js';
 import type { Conversation } from '../types/conversation.js';
 
@@ -21,7 +22,7 @@ describe('WatcherCommand', () => {
   let outputDir: string;
 
   beforeEach(() => {
-    tempDir = join(process.cwd(), '.test-watcher');
+    tempDir = mkdtempSync(join(tmpdir(), 'test-watcher-'));
     watchDir = join(tempDir, 'checkpoints');
     outputDir = join(tempDir, '.aicf');
     mkdirSync(watchDir, { recursive: true });

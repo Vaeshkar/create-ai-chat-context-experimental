@@ -7,6 +7,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mkdtempSync, rmSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import inquirer from 'inquirer';
 import { isOk, isErr } from '../types/result.js';
 import { MigrateCommand } from './MigrateCommand.js';
@@ -22,7 +23,7 @@ describe('MigrateCommand', () => {
   let testDir: string;
 
   beforeEach(() => {
-    testDir = mkdtempSync(join(process.cwd(), '.test-migrate-'));
+    testDir = mkdtempSync(join(tmpdir(), 'test-migrate-'));
     vi.mocked(inquirer.prompt).mockResolvedValue({
       platforms: ['augment'],
     });

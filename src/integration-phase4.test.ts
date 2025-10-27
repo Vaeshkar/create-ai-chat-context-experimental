@@ -11,8 +11,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { mkdirSync, rmSync, existsSync, readFileSync } from 'fs';
+import { mkdirSync, rmSync, existsSync, readFileSync, mkdtempSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { InitCommand } from './commands/InitCommand.js';
 import { PermissionManager } from './core/PermissionManager.js';
 import { WatcherConfigManager } from './core/WatcherConfigManager.js';
@@ -26,12 +27,10 @@ vi.mock('inquirer', () => ({
 }));
 
 describe('Phase 4 Integration Tests', () => {
-  let testDirCounter = 0;
   const testDirsToCleanup: string[] = [];
 
   function createTestDir(): string {
-    const testDir = join(process.cwd(), `.test-phase4-${testDirCounter++}`);
-    mkdirSync(testDir, { recursive: true });
+    const testDir = mkdtempSync(join(tmpdir(), 'test-phase4-'));
     testDirsToCleanup.push(testDir);
     return testDir;
   }
