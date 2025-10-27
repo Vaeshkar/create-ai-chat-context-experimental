@@ -32,6 +32,7 @@ import { Ok, Err } from '../types/result.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
 import { getTemplatesDir } from '../utils/PackageRoot.js';
+import { DaemonManager } from '../utils/DaemonManager.js';
 // BackgroundService removed - using Cache-First Architecture (Phase 6)
 
 export interface InitCommandOptions {
@@ -959,6 +960,20 @@ ${platformStatuses}
    */
   private async startWatcherDaemon(): Promise<boolean> {
     try {
+      // Check if daemon is already running BEFORE spawning a new one
+      const daemonManager = new DaemonManager(this.cwd);
+      const statusResult = daemonManager.getStatus();
+
+      if (statusResult.ok && statusResult.value.running) {
+        // Daemon already running - don't spawn another one!
+        if (this.verbose) {
+          console.log(
+            chalk.yellow('⚠️  Watcher daemon already running (PID: ' + statusResult.value.pid + ')')
+          );
+        }
+        return true;
+      }
+
       // Spawn aice watch as a detached background process
       const child = spawn('aice', ['watch'], {
         detached: true,

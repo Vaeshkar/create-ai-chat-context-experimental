@@ -45,21 +45,27 @@ export class DecisionExtractor {
 
   /**
    * Extract decisions from conversation summary
+   * IMPROVED: Only extract meaningful decisions, not garbage phrases
    * @param summary - Conversation summary
    * @returns Decision[]
    */
   private extractFromSummary(summary: ConversationSummary): Decision[] {
     const decisions: Decision[] = [];
 
-    // Look for decision keywords and patterns
+    // More specific patterns that capture actual decisions
     const decisionPatterns = [
-      /decided\s+(?:to\s+)?([^.!?]+)/gi,
-      /decided\s+(?:that\s+)?([^.!?]+)/gi,
-      /will\s+([^.!?]+)/gi,
-      /should\s+([^.!?]+)/gi,
-      /must\s+([^.!?]+)/gi,
-      /agreed\s+(?:to\s+)?([^.!?]+)/gi,
-      /chose\s+(?:to\s+)?([^.!?]+)/gi,
+      // "decided to X" or "decided that X"
+      /(?:we|I|they)\s+decided\s+(?:to|that)\s+([^.!?]+)/gi,
+      // "agreed to X"
+      /(?:we|I|they)\s+agreed\s+(?:to|that)\s+([^.!?]+)/gi,
+      // "chose to X"
+      /(?:we|I|they)\s+chose\s+(?:to|that)\s+([^.!?]+)/gi,
+      // "will implement/build/create/use X" (action-oriented)
+      /(?:we|I|they)\s+will\s+(?:implement|build|create|use|add|remove|fix|update|migrate|refactor)\s+([^.!?]+)/gi,
+      // "should implement/build/create/use X" (recommendation)
+      /(?:we|I|they)\s+should\s+(?:implement|build|create|use|add|remove|fix|update|migrate|refactor)\s+([^.!?]+)/gi,
+      // "must implement/build/create/use X" (requirement)
+      /(?:we|I|they)\s+must\s+(?:implement|build|create|use|add|remove|fix|update|migrate|refactor)\s+([^.!?]+)/gi,
     ];
 
     const fullConv = summary.fullConversation;
@@ -68,18 +74,133 @@ export class DecisionExtractor {
       let match;
       while ((match = pattern.exec(fullConv)) !== null) {
         const decision = match[1]?.trim();
-        if (decision && decision.length > 5 && decision.length < 500) {
-          decisions.push({
-            timestamp: new Date().toISOString(),
-            decision, // ✅ FULL content, not truncated
-            context: this.extractContext(fullConv, match.index),
-            impact: this.assessImpact(decision),
-          });
+
+        // Skip if no decision text
+        if (!decision) {
+          continue;
         }
+
+        // Filter out garbage decisions
+        if (!this.isValidDecision(decision)) {
+          continue;
+        }
+
+        decisions.push({
+          timestamp: new Date().toISOString(),
+          decision,
+          context: this.extractContext(fullConv, match.index),
+          impact: this.assessImpact(decision),
+        });
       }
     });
 
-    return decisions;
+    // Deduplicate and sort by impact
+    const uniqueDecisions = this.deduplicateDecisions(decisions);
+    const sortedDecisions = this.sortByImpact(uniqueDecisions);
+
+    // Return top 10 decisions only
+    return sortedDecisions.slice(0, 10);
+  }
+
+  /**
+   * Check if a decision is valid (not garbage)
+   * @param decision - Decision text
+   * @returns true if valid, false if garbage
+   */
+  private isValidDecision(decision: string): boolean {
+    if (!decision || decision.length < 10 || decision.length > 500) {
+      return false;
+    }
+
+    // Filter out garbage patterns
+    const garbagePatterns = [
+      /^be\s+/i, // "be gone", "be deleted", "be forgotten"
+      /^get\s+/i, // "get crowded", "get confused"
+      /^find\s+/i, // "find all the other data"
+      /^help\s+/i, // "help us: 1"
+      /^follow\s+/i, // "follow the same pattern"
+      /^it\s+/i, // "it work", "it matter"
+      /^this\s+/i, // "this fade away"
+      /^eventually\s+/i, // "eventually be deleted"
+      /^shut\s+down/i, // "shut down"
+      /^explode/i, // "explode"
+      /^last\s+forever/i, // "last forever"
+      /^change\s+the\s+world/i, // "change the world"
+      /^make\s+you\s+famous/i, // "make you famous"
+      /turn\s+to\s+dust/i, // "turn to dust when I die"
+      /\?\s*$/i, // Questions are not decisions
+    ];
+
+    for (const pattern of garbagePatterns) {
+      if (pattern.test(decision)) {
+        return false;
+      }
+    }
+
+    // Must contain action verbs or technical terms
+    const actionVerbs = [
+      'implement',
+      'build',
+      'create',
+      'use',
+      'add',
+      'remove',
+      'fix',
+      'update',
+      'migrate',
+      'refactor',
+      'consolidate',
+      'extract',
+      'parse',
+      'write',
+      'read',
+      'process',
+      'handle',
+      'manage',
+      'configure',
+      'setup',
+      'install',
+      'deploy',
+      'test',
+      'validate',
+    ];
+
+    const lowerDecision = decision.toLowerCase();
+    const hasActionVerb = actionVerbs.some((verb) => lowerDecision.includes(verb));
+
+    return hasActionVerb;
+  }
+
+  /**
+   * Deduplicate decisions by content similarity
+   * @param decisions - Array of decisions
+   * @returns Deduplicated decisions
+   */
+  private deduplicateDecisions(decisions: Decision[]): Decision[] {
+    const unique: Decision[] = [];
+    const seen = new Set<string>();
+
+    for (const decision of decisions) {
+      // Normalize decision text for comparison
+      const normalized = decision.decision.toLowerCase().trim().substring(0, 50);
+
+      if (!seen.has(normalized)) {
+        seen.add(normalized);
+        unique.push(decision);
+      }
+    }
+
+    return unique;
+  }
+
+  /**
+   * Sort decisions by impact (high > medium > low)
+   * @param decisions - Array of decisions
+   * @returns Sorted decisions
+   */
+  private sortByImpact(decisions: Decision[]): Decision[] {
+    const impactOrder = { high: 0, medium: 1, low: 2 };
+    return decisions.sort((a, b) => impactOrder[a.impact] - impactOrder[b.impact]);
   }
 
   /**

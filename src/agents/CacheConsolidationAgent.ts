@@ -180,8 +180,20 @@ export class CacheConsolidationAgent {
         return Err(new Error('Analysis failed'));
       }
 
-      // Generate AICF format (only format we use now)
-      const aicf = this.memoryWriter.generateAICF(analysisResult.value, conversationId);
+      // Generate AICF format with original conversation timestamp
+      // CRITICAL: Pass conversationTimestamp so historical conversations preserve their original date
+      // This ensures session consolidation groups conversations by actual date, not today
+      let aicf = this.memoryWriter.generateAICF(
+        analysisResult.value,
+        conversationId,
+        conversationTimestamp
+      );
+
+      // CRITICAL FIX: Replace the timestamp in AICF content with the original conversation timestamp
+      // aicf-core's generateAICF() uses new Date().toISOString() which gives today's date
+      // We need to preserve the original conversation date for historical conversations
+      // This ensures session consolidation groups conversations by their actual date, not today
+      aicf = aicf.replace(/^timestamp\|.*$/m, `timestamp|${conversationTimestamp}`);
 
       // Route content
       const contentTypes = this.router.classifyContent(chunk);

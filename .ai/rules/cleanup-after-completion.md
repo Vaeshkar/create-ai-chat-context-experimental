@@ -18,6 +18,7 @@
 ## 🗑️ What to Delete After Completion
 
 ### **Always Delete:**
+
 - `SESSION-*.md` - Session summaries (temporary planning)
 - `PHASE-*-COMPLETE.md` - Phase completion reports (temporary status)
 - `*-PLAN.md` - Planning documents (temporary roadmaps)
@@ -29,8 +30,13 @@
 - `*-REPORT.md` - Status reports (temporary updates)
 - `ACTION_PLAN_*.md` - Action plans (temporary task lists)
 - `CLEANUP-*.md` - Cleanup summaries (ironic, but delete these too!)
+- `TEST-*.md` - Test verification files (temporary test artifacts)
+- `.test-*` - Test directories (temporary test workspaces)
+- `.watcher.log` - Watcher log files (temporary runtime logs)
+- `*.log` - Any log files in root (should be in logs/ folder instead)
 
 ### **Keep Only:**
+
 - `README.md` - User-facing documentation
 - `PRIVACY.md` - Legal/privacy policy
 - `SECURITY.md` - Security policy
@@ -43,16 +49,19 @@
 ## 📁 Where Planning Docs Can Live (Temporarily)
 
 ### **Option 1: Root Folder (Temporary)**
+
 - ✅ Create planning docs in root during active work
 - ❌ **MUST DELETE** when task is complete
 - Use for: Quick planning, session notes, phase tracking
 
 ### **Option 2: `.ai-planning/` Folder (AI Reference Only)**
+
 - ✅ Create planning docs here if you need them for future reference
 - ✅ Add `.ai-planning/` to `.gitignore` (not committed)
 - Use for: AI's own planning, breadcrumbs for context loading
 
 ### **Option 3: Don't Create Them**
+
 - ✅ Best option: Just do the work without creating planning docs
 - ✅ Use task management tools instead (if needed)
 - Use for: Simple tasks that don't need extensive planning
@@ -91,6 +100,7 @@ After completing a task/phase/feature:
 ## 🚫 Exception: Active Work
 
 **DO NOT delete planning docs if:**
+
 - The task is still IN PROGRESS
 - The phase is not yet COMPLETE
 - The user explicitly asks to keep them
@@ -103,6 +113,7 @@ After completing a task/phase/feature:
 ## 💡 Example Workflow
 
 ### **During Work:**
+
 ```bash
 # Create planning doc
 echo "## Plan\n- Step 1\n- Step 2" > PHASE-X-PLAN.md
@@ -115,6 +126,7 @@ npm test  # All tests pass ✅
 ```
 
 ### **After Completion:**
+
 ```bash
 # Clean up
 git rm PHASE-X-PLAN.md PHASE-X-COMPLETE.md SESSION-*.md
@@ -125,8 +137,8 @@ git commit -m "chore: cleanup planning docs after Phase X completion"
 
 ## 📊 Current State (Example)
 
-**Root folder:** 40 markdown files (should be ~5-10)  
-**docs/ folder:** 66 markdown files (should be ~10-15)  
+**Root folder:** 40 markdown files (should be ~5-10)
+**docs/ folder:** 66 markdown files (should be ~10-15)
 **Total:** 106 markdown files (should be ~15-25)
 
 **Most of these are planning/session/completion docs that should have been deleted after the work was done.**
@@ -136,6 +148,7 @@ git commit -m "chore: cleanup planning docs after Phase X completion"
 ## 🎯 Success Criteria
 
 **You know cleanup is working when:**
+
 - ✅ Root folder has < 10 markdown files
 - ✅ docs/ folder has < 20 markdown files
 - ✅ Only essential user-facing and architecture docs remain
@@ -145,4 +158,3 @@ git commit -m "chore: cleanup planning docs after Phase X completion"
 ---
 
 **Remember: Make plans, execute, clean up. Don't leave scaffolding after the building is done!**
-

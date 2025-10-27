@@ -219,6 +219,32 @@ it('should handle malformed JSON gracefully', () => {
 
 ---
 
+## Rule 5: Test Locally Before Publishing
+
+**CRITICAL:** Always test CLI commands locally with `node aice` or `npm link` before publishing to npm.
+
+```bash
+# ❌ BAD - Publish without testing
+npm version patch
+npm publish
+
+# ✅ GOOD - Test first, then publish
+npm run build
+node dist/esm/cli.js init  # Test the actual CLI
+npm link                    # Test as installed package
+aice init                   # Test the linked command
+npm publish                 # Now publish
+```
+
+**Why:** Publishing untested code wastes users' time and damages trust. Always verify:
+
+- CLI commands work as expected
+- Version numbers are correct
+- Help text is accurate
+- Error messages are clear
+
+---
+
 ## References
 
 - Linus Torvalds on testing standard libraries

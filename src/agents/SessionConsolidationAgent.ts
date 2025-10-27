@@ -20,11 +20,10 @@
  * - Enterprise-grade writes (thread-safe, validated, PII redaction)
  */
 
-import { readdirSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import { readdirSync, readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
-import { AICFWriter } from 'aicf-core';
 
 export interface ConversationEssentials {
   id: string;
@@ -66,12 +65,10 @@ export interface ConsolidationStats {
 export class SessionConsolidationAgent {
   private inputDir: string;
   private outputDir: string;
-  private aicfWriter: AICFWriter;
 
   constructor(cwd: string = process.cwd()) {
     this.inputDir = join(cwd, '.aicf', 'recent');
     this.outputDir = join(cwd, '.aicf', 'sessions');
-    this.aicfWriter = new AICFWriter(join(cwd, '.aicf'));
   }
 
   /**
@@ -534,12 +531,8 @@ export class SessionConsolidationAgent {
 
   /**
    * Write session to template format file
-   * NOW USES aicf-core FOR ENTERPRISE-GRADE WRITES:
-   * - Thread-safe file locking (prevents corruption)
-   * - Atomic writes (all-or-nothing)
-   * - Input validation (schema-based)
-   * - PII redaction (if enabled)
-   * - Error recovery (corrupted file detection)
+   * Uses direct fs.writeFileSync since session files contain multi-line structured data
+   * that should not be escaped (unlike single-line AICF entries)
    */
   private async writeSessionFile(session: Session): Promise<Result<void>> {
     try {
@@ -548,16 +541,11 @@ export class SessionConsolidationAgent {
         mkdirSync(this.outputDir, { recursive: true });
       }
 
-      const fileName = `sessions/${session.date}-session.aicf`;
+      const filePath = join(this.outputDir, `${session.date}-session.aicf`);
       const content = this.generateTemplateFormat(session);
 
-      // Use aicf-core's appendLine for enterprise-grade writes
-      // This gives us: thread-safe locking, validation, PII redaction, error recovery
-      const result = await this.aicfWriter.appendLine(fileName, content);
-
-      if (!result.ok) {
-        return Err(new Error(`Failed to write session file: ${result.error.message}`));
-      }
+      // Write directly - session files are multi-line structured data
+      writeFileSync(filePath, content, 'utf-8');
 
       return Ok(undefined);
     } catch (error) {
@@ -568,50 +556,85 @@ export class SessionConsolidationAgent {
   }
 
   /**
-   * Generate template format content
+   * Generate AICF format content for LLM memory
+   * Format: @CONVERSATION sections with structured fields
+   * This is the format that GPT, Claude, Augment, and Warp all agreed on
    */
   private generateTemplateFormat(session: Session): string {
     const lines: string[] = [];
 
-    // Header
-    lines.push('@CONVERSATIONS');
-    lines.push('@SCHEMA');
-    lines.push('C#|TIMESTAMP|TITLE|SUMMARY|AI_MODEL|DECISIONS|ACTIONS|STATUS');
+    // Session header
+    lines.push(`# Session: ${session.date}`);
+    lines.push(`# Total conversations: ${session.metadata.totalConversations}`);
+    lines.push(`# Unique conversations: ${session.metadata.uniqueConversations}`);
+    lines.push(`# Focus: ${session.metadata.focus}`);
     lines.push('');
-    lines.push('@DATA');
 
-    // Conversations
-    for (let i = 0; i < session.conversations.length; i++) {
-      const conv = session.conversations[i];
+    // Each conversation gets its own @CONVERSATION block
+    for (const conv of session.conversations) {
       if (!conv) continue;
 
-      const timestamp = conv.timestamp.replace(/[-:]/g, '').replace('.000Z', 'Z');
+      // @CONVERSATION header
+      lines.push(`@CONVERSATION:${conv.id}`);
+      lines.push(`timestamp_start=${conv.timestamp}`);
+      lines.push(`timestamp_end=${conv.timestamp}`); // We don't track end time yet
+      lines.push(`messages=${conv.actions.length + conv.decisions.length}`);
+      lines.push(`tokens=0`); // We don't track tokens yet
+      lines.push(`title=${this.escapeField(conv.title)}`);
+      lines.push(`summary=${this.escapeField(conv.summary)}`);
+      lines.push(`ai_model=${conv.aiModel}`);
+      lines.push(`status=${conv.status}`);
+      lines.push('');
 
-      const row = [
-        (i + 1).toString(),
-        timestamp,
-        this.escapeField(conv.title),
-        this.escapeField(conv.summary),
-        conv.aiModel,
-        this.escapeField(conv.decisions.join('; ')),
-        this.escapeField(conv.actions.join('; ')),
-        conv.status,
-      ].join('|');
+      // @STATE section
+      lines.push('@STATE');
+      lines.push('working_on=development');
+      lines.push('blockers=none');
+      lines.push('next_action=continue');
+      lines.push('');
 
-      lines.push(row);
+      // @FLOW section
+      lines.push('@FLOW');
+      if (conv.actions.length > 0) {
+        // Create flow from actions
+        const flowSteps = conv.actions.slice(0, 5).map((action) => {
+          return action
+            .substring(0, 30)
+            .replace(/[^a-z0-9_]/gi, '_')
+            .toLowerCase();
+        });
+        lines.push(flowSteps.join('|'));
+      } else {
+        lines.push('user_query|ai_response|session_complete');
+      }
+      lines.push('');
+
+      // @INSIGHTS section
+      lines.push('@INSIGHTS');
+      // Extract insights from decisions (decisions are often insights)
+      const insights = conv.decisions.slice(0, 3); // Top 3 decisions as insights
+      if (insights.length > 0) {
+        for (const insight of insights) {
+          lines.push(`${this.escapeField(insight)}|GENERAL|MEDIUM|MEDIUM`);
+        }
+      } else {
+        lines.push('No significant insights extracted');
+      }
+      lines.push('');
+
+      // @DECISIONS section
+      lines.push('@DECISIONS');
+      if (conv.decisions.length > 0) {
+        for (const decision of conv.decisions) {
+          lines.push(
+            `${this.escapeField(decision)}|extracted_from_conversation|IMPACT:MEDIUM|CONF:MEDIUM`
+          );
+        }
+      } else {
+        lines.push('No explicit decisions extracted');
+      }
+      lines.push('');
     }
-
-    // Notes
-    lines.push('');
-    lines.push('@NOTES');
-    lines.push(`- Session: ${session.date}`);
-    lines.push(`- Total conversations: ${session.metadata.totalConversations}`);
-    lines.push(`- Unique conversations: ${session.metadata.uniqueConversations}`);
-    lines.push(
-      `- Duplicates removed: ${session.metadata.totalConversations - session.metadata.uniqueConversations}`
-    );
-    lines.push(`- Duration: ${session.metadata.duration}`);
-    lines.push(`- Focus: ${session.metadata.focus}`);
 
     return lines.join('\n') + '\n';
   }

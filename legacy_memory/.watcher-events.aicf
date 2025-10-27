@@ -1,0 +1,155 @@
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.671Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.671Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.672Z
+level=error
+event=error_occurred
+message=Processing error: Test error 1 (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.672Z
+level=error
+event=error_occurred
+message=Processing error: Test error 2 (total errors: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.675Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.676Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.676Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.678Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 3)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.679Z
+level=error
+event=error_occurred
+message=Processing error: Test error (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.681Z
+level=error
+event=error_occurred
+message=Processing error: Error 1 (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.683Z
+level=error
+event=error_occurred
+message=Processing error: Error 2 (total errors: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.684Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.685Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.686Z
+level=info
+event=watcher_event
+message=Log file cleared
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.688Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:16.979Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.278Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.880Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.880Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.881Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.981Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.982Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.983Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:17.984Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.081Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.082Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 3)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.084Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 3)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.085Z
+level=error
+event=error_occurred
+message=Processing error: Invalid checkpoint structure: missing conversation.messages (total errors: 3)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.186Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 1)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.186Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 2)
+@WATCHER_EVENT
+timestamp=2025-10-22T07:42:18.187Z
+level=success
+event=checkpoint_processed
+message=Processed checkpoint (total: 3)

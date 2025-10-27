@@ -27,18 +27,42 @@ vi.mock('inquirer', () => ({
 
 describe('Phase 4 Integration Tests', () => {
   let testDirCounter = 0;
+  const testDirsToCleanup: string[] = [];
 
   function createTestDir(): string {
     const testDir = join(process.cwd(), `.test-phase4-${testDirCounter++}`);
     mkdirSync(testDir, { recursive: true });
+    testDirsToCleanup.push(testDir);
     return testDir;
   }
 
   function cleanupTestDir(testDir: string): void {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+    if (!existsSync(testDir)) return;
+
+    // Retry cleanup up to 3 times with delays (handles file locks)
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      try {
+        rmSync(testDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+        return; // Success
+      } catch (error) {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          console.warn(`Failed to cleanup ${testDir} after ${maxAttempts} attempts:`, error);
+        }
+      }
     }
   }
+
+  // Clean up ALL test directories after each test
+  afterEach(() => {
+    for (const testDir of testDirsToCleanup) {
+      cleanupTestDir(testDir);
+    }
+    testDirsToCleanup.length = 0; // Clear the array
+  });
 
   describe('Manual Mode Workflow', () => {
     beforeEach(() => {
