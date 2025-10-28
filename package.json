@@ -1,6 +1,6 @@
 {
   "name": "create-ai-chat-context-experimental",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Phase 2: TypeScript rewrite - AI Chat Context & Memory System with conversation extraction and AICF format support (powered by aicf-core v2.1.0).",
   "type": "module",
   "main": "./dist/cjs/index.cjs",

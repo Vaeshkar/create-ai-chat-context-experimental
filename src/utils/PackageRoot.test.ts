@@ -112,13 +112,21 @@ describe('PackageRoot', () => {
   describe('integration', () => {
     it('should find templates directory in built package', () => {
       const templatesDir = getTemplatesDir();
-      const aiTemplatesDir = join(templatesDir, 'ai');
+      const augmentTemplatesDir = join(templatesDir, 'augment');
+      const sharedTemplatesDir = join(templatesDir, 'shared');
+      const aiTemplatesDir = join(augmentTemplatesDir, '.ai');
 
       // If templates exist, verify structure
       if (existsSync(templatesDir)) {
-        expect(existsSync(aiTemplatesDir)).toBe(true);
+        // Check for platform-based structure
+        expect(existsSync(augmentTemplatesDir) || existsSync(sharedTemplatesDir)).toBe(true);
 
-        // Check for expected template files
+        // If augment templates exist, check structure
+        if (existsSync(augmentTemplatesDir)) {
+          expect(existsSync(aiTemplatesDir)).toBe(true);
+        }
+
+        // Check for expected template files in augment or shared
         const expectedFiles = [
           'code-style.md',
           'design-system.md',

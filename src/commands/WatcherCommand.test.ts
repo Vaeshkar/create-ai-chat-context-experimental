@@ -95,7 +95,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher with timeout
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // The watcher should start without crashing, even if directory doesn't exist
     // It will just not find any files to process
@@ -129,7 +129,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher with timeout
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
     process.emit('SIGINT');
@@ -162,7 +162,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
     process.emit('SIGINT');
@@ -189,7 +189,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher with timeout
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
     process.emit('SIGINT');
@@ -219,7 +219,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher with timeout
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
     process.emit('SIGINT');
@@ -253,7 +253,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher with timeout
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
     process.emit('SIGINT');
@@ -280,7 +280,7 @@ describe('WatcherCommand', () => {
 
     // Start watcher
     const startPromise = watcher.start();
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
     process.emit('SIGINT');

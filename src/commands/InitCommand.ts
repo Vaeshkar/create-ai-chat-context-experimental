@@ -734,6 +734,12 @@ ${platformStatuses}
   /**
    * Copy template files from dist/templates to project directories
    * Smart merge: Only copies missing files or updates if template is newer
+   *
+   * New structure:
+   * - templates/augment/ - Augment-specific templates (includes .augment/, .ai/, .aicf/)
+   * - templates/cursor/ - Cursor-specific templates (future)
+   * - templates/warp/ - Warp-specific templates (future)
+   * - templates/shared/ - Shared templates across all platforms
    */
   private copyTemplateFiles(): void {
     try {
@@ -748,124 +754,243 @@ ${platformStatuses}
         return;
       }
 
-      // Copy ai-instructions.md if it exists
-      const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
-      if (existsSync(aiInstructionsTemplate)) {
-        const aiInstructionsPath = join(this.cwd, '.ai-instructions');
-        if (!existsSync(aiInstructionsPath)) {
-          copyFileSync(aiInstructionsTemplate, aiInstructionsPath);
-        }
+      // Determine which platform templates to use
+      // For now, we only support Augment, but this will expand
+      const platformDirs: string[] = [];
+
+      if (this.selectedPlatforms.augment) {
+        platformDirs.push('augment');
+      }
+      // Future: if (this.selectedPlatforms.cursor) platformDirs.push('cursor');
+      // Future: if (this.selectedPlatforms.warp) platformDirs.push('warp');
+
+      // If no platform-specific templates, fall back to shared
+      if (platformDirs.length === 0) {
+        platformDirs.push('shared');
       }
 
-      // Copy NEW_CHAT_PROMPT.md if it exists
-      const newChatPromptTemplate = join(templatesDir, 'NEW_CHAT_PROMPT.md');
-      if (existsSync(newChatPromptTemplate)) {
-        const newChatPromptPath = join(this.cwd, 'NEW_CHAT_PROMPT.md');
-        if (!existsSync(newChatPromptPath)) {
-          copyFileSync(newChatPromptTemplate, newChatPromptPath);
+      // Copy templates from each selected platform
+      for (const platform of platformDirs) {
+        const platformTemplateDir = join(templatesDir, platform);
+
+        if (!existsSync(platformTemplateDir)) {
+          if (this.verbose) {
+            console.warn(`⚠️  Warning: Platform template directory not found: ${platform}`);
+          }
+          continue;
         }
+
+        this.copyPlatformTemplates(platformTemplateDir, platform);
       }
 
-      // Copy .ai/ template files (smart merge for critical files)
-      const aiTemplateDir = join(templatesDir, 'ai');
-
-      if (existsSync(aiTemplateDir)) {
-        const aiDir = join(this.cwd, '.ai');
-        mkdirSync(aiDir, { recursive: true });
-
-        const aiFiles = readdirSync(aiTemplateDir);
-
-        const criticalFiles = [
-          'code-style.md',
-          'design-system.md',
-          'npm-publishing-checklist.md',
-          'testing-philosophy.md',
-          'project-overview.md',
-          'README.md',
-        ];
-
-        for (const file of aiFiles) {
-          const srcFile = join(aiTemplateDir, file);
-          const destFile = join(aiDir, file);
-
-          // Skip directories - handle them separately
-          if (statSync(srcFile).isDirectory()) {
-            continue;
-          }
-
-          if (!existsSync(destFile)) {
-            // File doesn't exist - copy template
-            copyFileSync(srcFile, destFile);
-            if (this.verbose) {
-              console.log(`📝 Copied ${file}`);
-            }
-          } else if (criticalFiles.includes(file)) {
-            // Critical file exists - check if identical
-            const isSame = this.filesAreIdentical(srcFile, destFile);
-
-            if (isSame) {
-              // Files are identical - no action needed
-              continue;
-            }
-
-            // Files differ - check if template is newer
-            const templateNewer = this.isTemplateNewer(srcFile, destFile);
-
-            if (templateNewer) {
-              // Template is newer - update user file with template
-              copyFileSync(srcFile, destFile);
-              if (this.verbose) {
-                console.log(`📦 Updated ${file} (template is newer)`);
-              }
-            } else {
-              // User file is newer or same version - preserve it
-              if (this.verbose) {
-                console.log(`⏭️  Skipped ${file} (user version is newer or customized)`);
-              }
-            }
-          }
-        }
-
-        // Copy .ai/rules/ directory
-        const aiRulesTemplateDir = join(aiTemplateDir, 'rules');
-        if (existsSync(aiRulesTemplateDir)) {
-          const aiRulesDir = join(aiDir, 'rules');
-          mkdirSync(aiRulesDir, { recursive: true });
-
-          const ruleFiles = readdirSync(aiRulesTemplateDir);
-          for (const file of ruleFiles) {
-            const srcFile = join(aiRulesTemplateDir, file);
-            const destFile = join(aiRulesDir, file);
-
-            if (!existsSync(destFile)) {
-              copyFileSync(srcFile, destFile);
-              if (this.verbose) {
-                console.log(`📝 Copied rules/${file}`);
-              }
-            }
-          }
-        }
-      }
-
-      // Copy .aicf/ template files (only if they don't exist)
-      const aicfTemplateDir = join(templatesDir, 'aicf');
-      if (existsSync(aicfTemplateDir)) {
-        const aicfDir = join(this.cwd, '.aicf');
-        mkdirSync(aicfDir, { recursive: true });
-
-        const aicfFiles = readdirSync(aicfTemplateDir);
-        for (const file of aicfFiles) {
-          const srcFile = join(aicfTemplateDir, file);
-          const destFile = join(aicfDir, file);
-          if (!existsSync(destFile)) {
-            copyFileSync(srcFile, destFile);
-          }
-        }
+      // Always copy shared templates (they apply to all platforms)
+      const sharedTemplateDir = join(templatesDir, 'shared');
+      if (existsSync(sharedTemplateDir)) {
+        this.copyPlatformTemplates(sharedTemplateDir, 'shared');
       }
     } catch (error) {
       // Silently fail if templates don't exist (e.g., in development)
       if (this.verbose) {
         console.warn('Warning: Could not copy template files:', error);
+      }
+    }
+  }
+
+  /**
+   * Copy templates from a specific platform directory
+   */
+  private copyPlatformTemplates(platformTemplateDir: string, platformName: string): void {
+    // Copy ai-instructions.md if it exists
+    const aiInstructionsTemplate = join(platformTemplateDir, 'ai-instructions.md');
+    if (existsSync(aiInstructionsTemplate)) {
+      const aiInstructionsPath = join(this.cwd, '.ai-instructions');
+      if (!existsSync(aiInstructionsPath)) {
+        copyFileSync(aiInstructionsTemplate, aiInstructionsPath);
+        if (this.verbose) {
+          console.log(`📝 Copied .ai-instructions from ${platformName}`);
+        }
+      }
+    }
+
+    // Copy NEW_CHAT_PROMPT.md if it exists
+    const newChatPromptTemplate = join(platformTemplateDir, 'NEW_CHAT_PROMPT.md');
+    if (existsSync(newChatPromptTemplate)) {
+      const newChatPromptPath = join(this.cwd, 'NEW_CHAT_PROMPT.md');
+      if (!existsSync(newChatPromptPath)) {
+        copyFileSync(newChatPromptTemplate, newChatPromptPath);
+        if (this.verbose) {
+          console.log(`📝 Copied NEW_CHAT_PROMPT.md from ${platformName}`);
+        }
+      }
+    }
+
+    // Copy .ai/ directory (universal AI context)
+    this.copyAiDirectory(platformTemplateDir, platformName);
+
+    // Copy .aicf/ directory (AICF format config)
+    this.copyAicfDirectory(platformTemplateDir, platformName);
+
+    // Copy platform-specific directories (e.g., .augment/, .cursor/, .warp/)
+    this.copyPlatformSpecificDirectories(platformTemplateDir, platformName);
+  }
+
+  /**
+   * Copy .ai/ directory with smart merge for critical files
+   */
+  private copyAiDirectory(platformTemplateDir: string, platformName: string): void {
+    const aiTemplateDir = join(platformTemplateDir, '.ai');
+
+    if (!existsSync(aiTemplateDir)) {
+      return;
+    }
+
+    const aiDir = join(this.cwd, '.ai');
+    mkdirSync(aiDir, { recursive: true });
+
+    const aiFiles = readdirSync(aiTemplateDir);
+
+    const criticalFiles = [
+      'code-style.md',
+      'design-system.md',
+      'npm-publishing-checklist.md',
+      'testing-philosophy.md',
+      'project-overview.md',
+      'README.md',
+    ];
+
+    for (const file of aiFiles) {
+      const srcFile = join(aiTemplateDir, file);
+      const destFile = join(aiDir, file);
+
+      // Skip directories - handle them separately
+      if (statSync(srcFile).isDirectory()) {
+        continue;
+      }
+
+      if (!existsSync(destFile)) {
+        // File doesn't exist - copy template
+        copyFileSync(srcFile, destFile);
+        if (this.verbose) {
+          console.log(`📝 Copied .ai/${file} from ${platformName}`);
+        }
+      } else if (criticalFiles.includes(file)) {
+        // Critical file exists - check if identical
+        const isSame = this.filesAreIdentical(srcFile, destFile);
+
+        if (isSame) {
+          // Files are identical - no action needed
+          continue;
+        }
+
+        // Files differ - check if template is newer
+        const templateNewer = this.isTemplateNewer(srcFile, destFile);
+
+        if (templateNewer) {
+          // Template is newer - update user file with template
+          copyFileSync(srcFile, destFile);
+          if (this.verbose) {
+            console.log(`📦 Updated .ai/${file} (template is newer)`);
+          }
+        } else {
+          // User file is newer or same version - preserve it
+          if (this.verbose) {
+            console.log(`⏭️  Skipped .ai/${file} (user version is newer or customized)`);
+          }
+        }
+      }
+    }
+
+    // Copy .ai/rules/ directory
+    const aiRulesTemplateDir = join(aiTemplateDir, 'rules');
+    if (existsSync(aiRulesTemplateDir)) {
+      const aiRulesDir = join(aiDir, 'rules');
+      mkdirSync(aiRulesDir, { recursive: true });
+
+      const ruleFiles = readdirSync(aiRulesTemplateDir);
+      for (const file of ruleFiles) {
+        const srcFile = join(aiRulesTemplateDir, file);
+        const destFile = join(aiRulesDir, file);
+
+        if (!existsSync(destFile)) {
+          copyFileSync(srcFile, destFile);
+          if (this.verbose) {
+            console.log(`📝 Copied .ai/rules/${file} from ${platformName}`);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Copy .aicf/ directory
+   */
+  private copyAicfDirectory(platformTemplateDir: string, platformName: string): void {
+    const aicfTemplateDir = join(platformTemplateDir, '.aicf');
+
+    if (!existsSync(aicfTemplateDir)) {
+      return;
+    }
+
+    const aicfDir = join(this.cwd, '.aicf');
+    mkdirSync(aicfDir, { recursive: true });
+
+    const aicfFiles = readdirSync(aicfTemplateDir);
+    for (const file of aicfFiles) {
+      const srcFile = join(aicfTemplateDir, file);
+      const destFile = join(aicfDir, file);
+
+      if (!existsSync(destFile)) {
+        copyFileSync(srcFile, destFile);
+        if (this.verbose) {
+          console.log(`📝 Copied .aicf/${file} from ${platformName}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * Copy platform-specific directories (e.g., .augment/, .cursor/, .warp/)
+   */
+  private copyPlatformSpecificDirectories(platformTemplateDir: string, platformName: string): void {
+    // Map platform names to their directory names
+    const platformDirMap: Record<string, string> = {
+      augment: '.augment',
+      cursor: '.cursor',
+      warp: '.warp',
+      // Add more platforms as needed
+    };
+
+    const platformDir = platformDirMap[platformName];
+    if (!platformDir) {
+      // Not a platform with specific directory (e.g., 'shared')
+      return;
+    }
+
+    const platformSpecificTemplateDir = join(platformTemplateDir, platformDir);
+    if (!existsSync(platformSpecificTemplateDir)) {
+      return;
+    }
+
+    const platformSpecificDir = join(this.cwd, platformDir);
+    mkdirSync(platformSpecificDir, { recursive: true });
+
+    // Copy rules/ subdirectory if it exists
+    const rulesTemplateDir = join(platformSpecificTemplateDir, 'rules');
+    if (existsSync(rulesTemplateDir)) {
+      const rulesDir = join(platformSpecificDir, 'rules');
+      mkdirSync(rulesDir, { recursive: true });
+
+      const ruleFiles = readdirSync(rulesTemplateDir);
+      for (const file of ruleFiles) {
+        const srcFile = join(rulesTemplateDir, file);
+        const destFile = join(rulesDir, file);
+
+        if (!existsSync(destFile)) {
+          copyFileSync(srcFile, destFile);
+          if (this.verbose) {
+            console.log(`📝 Copied ${platformDir}/rules/${file} from ${platformName}`);
+          }
+        }
       }
     }
   }

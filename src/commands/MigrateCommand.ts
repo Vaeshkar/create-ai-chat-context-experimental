@@ -373,6 +373,8 @@ export class MigrateCommand {
   /**
    * Copy template files from dist/templates to project directories
    * Smart merge: Only copies missing files or updates if template is newer
+   *
+   * Note: Migrate uses 'shared' templates since it doesn't know which platform the user has
    */
   private copyTemplateFiles(): void {
     try {
@@ -387,8 +389,22 @@ export class MigrateCommand {
         return;
       }
 
+      // Use 'shared' templates for migrate (platform-agnostic)
+      // Try 'shared' first, fall back to 'augment' if shared doesn't exist (backwards compatibility)
+      let sourceTemplateDir = join(templatesDir, 'shared');
+      if (!existsSync(sourceTemplateDir)) {
+        sourceTemplateDir = join(templatesDir, 'augment');
+      }
+
+      if (!existsSync(sourceTemplateDir)) {
+        if (this.verbose) {
+          console.warn('⚠️  Warning: No template source directory found');
+        }
+        return;
+      }
+
       // Copy ai-instructions.md if it exists
-      const aiInstructionsTemplate = join(templatesDir, 'ai-instructions.md');
+      const aiInstructionsTemplate = join(sourceTemplateDir, 'ai-instructions.md');
       if (existsSync(aiInstructionsTemplate)) {
         const aiInstructionsPath = join(this.cwd, '.ai-instructions');
         if (!existsSync(aiInstructionsPath)) {
@@ -397,7 +413,7 @@ export class MigrateCommand {
       }
 
       // Copy NEW_CHAT_PROMPT.md if it exists
-      const newChatPromptTemplate = join(templatesDir, 'NEW_CHAT_PROMPT.md');
+      const newChatPromptTemplate = join(sourceTemplateDir, 'NEW_CHAT_PROMPT.md');
       if (existsSync(newChatPromptTemplate)) {
         const newChatPromptPath = join(this.cwd, 'NEW_CHAT_PROMPT.md');
         if (!existsSync(newChatPromptPath)) {
@@ -406,7 +422,7 @@ export class MigrateCommand {
       }
 
       // Copy .ai/ template files (smart merge for critical files)
-      const aiTemplateDir = join(templatesDir, 'ai');
+      const aiTemplateDir = join(sourceTemplateDir, '.ai');
       if (existsSync(aiTemplateDir)) {
         const aiDir = join(this.cwd, '.ai');
         mkdirSync(aiDir, { recursive: true });
@@ -481,7 +497,7 @@ export class MigrateCommand {
       }
 
       // Copy .aicf/ template files (only if they don't exist)
-      const aicfTemplateDir = join(templatesDir, 'aicf');
+      const aicfTemplateDir = join(sourceTemplateDir, '.aicf');
       if (existsSync(aicfTemplateDir)) {
         const aicfDir = join(this.cwd, '.aicf');
         mkdirSync(aicfDir, { recursive: true });

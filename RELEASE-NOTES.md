@@ -2,6 +2,63 @@
 
 ---
 
+## Version 3.2.3
+
+**Release Date:** October 28, 2025
+
+### 🏗️ Architecture Improvements
+
+This release restructures the templates folder to support multiple LLM platforms with platform-specific configurations.
+
+#### Template Structure Redesign
+
+**New Platform-Based Structure:**
+
+```
+templates/
+├── augment/                    # Augment-specific templates
+│   ├── .augment/
+│   │   └── rules/
+│   │       └── always-load-context.md
+│   ├── .ai/                    # Universal AI context
+│   ├── .aicf/                  # AICF format config
+│   ├── .ai-instructions
+│   └── NEW_CHAT_PROMPT.md
+├── shared/                     # Shared across all platforms
+│   ├── .ai/
+│   ├── .aicf/
+│   ├── .ai-instructions
+│   └── NEW_CHAT_PROMPT.md
+└── (future: cursor/, warp/, etc.)
+```
+
+**Benefits:**
+
+- ✅ Each LLM platform gets its own folder with platform-specific files
+- ✅ Shared files (`.ai/`, `.aicf/`) available for all platforms
+- ✅ Easy to add new platforms (Cursor, Warp, etc.) without touching existing ones
+- ✅ `InitCommand` copies from the right platform folder based on user selection
+- ✅ `MigrateCommand` uses shared templates (platform-agnostic)
+
+#### What Changed
+
+1. **InitCommand** - Now copies templates from `templates/augment/` for Augment users
+2. **MigrateCommand** - Uses `templates/shared/` for platform-agnostic migrations
+3. **Template Organization** - Platform-specific files (`.augment/`, `.cursor/`, `.warp/`) separated from universal files (`.ai/`, `.aicf/`)
+
+#### Backwards Compatibility
+
+- ✅ All existing projects continue to work
+- ✅ All 624 tests passing
+- ✅ No breaking changes to user-facing APIs
+
+### 🐛 Bug Fixes
+
+- Fixed missing `.augment/rules/always-load-context.md` in template distribution
+- Updated test expectations to match new template structure
+
+---
+
 ## Version 3.2.2
 
 **Release Date:** October 28, 2025
