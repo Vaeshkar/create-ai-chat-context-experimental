@@ -38,12 +38,11 @@ export class MemoryFileWriter {
    * Generate AICF format content using aicf-core v2.1.1
    * @param analysis - Analysis result
    * @param conversationId - Conversation ID
-   * @param timestamp - Optional conversation timestamp (defaults to now)
    * @returns AICF content as string
    */
-  generateAICF(analysis: AnalysisResult, conversationId: string, timestamp?: string): string {
-    // Delegate to aicf-core's MemoryFileWriter with timestamp support
-    return this.coreWriter.generateAICF(analysis, conversationId, timestamp);
+  generateAICF(analysis: AnalysisResult, conversationId: string): string {
+    // Delegate to aicf-core's MemoryFileWriter
+    return this.coreWriter.generateAICF(analysis, conversationId);
   }
 
   /**

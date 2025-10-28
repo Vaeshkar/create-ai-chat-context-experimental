@@ -2,6 +2,69 @@
 
 ---
 
+## Version 3.2.2
+
+**Release Date:** October 28, 2025
+
+### 📝 Documentation Updates
+
+This release clarifies platform support status after extensive investigation into Claude Desktop and ChatGPT Desktop automatic capture.
+
+#### Platform Support Clarifications
+
+**✅ Fully Supported:**
+
+- **Augment** - Automatic capture from VSCode extension (LevelDB-based)
+- **Claude Import** - Manual import via `aice import-claude <file>` for exported conversations
+
+**🚧 In Development:**
+
+- **Claude CLI** - Parser implemented, needs watcher integration
+- **Warp** - Planned (SQLite-based storage)
+- **Copilot** - Planned
+
+**❌ Not Possible:**
+
+- **Claude Desktop** - Conversations stored in cloud, local access blocked by Cloudflare bot protection
+- **ChatGPT Desktop** - Keychain encrypted storage + API protection
+
+#### Investigation Summary
+
+After extensive investigation into Claude Desktop support:
+
+1. Successfully decrypted Chromium cookies from macOS Keychain
+2. Extracted valid session keys
+3. Discovered conversations are stored in cloud, not locally
+4. API access blocked by Cloudflare bot protection (403 Forbidden)
+5. **Conclusion:** Not feasible for automatic capture without complex workarounds
+
+Similar issues found with ChatGPT Desktop (encrypted storage + API protection).
+
+#### Documentation Changes
+
+- Updated `README.md` with clear platform support status
+- Updated `PRIVACY.md` with accurate platform access information
+- Added "Not Possible" section explaining technical limitations
+- Clarified that manual export/import still works for Claude Web
+
+### 🔧 What Still Works
+
+- ✅ Augment automatic capture (fully functional)
+- ✅ Claude manual import from exported JSON
+- ✅ Full consolidation pipeline (Cache → Sessions → Memory Dropoff)
+- ✅ Universal AI rules (`.ai/rules/`)
+- ✅ 624+ tests passing
+
+### 📚 For Users
+
+If you use Claude Desktop or ChatGPT Desktop:
+
+- Export conversations manually from Claude Web
+- Use `aice import-claude <file>` to import them
+- Automatic capture is not possible due to technical limitations
+
+---
+
 ## Version 3.2.0
 
 **Release Date:** October 26, 2025

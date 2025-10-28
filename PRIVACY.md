@@ -57,16 +57,19 @@ To set up automatic mode, we need your permission to:
 
 ### Platform-Specific Access
 
-| Platform | Location | Access Type | Data Read |
-|----------|----------|-------------|-----------|
-| **Augment** | `.cache/llm/augment/` | Read-only JSON | Conversation chunks |
-| **Warp** | `~/Library/Group Containers/.../warp.sqlite` | Read-only SQLite | AI queries & responses |
-| **Claude Desktop** | `~/Library/Application Support/Claude/` | Read-only DB | Conversation history |
-| **Claude CLI** | `~/.claude/projects/` | Read-only JSONL | Session files |
-| **Copilot** | `~/AppData/Local/Microsoft/Copilot/` | Read-only files | Conversation history |
-| **ChatGPT** | Browser storage | Read-only | Conversation history |
+| Platform            | Location                                     | Access Type      | Data Read            | Status            |
+| ------------------- | -------------------------------------------- | ---------------- | -------------------- | ----------------- |
+| **Augment**         | Augment LevelDB storage                      | Read-only JSON   | Conversation chunks  | ✅ Supported      |
+| **Claude CLI**      | `~/.claude/projects/`                        | Read-only JSONL  | Session files        | 🚧 In Development |
+| **Claude Import**   | Manual export from Claude Web                | Read-only JSON   | Exported convos      | ✅ Supported      |
+| **Warp**            | `~/Library/Group Containers/.../warp.sqlite` | Read-only SQLite | AI queries           | 🚧 Planned        |
+| **Copilot**         | TBD                                          | Read-only files  | Conversation history | 🚧 Planned        |
+| **Claude Desktop**  | N/A                                          | N/A              | N/A                  | ❌ Not Possible   |
+| **ChatGPT Desktop** | N/A                                          | N/A              | N/A                  | ❌ Not Possible   |
 
 **All access is read-only. We never modify your LLM data.**
+
+**Note:** Claude Desktop and ChatGPT Desktop are not supported due to technical limitations (cloud storage + API protection).
 
 ---
 
@@ -156,29 +159,34 @@ Your LLM Platform (Augment, Claude, etc.)
 ## 🛡️ Security Measures
 
 ### 1. Read-Only Access
+
 - Tool only reads from LLM platforms
 - Never modifies LLM data
 - Never deletes LLM data
 - Never writes to LLM platforms
 
 ### 2. Local Processing
+
 - All processing happens on your machine
 - No external API calls
 - No cloud uploads
 - No network transmission
 
 ### 3. File Permissions
+
 - Respects your system file permissions
 - Cannot access files you don't have access to
 - Cannot bypass OS security
 
 ### 4. Audit Logging
+
 - Every access is logged
 - Timestamps recorded
 - Audit trail in `.permissions.aicf`
 - You can review all access
 
 ### 5. No Credentials Stored
+
 - No passwords stored
 - No API keys stored
 - No tokens stored
@@ -229,18 +237,21 @@ Your LLM Platform (Augment, Claude, etc.)
 ## ⚖️ Legal
 
 ### Data Ownership
+
 - **You own all extracted data**
 - You can use it however you want
 - You can delete it anytime
 - You can share it or keep it private
 
 ### Liability
+
 - This tool is provided "as-is"
 - No warranty or guarantees
 - Use at your own risk
 - See LICENSE file for full terms
 
 ### GDPR & Privacy Laws
+
 - This tool helps you comply with privacy laws
 - You control what data is accessed
 - You can delete data anytime
@@ -251,27 +262,35 @@ Your LLM Platform (Augment, Claude, etc.)
 ## 🤔 FAQ
 
 ### Q: Does this tool send my data to the cloud?
+
 **A:** No. All processing happens on your machine. No data is sent anywhere.
 
 ### Q: Can I revoke permissions?
+
 **A:** Yes. Run `aice permissions revoke <platform>` anytime.
 
 ### Q: What if I want to delete all extracted data?
+
 **A:** Delete `.aicf/` and `.ai/` folders. Your data is gone.
 
 ### Q: Is this tool open source?
+
 **A:** Yes. See https://github.com/Vaeshkar/create-ai-chat-context-experimental
 
 ### Q: Can I audit what data was accessed?
+
 **A:** Yes. Check `.aicf/.permissions.aicf` for complete audit trail.
 
 ### Q: What if I don't trust this tool?
+
 **A:** Use manual mode instead. You ask your LLM to update memory files. No automatic access.
 
 ### Q: Does this tool require internet?
+
 **A:** No. Works completely offline.
 
 ### Q: Can I use this tool in a corporate environment?
+
 **A:** Yes. All data stays on your machine. No cloud access. No external dependencies.
 
 ---
@@ -297,4 +316,3 @@ If you have privacy or security concerns:
 ---
 
 **Your data. Your machine. Your control. 🔐**
-

@@ -191,12 +191,12 @@ pnpm format        # Format with Prettier
 
 ### Platforms In Development
 
-- 🚧 Claude Desktop support (Phase 5.5b) - Parser implemented, needs testing
-- 🚧 Claude CLI support (Phase 5.5a) - Parser implemented, needs watcher integration
-- ✅ Claude Manual Import - `aice import-claude <file>` works for exported conversations
-- 🚧 Warp support (Phase 5.6)
-- 🚧 Copilot support (Phase 5.7)
-- ❌ ChatGPT support - Not possible (Keychain encrypted storage)
+- ❌ **Claude Desktop** - Not possible (conversations stored in cloud, local access blocked by Cloudflare)
+- 🚧 **Claude CLI** - Parser implemented, needs watcher integration
+- ✅ **Claude Manual Import** - `aice import-claude <file>` works for exported conversations from Claude Web
+- 🚧 **Warp** - Planned (SQLite-based storage)
+- 🚧 **Copilot** - Planned
+- ❌ **ChatGPT Desktop** - Not possible (Keychain encrypted storage + API protection)
 
 ## 🎓 Key Concepts
 
@@ -278,14 +278,19 @@ aice tokens
 
 ### In Development
 
-| Platform           | Status | Flag               | Use Case                                  |
-| ------------------ | ------ | ------------------ | ----------------------------------------- |
-| **Claude Desktop** | 🚧     | `--claude-desktop` | Claude desktop app (parser ready)         |
-| **Claude CLI**     | 🚧     | `--claude-cli`     | Claude command-line tool (parser ready)   |
-| **Claude Import**  | ✅     | N/A                | Manual import via `aice import-claude`    |
-| **Warp**           | 🚧     | `--warp`           | Warp terminal AI                          |
-| **Copilot**        | 🚧     | `--copilot`        | GitHub Copilot                            |
-| **ChatGPT**        | ❌     | N/A                | Not possible (Keychain encrypted storage) |
+| Platform          | Status | Flag           | Use Case                                                   |
+| ----------------- | ------ | -------------- | ---------------------------------------------------------- |
+| **Claude CLI**    | 🚧     | `--claude-cli` | Claude command-line tool (parser ready, needs integration) |
+| **Claude Import** | ✅     | N/A            | Manual import via `aice import-claude` (works now)         |
+| **Warp**          | 🚧     | `--warp`       | Warp terminal AI (planned)                                 |
+| **Copilot**       | 🚧     | `--copilot`    | GitHub Copilot (planned)                                   |
+
+### Not Possible
+
+| Platform            | Reason                                                            |
+| ------------------- | ----------------------------------------------------------------- |
+| **Claude Desktop**  | Conversations stored in cloud, local access blocked by Cloudflare |
+| **ChatGPT Desktop** | Keychain encrypted storage + API protection                       |
 
 **Default behavior:** Currently only Augment is supported. Other platforms are in active development.
 
