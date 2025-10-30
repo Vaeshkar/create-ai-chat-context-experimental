@@ -36,7 +36,8 @@ export class AugmentCacheWriter {
   private lastChunkNumber: number = 0;
 
   constructor(cwd: string = process.cwd()) {
-    this.reader = new AugmentLevelDBReader();
+    // FIX #1: Pass cwd to AugmentLevelDBReader so it knows which workspace to filter
+    this.reader = new AugmentLevelDBReader(cwd);
     this.cacheDir = join(cwd, '.cache', 'llm', 'augment', '.conversations');
   }
 
@@ -155,6 +156,7 @@ export class AugmentCacheWriter {
       chunkId: `chunk-${this.lastChunkNumber + 1}`,
       conversationId: conv.conversationId,
       workspaceId: conv.workspaceId,
+      workspaceName: conv.workspaceName, // FIX #5: Include workspace name for filtering
       timestamp: conv.timestamp,
       lastModified: conv.lastModified,
       source: 'augment-leveldb',

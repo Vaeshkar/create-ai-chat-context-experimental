@@ -127,8 +127,9 @@ export class AugmentLevelDBReader {
       const targetWorkspace = filterWorkspaceName || this.getCurrentProjectName();
 
       for (const workspace of workspaces) {
-        // Filter by workspace name - automatically uses current project if no filter provided
-        if (!workspace.name.includes(targetWorkspace)) {
+        // FIX #2: Use exact workspace name match instead of .includes()
+        // This prevents LILL-Core from matching LILL-Meta-Learner, etc.
+        if (workspace.name !== targetWorkspace) {
           continue;
         }
 

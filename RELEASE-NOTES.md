@@ -2,6 +2,64 @@
 
 ---
 
+## Version 3.2.4
+
+**Release Date:** October 30, 2025
+
+### 🚨 Critical Bug Fixes
+
+This release fixes **5 CRITICAL BUGS** that were causing data quality issues in production:
+
+#### Bug #1: AugmentCacheWriter Doesn't Pass Project Path
+
+- **File:** `src/writers/AugmentCacheWriter.ts`
+- **Problem:** Reader defaulted to `process.cwd()` instead of actual project directory
+- **Fix:** Pass `cwd` to `AugmentLevelDBReader` constructor
+- **Impact:** ✅ Watcher now correctly reads conversations from target workspace
+
+#### Bug #2: Workspace Filtering Uses `.includes()` Instead of Exact Match
+
+- **File:** `src/readers/AugmentLevelDBReader.ts`
+- **Problem:** `LILL-Core` matched `LILL-Meta-Learner`, mixing conversations from multiple projects
+- **Fix:** Use exact workspace name matching (`===` instead of `.includes()`)
+- **Impact:** ✅ Only conversations from exact workspace are captured
+
+#### Bug #3: SessionConsolidationAgent Writes Duplicates
+
+- **File:** `src/agents/SessionConsolidationAgent.ts`
+- **Problem:** Session files contained 1000+ duplicate decisions
+- **Fix:** Deduplicate decisions/insights before writing
+- **Impact:** ✅ Session files contain unique decisions only
+
+#### Bug #4: DecisionExtractor Extracts Full Message Content
+
+- **File:** `src/extractors/DecisionExtractor.ts`
+- **Problem:** Extracted entire message as "decision", creating massive files
+- **Fix:** Extract only decision sentence (max 200 chars)
+- **Impact:** ✅ Session files are dramatically smaller with relevant content only
+
+#### Bug #5: No Workspace Metadata in Cache Chunks
+
+- **File:** `src/writers/AugmentCacheWriter.ts`
+- **Problem:** Workspace name not preserved in cache chunks
+- **Fix:** Add `workspaceName` field to chunk metadata
+- **Impact:** ✅ Workspace context preserved throughout pipeline
+
+### Expected Results After Upgrade
+
+1. ✅ **Workspace Isolation** - Only conversations from current project captured
+2. ✅ **No Duplicates** - Session files contain unique decisions only
+3. ✅ **Smaller Files** - Recent/session files dramatically smaller
+4. ✅ **Accurate Data** - Decisions are concise and relevant
+
+### Testing
+
+- All 624 tests passing ✅
+- Build successful ✅
+- TypeScript compilation clean ✅
+
+---
+
 ## Version 3.2.3
 
 **Release Date:** October 28, 2025

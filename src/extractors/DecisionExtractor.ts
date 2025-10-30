@@ -217,16 +217,47 @@ export class DecisionExtractor {
     messages.forEach((msg) => {
       const lowerContent = msg.content.toLowerCase();
       if (decisionKeywords.some((keyword) => lowerContent.includes(keyword))) {
+        // FIX #4: Extract only the decision sentence, not the full message content
+        // This prevents massive session files with entire messages as "decisions"
+        const decisionText = this.extractDecisionSentence(msg.content);
+
         decisions.push({
           timestamp: msg.timestamp,
-          decision: msg.content, // ✅ FULL content, not truncated
+          decision: decisionText,
           context: msg.content.substring(0, 100),
-          impact: this.assessImpact(msg.content),
+          impact: this.assessImpact(decisionText),
         });
       }
     });
 
     return decisions;
+  }
+
+  /**
+   * Extract the actual decision sentence from message content
+   * Instead of using the entire message, extract just the sentence with the decision
+   */
+  private extractDecisionSentence(content: string): string {
+    // Split into sentences
+    const sentences = content
+      .split(/[.!?]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    // Find the sentence with decision keywords
+    const decisionKeywords = ['decided', 'will', 'should', 'must', 'agreed', 'chose'];
+
+    for (const sentence of sentences) {
+      const lowerSentence = sentence.toLowerCase();
+      if (decisionKeywords.some((keyword) => lowerSentence.includes(keyword))) {
+        // Return the sentence, truncated to 200 chars max
+        return sentence.length > 200 ? sentence.substring(0, 197) + '...' : sentence;
+      }
+    }
+
+    // Fallback: return first sentence, truncated
+    const firstSentence = sentences[0] || content;
+    return firstSentence.length > 200 ? firstSentence.substring(0, 197) + '...' : firstSentence;
   }
 
   /**

@@ -663,10 +663,10 @@ export class SessionConsolidationAgent {
 
       // @INSIGHTS section
       lines.push('@INSIGHTS');
-      // Extract insights from decisions (decisions are often insights)
-      const insights = conv.decisions.slice(0, 3); // Top 3 decisions as insights
-      if (insights.length > 0) {
-        for (const insight of insights) {
+      // FIX #3: Deduplicate insights before writing
+      const uniqueInsights = this.deduplicateArray(conv.decisions.slice(0, 3));
+      if (uniqueInsights.length > 0) {
+        for (const insight of uniqueInsights) {
           lines.push(`${this.escapeField(insight)}|GENERAL|MEDIUM|MEDIUM`);
         }
       } else {
@@ -676,8 +676,10 @@ export class SessionConsolidationAgent {
 
       // @DECISIONS section
       lines.push('@DECISIONS');
-      if (conv.decisions.length > 0) {
-        for (const decision of conv.decisions) {
+      // FIX #3: Deduplicate decisions before writing
+      const uniqueDecisions = this.deduplicateArray(conv.decisions);
+      if (uniqueDecisions.length > 0) {
+        for (const decision of uniqueDecisions) {
           lines.push(
             `${this.escapeField(decision)}|extracted_from_conversation|IMPACT:MEDIUM|CONF:MEDIUM`
           );
@@ -689,6 +691,14 @@ export class SessionConsolidationAgent {
     }
 
     return lines.join('\n') + '\n';
+  }
+
+  /**
+   * Deduplicate array of strings
+   * Used to remove duplicate decisions and insights before writing to session files
+   */
+  private deduplicateArray(items: string[]): string[] {
+    return Array.from(new Set(items));
   }
 
   /**
