@@ -63,65 +63,26 @@ describe('MemoryFileWriter', () => {
     },
   });
 
-  describe('generateAICF', () => {
-    it('should generate valid AICF format', () => {
+  describe('generateAICF (deprecated)', () => {
+    it('should return legacy format message', () => {
       const analysis = createTestAnalysis();
       const aicf = writer.generateAICF(analysis, 'conv-123');
 
-      expect(aicf).toContain('version|3.0.0-alpha');
-      expect(aicf).toContain('conversationId|conv-123');
-      expect(aicf).toContain('timestamp|');
+      // generateAICF is deprecated, returns a simple message
+      expect(aicf).toContain('AICF v3.1 Format');
+      expect(aicf).toContain('conv-123');
     });
+  });
 
-    it('should include user intents in AICF', () => {
+  describe('writeAICF (v3.1 format)', () => {
+    it('should write AICF v3.1 format to files', async () => {
       const analysis = createTestAnalysis();
-      const aicf = writer.generateAICF(analysis, 'conv-123');
+      const result = await writer.writeAICF('conv-123', analysis);
 
-      expect(aicf).toContain('userIntents|');
-      expect(aicf).toContain('Implement authentication system');
+      expect(result.ok).toBe(true);
     });
 
-    it('should include AI actions in AICF', () => {
-      const analysis = createTestAnalysis();
-      const aicf = writer.generateAICF(analysis, 'conv-123');
-
-      expect(aicf).toContain('aiActions|');
-      expect(aicf).toContain('Provided comprehensive authentication guide');
-    });
-
-    it('should include technical work in AICF', () => {
-      const analysis = createTestAnalysis();
-      const aicf = writer.generateAICF(analysis, 'conv-123');
-
-      expect(aicf).toContain('technicalWork|');
-      expect(aicf).toContain('Implement JWT authentication with TypeScript');
-    });
-
-    it('should include decisions in AICF', () => {
-      const analysis = createTestAnalysis();
-      const aicf = writer.generateAICF(analysis, 'conv-123');
-
-      expect(aicf).toContain('decisions|');
-      expect(aicf).toContain('Use JWT for authentication');
-    });
-
-    it('should include flow in AICF', () => {
-      const analysis = createTestAnalysis();
-      const aicf = writer.generateAICF(analysis, 'conv-123');
-
-      expect(aicf).toContain('flow|');
-      expect(aicf).toContain('balanced');
-    });
-
-    it('should include working state in AICF', () => {
-      const analysis = createTestAnalysis();
-      const aicf = writer.generateAICF(analysis, 'conv-123');
-
-      expect(aicf).toContain('workingState|');
-      expect(aicf).toContain('Implementing authentication');
-    });
-
-    it('should handle empty analysis', () => {
+    it('should handle empty analysis', async () => {
       const analysis: AnalysisResult = {
         userIntents: [],
         aiActions: [],
@@ -136,9 +97,8 @@ describe('MemoryFileWriter', () => {
         },
       };
 
-      const aicf = writer.generateAICF(analysis, 'conv-123');
-      expect(aicf).toContain('version|3.0.0-alpha');
-      expect(aicf).toContain('conversationId|conv-123');
+      const result = await writer.writeAICF('conv-123', analysis);
+      expect(result.ok).toBe(true);
     });
   });
 

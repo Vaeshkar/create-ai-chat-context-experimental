@@ -1,0 +1,14 @@
+1|\@DECISION:\ndecision=Use JWT for authentication\nrationale=Scalability and microservices architecture\ntimestamp=2025-10-21T10:00:03Z
+2|\@DECISION:\ndecision=Use JWT for authentication\nrationale=Scalability and microservices architecture\ntimestamp=2025-10-21T10:00:03Z
+3|@DECISION:
+decision=Use JWT for authentication
+rationale=Scalability and microservices architecture
+timestamp=2025-10-21T10:00:03Z
+4|@DECISION:
+decision=Use JWT for authentication
+rationale=Scalability and microservices architecture
+timestamp=2025-10-21T10:00:03Z
+5|@DECISION:
+decision=Use JWT for authentication
+rationale=Scalability and microservices architecture
+timestamp=2025-10-21T10:00:03Z

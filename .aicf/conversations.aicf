@@ -1,0 +1,34 @@
+1|\@CONVERSATION:\nid=conv-123_user_0\ntimestamp=2025-10-21T10:00:00Z\nrole=user\ncontent=Implement authentication system
+2|\@CONVERSATION:\nid=conv-123_ai_0\ntimestamp=2025-10-21T10:00:01Z\nrole=assistant\ncontent=Provided comprehensive authentication guide
+3|\@CONVERSATION:\nid=conv-123_user_0\ntimestamp=2025-10-21T10:00:00Z\nrole=user\ncontent=Implement authentication system
+4|\@CONVERSATION:\nid=conv-123_ai_0\ntimestamp=2025-10-21T10:00:01Z\nrole=assistant\ncontent=Provided comprehensive authentication guide
+5|@CONVERSATION:
+id=conv-123_user_0
+timestamp=2025-10-21T10:00:00Z
+role=user
+content=Implement authentication system
+6|@CONVERSATION:
+id=conv-123_ai_0
+timestamp=2025-10-21T10:00:01Z
+role=assistant
+content=Provided comprehensive authentication guide
+7|@CONVERSATION:
+id=conv-123_user_0
+timestamp=2025-10-21T10:00:00Z
+role=user
+content=Implement authentication system
+8|@CONVERSATION:
+id=conv-123_ai_0
+timestamp=2025-10-21T10:00:01Z
+role=assistant
+content=Provided comprehensive authentication guide
+9|@CONVERSATION:
+id=conv-123_user_0
+timestamp=2025-10-21T10:00:00Z
+role=user
+content=Implement authentication system
+10|@CONVERSATION:
+id=conv-123_ai_0
+timestamp=2025-10-21T10:00:01Z
+role=assistant
+content=Provided comprehensive authentication guide

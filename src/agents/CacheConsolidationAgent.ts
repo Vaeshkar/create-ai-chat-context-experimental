@@ -51,7 +51,7 @@ export class CacheConsolidationAgent {
 
   constructor(cwd: string = process.cwd()) {
     this.orchestrator = new ConversationOrchestrator();
-    this.memoryWriter = new MemoryFileWriter();
+    this.memoryWriter = new MemoryFileWriter(cwd);
     this.router = new AgentRouter();
     this.cacheDir = join(cwd, '.cache', 'llm');
     this.outputDir = join(cwd, '.aicf');
@@ -180,16 +180,6 @@ export class CacheConsolidationAgent {
         return Err(new Error('Analysis failed'));
       }
 
-      // Generate AICF format
-      // Note: generateAICF doesn't take timestamp parameter, we'll replace it in the content below
-      let aicf = this.memoryWriter.generateAICF(analysisResult.value, conversationId);
-
-      // CRITICAL FIX: Replace the timestamp in AICF content with the original conversation timestamp
-      // aicf-core's generateAICF() uses new Date().toISOString() which gives today's date
-      // We need to preserve the original conversation date for historical conversations
-      // This ensures session consolidation groups conversations by their actual date, not today
-      aicf = aicf.replace(/^timestamp\|.*$/m, `timestamp|${conversationTimestamp}`);
-
       // Route content
       const contentTypes = this.router.classifyContent(chunk);
       for (const contentType of contentTypes) {
@@ -199,12 +189,14 @@ export class CacheConsolidationAgent {
         }
       }
 
-      // Write AICF file to .aicf/recent/ with conversation timestamp
-      // CRITICAL: Pass timestamp so historical conversations get correct date in filename
-      // NOW USES aicf-core for enterprise-grade writes (thread-safe, validated, PII redaction)
+      // Write AICF v3.1 format to multiple semantic files
+      // NOW USES aicf-core v2.2.0 bridge for AICF v3.1 format
+      // - Writes to sessions.aicf, conversations.aicf, decisions.aicf, memories.aicf
+      // - Preserves original conversation timestamp
+      // - Enterprise-grade file operations (thread-safe, validated, PII redaction)
       const writeResult = await this.memoryWriter.writeAICF(
         conversationId,
-        aicf,
+        analysisResult.value,
         this.outputDir.replace('/.aicf', ''),
         conversation.timestamp
       );

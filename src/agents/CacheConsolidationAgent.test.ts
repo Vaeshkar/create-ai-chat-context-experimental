@@ -174,24 +174,46 @@ describe('CacheConsolidationAgent', () => {
     });
 
     it('should create output directory if it does not exist', async () => {
-      const augmentCacheDir = join(testDir, '.cache', 'llm', 'augment', '.conversations');
+      // Create a new test directory without initializing the agent first
+      const newTestDir = join(
+        process.cwd(),
+        '.test-tmp',
+        `cache-consolidation-test-dir-${Date.now()}`
+      );
+      const aicfDir = join(newTestDir, '.aicf');
+
+      // Verify directory doesn't exist before we do anything
+      expect(existsSync(newTestDir)).toBe(false);
+      expect(existsSync(aicfDir)).toBe(false);
+
+      mkdirSync(newTestDir, { recursive: true });
+
+      // Still shouldn't exist after creating parent dir
+      expect(existsSync(aicfDir)).toBe(false);
+
+      const augmentCacheDir = join(newTestDir, '.cache', 'llm', 'augment', '.conversations');
       mkdirSync(augmentCacheDir, { recursive: true });
 
       const chunk = {
         conversationId: 'test-conv',
+        contentHash: 'test-hash-123',
+        chunkId: 'chunk-1',
         timestamp: new Date().toISOString(),
-        messages: [{ role: 'user', content: 'Test' }],
+        messages: [{ role: 'user', content: 'Test', timestamp: new Date().toISOString() }],
+        source: 'augment',
       };
 
       writeFileSync(join(augmentCacheDir, 'chunk-1.json'), JSON.stringify(chunk));
 
-      const aicfDir = join(testDir, '.aicf');
+      // Still shouldn't exist after creating cache dir and chunk
       expect(existsSync(aicfDir)).toBe(false);
 
-      await agent.consolidate();
-
-      // Output directory should be created
+      // Creating the agent should create the directory
+      const newAgent = new CacheConsolidationAgent(newTestDir);
       expect(existsSync(aicfDir)).toBe(true);
+
+      // Clean up
+      rmSync(newTestDir, { recursive: true, force: true });
     });
 
     it('should include timestamp in stats', async () => {
