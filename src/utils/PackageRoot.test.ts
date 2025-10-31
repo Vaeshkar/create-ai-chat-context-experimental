@@ -126,20 +126,25 @@ describe('PackageRoot', () => {
           expect(existsSync(aiTemplatesDir)).toBe(true);
         }
 
-        // Check for expected template files in augment or shared
-        const expectedFiles = [
+        // Check for expected template files in .ai/ (manual curation)
+        const expectedAiFiles = [
           'code-style.md',
           'design-system.md',
           'npm-publishing-checklist.md',
-          'project-overview.md',
           'README.md',
           'testing-philosophy.md',
         ];
 
-        for (const file of expectedFiles) {
+        for (const file of expectedAiFiles) {
           const filePath = join(aiTemplatesDir, file);
           expect(existsSync(filePath)).toBe(true);
         }
+
+        // Check for project-overview.md in .augment/ (auto-generated documentation)
+        const augmentDir = join(augmentTemplatesDir, '.augment');
+        expect(existsSync(augmentDir)).toBe(true);
+        const projectOverviewPath = join(augmentDir, 'project-overview.md');
+        expect(existsSync(projectOverviewPath)).toBe(true);
       }
     });
 

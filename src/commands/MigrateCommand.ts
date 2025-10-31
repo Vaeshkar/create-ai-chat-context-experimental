@@ -511,6 +511,32 @@ export class MigrateCommand {
           }
         }
       }
+
+      // Copy .augment/ template files (auto-generated documentation)
+      const augmentTemplateDir = join(sourceTemplateDir, '.augment');
+      if (existsSync(augmentTemplateDir)) {
+        const augmentDir = join(this.cwd, '.augment');
+        mkdirSync(augmentDir, { recursive: true });
+
+        const augmentFiles = readdirSync(augmentTemplateDir);
+        for (const file of augmentFiles) {
+          const srcFile = join(augmentTemplateDir, file);
+          const destFile = join(augmentDir, file);
+
+          // Skip directories
+          if (statSync(srcFile).isDirectory()) {
+            continue;
+          }
+
+          // Only copy if file doesn't exist (don't overwrite auto-generated docs)
+          if (!existsSync(destFile)) {
+            copyFileSync(srcFile, destFile);
+            if (this.verbose) {
+              console.log(`📝 Copied .augment/${file}`);
+            }
+          }
+        }
+      }
     } catch (error) {
       // Silently fail if templates don't exist (e.g., in development)
       if (this.verbose) {

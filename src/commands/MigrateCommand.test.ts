@@ -289,20 +289,25 @@ describe('MigrateCommand', () => {
 
       expect(isOk(result)).toBe(true);
 
-      // Check for expected template files
-      const expectedFiles = [
+      // Check for expected template files in .ai/ (manual curation)
+      const expectedAiFiles = [
         'code-style.md',
         'design-system.md',
         'npm-publishing-checklist.md',
-        'project-overview.md',
         'README.md',
         'testing-philosophy.md',
       ];
 
-      for (const file of expectedFiles) {
+      for (const file of expectedAiFiles) {
         const filePath = join(aiDir, file);
         expect(fs.existsSync(filePath)).toBe(true);
       }
+
+      // Check for project-overview.md in .augment/ (auto-generated documentation)
+      const augmentDir = join(testDir, '.augment');
+      expect(fs.existsSync(augmentDir)).toBe(true);
+      const projectOverviewPath = join(augmentDir, 'project-overview.md');
+      expect(fs.existsSync(projectOverviewPath)).toBe(true);
     });
 
     it('should preserve existing .ai files (smart merge)', async () => {
@@ -313,14 +318,14 @@ describe('MigrateCommand', () => {
       fs.mkdirSync(aiDir, { recursive: true });
 
       // Create an existing file with custom content
-      const customContent = '# My Custom Project Overview\n\nCustom content here.';
-      fs.writeFileSync(join(aiDir, 'project-overview.md'), customContent);
+      const customContent = '# My Custom Code Style\n\nCustom content here.';
+      fs.writeFileSync(join(aiDir, 'code-style.md'), customContent);
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
       // Check that custom content was preserved
-      const content = fs.readFileSync(join(aiDir, 'project-overview.md'), 'utf-8');
+      const content = fs.readFileSync(join(aiDir, 'code-style.md'), 'utf-8');
       expect(content).toBe(customContent);
     });
 
@@ -347,18 +352,18 @@ describe('MigrateCommand', () => {
       fs.mkdirSync(aiDir, { recursive: true });
 
       // Create only some template files
-      fs.writeFileSync(join(aiDir, 'project-overview.md'), 'Existing content');
       fs.writeFileSync(join(aiDir, 'code-style.md'), 'Existing code style');
+      fs.writeFileSync(join(aiDir, 'testing-philosophy.md'), 'Existing testing philosophy');
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
       // Check that existing files were preserved
-      const projectOverview = fs.readFileSync(join(aiDir, 'project-overview.md'), 'utf-8');
-      expect(projectOverview).toBe('Existing content');
-
       const codeStyle = fs.readFileSync(join(aiDir, 'code-style.md'), 'utf-8');
       expect(codeStyle).toBe('Existing code style');
+
+      const testingPhilosophy = fs.readFileSync(join(aiDir, 'testing-philosophy.md'), 'utf-8');
+      expect(testingPhilosophy).toBe('Existing testing philosophy');
 
       // Check that missing files were created
       expect(fs.existsSync(join(aiDir, 'design-system.md'))).toBe(true);

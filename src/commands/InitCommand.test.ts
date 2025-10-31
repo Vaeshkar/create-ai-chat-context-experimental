@@ -494,20 +494,25 @@ describe('InitCommand', () => {
         const aiDir = join(testDir, '.ai');
         expect(existsSync(aiDir)).toBe(true);
 
-        // Check for expected template files
-        const expectedFiles = [
+        // Check for expected template files in .ai/
+        const expectedAiFiles = [
           'code-style.md',
           'design-system.md',
           'npm-publishing-checklist.md',
-          'project-overview.md',
           'README.md',
           'testing-philosophy.md',
         ];
 
-        for (const file of expectedFiles) {
+        for (const file of expectedAiFiles) {
           const filePath = join(aiDir, file);
           expect(existsSync(filePath)).toBe(true);
         }
+
+        // Check for project-overview.md in .augment/ (auto-generated documentation)
+        const augmentDir = join(testDir, '.augment');
+        expect(existsSync(augmentDir)).toBe(true);
+        const projectOverviewPath = join(augmentDir, 'project-overview.md');
+        expect(existsSync(projectOverviewPath)).toBe(true);
       } finally {
         cleanupTestDir(testDir);
       }
@@ -520,9 +525,9 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
         expect(result.ok).toBe(true);
 
-        // Modify a template file
-        const aiDir = join(testDir, '.ai');
-        const testFile = join(aiDir, 'project-overview.md');
+        // Modify a template file in .augment/ (auto-generated documentation)
+        const augmentDir = join(testDir, '.augment');
+        const testFile = join(augmentDir, 'project-overview.md');
         const originalContent = readFileSync(testFile, 'utf-8');
         const modifiedContent = '# My Custom Project Overview\n\nCustom content here.';
         require('fs').writeFileSync(testFile, modifiedContent);

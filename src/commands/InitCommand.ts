@@ -854,7 +854,6 @@ ${platformStatuses}
       'design-system.md',
       'npm-publishing-checklist.md',
       'testing-philosophy.md',
-      'project-overview.md',
       'README.md',
     ];
 
@@ -973,6 +972,16 @@ ${platformStatuses}
 
     const platformSpecificDir = join(this.cwd, platformDir);
     mkdirSync(platformSpecificDir, { recursive: true });
+
+    // Copy project-overview.md if it exists (auto-generated documentation)
+    const projectOverviewSrc = join(platformSpecificTemplateDir, 'project-overview.md');
+    const projectOverviewDest = join(platformSpecificDir, 'project-overview.md');
+    if (existsSync(projectOverviewSrc) && !existsSync(projectOverviewDest)) {
+      copyFileSync(projectOverviewSrc, projectOverviewDest);
+      if (this.verbose) {
+        console.log(`📝 Copied ${platformDir}/project-overview.md from ${platformName}`);
+      }
+    }
 
     // Copy rules/ subdirectory if it exists
     const rulesTemplateDir = join(platformSpecificTemplateDir, 'rules');
