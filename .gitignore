@@ -70,6 +70,7 @@ temp/
 .aicf/insights.aicf
 .aicf/conversations.aicf
 .aicf/principles.aicf
+.aicf/sessions.aicf
 .aicf/*.lock
 .aicf/*.tmp.*
 
