@@ -27,6 +27,9 @@ describe('MigrateCommand', () => {
     vi.mocked(inquirer.prompt).mockResolvedValue({
       platforms: ['augment'],
     });
+
+    // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+    vi.spyOn(MigrateCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
   });
 
   afterEach(() => {

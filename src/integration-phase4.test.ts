@@ -68,6 +68,9 @@ describe('Phase 4 Integration Tests', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         llm: 'augment',
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should initialize project in manual mode', async () => {
@@ -108,6 +111,9 @@ describe('Phase 4 Integration Tests', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should initialize project in automatic mode', async () => {
@@ -191,6 +197,9 @@ describe('Phase 4 Integration Tests', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should grant and revoke permissions', async () => {
@@ -249,6 +258,9 @@ describe('Phase 4 Integration Tests', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should enable/disable platforms via config manager', async () => {
@@ -335,6 +347,9 @@ describe('Phase 4 Integration Tests', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should complete full automatic mode setup', async () => {

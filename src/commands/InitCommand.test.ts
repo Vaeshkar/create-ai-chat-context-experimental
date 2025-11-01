@@ -68,6 +68,9 @@ describe('InitCommand', () => {
         llm: 'augment',
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should initialize in manual mode', async () => {
@@ -155,6 +158,9 @@ describe('InitCommand', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         llm: 'augment',
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should create .ai directory', async () => {
@@ -203,6 +209,9 @@ describe('InitCommand', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should create .cache/llm directory', async () => {
@@ -400,6 +409,9 @@ describe('InitCommand', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should have correct AICF format', async () => {
@@ -466,6 +478,9 @@ describe('InitCommand', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should handle invalid cwd gracefully', async () => {
@@ -481,6 +496,9 @@ describe('InitCommand', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should copy all template files to .ai directory', async () => {
@@ -567,6 +585,9 @@ describe('InitCommand', () => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
       });
+
+      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
+      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
 
     it('should create recent directory', async () => {

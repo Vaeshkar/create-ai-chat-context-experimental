@@ -20,6 +20,7 @@ describe('WatcherCommand', () => {
   let tempDir: string;
   let watchDir: string;
   let outputDir: string;
+  let watcher: WatcherCommand | null = null;
 
   beforeEach(() => {
     tempDir = mkdtempSync(join(tmpdir(), 'test-watcher-'));
@@ -29,7 +30,18 @@ describe('WatcherCommand', () => {
     mkdirSync(outputDir, { recursive: true });
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // CRITICAL: Stop watcher to prevent zombie processes
+    if (watcher) {
+      try {
+        await watcher.stop();
+      } catch (error) {
+        // Ignore errors during cleanup
+      }
+      watcher = null;
+    }
+
+    // Clean up temp files
     if (existsSync(tempDir)) {
       rmSync(tempDir, { recursive: true });
     }
@@ -66,12 +78,12 @@ describe('WatcherCommand', () => {
   }
 
   it('should initialize with default options', () => {
-    const watcher = new WatcherCommand();
+    watcher = new WatcherCommand();
     expect(watcher).toBeDefined();
   });
 
   it('should initialize with custom options', () => {
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '10000',
       dir: watchDir,
       verbose: true,
@@ -81,7 +93,7 @@ describe('WatcherCommand', () => {
 
   it('should handle missing watch directory gracefully', async () => {
     const nonExistentDir = join(tempDir, 'non-existent');
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: nonExistentDir,
       verbose: false,
@@ -102,8 +114,8 @@ describe('WatcherCommand', () => {
     // We don't care if process.exit was called or not - we just want no crash
     expect(watcher).toBeDefined();
 
-    // Stop watcher
-    process.emit('SIGINT');
+    // CRITICAL: Properly stop watcher
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;
@@ -114,7 +126,7 @@ describe('WatcherCommand', () => {
     const checkpoint = createTestCheckpoint('test-conv-1');
     writeFileSync(checkpointPath, JSON.stringify(checkpoint, null, 2));
 
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
       output: outputDir,
@@ -131,8 +143,8 @@ describe('WatcherCommand', () => {
     const startPromise = watcher.start();
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    // Stop watcher
-    process.emit('SIGINT');
+    // CRITICAL: Properly stop watcher
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;
@@ -147,7 +159,7 @@ describe('WatcherCommand', () => {
     const checkpoint = createTestCheckpoint('test-conv-1');
     writeFileSync(checkpointPath, JSON.stringify(checkpoint, null, 2));
 
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
       output: outputDir,
@@ -165,7 +177,7 @@ describe('WatcherCommand', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
-    process.emit('SIGINT');
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;
@@ -174,7 +186,7 @@ describe('WatcherCommand', () => {
   });
 
   it('should handle verbose output', async () => {
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
       output: outputDir,
@@ -192,7 +204,7 @@ describe('WatcherCommand', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
-    process.emit('SIGINT');
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;
@@ -204,7 +216,7 @@ describe('WatcherCommand', () => {
     const invalidPath = join(watchDir, 'invalid.json');
     writeFileSync(invalidPath, JSON.stringify({ invalid: 'structure' }));
 
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
       output: outputDir,
@@ -222,7 +234,7 @@ describe('WatcherCommand', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
-    process.emit('SIGINT');
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;
@@ -238,7 +250,7 @@ describe('WatcherCommand', () => {
       writeFileSync(checkpointPath, JSON.stringify(checkpoint, null, 2));
     }
 
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
       output: outputDir,
@@ -256,7 +268,7 @@ describe('WatcherCommand', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
-    process.emit('SIGINT');
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;
@@ -265,7 +277,7 @@ describe('WatcherCommand', () => {
   });
 
   it('should handle watcher errors gracefully', async () => {
-    const watcher = new WatcherCommand({
+    watcher = new WatcherCommand({
       interval: '100',
       dir: watchDir,
       output: outputDir,
@@ -283,7 +295,7 @@ describe('WatcherCommand', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Stop watcher
-    process.emit('SIGINT');
+    await watcher.stop();
 
     process.on = originalOn;
     process.exit = originalExit;

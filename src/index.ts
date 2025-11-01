@@ -173,6 +173,10 @@ export { AugmentLevelDBReader } from './readers/AugmentLevelDBReader.js';
 // Watcher Exports
 // ============================================================================
 
+// Unified AETHER watcher (orchestrates all sub-watchers)
+export { AetherWatcher } from './watchers/AetherWatcher.js';
+export type { AetherWatcherConfig, WatcherStatus } from './watchers/AetherWatcher.js';
+
 // Platform-specific watchers
 export { ClaudeCliWatcher } from './watchers/ClaudeCliWatcher.js';
 export { ClaudeDesktopWatcher } from './watchers/ClaudeDesktopWatcher.js';
