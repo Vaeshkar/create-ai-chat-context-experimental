@@ -14,7 +14,7 @@
     }
   },
   "bin": {
-    "aice": "./dist/esm/cli.js"
+    "aether": "./dist/esm/cli.js"
   },
   "scripts": {
     "build": "pnpm run clean && pnpm run build:esm && pnpm run build:cjs && pnpm run copy:templates",
