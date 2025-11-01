@@ -186,6 +186,14 @@ export type {
 export { ApiKeyScanner } from './utils/ApiKeyScanner.js';
 export type { ApiKeyScanResult } from './utils/ApiKeyScanner.js';
 
+// AETHER banner utilities
+export {
+  showBanner,
+  showAnimatedBanner,
+  showStaticBanner,
+  STATIC_BANNER,
+} from './utils/AetherBanner.js';
+
 // Platform-specific watchers
 export { ClaudeCliWatcher } from './watchers/ClaudeCliWatcher.js';
 export { ClaudeDesktopWatcher } from './watchers/ClaudeDesktopWatcher.js';

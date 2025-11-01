@@ -35,6 +35,7 @@ import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
 import { DaemonManager } from '../utils/DaemonManager.js';
 import { spawn } from 'child_process';
+import { showBanner } from '../utils/AetherBanner.js';
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -60,18 +61,7 @@ export interface PlatformSelection {
 }
 
 // AETHER ASCII Logo
-// AETHER logo inspired by the Python rich banner
-const AETHER_LOGO = `
-╭─────────────────────────────────────────────────────────────────────────────╮
-│                                                                             │
-│                      ${chalk.bold.white('A')}${chalk.magenta('E')}${chalk.bold.white('T')}${chalk.magenta('H')}${chalk.bold.white('E')}${chalk.magenta('R')}                                          │
-│                                                                             │
-│              ${chalk.white('Distributed AI Memory System')}                            │
-│   ${chalk.gray('Automatic learning • Conversation capture • Principle extraction')}   │
-│              ${chalk.dim('95.5% compression • zero semantic loss')}                    │
-│                                                                             │
-╰─────────────────────────────────────────────────────────────────────────────╯
-`;
+// AETHER banner is now in AetherBanner.ts utility
 
 /**
  * Initialize AETHER in a project
@@ -104,8 +94,8 @@ export class InitCommand {
     try {
       const spinner = ora();
 
-      // Step 1: Show AETHER logo and welcome
-      this.showWelcome();
+      // Step 1: Show AETHER logo and welcome (with shimmer animation)
+      await this.showWelcome();
 
       // Step 2: Check if already initialized
       if (!this.force) {
@@ -228,12 +218,11 @@ export class InitCommand {
 
   /**
    * Show AETHER welcome message with logo
+   * Uses animated shimmer banner for first-time setup
    */
-  private showWelcome(): void {
-    console.log(AETHER_LOGO);
-    console.log();
-    console.log(chalk.dim('System initializing…'));
-    console.log();
+  private async showWelcome(): Promise<void> {
+    // Show animated banner for first-time setup (beautiful neural signal effect)
+    await showBanner(true);
   }
 
   /**
