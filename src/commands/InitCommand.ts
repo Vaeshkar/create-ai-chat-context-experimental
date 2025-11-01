@@ -94,16 +94,16 @@ export class InitCommand {
     try {
       const spinner = ora();
 
-      // Step 1: Show AETHER logo and welcome (with shimmer animation)
-      await this.showWelcome();
-
-      // Step 2: Check if already initialized
+      // Step 1: Check if already initialized (before showing banner)
       if (!this.force) {
         const checkResult = this.checkNotInitialized();
         if (!checkResult.ok) {
           return checkResult;
         }
       }
+
+      // Step 2: Show AETHER logo and welcome (with shimmer animation)
+      await this.showWelcome();
 
       // Step 3: Ask permission to access LLM libraries
       const hasPermission = await this.askPermission();

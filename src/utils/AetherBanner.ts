@@ -16,8 +16,8 @@ import chalk from 'chalk';
  * Configuration for shimmer animation
  */
 const SHIMMER_CONFIG = {
-  speed: 150, // milliseconds between glow steps
-  cycles: 2, // number of full left→right glow passes
+  speed: 120, // milliseconds between glow steps (faster)
+  cycles: 1, // number of full left→right glow passes (reduced from 2)
   letters: ['A', 'E', 'T', 'H', 'E', 'R'],
 };
 
@@ -25,15 +25,10 @@ const SHIMMER_CONFIG = {
  * Static AETHER banner (fast, no animation)
  */
 export const STATIC_BANNER = `
-╭─────────────────────────────────────────────────────────────────────────────╮
-│                                                                             │
-│                      ${chalk.bold.white('A')}${chalk.magenta('E')}${chalk.bold.white('T')}${chalk.magenta('H')}${chalk.bold.white('E')}${chalk.magenta('R')}                                          │
-│                                                                             │
-│              ${chalk.white('Distributed AI Memory System')}                            │
-│   ${chalk.gray('Automatic learning • Conversation capture • Principle extraction')}   │
-│              ${chalk.dim('95.5% compression • zero semantic loss')}                    │
-│                                                                             │
-╰─────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────────────────╮
+│  ${chalk.bold.white('A')}${chalk.magenta('E')}${chalk.bold.white('T')}${chalk.magenta('H')}${chalk.bold.white('E')}${chalk.magenta('R')}  ${chalk.white('Distributed AI Memory System')}                  │
+│  ${chalk.gray('Automatic learning • Conversation capture')}              │
+╰────────────────────────────────────────────────────────────╯
 `;
 
 /**
@@ -65,22 +60,24 @@ function renderLogoWithShimmer(glowIndex: number): string {
  */
 function renderPanel(logo: string): string {
   return `
-╭─────────────────────────────── ${logo} ───────────────────────────────╮
-│                                                                      │
-│   ${chalk.white('Distributed AI Memory System')}                                       │
-│   ${chalk.gray('Automatic learning • Conversation capture • Principle extraction')}   │
-│   ${chalk.dim('95.5% compression • zero semantic loss')}                             │
-│                                                                      │
-╰──────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────╮
+│  ${logo}  ${chalk.white('Distributed AI Memory System')}                │
+│  ${chalk.gray('Automatic learning • Conversation capture')}            │
+╰──────────────────────────────────────────────────────────╯
 `;
 }
 
 /**
  * Clear the terminal screen
+ * Uses multiple methods to ensure compatibility across terminals
  */
 function clearScreen(): void {
-  // ANSI escape code to clear screen and move cursor to top-left
+  // Method 1: ANSI escape codes (works in most terminals)
   process.stdout.write('\x1b[2J\x1b[H');
+
+  // Method 2: Move cursor up to overwrite previous output
+  // This helps when ANSI codes don't work
+  process.stdout.write('\x1b[0f');
 }
 
 /**
@@ -92,10 +89,18 @@ function sleep(ms: number): Promise<void> {
 
 /**
  * Display animated shimmer banner
- * A subtle shimmer of light runs through AETHER twice
+ * A subtle shimmer of light runs through AETHER once
  * Each letter brightens briefly, then fades — like a neural signal
+ *
+ * Note: Animation is skipped if output is not a TTY (e.g., piped or redirected)
  */
 export async function showAnimatedBanner(): Promise<void> {
+  // Skip animation if output is not a TTY (piped, redirected, or non-interactive)
+  if (!process.stdout.isTTY) {
+    showStaticBanner();
+    return;
+  }
+
   const { speed, cycles, letters } = SHIMMER_CONFIG;
 
   // Run shimmer animation
@@ -138,4 +143,3 @@ export async function showBanner(animated = false): Promise<void> {
     showStaticBanner();
   }
 }
-
