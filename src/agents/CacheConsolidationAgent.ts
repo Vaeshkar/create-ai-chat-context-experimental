@@ -46,7 +46,6 @@ export class CacheConsolidationAgent {
   private memoryWriter: MemoryFileWriter;
   private router: AgentRouter;
   private cacheDir: string;
-  private outputDir: string;
   private processedHashes: Set<string> = new Set();
 
   constructor(cwd: string = process.cwd()) {
@@ -54,7 +53,6 @@ export class CacheConsolidationAgent {
     this.memoryWriter = new MemoryFileWriter(cwd);
     this.router = new AgentRouter();
     this.cacheDir = join(cwd, '.cache', 'llm');
-    this.outputDir = join(cwd, '.aicf');
   }
 
   /**
@@ -189,21 +187,20 @@ export class CacheConsolidationAgent {
         }
       }
 
-      // Write AICF v3.1 format to multiple semantic files
-      // NOW USES aicf-core v2.2.0 bridge for AICF v3.1 format
-      // - Writes to sessions.aicf, conversations.aicf, decisions.aicf, memories.aicf
+      // Write clean JSON to .aicf/raw/ directory
+      // NEW PIPELINE: JSON → AICF-Core watcher → AICF v3.1
+      // - Writes structured JSON for watcher to process
+      // - Watcher converts to AICF v3.1 and appends to 4 core files
       // - Preserves original conversation timestamp
-      // - Enterprise-grade file operations (thread-safe, validated, PII redaction)
-      const writeResult = await this.memoryWriter.writeAICF(
+      const writeResult = await this.memoryWriter.writeJSON(
         conversationId,
         analysisResult.value,
-        this.outputDir.replace('/.aicf', ''),
-        conversation.timestamp
+        conversation
       );
 
       if (!writeResult.ok) {
         return Err(
-          new Error(`Failed to write AICF file for ${conversationId}: ${writeResult.error.message}`)
+          new Error(`Failed to write JSON file for ${conversationId}: ${writeResult.error.message}`)
         );
       }
 

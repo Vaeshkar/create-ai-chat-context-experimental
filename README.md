@@ -24,7 +24,7 @@ A system that automatically captures AI conversations from Augment and consolida
 - **Universal AI Rules** - `.ai/rules/` work across all LLM platforms (Augment, Claude, Cursor, Warp, Copilot, ChatGPT)
 - **Automatic Capture** - Background watcher monitors for new conversations
 - **Smart Consolidation** - Extracts decisions, actions, technical work, and context
-- **AICF Format** - AI-optimized pipe-delimited format powered by [aicf-core v2.1.0](https://www.npmjs.com/package/aicf-core)
+- **AICF Format** - AI-optimized pipe-delimited format powered by [aicf-core v2.1.1](https://www.npmjs.com/package/aicf-core)
 - **Proper Escaping** - Handles multi-line content and special characters correctly
 - **Git Integration** - Automatic commits for version control
 - **Type-Safe** - Pure TypeScript with 100% type coverage

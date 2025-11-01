@@ -19,9 +19,10 @@
  */
 
 import { AICEToAICFBridge } from 'aicf-core';
-import type { AnalysisResult, Result } from '../types/index.js';
+import type { AnalysisResult, Result, Conversation } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { join } from 'path';
+import { promises as fs } from 'fs';
 
 /**
  * Writer for memory files (.aicf and .ai formats)
@@ -31,10 +32,12 @@ import { join } from 'path';
 export class MemoryFileWriter {
   private bridge: AICEToAICFBridge;
   private cwd: string;
+  private rawDir: string;
 
   constructor(cwd: string = process.cwd()) {
     this.cwd = cwd;
     const aicfDir = join(cwd, '.aicf');
+    this.rawDir = join(aicfDir, 'raw');
     this.bridge = new AICEToAICFBridge(aicfDir);
   }
 
@@ -149,8 +152,141 @@ export class MemoryFileWriter {
   }
 
   /**
+   * Write clean JSON to .aicf/raw/ directory
+   * This is the new primary method - outputs structured JSON for AICF-Core watcher to process
+   *
+   * @param conversationId - Conversation ID
+   * @param analysis - Analysis result to write
+   * @param conversation - Full conversation object with messages and metadata
+   * @returns Result<void>
+   */
+  async writeJSON(
+    conversationId: string,
+    analysis: AnalysisResult,
+    conversation: Conversation
+  ): Promise<Result<void>> {
+    try {
+      // Ensure raw directory exists
+      await fs.mkdir(this.rawDir, { recursive: true });
+
+      // Create clean JSON structure
+      const date = new Date().toISOString().split('T')[0];
+      const jsonData = {
+        metadata: {
+          conversationId,
+          date,
+          platform: conversation.source || 'augment',
+          user: 'dennis_van_leeuwen',
+          status: 'completed',
+          timestamp_start: conversation.timestamp,
+          timestamp_end: new Date().toISOString(),
+          duration_minutes: Math.floor(
+            (new Date().getTime() - new Date(conversation.timestamp).getTime()) / 60000
+          ),
+          messages: conversation.messages.length,
+          tokens_estimated: conversation.messages.reduce(
+            (sum, msg) => sum + Math.floor(msg.content.length / 4),
+            0
+          ),
+        },
+        conversation: {
+          topic: this.extractTopic(analysis),
+          summary: this.extractSummary(analysis),
+          participants: ['user_dennis', 'assistant_augment'],
+          flow: analysis.flow.sequence,
+        },
+        key_exchanges: conversation.messages.map((msg, idx) => ({
+          index: idx,
+          timestamp: msg.timestamp,
+          role: msg.role,
+          content: msg.content.substring(0, 500), // First 500 chars for key exchanges
+          full_content_length: msg.content.length,
+        })),
+        decisions: analysis.decisions.map((d) => ({
+          timestamp: d.timestamp,
+          decision: d.decision,
+          context: d.context,
+          impact: d.impact,
+        })),
+        insights: analysis.technicalWork.map((w) => ({
+          timestamp: w.timestamp,
+          insight: w.work,
+          type: w.type,
+          source: w.source,
+        })),
+        technical_work: analysis.technicalWork.map((w) => ({
+          timestamp: w.timestamp,
+          work: w.work,
+          type: w.type,
+        })),
+        state: {
+          current_task: analysis.workingState.currentTask,
+          blockers: analysis.workingState.blockers,
+          next_action: analysis.workingState.nextAction,
+          last_update: analysis.workingState.lastUpdate,
+        },
+        user_intents: analysis.userIntents.map((i) => ({
+          timestamp: i.timestamp,
+          intent: i.intent,
+          confidence: i.confidence,
+          inferred_from: i.inferredFrom,
+        })),
+        ai_actions: analysis.aiActions.map((a) => ({
+          timestamp: a.timestamp,
+          type: a.type,
+          details: a.details,
+          source: a.source,
+        })),
+      };
+
+      // Write to .aicf/raw/{date}_{conversationId}.json
+      const filename = `${date}_${conversationId}.json`;
+      const filepath = join(this.rawDir, filename);
+      await fs.writeFile(filepath, JSON.stringify(jsonData, null, 2), 'utf-8');
+
+      return Ok(undefined);
+    } catch (error) {
+      return Err(
+        error instanceof Error ? error : new Error(`Failed to write JSON file: ${String(error)}`)
+      );
+    }
+  }
+
+  /**
+   * Extract topic from analysis
+   */
+  private extractTopic(analysis: AnalysisResult): string {
+    if (analysis.userIntents.length > 0 && analysis.userIntents[0]) {
+      return analysis.userIntents[0].intent.substring(0, 100);
+    }
+    if (analysis.workingState.currentTask) {
+      return analysis.workingState.currentTask;
+    }
+    return 'Conversation';
+  }
+
+  /**
+   * Extract summary from analysis
+   */
+  private extractSummary(analysis: AnalysisResult): string {
+    const parts: string[] = [];
+    if (analysis.userIntents.length > 0 && analysis.userIntents[0]) {
+      parts.push(`User requested: ${analysis.userIntents[0].intent.substring(0, 100)}`);
+    }
+    if (analysis.decisions.length > 0) {
+      parts.push(`Decisions made: ${analysis.decisions.length}`);
+    }
+    if (analysis.technicalWork.length > 0) {
+      parts.push(`Technical work: ${analysis.technicalWork.length} items`);
+    }
+    return parts.join('. ') || 'Conversation captured';
+  }
+
+  /**
    * Write AICF v3.1 format to multiple semantic files
    * Uses aicf-core v2.2.0 bridge to transform AnalysisResult into proper AICF v3.1 format
+   *
+   * @deprecated Use writeJSON() instead - new pipeline uses JSON → AICF-Core watcher → AICF v3.1
    *
    * Writes to multiple files:
    * - sessions.aicf - Session metadata and metrics

@@ -24,6 +24,9 @@ import { CacheConsolidationAgent } from '../agents/CacheConsolidationAgent.js';
 import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js';
 import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
 import { DaemonManager } from '../utils/DaemonManager.js';
+import { JSONToAICFWatcher } from 'aicf-core';
+import { AICFFileWatcher } from 'lill-core';
+import { PrincipleWatcher } from 'lill-meta';
 
 interface WatcherCommandOptions {
   interval?: string;
@@ -59,6 +62,9 @@ export class WatcherCommand {
   private cacheConsolidationAgent: CacheConsolidationAgent;
   private sessionConsolidationAgent: SessionConsolidationAgent;
   private memoryDropoffAgent: MemoryDropoffAgent;
+  private jsonToAICFWatcher: JSONToAICFWatcher;
+  private aicfFileWatcher: AICFFileWatcher;
+  private principleWatcher: PrincipleWatcher;
   private isRunning: boolean = false;
   private enabledPlatforms: PlatformName[] = [];
   private cwd: string;
@@ -90,6 +96,23 @@ export class WatcherCommand {
     this.cacheConsolidationAgent = new CacheConsolidationAgent(this.cwd);
     this.sessionConsolidationAgent = new SessionConsolidationAgent(this.cwd);
     this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd);
+    this.jsonToAICFWatcher = new JSONToAICFWatcher(this.cwd, {
+      verbose: this.verbose,
+    });
+    this.aicfFileWatcher = new AICFFileWatcher(this.cwd, {
+      verbose: this.verbose,
+      onNewEntry: async (file: string, lineNumber: number, content: string) => {
+        if (this.verbose) {
+          const preview = content.substring(0, 80).replace(/\n/g, ' ');
+          this.logger.debug(`[AICF] ${file}:${lineNumber} - ${preview}`);
+        }
+      },
+    });
+    this.principleWatcher = new PrincipleWatcher(this.cwd, {
+      verbose: this.verbose,
+      enableLearning: true,
+      apiKey: process.env['ANTHROPIC_API_KEY'],
+    });
 
     // Determine which platforms to enable
     this.enabledPlatforms = this.determinePlatforms(options);
@@ -219,6 +242,41 @@ export class WatcherCommand {
       this.stop();
     });
 
+    // Start JSON-to-AICF watcher (Phase 2)
+    this.jsonToAICFWatcher.start().then((result) => {
+      if (result.ok) {
+        if (this.verbose) {
+          console.log(chalk.green('✅ JSON-to-AICF watcher started'));
+        }
+      } else {
+        console.error(chalk.red('❌ Failed to start JSON-to-AICF watcher:'), result.error.message);
+      }
+    });
+
+    // Start AICF file watcher (Phase 3)
+    this.aicfFileWatcher
+      .start()
+      .then(() => {
+        if (this.verbose) {
+          console.log(chalk.green('✅ AICF file watcher started'));
+        }
+      })
+      .catch((error: Error) => {
+        console.error(chalk.red('❌ Failed to start AICF file watcher:'), error.message);
+      });
+
+    // Start Principle watcher (Phase 5)
+    this.principleWatcher
+      .start()
+      .then(() => {
+        if (this.verbose) {
+          console.log(chalk.green('✅ Principle watcher started'));
+        }
+      })
+      .catch((error: Error) => {
+        console.error(chalk.red('❌ Failed to start Principle watcher:'), error.message);
+      });
+
     // Start watching
     this.watch();
   }
@@ -243,6 +301,23 @@ export class WatcherCommand {
    */
   private stop(): void {
     this.isRunning = false;
+
+    // Stop JSON-to-AICF watcher
+    this.jsonToAICFWatcher.stop().then((result) => {
+      if (!result.ok) {
+        console.error(chalk.red('❌ Failed to stop JSON-to-AICF watcher:'), result.error.message);
+      }
+    });
+
+    // Stop AICF file watcher
+    this.aicfFileWatcher.stop().catch((error: Error) => {
+      console.error(chalk.red('❌ Failed to stop AICF file watcher:'), error.message);
+    });
+
+    // Stop Principle watcher
+    this.principleWatcher.stop().catch((error: Error) => {
+      console.error(chalk.red('❌ Failed to stop Principle watcher:'), error.message);
+    });
 
     const status = this.manager.getStatus();
     this.logger.info('Watcher stopped', {

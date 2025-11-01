@@ -20,6 +20,7 @@ import { join, dirname } from 'path';
 import { WatcherCommand } from './commands/WatcherCommand.js';
 import { InitCommand } from './commands/InitCommand.js';
 import { MigrateCommand } from './commands/MigrateCommand.js';
+import { MigrateOldAICFCommand } from './commands/MigrateOldAICFCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 import { PermissionsCommand } from './commands/PermissionsCommand.js';
 import { StopCommand } from './commands/StopCommand.js';
@@ -140,6 +141,24 @@ program
         console.error(chalk.red('❌ Error:'), result.error.message);
         process.exit(1);
       }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Migrate Old AICF command
+program
+  .command('migrate-aicf')
+  .description('Convert old v3.0-alpha AICF files to new JSON format')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const migrateOldCmd = new MigrateOldAICFCommand({
+        verbose: options.verbose,
+      });
+
+      await migrateOldCmd.execute();
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
