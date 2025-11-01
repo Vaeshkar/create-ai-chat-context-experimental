@@ -50,7 +50,7 @@ export class StatusCommand {
         console.log(chalk.yellow('Status:'), chalk.red('Not Running'));
         console.log();
         console.log(chalk.dim('To start the watcher, run:'));
-        console.log(chalk.cyan('  aice watch'));
+        console.log(chalk.cyan('  aether watch'));
         console.log();
         return Ok({
           status,
@@ -82,7 +82,7 @@ export class StatusCommand {
 
       console.log();
       console.log(chalk.dim('To stop the watcher, run:'));
-      console.log(chalk.cyan('  aice stop'));
+      console.log(chalk.cyan('  aether stop'));
       console.log();
 
       return Ok({

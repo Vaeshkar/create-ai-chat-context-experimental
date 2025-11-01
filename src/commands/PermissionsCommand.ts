@@ -43,7 +43,7 @@ export class PermissionsCommand {
       // Load permissions first
       const loadResult = await this.permissionManager.load();
       if (!loadResult.ok) {
-        return Err(new Error('No permissions file found. Run "aice init" first.'));
+        return Err(new Error('No permissions file found. Run "aether init" first.'));
       }
 
       switch (action) {

@@ -120,7 +120,7 @@ export async function displayTokenUsage(cwd: string, showAll: boolean = false): 
   if (!showAll) {
     console.log(
       chalk.gray(
-        `💡 Showing ${modelsToShow.length} models. Run 'npx aice tokens --all' to see all ${ALL_MODELS.length} models\n`
+        `💡 Showing ${modelsToShow.length} models. Run 'aether tokens --all' to see all ${ALL_MODELS.length} models\n`
       )
     );
   }

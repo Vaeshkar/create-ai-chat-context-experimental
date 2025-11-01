@@ -78,9 +78,7 @@ export class MigrateCommand {
       const aiDir = join(this.cwd, '.ai');
 
       if (!existsSync(aicfDir) || !existsSync(aiDir)) {
-        return Err(
-          new Error('No existing memory files found. Run: npx aice init --mode automatic')
-        );
+        return Err(new Error('No existing memory files found. Run: aether init'));
       }
 
       // Ask which platforms to enable
@@ -148,7 +146,7 @@ export class MigrateCommand {
         console.log(chalk.yellow('📦 Legacy Data Migration'));
         console.log(chalk.dim(`  Moved ${movedFiles.length} files to legacy_memory/`));
         console.log(chalk.dim('  Your old memory files are preserved'));
-        console.log(chalk.dim('  Run "aice watch" to re-extract from library data'));
+        console.log(chalk.dim('  Run "aether watch" to re-extract from library data'));
         console.log();
       }
 
@@ -169,16 +167,16 @@ export class MigrateCommand {
         console.log(chalk.green('✅ Watcher started successfully'));
         console.log();
         console.log(chalk.dim('To check watcher status, run:'));
-        console.log(chalk.cyan('  aice status'));
+        console.log(chalk.cyan('  aether status'));
         console.log();
         console.log(chalk.dim('To stop the watcher, run:'));
-        console.log(chalk.cyan('  aice stop'));
+        console.log(chalk.cyan('  aether stop'));
         console.log();
       } else {
         console.log(chalk.yellow('⚠️  Failed to start watcher automatically'));
         console.log();
         console.log(chalk.dim('To start the watcher manually, run:'));
-        console.log(chalk.cyan('  aice watch'));
+        console.log(chalk.cyan('  aether watch'));
         console.log();
       }
 
@@ -649,8 +647,8 @@ export class MigrateCommand {
         return true;
       }
 
-      // Spawn aice watch as a detached background process
-      const child = spawn('aice', ['watch'], {
+      // Spawn aether watch as a detached background process
+      const child = spawn('aether', ['watch'], {
         detached: true,
         stdio: 'ignore',
         cwd: this.cwd,

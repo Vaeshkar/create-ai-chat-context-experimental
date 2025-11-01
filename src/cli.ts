@@ -84,8 +84,8 @@ function getVersion(): string {
 const program = new Command();
 
 program
-  .name('aice')
-  .description('AI Chat Context Experimental - Automatic mode with watchers')
+  .name('aether')
+  .description('AETHER - Distributed AI Memory System with automatic learning')
   .version(getVersion());
 
 // Init command

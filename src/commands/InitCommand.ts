@@ -775,7 +775,7 @@ export class InitCommand {
       }
 
       console.log();
-      console.log(chalk.dim('These will be imported when you run: npx aice watch'));
+      console.log(chalk.dim('These will be imported when you run: aether watch'));
       console.log();
     } catch {
       spinner.fail('Error scanning for data');
@@ -1020,16 +1020,16 @@ export class InitCommand {
         console.log(chalk.green('✅ Watcher started successfully'));
         console.log();
         console.log(chalk.dim('To check watcher status, run:'));
-        console.log(chalk.cyan('  aice status'));
+        console.log(chalk.cyan('  aether status'));
         console.log();
         console.log(chalk.dim('To stop the watcher, run:'));
-        console.log(chalk.cyan('  aice stop'));
+        console.log(chalk.cyan('  aether stop'));
         console.log();
       } else {
         console.log(chalk.yellow('⚠️  Failed to start watcher automatically'));
         console.log();
         console.log(chalk.dim('To start the watcher manually, run:'));
-        console.log(chalk.cyan('  aice watch'));
+        console.log(chalk.cyan('  aether watch'));
         console.log();
       }
 
@@ -1580,8 +1580,8 @@ ${platformStatuses}
         return true;
       }
 
-      // Spawn aice watch as a detached background process
-      const child = spawn('aice', ['watch'], {
+      // Spawn aether watch as a detached background process
+      const child = spawn('aether', ['watch'], {
         detached: true,
         stdio: 'ignore',
         cwd: this.cwd,

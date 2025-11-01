@@ -55,7 +55,7 @@ export class MigrateOldAICFCommand {
         console.log(chalk.dim('The watchers will process them automatically.'));
         console.log();
         console.log(chalk.dim('To start the watchers, run:'));
-        console.log(chalk.cyan('  aice watch'));
+        console.log(chalk.cyan('  aether watch'));
         console.log();
       } else {
         console.log(chalk.yellow('No files to migrate.'));

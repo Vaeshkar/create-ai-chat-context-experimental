@@ -171,10 +171,10 @@ export class WatcherCommand {
       console.log(chalk.yellow('Uptime:'), statusResult.value.uptime);
       console.log();
       console.log(chalk.dim('To stop the watcher, run:'));
-      console.log(chalk.cyan('  aice stop'));
+      console.log(chalk.cyan('  aether stop'));
       console.log();
       console.log(chalk.dim('To check status, run:'));
-      console.log(chalk.cyan('  aice status'));
+      console.log(chalk.cyan('  aether status'));
       console.log();
       process.exit(1);
     }

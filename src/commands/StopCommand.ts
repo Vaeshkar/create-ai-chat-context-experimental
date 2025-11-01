@@ -48,7 +48,7 @@ export class StopCommand {
         spinner.info('No watcher daemon running');
         console.log();
         console.log(chalk.dim('To start the watcher, run:'));
-        console.log(chalk.cyan('  aice watch'));
+        console.log(chalk.cyan('  aether watch'));
         console.log();
         return Ok({
           message: 'No daemon running',
@@ -69,7 +69,7 @@ export class StopCommand {
       console.log(chalk.green('✅ Watcher Stopped'));
       console.log();
       console.log(chalk.dim('To restart the watcher, run:'));
-      console.log(chalk.cyan('  aice watch'));
+      console.log(chalk.cyan('  aether watch'));
       console.log();
 
       return Ok({
