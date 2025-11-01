@@ -177,6 +177,15 @@ export { AugmentLevelDBReader } from './readers/AugmentLevelDBReader.js';
 export { AetherWatcher } from './watchers/AetherWatcher.js';
 export type { AetherWatcherConfig, WatcherStatus } from './watchers/AetherWatcher.js';
 
+// Platform detection and API key scanning utilities
+export { PlatformDetector } from './utils/PlatformDetector.js';
+export type {
+  PlatformDetectionResult,
+  PlatformDetectionSummary,
+} from './utils/PlatformDetector.js';
+export { ApiKeyScanner } from './utils/ApiKeyScanner.js';
+export type { ApiKeyScanResult } from './utils/ApiKeyScanner.js';
+
 // Platform-specific watchers
 export { ClaudeCliWatcher } from './watchers/ClaudeCliWatcher.js';
 export { ClaudeDesktopWatcher } from './watchers/ClaudeDesktopWatcher.js';

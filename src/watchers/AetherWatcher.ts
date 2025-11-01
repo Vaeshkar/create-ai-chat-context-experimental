@@ -106,9 +106,7 @@ export class AetherWatcher {
           apiKey,
         });
       } else if (this.verbose) {
-        console.log(
-          chalk.yellow('⚠️  PrincipleWatcher disabled: ANTHROPIC_API_KEY not found')
-        );
+        console.log(chalk.yellow('⚠️  PrincipleWatcher disabled: ANTHROPIC_API_KEY not found'));
       }
     }
   }
@@ -316,4 +314,3 @@ export class AetherWatcher {
     }
   }
 }
-

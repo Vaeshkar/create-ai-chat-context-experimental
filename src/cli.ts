@@ -97,13 +97,10 @@ program
   .option('-m, --mode <mode>', 'Mode: manual or automatic (default: automatic)', 'automatic')
   .option('-a, --automatic', 'Use automatic mode (alias for --mode automatic)')
   .action(async (options) => {
-    // Handle --automatic flag as alias for --mode automatic
-    const mode = options.automatic ? 'automatic' : options.mode;
     try {
       const initCmd = new InitCommand({
         force: options.force,
         verbose: options.verbose,
-        mode: mode as 'manual' | 'automatic',
       });
 
       const result = await initCmd.execute();
@@ -111,12 +108,6 @@ program
       if (!result.ok) {
         console.error(chalk.red('❌ Error:'), result.error.message);
         process.exit(1);
-      }
-
-      if (result.value.mode === 'manual') {
-        console.log(chalk.blue('ℹ️  Manual Mode:'));
-        console.log(chalk.dim('   Use create-ai-chat-context for manual memory updates'));
-        console.log(chalk.dim('   Link: https://github.com/Vaeshkar/create-ai-chat-context'));
       }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));

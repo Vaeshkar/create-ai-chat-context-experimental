@@ -5,12 +5,11 @@
  */
 
 /**
- * Init Command - Initialize aicf-watcher
- * Phase 4.4: InitCommand Implementation - October 2025
+ * Init Command - Initialize AETHER
+ * Phase 6: November 2025
  *
- * Extends create-ai-chat-context init with automatic mode setup
- * Asks user: Manual or Automatic mode?
- * If Automatic: Creates .cache/llm/, .permissions.aicf, .watcher-config.json
+ * AETHER: Adaptive External Thinking & Holistic Experiential Recall
+ * Automatic-only mode with beautiful CLI flow
  */
 
 import { join } from 'path';
@@ -23,32 +22,32 @@ import {
   readdirSync,
   statSync,
 } from 'fs';
-import { spawn } from 'child_process';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
 import inquirer from 'inquirer';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
+import { getTemplatesDir } from '../utils/PackageRoot.js';
+import { PlatformDetector, type PlatformDetectionSummary } from '../utils/PlatformDetector.js';
+import { ApiKeyScanner } from '../utils/ApiKeyScanner.js';
+import { AetherWatcher } from '../watchers/AetherWatcher.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
-import { getTemplatesDir } from '../utils/PackageRoot.js';
 import { DaemonManager } from '../utils/DaemonManager.js';
-// BackgroundService removed - using Cache-First Architecture (Phase 6)
+import { spawn } from 'child_process';
 
 export interface InitCommandOptions {
   cwd?: string;
   force?: boolean;
   verbose?: boolean;
-  mode?: 'manual' | 'automatic';
 }
 
 export interface InitResult {
-  mode: 'manual' | 'automatic';
   projectPath: string;
   filesCreated: string[];
   message: string;
-  platforms?: string[];
-  llmPrompt?: string;
+  platforms: string[];
+  watcherStarted: boolean;
 }
 
 export interface PlatformSelection {
@@ -60,15 +59,28 @@ export interface PlatformSelection {
   chatgpt: boolean;
 }
 
+// AETHER ASCII Logo
+// AETHER logo inspired by the Python rich banner
+const AETHER_LOGO = `
+╭─────────────────────────────────────────────────────────────────────────────╮
+│                                                                             │
+│                      ${chalk.bold.white('A')}${chalk.magenta('E')}${chalk.bold.white('T')}${chalk.magenta('H')}${chalk.bold.white('E')}${chalk.magenta('R')}                                          │
+│                                                                             │
+│              ${chalk.white('Distributed AI Memory System')}                            │
+│   ${chalk.gray('Automatic learning • Conversation capture • Principle extraction')}   │
+│              ${chalk.dim('95.5% compression • zero semantic loss')}                    │
+│                                                                             │
+╰─────────────────────────────────────────────────────────────────────────────╯
+`;
+
 /**
- * Initialize aicf-watcher in a project
- * Extends create-ai-chat-context init with automatic mode setup
+ * Initialize AETHER in a project
+ * Automatic-only mode with beautiful CLI flow
  */
 export class InitCommand {
   private cwd: string;
   private force: boolean;
   private verbose: boolean;
-  private mode: 'manual' | 'automatic';
   private selectedPlatforms: PlatformSelection = {
     augment: false,
     warp: false,
@@ -77,50 +89,123 @@ export class InitCommand {
     copilot: false,
     chatgpt: false,
   };
+  private aetherWatcher: AetherWatcher | null = null;
 
   constructor(options: InitCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.force = options.force || false;
     this.verbose = options.verbose || false;
-    this.mode = options.mode || 'automatic';
   }
 
   /**
-   * Execute init command
+   * Execute init command - AETHER flow
    */
   async execute(): Promise<Result<InitResult>> {
     try {
       const spinner = ora();
 
-      // Step 1: Check if already initialized
+      // Step 1: Show AETHER logo and welcome
+      this.showWelcome();
+
+      // Step 2: Check if already initialized
       if (!this.force) {
-        // Check if we need to migrate (existing .ai and .aicf but no .permissions.aicf)
-        const aicfDir = join(this.cwd, '.aicf');
-        const aiDir = join(this.cwd, '.ai');
-        const permissionsFile = join(this.cwd, '.aicf', '.permissions.aicf');
-
-        if (existsSync(aicfDir) && existsSync(aiDir) && !existsSync(permissionsFile)) {
-          // Existing setup from base package - migrate it
-          spinner.info('Found existing memory files. Switching to migration workflow...');
-          return await this.migrateExistingSetup(spinner);
-        }
-
-        // Check for other initialization issues
         const checkResult = this.checkNotInitialized();
         if (!checkResult.ok) {
           return checkResult;
         }
       }
 
-      // Step 2: Ask user for mode (manual or automatic)
-      spinner.info('Initializing aicf-watcher...');
-      const mode = await this.askMode();
-
-      if (mode === 'manual') {
-        return await this.initManualMode(spinner);
-      } else {
-        return await this.initAutomaticMode(spinner);
+      // Step 3: Ask permission to access LLM libraries
+      const hasPermission = await this.askPermission();
+      if (!hasPermission) {
+        return Err(
+          new Error('Permission denied. Cannot initialize AETHER without access to LLM libraries.')
+        );
       }
+
+      // Step 4: Auto-detect platforms
+      spinner.start('Scanning for LLM platforms...');
+      const detector = new PlatformDetector();
+      const detection = await detector.detectAll();
+      spinner.succeed('Platform scan complete');
+
+      // Show detection results
+      this.showDetectionResults(detection);
+
+      // Step 5: Ask user to select platforms
+      const selectedPlatforms = await this.askPlatformSelection(detection);
+      if (selectedPlatforms.length === 0) {
+        return Err(
+          new Error(
+            'No platforms selected. Cannot initialize AETHER without at least one platform.'
+          )
+        );
+      }
+
+      // Step 6: Handle Claude API key
+      const apiKeyResult = await this.handleApiKey();
+      if (!apiKeyResult.ok) {
+        console.log(
+          chalk.yellow(
+            '\n⚠️  PrincipleWatcher will be disabled until you add ANTHROPIC_API_KEY to .env'
+          )
+        );
+      }
+
+      // Step 7: Ask about initial import
+      const shouldImport = await this.askInitialImport(detection);
+
+      // Step 8: Create directory structure
+      spinner.start('Creating directory structure...');
+      const filesCreated = this.createDirectoryStructure();
+      spinner.succeed('Directory structure created');
+
+      // Step 9: Create configuration files
+      spinner.start('Creating configuration files...');
+      this.createConfigFiles(selectedPlatforms);
+      spinner.succeed('Configuration files created');
+
+      // Step 10: Update .gitignore
+      spinner.start('Updating .gitignore...');
+      this.updateGitignore();
+      spinner.succeed('.gitignore updated');
+
+      // Step 11: Copy template files
+      spinner.start('Copying template files...');
+      this.copyTemplateFiles();
+      spinner.succeed('Template files copied');
+
+      // Step 12: Initial import (if requested)
+      if (shouldImport) {
+        console.log(chalk.cyan('\n📦 Initial import will be performed when watcher starts...'));
+      }
+
+      // Step 13: Ask to start AETHER watcher
+      const shouldStart = await this.askStartWatcher();
+      let watcherStarted = false;
+
+      if (shouldStart) {
+        spinner.start('Starting AETHER watcher...');
+        const startResult = await this.startAetherWatcher();
+        if (startResult.ok) {
+          spinner.succeed('AETHER watcher started');
+          watcherStarted = true;
+        } else {
+          spinner.fail('Failed to start AETHER watcher');
+          console.log(chalk.yellow(`\n⚠️  ${startResult.error.message}`));
+        }
+      }
+
+      // Step 14: Show success summary
+      this.showSuccessSummary(selectedPlatforms, watcherStarted);
+
+      return Ok({
+        projectPath: this.cwd,
+        filesCreated,
+        message: 'AETHER initialized successfully',
+        platforms: selectedPlatforms,
+        watcherStarted,
+      });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
     }
@@ -131,34 +216,427 @@ export class InitCommand {
    */
   private checkNotInitialized(): Result<void> {
     const aicfDir = join(this.cwd, '.aicf');
-    const aiDir = join(this.cwd, '.ai');
     const permissionsFile = join(this.cwd, '.aicf', '.permissions.aicf');
 
-    // If both .ai and .aicf exist AND .permissions.aicf exists, it's already in automatic mode
-    if (existsSync(aicfDir) && existsSync(aiDir) && existsSync(permissionsFile)) {
-      return Err(
-        new Error('Project already initialized in automatic mode. Use --force to overwrite.')
-      );
-    }
-
-    // If only .ai and .aicf exist (from base package), suggest migration
-    if (existsSync(aicfDir) && existsSync(aiDir)) {
-      return Err(
-        new Error(
-          'Project has existing memory files from create-ai-chat-context.\n' +
-            'To upgrade to automatic mode, run: npx aice migrate\n' +
-            'Or use --force to reinitialize from scratch.'
-        )
-      );
+    // If .aicf and .permissions.aicf exist, it's already initialized
+    if (existsSync(aicfDir) && existsSync(permissionsFile)) {
+      return Err(new Error('AETHER already initialized. Use --force to reinitialize.'));
     }
 
     return Ok(undefined);
   }
 
   /**
+   * Show AETHER welcome message with logo
+   */
+  private showWelcome(): void {
+    console.log(AETHER_LOGO);
+    console.log();
+    console.log(chalk.dim('System initializing…'));
+    console.log();
+  }
+
+  /**
+   * Ask permission to access LLM libraries
+   */
+  private async askPermission(): Promise<boolean> {
+    console.log(chalk.cyan('📁 Data Access & Privacy'));
+    console.log();
+    console.log('AETHER needs to access your LLM library folders to capture conversations.');
+    console.log();
+    console.log(chalk.dim('What we access:'));
+    console.log(
+      chalk.dim('  • Augment: ~/Library/Application Support/Code/User/workspaceStorage/')
+    );
+    console.log(chalk.dim('  • Claude Desktop: ~/Library/Application Support/Claude/'));
+    console.log(chalk.dim('  • Claude CLI: ~/.claude/'));
+    console.log(chalk.dim('  • Warp: ~/Library/Application Support/warp-terminal/'));
+    console.log();
+    console.log(chalk.dim('What we do:'));
+    console.log(chalk.dim('  ✓ Read conversation data from LevelDB/SQLite databases'));
+    console.log(chalk.dim('  ✓ Extract and consolidate into .aicf/ format'));
+    console.log(chalk.dim('  ✓ Store principles, decisions, and insights locally'));
+    console.log();
+    console.log(chalk.dim("What we DON'T do:"));
+    console.log(chalk.dim('  ✗ Send data to external servers'));
+    console.log(chalk.dim('  ✗ Modify your LLM databases'));
+    console.log(chalk.dim('  ✗ Access any other files'));
+    console.log();
+
+    const answers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'permission',
+        message: 'Do you grant permission to access your LLM library folders?',
+        default: true,
+      },
+    ]);
+
+    return answers.permission;
+  }
+
+  /**
+   * Show platform detection results
+   */
+  private showDetectionResults(detection: PlatformDetectionSummary): void {
+    console.log();
+    console.log(chalk.cyan('🔍 Found platforms:'));
+    console.log();
+
+    for (const platform of detection.platforms) {
+      if (platform.available) {
+        const name = platform.platform
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, (l: string) => l.toUpperCase());
+        const count = platform.conversationCount || 0;
+        const size = platform.size || 'Unknown';
+        const dbCount = platform.databaseCount || 0;
+
+        console.log(chalk.green(`  ✓ ${name}`));
+        if (count > 0) {
+          console.log(chalk.dim(`    ${dbCount} database(s), ~${count} conversations, ${size}`));
+        } else {
+          console.log(chalk.dim(`    ${dbCount} database(s), ${size}`));
+        }
+      } else {
+        const name = platform.platform
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, (l: string) => l.toUpperCase());
+        console.log(chalk.dim(`  ✗ ${name} (not found)`));
+      }
+    }
+
+    if (detection.totalConversations > 0) {
+      console.log();
+      console.log(
+        chalk.cyan(
+          `📊 Total: ~${detection.totalConversations} conversations, ${detection.totalSize}`
+        )
+      );
+    }
+    console.log();
+  }
+
+  /**
+   * Ask user to select platforms
+   */
+  private async askPlatformSelection(detection: PlatformDetectionSummary): Promise<string[]> {
+    const availablePlatforms = detection.platforms.filter((p) => p.available);
+
+    if (availablePlatforms.length === 0) {
+      console.log(
+        chalk.yellow(
+          '⚠️  No platforms detected. You can still initialize AETHER and add platforms later.'
+        )
+      );
+      return [];
+    }
+
+    const choices = detection.platforms.map((p) => {
+      const name = p.platform.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+      const count = p.conversationCount || 0;
+      const label = count > 0 ? `${name} (~${count} conversations)` : name;
+
+      return {
+        name: label,
+        value: p.platform,
+        checked: p.available, // Auto-check available platforms
+        disabled: !p.available ? 'not detected' : false,
+      };
+    });
+
+    // @ts-expect-error - inquirer types are complex, but this works at runtime
+    const answers = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'platforms',
+        message: 'Which platforms should AETHER monitor?',
+        choices,
+        validate: (answer: string[]) => {
+          if (answer.length === 0) {
+            return 'Please select at least one platform (or press Ctrl+C to cancel)';
+          }
+          return true;
+        },
+      },
+    ]);
+
+    return answers.platforms as string[];
+  }
+
+  /**
+   * Handle Claude API key (scan or ask for input)
+   */
+  private async handleApiKey(): Promise<Result<void>> {
+    console.log();
+    console.log(chalk.cyan('🔑 Claude API Key'));
+    console.log();
+    console.log('AETHER uses Claude API to validate and improve extracted principles.');
+    console.log();
+
+    const scanner = new ApiKeyScanner(this.cwd);
+    const scanResult = await scanner.scan();
+
+    if (scanResult.found && scanResult.valid) {
+      console.log(chalk.green(`✓ Found valid API key in ${scanResult.file}`));
+      console.log(chalk.dim(`  Key: ${ApiKeyScanner.maskKey(scanResult.key!)}`));
+      return Ok(undefined);
+    }
+
+    if (scanResult.found && !scanResult.valid) {
+      console.log(chalk.yellow(`⚠️  Found invalid API key in ${scanResult.file}`));
+      console.log(chalk.dim('  API keys should start with "sk-ant-"'));
+    }
+
+    // Ask user what to do
+    const answers = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'action',
+        message: 'How would you like to provide your Claude API key?',
+        choices: [
+          { name: 'Enter it now', value: 'enter' },
+          { name: "I'll add it to .env later (PrincipleWatcher will be disabled)", value: 'later' },
+        ],
+        default: 'enter',
+      },
+    ]);
+
+    if (answers.action === 'later') {
+      await scanner.createExample();
+      console.log(chalk.dim('\n  Created .env.example - copy it to .env and add your API key'));
+      return Err(new Error('API key not provided'));
+    }
+
+    // Ask for API key
+    const keyAnswers = await inquirer.prompt([
+      {
+        type: 'password',
+        name: 'key',
+        message: 'Enter your Claude API key:',
+        mask: '*',
+        validate: (input: string) => {
+          if (!input || input.length === 0) {
+            return 'API key cannot be empty';
+          }
+          if (!input.startsWith('sk-ant-')) {
+            return 'Invalid API key format (should start with "sk-ant-")';
+          }
+          return true;
+        },
+      },
+    ]);
+
+    // Save key to .env
+    const saveResult = await scanner.saveKey(keyAnswers.key);
+    if (!saveResult.ok) {
+      return saveResult;
+    }
+
+    await scanner.createExample();
+    console.log(chalk.green('\n✓ API key saved to .env'));
+    console.log(chalk.dim('  Created .env.example for reference'));
+
+    return Ok(undefined);
+  }
+
+  /**
+   * Ask about initial import
+   */
+  private async askInitialImport(detection: PlatformDetectionSummary): Promise<boolean> {
+    if (detection.totalConversations === 0) {
+      return false;
+    }
+
+    console.log();
+    console.log(chalk.cyan('📦 Initial Import'));
+    console.log();
+    console.log('We found existing conversations in your LLM libraries:');
+    console.log(
+      chalk.dim(
+        `  • Total: ~${detection.totalConversations} conversations (${detection.totalSize})`
+      )
+    );
+    console.log();
+
+    const answers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'import',
+        message: 'Import existing conversations now?',
+        default: true,
+      },
+    ]);
+
+    return answers.import;
+  }
+
+  /**
+   * Create directory structure
+   */
+  private createDirectoryStructure(): string[] {
+    const filesCreated: string[] = [];
+
+    // Create main directories
+    const aicfDir = join(this.cwd, '.aicf');
+    const aiDir = join(this.cwd, '.ai');
+    const cacheLlmDir = join(this.cwd, '.cache', 'llm');
+
+    mkdirSync(aicfDir, { recursive: true });
+    mkdirSync(aiDir, { recursive: true });
+    mkdirSync(cacheLlmDir, { recursive: true });
+
+    filesCreated.push(aicfDir, aiDir, cacheLlmDir);
+
+    // Create AICF subdirectories
+    const rawDir = join(aicfDir, 'raw');
+    const recentDir = join(aicfDir, 'recent');
+    const sessionsDir = join(aicfDir, 'sessions');
+    const mediumDir = join(aicfDir, 'medium');
+    const oldDir = join(aicfDir, 'old');
+    const archiveDir = join(aicfDir, 'archive');
+
+    mkdirSync(rawDir, { recursive: true });
+    mkdirSync(recentDir, { recursive: true });
+    mkdirSync(sessionsDir, { recursive: true });
+    mkdirSync(mediumDir, { recursive: true });
+    mkdirSync(oldDir, { recursive: true });
+    mkdirSync(archiveDir, { recursive: true });
+
+    filesCreated.push(rawDir, recentDir, sessionsDir, mediumDir, oldDir, archiveDir);
+
+    return filesCreated;
+  }
+
+  /**
+   * Create configuration files
+   */
+  private createConfigFiles(selectedPlatforms: string[]): void {
+    // Update selectedPlatforms object
+    this.selectedPlatforms = {
+      augment: selectedPlatforms.includes('augment'),
+      warp: selectedPlatforms.includes('warp'),
+      claudeDesktop: selectedPlatforms.includes('claude-desktop'),
+      claudeCli: selectedPlatforms.includes('claude-cli'),
+      copilot: selectedPlatforms.includes('copilot'),
+      chatgpt: selectedPlatforms.includes('chatgpt'),
+    };
+
+    // Create .permissions.aicf
+    const aicfDir = join(this.cwd, '.aicf');
+    const permissionsFile = join(aicfDir, '.permissions.aicf');
+    const permissionsContent = this.generatePermissionsFile();
+    writeFileSync(permissionsFile, permissionsContent, 'utf-8');
+
+    // Create .watcher-config.json
+    const configFile = join(aicfDir, '.watcher-config.json');
+    const configContent = this.generateWatcherConfig();
+    writeFileSync(configFile, configContent, 'utf-8');
+
+    // Create empty principles, decisions, insights files
+    const principlesFile = join(aicfDir, 'principles.aicf');
+    const decisionsFile = join(aicfDir, 'decisions.aicf');
+    const insightsFile = join(aicfDir, 'insights.aicf');
+
+    if (!existsSync(principlesFile)) {
+      writeFileSync(principlesFile, '@PRINCIPLES|version=3.1|format=aicf\n', 'utf-8');
+    }
+    if (!existsSync(decisionsFile)) {
+      writeFileSync(decisionsFile, '@DECISIONS|version=3.1|format=aicf\n', 'utf-8');
+    }
+    if (!existsSync(insightsFile)) {
+      writeFileSync(insightsFile, '@INSIGHTS|version=3.1|format=aicf\n', 'utf-8');
+    }
+  }
+
+  /**
+   * Ask if user wants to start AETHER watcher
+   */
+  private async askStartWatcher(): Promise<boolean> {
+    console.log();
+    const answers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'start',
+        message: 'Start AETHER watcher now?',
+        default: true,
+      },
+    ]);
+
+    return answers.start;
+  }
+
+  /**
+   * Start AETHER watcher
+   */
+  private async startAetherWatcher(): Promise<Result<void>> {
+    try {
+      // Check if API key is available
+      const apiKey = process.env['ANTHROPIC_API_KEY'];
+      const enablePrincipleWatcher = !!apiKey;
+
+      // Create AetherWatcher instance
+      this.aetherWatcher = new AetherWatcher({
+        cwd: this.cwd,
+        verbose: this.verbose,
+        enablePrincipleWatcher,
+        pollInterval: 300000, // 5 minutes
+      });
+
+      // Start the watcher
+      const result = await this.aetherWatcher.start();
+      if (!result.ok) {
+        return result;
+      }
+
+      return Ok(undefined);
+    } catch (error) {
+      return Err(error instanceof Error ? error : new Error(String(error)));
+    }
+  }
+
+  /**
+   * Show success summary
+   */
+  private showSuccessSummary(platforms: string[], watcherStarted: boolean): void {
+    console.log();
+    console.log(chalk.green('✅ AETHER initialized successfully!'));
+    console.log();
+
+    if (watcherStarted) {
+      console.log(chalk.cyan("🌌 What's running:"));
+      console.log(chalk.dim('  • AETHER watcher daemon'));
+      console.log(chalk.dim(`  • Monitoring: ${platforms.join(', ')}`));
+      console.log(chalk.dim('  • Capturing conversations every 5 minutes'));
+      console.log();
+    }
+
+    console.log(chalk.cyan('🎯 Next steps:'));
+    if (watcherStarted) {
+      console.log(chalk.dim('  • Check status: aether status'));
+      console.log(chalk.dim('  • View logs: aether logs'));
+      console.log(chalk.dim('  • Stop watcher: aether stop'));
+    } else {
+      console.log(chalk.dim('  • Start watcher: aether watch'));
+      console.log(chalk.dim('  • Check status: aether status'));
+    }
+    console.log();
+
+    console.log(
+      chalk.cyan('💡 AETHER will now automatically capture and learn from your conversations.')
+    );
+    console.log(chalk.dim('   Everything stays local. Your data never leaves your machine.'));
+    console.log();
+    console.log(chalk.cyan('🎉 Happy thinking!'));
+    console.log();
+  }
+
+  /**
    * Migrate existing setup from base package to experimental
    * Adds missing files and asks for mode preference
+   * @deprecated - Old method, kept for compatibility
    */
+  // @ts-expect-error - Deprecated method, kept for compatibility
   private async migrateExistingSetup(spinner: Ora): Promise<Result<InitResult>> {
     spinner.stop();
 
@@ -195,13 +673,19 @@ export class InitCommand {
 
   /**
    * Ask user for mode: manual or automatic
+   * @deprecated - Old method, kept for compatibility
    */
   private async askMode(): Promise<'manual' | 'automatic'> {
-    // If mode was explicitly set via CLI flag, use it
-    if (this.mode !== 'automatic') {
-      return this.mode;
-    }
+    // Always return automatic (AETHER is automatic-only)
+    return 'automatic';
+  }
 
+  /**
+   * Ask user for mode: manual or automatic (old implementation)
+   * @deprecated - Old method, kept for compatibility
+   */
+  // @ts-expect-error - Deprecated method, kept for compatibility
+  private async askModeOld(): Promise<'manual' | 'automatic'> {
     console.log();
     console.log(chalk.cyan('🔐 Conversation Capture Mode'));
     console.log();
@@ -384,12 +868,11 @@ export class InitCommand {
       console.log();
 
       return Ok({
-        mode: 'manual',
         projectPath: this.cwd,
         filesCreated: [aiDir, aicfDir, recentDir, sessionsDir, mediumDir, oldDir, archiveDir],
         message: 'Manual mode initialized. Use the prompt above to trigger LLM updates.',
         platforms: [llmAnswers.llm],
-        llmPrompt,
+        watcherStarted: false,
       });
     } catch (error) {
       spinner.fail('Failed to initialize manual mode');
@@ -562,11 +1045,11 @@ export class InitCommand {
       }
 
       return Ok({
-        mode: 'automatic',
         projectPath: this.cwd,
         filesCreated,
         message: 'Automatic mode initialized. Watcher is running in background.',
         platforms: platformAnswers.platforms,
+        watcherStarted: true,
       });
     } catch (error) {
       spinner.fail('Failed to initialize automatic mode');
