@@ -16,7 +16,7 @@
 import chalk from 'chalk';
 import { JSONToAICFWatcher } from 'aicf-core';
 import { AICFFileWatcher } from 'lill-core';
-import { PrincipleWatcher } from 'lill-meta';
+import { PrincipleWatcher, EnhancedConversationExtractor } from 'lill-meta';
 import { join } from 'path';
 import type { Result } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
@@ -59,11 +59,13 @@ export class AetherWatcher {
   private jsonToAICFWatcher: JSONToAICFWatcher;
   private aicfFileWatcher: AICFFileWatcher;
   private principleWatcher: PrincipleWatcher | null = null;
+  private enhancedConversationExtractor: EnhancedConversationExtractor | null = null;
 
   // State
   private isRunning: boolean = false;
   private startTime: number = 0;
   private errors: string[] = [];
+  private isExtracting: boolean = false; // Prevent concurrent extractions
 
   constructor(config: AetherWatcherConfig = {}) {
     this.cwd = config.cwd || process.cwd();
@@ -85,15 +87,20 @@ export class AetherWatcher {
       pollInterval: this.pollInterval,
       verbose: this.verbose,
       enableStorage: true,
+      principleExtractionThreshold: 500, // Trigger extraction after 500 lines read
       onNewEntry: async (file: string, lineNumber: number, content: string) => {
         if (this.verbose) {
           const preview = content.substring(0, 80).replace(/\n/g, ' ');
           console.log(chalk.dim(`[AICF] ${file}:${lineNumber} - ${preview}`));
         }
       },
+      onThresholdReached: async () => {
+        // Trigger principle extraction when threshold reached
+        await this.triggerPrincipleExtraction();
+      },
     });
 
-    // Only initialize PrincipleWatcher if enabled and API key is available
+    // Only initialize PrincipleWatcher and EnhancedConversationExtractor if enabled and API key is available
     if (this.enablePrincipleWatcher) {
       const apiKey = process.env['ANTHROPIC_API_KEY'];
       if (apiKey) {
@@ -104,6 +111,13 @@ export class AetherWatcher {
           verbose: this.verbose,
           enableLearning: true,
           apiKey,
+        });
+
+        this.enhancedConversationExtractor = new EnhancedConversationExtractor(this.cwd, {
+          aicfDir: join(this.cwd, '.aicf'),
+          apiKey,
+          batchSize: 5, // Analyze last 5 conversations (optimal for learning)
+          verbose: this.verbose,
         });
       } else if (this.verbose) {
         console.log(chalk.yellow('⚠️  PrincipleWatcher disabled: ANTHROPIC_API_KEY not found'));
@@ -311,6 +325,61 @@ export class AetherWatcher {
     await this.principleWatcher.stop();
     if (this.verbose) {
       console.log(chalk.dim('  ✓ Principle Watcher stopped'));
+    }
+  }
+
+  /**
+   * Trigger enhanced memory extraction from conversations
+   * Called when AICFFileWatcher reaches threshold (500 lines read)
+   * Phase 7: Extracts all 6 memory types (principles, decisions, profile, rejected, relationships, hypotheticals)
+   */
+  private async triggerPrincipleExtraction(): Promise<void> {
+    // Prevent concurrent extractions
+    if (this.isExtracting) {
+      if (this.verbose) {
+        console.log(chalk.yellow('[AETHER] Memory extraction already in progress, skipping...'));
+      }
+      return;
+    }
+
+    if (!this.enhancedConversationExtractor) {
+      if (this.verbose) {
+        console.log(chalk.yellow('[AETHER] EnhancedConversationExtractor not initialized'));
+      }
+      return;
+    }
+
+    try {
+      this.isExtracting = true;
+
+      if (this.verbose) {
+        console.log(chalk.cyan('\n🧠 [AETHER] Triggering enhanced memory extraction...'));
+      }
+
+      const result = await this.enhancedConversationExtractor.extractMemory();
+
+      if (result.success) {
+        console.log(chalk.green(`✅ [AETHER] Enhanced memory extraction complete:`));
+        console.log(chalk.gray(`   Principles: ${result.principlesExtracted}`));
+        console.log(chalk.gray(`   Decisions: ${result.decisionsExtracted}`));
+        console.log(chalk.gray(`   Preferences: ${result.preferencesExtracted}`));
+        console.log(chalk.gray(`   Patterns: ${result.patternsExtracted}`));
+        console.log(chalk.gray(`   Triggers: ${result.triggersExtracted}`));
+        console.log(chalk.gray(`   Communication Styles: ${result.communicationStylesExtracted}`));
+        console.log(chalk.gray(`   Rejected: ${result.rejectedExtracted}`));
+        console.log(chalk.gray(`   Relationships: ${result.relationshipsExtracted}`));
+        console.log(chalk.gray(`   Hypotheticals: ${result.hypotheticalsExtracted}`));
+        console.log(chalk.gray(`   Conversations Analyzed: ${result.conversationsAnalyzed}`));
+
+        // Reset the counter in AICFFileWatcher
+        this.aicfFileWatcher.resetExtractionCounter();
+      } else {
+        console.error(chalk.red(`❌ [AETHER] Memory extraction failed: ${result.error}`));
+      }
+    } catch (error) {
+      console.error(chalk.red('[AETHER] Memory extraction error:'), error);
+    } finally {
+      this.isExtracting = false;
     }
   }
 }

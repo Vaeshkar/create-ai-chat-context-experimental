@@ -25,6 +25,9 @@ import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 import { PermissionsCommand } from './commands/PermissionsCommand.js';
 import { StopCommand } from './commands/StopCommand.js';
 import { StatusCommand } from './commands/StatusCommand.js';
+import { QueryCommand } from './commands/QueryCommand.js';
+import { ProfileCommand } from './commands/ProfileCommand.js';
+import { MemoryCommand } from './commands/MemoryCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -344,6 +347,86 @@ program
         console.error(chalk.red('❌ Error:'), result.error.message);
         process.exit(1);
       }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Query command
+program
+  .command('query <text>')
+  .description('Query conversations using ConversationRAG')
+  .option('-k, --top-k <number>', 'Number of results to return (default: 5)', '5')
+  .option('-t, --type <type>', 'Filter by type: conversation, decision, or insight')
+  .option('--date-from <date>', 'Filter by date from (YYYY-MM-DD)')
+  .option('--date-to <date>', 'Filter by date to (YYYY-MM-DD)')
+  .option('-r, --reindex', 'Reindex conversations before querying')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (text, options) => {
+    try {
+      const cmd = new QueryCommand({ cwd: process.cwd() });
+      await cmd.execute(text, {
+        topK: parseInt(options.topK, 10),
+        type: options.type,
+        dateFrom: options.dateFrom,
+        dateTo: options.dateTo,
+        reindex: options.reindex,
+        verbose: options.verbose,
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Profile command
+program
+  .command('profile <action>')
+  .description('Manage user profile (show, edit, clear, privacy)')
+  .action(async (action) => {
+    try {
+      const cmd = new ProfileCommand({ cwd: process.cwd() });
+
+      switch (action) {
+        case 'show':
+          await cmd.show();
+          break;
+        case 'edit':
+          await cmd.edit();
+          break;
+        case 'clear':
+          await cmd.clear();
+          break;
+        case 'privacy':
+          await cmd.privacy();
+          break;
+        default:
+          console.error(chalk.red('❌ Unknown action:'), action);
+          console.log(chalk.gray('   Valid actions: show, edit, clear, privacy'));
+          process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Memory command
+program
+  .command('memory <type> <query>')
+  .description(
+    'Query memory types (principles, decisions, profile, rejected, relationships, hypotheticals, all)'
+  )
+  .option('-k, --top-k <number>', 'Number of results to return (default: 5)', '5')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (type, query, options) => {
+    try {
+      const cmd = new MemoryCommand({ cwd: process.cwd() });
+      await cmd.execute(type, query, {
+        topK: parseInt(options.topK, 10),
+        verbose: options.verbose,
+      });
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

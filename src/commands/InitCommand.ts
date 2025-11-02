@@ -105,6 +105,9 @@ export class InitCommand {
       // Step 2: Show AETHER logo and welcome (with shimmer animation)
       await this.showWelcome();
 
+      // Step 2.5: Show privacy information
+      this.showPrivacyInfo();
+
       // Step 3: Ask permission to access LLM libraries
       const hasPermission = await this.askPermission();
       if (!hasPermission) {
@@ -223,6 +226,27 @@ export class InitCommand {
   private async showWelcome(): Promise<void> {
     // Show animated banner for first-time setup (beautiful neural signal effect)
     await showBanner(true);
+  }
+
+  /**
+   * Show privacy information about user profile
+   * Phase 7: Enhanced Memory Extraction
+   */
+  private showPrivacyInfo(): void {
+    console.log(chalk.bold('\n🔒 Privacy & Data Storage\n'));
+
+    console.log(chalk.gray('AETHER builds a local user profile to adapt to your preferences:'));
+    console.log(chalk.gray('  • User preferences (development style, quality standards)'));
+    console.log(chalk.gray('  • Behavioral patterns (observed from conversations)'));
+    console.log(chalk.gray('  • Emotional triggers (frustration, excitement)'));
+    console.log(chalk.gray('  • Communication style (tone, detail level)'));
+    console.log();
+
+    console.log(chalk.bold('✅ Your data stays local:'));
+    console.log(chalk.gray('  • Stored in .aicf/user-profile.aicf'));
+    console.log(chalk.gray('  • Never uploaded or shared'));
+    console.log(chalk.gray('  • You control it: aether profile show/edit/clear'));
+    console.log();
   }
 
   /**
