@@ -206,6 +206,50 @@ program
     }
   });
 
+// Watch in Terminal command (macOS only)
+program
+  .command('watch-terminal')
+  .description('Start watcher in a new Terminal window (macOS only)')
+  .option('-v, --verbose', 'Enable verbose output')
+  .action(async (options) => {
+    try {
+      const { spawn } = await import('child_process');
+
+      // Get project root
+      const projectRoot = process.cwd();
+
+      // Build the command to run in the new terminal
+      const verboseFlag = options.verbose ? '--verbose' : '';
+      const command = `cd '${projectRoot}' && clear && echo '🚀 Starting AETHER Watcher...' && echo '' && npx tsx packages/aice/src/cli.ts watch --foreground ${verboseFlag}`;
+
+      // AppleScript to open new Terminal window
+      const appleScript = `
+tell application "Terminal"
+    activate
+    set newTab to do script "${command}"
+    set custom title of newTab to "AETHER Watcher"
+end tell
+`;
+
+      // Execute AppleScript (fire and forget)
+      const osascript = spawn('osascript', ['-e', appleScript], {
+        detached: true,
+        stdio: 'ignore',
+      });
+
+      osascript.unref();
+
+      // Give it a moment to start
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      console.log(chalk.green('✅ Watcher started in new terminal window'));
+      console.log(chalk.dim('   Check the new Terminal window to see watcher output'));
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
 // Stop command
 program
   .command('stop')
