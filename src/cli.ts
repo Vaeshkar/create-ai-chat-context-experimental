@@ -28,6 +28,8 @@ import { StatusCommand } from './commands/StatusCommand.js';
 import { QueryCommand } from './commands/QueryCommand.js';
 import { ProfileCommand } from './commands/ProfileCommand.js';
 import { MemoryCommand } from './commands/MemoryCommand.js';
+import { SnapshotCommand } from './commands/SnapshotCommand.js';
+import { RecoverCommand } from './commands/RecoverCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -427,6 +429,70 @@ program
         topK: parseInt(options.topK, 10),
         verbose: options.verbose,
       });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Snapshot commands
+program
+  .command('snapshot <action>')
+  .description('Manage QuadIndex snapshots (actions: take, list, restore, stats)')
+  .option('-t, --type <type>', 'Snapshot type: rolling or golden (default: rolling)', 'rolling')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (action, options) => {
+    try {
+      const cmd = new SnapshotCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+      });
+
+      const type = options.type as 'rolling' | 'golden';
+
+      switch (action) {
+        case 'take':
+          await cmd.take(type);
+          break;
+        case 'list':
+          await cmd.list();
+          break;
+        case 'restore':
+          await cmd.restore(type);
+          break;
+        case 'stats':
+          await cmd.stats();
+          break;
+        default:
+          console.error(chalk.red('❌ Unknown action:'), action);
+          console.log(chalk.gray('   Valid actions: take, list, restore, stats'));
+          process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Recover command (Task 4e: Fallback Recovery)
+// Rebuilds QuadIndex from raw JSON conversation files if snapshots are corrupted
+program
+  .command('recover')
+  .description('Recover QuadIndex from raw JSON conversation files (fallback recovery)')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const cmd = new RecoverCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+      });
+
+      const result = await cmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

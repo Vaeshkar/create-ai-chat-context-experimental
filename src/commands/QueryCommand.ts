@@ -67,9 +67,9 @@ export class QueryCommand {
 
     // Build filters
     const filters: Record<string, string> = {};
-    if (options.type) filters.type = options.type;
-    if (options.dateFrom) filters.dateFrom = options.dateFrom;
-    if (options.dateTo) filters.dateTo = options.dateTo;
+    if (options['type']) filters['type'] = options['type'];
+    if (options['dateFrom']) filters['dateFrom'] = options['dateFrom'];
+    if (options['dateTo']) filters['dateTo'] = options['dateTo'];
 
     const results = await retriever.query(queryText, filters, topK);
 

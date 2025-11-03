@@ -1,0 +1,28 @@
+{
+  "isAlive": false,
+  "lastHeartbeat": 1762174659621,
+  "pid": 11180,
+  "uptime": 54,
+  "stats": {
+    "principles": 0,
+    "relationships": 0,
+    "hypotheticals": 0,
+    "rejected": 0
+  },
+  "memory": {
+    "heapUsed": 44410368,
+    "heapTotal": 75399168,
+    "external": 4477460,
+    "rss": 128466944,
+    "heapUsedMB": 42.35,
+    "heapTotalMB": 71.91,
+    "rssMB": 122.52
+  },
+  "lock": {
+    "readers": 0,
+    "writers": 0,
+    "writeRequests": 0,
+    "readQueueLength": 0,
+    "writeQueueLength": 0
+  }
+}

@@ -24,8 +24,9 @@ import { CacheConsolidationAgent } from '../agents/CacheConsolidationAgent.js';
 import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js';
 import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
 import { DaemonManager } from '../utils/DaemonManager.js';
+import { HealthCheck } from '../utils/HealthCheck.js';
 import { JSONToAICFWatcher } from 'aicf-core';
-import { AICFFileWatcher } from 'lill-core';
+import { AICFFileWatcher, QuadIndex, SnapshotManager } from 'lill-core';
 import { PrincipleWatcher } from 'lill-meta';
 
 interface WatcherCommandOptions {
@@ -65,6 +66,9 @@ export class WatcherCommand {
   private jsonToAICFWatcher: JSONToAICFWatcher;
   private aicfFileWatcher: AICFFileWatcher;
   private principleWatcher: PrincipleWatcher;
+  private quadIndex: QuadIndex;
+  private snapshotManager: SnapshotManager;
+  private healthCheck: HealthCheck;
   private isRunning: boolean = false;
   private enabledPlatforms: PlatformName[] = [];
   private cwd: string;
@@ -112,6 +116,19 @@ export class WatcherCommand {
       verbose: this.verbose,
       enableLearning: true,
       apiKey: process.env['ANTHROPIC_API_KEY'],
+    });
+
+    // Initialize QuadIndex and SnapshotManager
+    this.quadIndex = new QuadIndex();
+    this.snapshotManager = new SnapshotManager({
+      snapshotDir: join(this.cwd, '.lill', 'snapshots'),
+      verbose: this.verbose,
+    });
+
+    // Initialize HealthCheck (Task 4c)
+    this.healthCheck = new HealthCheck({
+      cwd: this.cwd,
+      heartbeatInterval: 30000, // 30 seconds
     });
 
     // Determine which platforms to enable
@@ -202,6 +219,15 @@ export class WatcherCommand {
       platforms: this.enabledPlatforms,
     });
 
+    // Load QuadIndex from latest snapshot
+    await this.loadQuadIndexFromSnapshot();
+
+    // Start health check (Task 4c)
+    this.healthCheck.start();
+    if (this.verbose) {
+      console.log(chalk.green('✅ Started health check system'));
+    }
+
     console.log(chalk.cyan('\n🔍 Starting watcher...\n'));
     console.log(chalk.gray(`   Watch Directory: ${this.watchDir}`));
     console.log(chalk.gray(`   Check Interval: ${this.interval}ms`));
@@ -237,9 +263,15 @@ export class WatcherCommand {
 
     console.log(chalk.gray('\n   Press Ctrl+C to stop\n'));
 
-    // Handle graceful shutdown
-    process.on('SIGINT', () => {
-      this.stop();
+    // Handle graceful shutdown (Task 4b)
+    process.on('SIGINT', async () => {
+      await this.stop();
+    });
+    process.on('SIGTERM', async () => {
+      await this.stop();
+    });
+    process.on('SIGHUP', async () => {
+      await this.stop();
     });
 
     // Start JSON-to-AICF watcher (Phase 2)
@@ -297,10 +329,15 @@ export class WatcherCommand {
   }
 
   /**
-   * Stop the watcher
+   * Stop the watcher (with graceful shutdown)
    */
-  private stop(): void {
+  private async stop(): Promise<void> {
     this.isRunning = false;
+
+    console.log(chalk.yellow('\n\n🛑 Stopping watcher gracefully...\n'));
+
+    // Save QuadIndex snapshot before shutdown
+    await this.saveQuadIndexSnapshot();
 
     // Stop JSON-to-AICF watcher
     this.jsonToAICFWatcher.stop().then((result) => {
@@ -318,6 +355,12 @@ export class WatcherCommand {
     this.principleWatcher.stop().catch((error: Error) => {
       console.error(chalk.red('❌ Failed to stop Principle watcher:'), error.message);
     });
+
+    // Stop SnapshotManager
+    this.snapshotManager.stop();
+
+    // Stop health check (Task 4c)
+    this.healthCheck.stop();
 
     const status = this.manager.getStatus();
     this.logger.info('Watcher stopped', {
@@ -502,5 +545,86 @@ export class WatcherCommand {
         this.logger.error('Memory dropoff failed', { error: result.error.message });
       }
     });
+  }
+
+  /**
+   * Load QuadIndex from latest snapshot (Task 4a)
+   */
+  private async loadQuadIndexFromSnapshot(): Promise<void> {
+    try {
+      const result = await this.snapshotManager.restore(this.quadIndex, 'rolling');
+
+      if (result.success) {
+        const stats = this.quadIndex.getStats();
+        if (this.verbose) {
+          console.log(chalk.green('✅ Loaded QuadIndex from snapshot'));
+          console.log(chalk.gray(`   Principles: ${stats.data.metadata.total}`));
+          console.log(chalk.gray(`   Relationships: ${stats.data.graph.edges}`));
+          console.log(chalk.gray(`   Hypotheticals: ${stats.data.reasoning.hypotheticals}`));
+        }
+      } else {
+        if (this.verbose) {
+          console.log(chalk.yellow('⚠️  No snapshot found, starting with empty QuadIndex'));
+        }
+      }
+
+      // Start continuous snapshots (every 5 mins)
+      await this.snapshotManager.start(this.quadIndex);
+      if (this.verbose) {
+        console.log(chalk.green('✅ Started continuous snapshot system'));
+      }
+
+      // Update health check stats
+      this.updateHealthCheckStats();
+    } catch (error) {
+      console.error(
+        chalk.red('❌ Failed to load QuadIndex:'),
+        error instanceof Error ? error.message : String(error)
+      );
+    }
+  }
+
+  /**
+   * Save QuadIndex snapshot (Task 4b: Graceful Shutdown)
+   */
+  private async saveQuadIndexSnapshot(): Promise<void> {
+    try {
+      const result = await this.snapshotManager.takeSnapshot(this.quadIndex, 'rolling');
+
+      if (result.success) {
+        console.log(chalk.green('✅ Saved QuadIndex snapshot'));
+        if (this.verbose) {
+          console.log(chalk.gray(`   Snapshot: ${result.data}`));
+        }
+      } else {
+        console.error(chalk.red('❌ Failed to save snapshot:'), result.error);
+      }
+    } catch (error) {
+      console.error(
+        chalk.red('❌ Error saving snapshot:'),
+        error instanceof Error ? error.message : String(error)
+      );
+    }
+  }
+
+  /**
+   * Update health check stats from QuadIndex (Task 4c + Task 4)
+   */
+  private updateHealthCheckStats(): void {
+    try {
+      const stats = this.quadIndex.getStats();
+      this.healthCheck.updateStats({
+        principles: stats.data.metadata.total,
+        relationships: stats.data.graph.edges,
+        hypotheticals: stats.data.reasoning.hypotheticals,
+        rejected: stats.data.reasoning.rejected,
+      });
+
+      // Update lock stats (Task 4: Memory Monitoring)
+      const lockStats = this.quadIndex.getLockStats();
+      this.healthCheck.updateLockStats(lockStats);
+    } catch {
+      // Ignore errors (don't crash watcher)
+    }
   }
 }
