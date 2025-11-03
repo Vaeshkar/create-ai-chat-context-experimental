@@ -222,6 +222,9 @@ export class WatcherCommand {
     // Load QuadIndex from latest snapshot
     await this.loadQuadIndexFromSnapshot();
 
+    // Resume from last timestamp (Task 1: Continuous data collection)
+    await this.resumeFromLastTimestamp();
+
     // Start health check (Task 4c)
     this.healthCheck.start();
     if (this.verbose) {
@@ -579,6 +582,132 @@ export class WatcherCommand {
     } catch (error) {
       console.error(
         chalk.red('❌ Failed to load QuadIndex:'),
+        error instanceof Error ? error.message : String(error)
+      );
+    }
+  }
+
+  /**
+   * Resume from last timestamp (Task 1: Continuous data collection)
+   * Processes any missed conversations since the last saved timestamp
+   */
+  private async resumeFromLastTimestamp(): Promise<void> {
+    try {
+      const { getLastTimestamp, formatTimestamp, getTimeDifferenceMinutes } = await import(
+        '../utils/TimestampUtils.js'
+      );
+      const { AugmentLevelDBReader } = await import('../readers/AugmentLevelDBReader.js');
+
+      const rawDir = join(this.cwd, '.aicf', 'raw');
+      const lastTimestamp = getLastTimestamp(rawDir);
+
+      if (!lastTimestamp) {
+        if (this.verbose) {
+          console.log(chalk.yellow('⚠️  No previous timestamp found, starting fresh'));
+        }
+        return;
+      }
+
+      if (this.verbose) {
+        console.log(chalk.cyan('🔄 Resuming from last timestamp...'));
+        console.log(chalk.gray(`   Last saved: ${formatTimestamp(lastTimestamp)}`));
+      }
+
+      // Query LevelDB for conversations since last timestamp
+      const reader = new AugmentLevelDBReader(this.cwd);
+      const conversationsResult = await reader.readConversationsSince(lastTimestamp);
+
+      if (!conversationsResult.ok) {
+        if (this.verbose) {
+          console.log(
+            chalk.yellow('⚠️  Failed to read conversations:'),
+            conversationsResult.error.message
+          );
+        }
+        return;
+      }
+
+      const missedConversations = conversationsResult.value;
+
+      if (missedConversations.length === 0) {
+        if (this.verbose) {
+          console.log(chalk.green('✅ No missed conversations, already up to date'));
+        }
+        return;
+      }
+
+      // Process missed conversations
+      console.log(
+        chalk.cyan(`📥 Found ${missedConversations.length} missed conversation(s), processing...`)
+      );
+
+      for (const conversation of missedConversations) {
+        try {
+          // Write directly to .aicf/raw/ directory
+          const { writeFileSync, mkdirSync, existsSync } = await import('fs');
+          const rawDir = join(this.cwd, '.aicf', 'raw');
+
+          // Ensure directory exists
+          if (!existsSync(rawDir)) {
+            mkdirSync(rawDir, { recursive: true });
+          }
+
+          // Parse the raw data to extract messages
+          const messages = JSON.parse(conversation.rawData);
+
+          // Format as conversation JSON (same format as AICE exports)
+          const conversationData = {
+            metadata: {
+              conversationId: conversation.conversationId,
+              date: new Date(conversation.timestamp).toISOString().split('T')[0],
+              platform: 'augment-leveldb',
+              user: 'dennis_van_leeuwen',
+              status: 'completed',
+              timestamp_start: conversation.timestamp,
+              timestamp_end: conversation.lastModified,
+              duration_minutes: getTimeDifferenceMinutes(
+                conversation.timestamp,
+                conversation.lastModified
+              ),
+              messages: messages.length,
+              tokens_estimated: messages.length * 100, // Rough estimate
+            },
+            decisions: [],
+            key_exchanges: messages.map(
+              (msg: { role: string; content: string; timestamp: string }) => ({
+                outcome: msg.content.substring(0, 200), // First 200 chars
+                assistant_action: msg.role === 'assistant' ? msg.content.substring(0, 200) : '',
+                timestamp: msg.timestamp,
+              })
+            ),
+          };
+
+          // Write to file
+          const filename = `${conversationData.metadata.date}_${conversation.conversationId}.json`;
+          const filepath = join(rawDir, filename);
+          writeFileSync(filepath, JSON.stringify(conversationData, null, 2), 'utf-8');
+
+          const timeDiff = getTimeDifferenceMinutes(lastTimestamp, conversation.lastModified);
+          if (this.verbose) {
+            console.log(
+              chalk.green(`   ✅ Processed conversation ${conversation.conversationId}`),
+              chalk.gray(`(${timeDiff} minutes ago)`)
+            );
+          }
+        } catch (error) {
+          console.error(
+            chalk.red(`   ❌ Error processing conversation ${conversation.conversationId}:`),
+            error instanceof Error ? error.message : String(error)
+          );
+        }
+      }
+
+      console.log(
+        chalk.green(`✅ Resume complete, processed ${missedConversations.length} conversation(s)`)
+      );
+    } catch (error) {
+      console.error(
+        chalk.red('❌ Failed to resume from last timestamp:'),
         error instanceof Error ? error.message : String(error)
       );
     }

@@ -157,6 +157,43 @@ export class AugmentLevelDBReader {
   }
 
   /**
+   * Read conversations from Augment LevelDB since a specific timestamp
+   * Used for resuming watcher after downtime (continuous data collection)
+   *
+   * @param sinceTimestamp - ISO timestamp to filter conversations (only returns conversations modified after this time)
+   * @param filterWorkspaceName - Optional workspace name filter (defaults to current project)
+   * @returns Conversations that were modified after the given timestamp
+   */
+  async readConversationsSince(
+    sinceTimestamp: string,
+    filterWorkspaceName?: string
+  ): Promise<Result<AugmentConversation[]>> {
+    try {
+      // First, read all conversations
+      const allConversationsResult = await this.readAllConversations(filterWorkspaceName);
+
+      if (!allConversationsResult.ok) {
+        return allConversationsResult;
+      }
+
+      // Filter conversations by lastModified timestamp
+      const sinceDate = new Date(sinceTimestamp);
+      const filteredConversations = allConversationsResult.value.filter((conv) => {
+        const lastModifiedDate = new Date(conv.lastModified);
+        return lastModifiedDate > sinceDate;
+      });
+
+      return Ok(filteredConversations);
+    } catch (error) {
+      return Err(
+        error instanceof Error
+          ? error
+          : new Error(`Failed to read conversations since ${sinceTimestamp}: ${String(error)}`)
+      );
+    }
+  }
+
+  /**
    * Read conversations from a specific workspace
    * Uses a copy of the database to avoid lock conflicts with VSCode
    */
