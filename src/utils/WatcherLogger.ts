@@ -56,7 +56,7 @@ export class WatcherLogger {
     this.verbose = options.verbose || false;
     this.logLevel = options.logLevel || 'info';
     this.maxEntries = options.maxEntries || 1000;
-    this.aicfWriter = new AICFWriter(options.aicfDir || '.aicf');
+    this.aicfWriter = new AICFWriter(options.aicfDir || '.lill'); // Phase 6: Use .lill/ not .aicf/
     this.logFile = options.logFile;
   }
 

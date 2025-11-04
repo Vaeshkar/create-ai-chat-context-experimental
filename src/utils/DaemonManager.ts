@@ -34,7 +34,7 @@ export class DaemonManager {
   private watcherConfigPath: string;
 
   constructor(projectPath: string) {
-    this.pidFilePath = join(projectPath, '.aicf', '.watcher.pid');
+    this.pidFilePath = join(projectPath, '.lill', '.watcher.pid'); // Phase 6: Use .lill/ not .aicf/
     this.watcherConfigPath = join(projectPath, '.watcher-config.json');
   }
 
