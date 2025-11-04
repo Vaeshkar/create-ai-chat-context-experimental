@@ -22,7 +22,7 @@ import { WatcherConfigManager, type PlatformName } from '../core/WatcherConfigMa
 import { AugmentCacheWriter } from '../writers/AugmentCacheWriter.js';
 import { ClaudeCacheWriter } from '../writers/ClaudeCacheWriter.js';
 import { CacheConsolidationAgent } from '../agents/CacheConsolidationAgent.js';
-import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js';
+// import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js'; // Phase 7 - Disabled (not using session files yet)
 import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
 import { DaemonManager } from '../utils/DaemonManager.js';
 import { HealthCheck } from '../utils/HealthCheck.js';
@@ -66,7 +66,7 @@ export class WatcherCommand {
   private claudeCacheWriter: ClaudeCacheWriter;
   private cacheConsolidationAgent: CacheConsolidationAgent;
   private sessionConsolidationAgent: SessionConsolidationAgent;
-  private memoryDropoffAgent: MemoryDropoffAgent;
+  // private memoryDropoffAgent: MemoryDropoffAgent; // Phase 7 - Disabled
   private conversationWatcher: ConversationWatcher;
   private principleWatcher: PrincipleWatcher;
   private quadIndex: QuadIndex;
@@ -115,7 +115,7 @@ export class WatcherCommand {
     this.claudeCacheWriter = new ClaudeCacheWriter(this.cwd);
     this.cacheConsolidationAgent = new CacheConsolidationAgent(this.cwd);
     this.sessionConsolidationAgent = new SessionConsolidationAgent(this.cwd);
-    this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd);
+    // this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd); // Phase 7 - Disabled
 
     // Initialize QuadIndex and SnapshotManager FIRST (before ConversationWatcher)
     this.quadIndex = new QuadIndex();
@@ -586,7 +586,7 @@ export class WatcherCommand {
     this.consolidateSessionFiles();
 
     // 4. Run memory dropoff (Phase 7) - compress sessions by age
-    this.runMemoryDropoff();
+    // this.runMemoryDropoff(); // Phase 7 - Disabled (not using session files yet)
   }
 
   /**
@@ -682,29 +682,31 @@ export class WatcherCommand {
   /**
    * Run memory dropoff agent (Phase 7)
    * Move and compress conversations by age
+   *
+   * DISABLED: Phase 7 - Not using session files yet
    */
-  private runMemoryDropoff(): void {
-    this.memoryDropoffAgent.dropoff().then((result) => {
-      if (result.ok) {
-        const stats = result.value;
-        this.logger.info('Memory dropoff complete', {
-          sessions: stats.sessionFiles,
-          medium: stats.mediumFiles,
-          old: stats.oldFiles,
-          archive: stats.archiveFiles,
-          movedToMedium: stats.movedToMedium,
-          movedToOld: stats.movedToOld,
-          movedToArchive: stats.movedToArchive,
-          compressed: stats.compressed,
-        });
-        if (this.verbose && stats.compressed > 0) {
-          console.log(chalk.cyan(`🗜️  Compressed ${stats.compressed} conversations`));
-        }
-      } else {
-        this.logger.error('Memory dropoff failed', { error: result.error.message });
-      }
-    });
-  }
+  // private runMemoryDropoff(): void {
+  //   this.memoryDropoffAgent.dropoff().then((result) => {
+  //     if (result.ok) {
+  //       const stats = result.value;
+  //       this.logger.info('Memory dropoff complete', {
+  //         sessions: stats.sessionFiles,
+  //         medium: stats.mediumFiles,
+  //         old: stats.oldFiles,
+  //         archive: stats.archiveFiles,
+  //         movedToMedium: stats.movedToMedium,
+  //         movedToOld: stats.movedToOld,
+  //         movedToArchive: stats.movedToArchive,
+  //         compressed: stats.compressed,
+  //       });
+  //       if (this.verbose && stats.compressed > 0) {
+  //         console.log(chalk.cyan(`🗜️  Compressed ${stats.compressed} conversations`));
+  //       }
+  //     } else {
+  //       this.logger.error('Memory dropoff failed', { error: result.error.message });
+  //     }
+  //   });
+  // }
 
   /**
    * Clean up old log files (keep last 10) - sync version for constructor
