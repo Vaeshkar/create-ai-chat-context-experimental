@@ -9,7 +9,7 @@
  * Phase 4.6: Watcher Configuration - October 2025
  *
  * Manages watcher configuration and platform settings
- * Reads/writes .aicf/.watcher-config.json file
+ * Reads/writes .lill/.watcher-config.json file (Phase 6: migrated from .aicf to .lill)
  */
 
 import { join } from 'path';
@@ -57,7 +57,7 @@ export class WatcherConfigManager {
   private data: WatcherConfigData | null = null;
 
   constructor(projectPath: string = process.cwd()) {
-    this.configFile = join(projectPath, '.aicf', '.watcher-config.json');
+    this.configFile = join(projectPath, '.lill', '.watcher-config.json'); // Phase 6: Use .lill/ not .aicf/
   }
 
   /**

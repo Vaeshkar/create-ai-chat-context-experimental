@@ -9,7 +9,7 @@
  * Phase 4.5: Permission Management - October 2025
  *
  * Manages platform permissions, consent tracking, and audit logging
- * Reads/writes .aicf/.permissions.aicf file
+ * Reads/writes .lill/.permissions.aicf file (Phase 6: migrated from .aicf to .lill)
  */
 
 import { join } from 'path';
@@ -51,7 +51,7 @@ export class PermissionManager {
   private data: PermissionsData | null = null;
 
   constructor(projectPath: string = process.cwd()) {
-    this.permissionsFile = join(projectPath, '.aicf', '.permissions.aicf');
+    this.permissionsFile = join(projectPath, '.lill', '.permissions.aicf'); // Phase 6: Use .lill/ not .aicf/
   }
 
   /**
