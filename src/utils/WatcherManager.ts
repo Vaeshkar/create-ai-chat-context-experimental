@@ -51,10 +51,10 @@ export class WatcherManager {
   constructor(options: WatcherManagerOptions = {}) {
     this.pidFile = options.pidFile || '.watcher.pid';
     this.logFile = options.logFile || '.watcher.log';
-    this.aicfLogFile = options.aicfLogFile || '.aicf/.watcher-events.aicf';
+    this.aicfLogFile = options.aicfLogFile || '.lill/.watcher-events.aicf'; // Phase 6: Use .lill/ not .aicf/
     this.verbose = options.verbose || false;
     this.pid = process.pid;
-    this.aicfWriter = new AICFWriter('.aicf');
+    this.aicfWriter = new AICFWriter('.lill'); // Phase 6: Use .lill/ not .aicf/
   }
 
   /**

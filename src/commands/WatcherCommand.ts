@@ -96,7 +96,7 @@ export class WatcherCommand {
     this.cleanupOldLogsSync(logsDir);
 
     this.manager = new WatcherManager({
-      pidFile: join(this.cwd, '.watcher.pid'),
+      pidFile: join(this.cwd, '.lill', '.watcher.pid'), // Phase 6: Store in .lill/
       logFile,
       verbose: this.verbose,
     });
