@@ -36,9 +36,9 @@ export class MemoryFileWriter {
 
   constructor(cwd: string = process.cwd()) {
     this.cwd = cwd;
-    const aicfDir = join(cwd, '.aicf');
-    this.rawDir = join(aicfDir, 'raw');
-    this.bridge = new AICEToAICFBridge(aicfDir);
+    const lillDir = join(cwd, '.lill'); // Phase 6: Use .lill/ not .aicf/
+    this.rawDir = join(lillDir, 'raw');
+    this.bridge = new AICEToAICFBridge(lillDir); // Phase 6: Use .lill/ not .aicf/
   }
 
   /**
