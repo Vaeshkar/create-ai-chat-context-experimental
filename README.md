@@ -43,40 +43,40 @@ pnpm add create-ai-chat-context-experimental@latest
 
 ```bash
 # Initialize with automatic capture (Augment)
-npx aice init --automatic
+npx aether init --automatic
 
 # Initialize with manual mode (you update memory files manually)
-npx aice init --manual
+npx aether init --manual
 ```
 
 ### Use It
 
 ```bash
 # Start automatic watcher (Augment)
-npx aice watch
+npx aether watch
 
 # Watch in daemon mode (background)
-npx aice watch --daemon
+npx aether watch --daemon
 
 # Watch in foreground with minimal feedback (default)
-npx aice watch --foreground
+npx aether watch --foreground
 
 # Stop the background watcher daemon
-npx aice stop
+npx aether stop
 
 # Check watcher daemon status
-npx aice status
+npx aether status
 
 # Manage platform permissions
-npx aice permissions list
-npx aice permissions grant augment
-npx aice permissions revoke augment
+npx aether permissions list
+npx aether permissions grant augment
+npx aether permissions revoke augment
 
 # Import Claude conversation exports (manual fallback)
-npx aice import-claude conversation.json
+npx aether import-claude conversation.json
 
 # Migrate from v2.0.1 to v3.x
-npx aice migrate
+npx aether migrate
 ```
 
 ## 📚 Documentation
@@ -228,19 +228,19 @@ pnpm format        # Format with Prettier
 
 ```bash
 # Initialize project (interactive setup)
-aice init
+aether init
 
 # Automatic mode (reads LLM data automatically)
-aice init --automatic
+aether init --automatic
 
 # Manual mode (you ask LLM to update memory files)
-aice init --manual
+aether init --manual
 
 # Watch for new conversations (checks every 5 minutes)
-aice watch
+aether watch
 
 # Watch in daemon mode (background)
-aice watch --daemon
+aether watch --daemon
 
 # Stop the background watcher daemon
 aice stop
@@ -297,7 +297,7 @@ aice tokens
 **Example:** Start watching Augment conversations:
 
 ```bash
-npx aice watch
+npx aether watch
 ```
 
 ## 📖 Learn More

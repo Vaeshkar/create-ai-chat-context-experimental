@@ -45,44 +45,65 @@ export class TechnicalWorkExtractor {
 
   /**
    * Extract technical work from conversation summary
+   * NO TRUNCATION - captures full assistant responses that contain technical work
    * @param summary - Conversation summary
    * @returns TechnicalWork[]
    */
   private extractFromSummary(summary: ConversationSummary): TechnicalWork[] {
     const work: TechnicalWork[] = [];
 
-    // Look for technical keywords and patterns
-    const technicalPatterns = [
-      /implement(?:ing|ed)?\s+([^.!?]+)/gi,
-      /create(?:d)?\s+([^.!?]+)/gi,
-      /build(?:ing)?\s+([^.!?]+)/gi,
-      /fix(?:ing|ed)?\s+([^.!?]+)/gi,
-      /refactor(?:ing|ed)?\s+([^.!?]+)/gi,
-      /test(?:ing|ed)?\s+([^.!?]+)/gi,
-      /debug(?:ging|ged)?\s+([^.!?]+)/gi,
-      /optimize(?:d)?\s+([^.!?]+)/gi,
-      /automate(?:d)?\s+([^.!?]+)/gi,
-      /pipeline\s+([^.!?]+)/gi,
+    // Keywords that indicate technical work (but we capture FULL response, not just the fragment)
+    const technicalKeywords = [
+      'implement',
+      'create',
+      'build',
+      'fix',
+      'refactor',
+      'test',
+      'update',
+      'add',
+      'remove',
+      'delete',
+      'modify',
+      'change',
+      'install',
+      'configure',
+      'setup',
+      'deploy',
+      'migrate',
+      'debug',
+      'optimize',
+      'improve',
+      'enhance',
+      'extend',
+      'automate',
+      'pipeline',
     ];
 
-    const fullConv = summary.fullConversation;
-    let workIndex = 1;
+    // Split by assistant responses (look for common patterns)
+    const assistantResponses = summary.aiResponses.split(/\n\n+/);
 
-    technicalPatterns.forEach((pattern) => {
-      let match;
-      while ((match = pattern.exec(fullConv)) !== null) {
-        const workItem = match[1]?.trim();
-        if (workItem && workItem.length > 5 && workItem.length < 500) {
-          work.push({
-            timestamp: new Date().toISOString(),
-            work: workItem, // ✅ FULL content, not truncated
-            type: this.detectWorkType(match[0]),
-            source: 'conversation_summary',
-            lineIndex: workIndex++,
-          });
-        }
+    let workIndex = 1;
+    for (const response of assistantResponses) {
+      const trimmed = response.trim();
+
+      // Skip empty or very short responses
+      if (trimmed.length < 20) continue;
+
+      // Check if response contains technical keywords
+      const lowerResponse = trimmed.toLowerCase();
+      const hasTechnicalWork = technicalKeywords.some((keyword) => lowerResponse.includes(keyword));
+
+      if (hasTechnicalWork) {
+        work.push({
+          timestamp: new Date().toISOString(),
+          work: trimmed, // ✅ FULL response, NO truncation, NO length limit
+          type: this.detectWorkTypeFromContent(trimmed),
+          source: 'conversation_summary',
+          lineIndex: workIndex++,
+        });
       }
-    });
+    }
 
     return work;
   }
@@ -126,28 +147,6 @@ export class TechnicalWorkExtractor {
     });
 
     return work;
-  }
-
-  /**
-   * Detect work type from pattern match
-   * @param match - Pattern match string
-   * @returns Work type
-   */
-  private detectWorkType(match: string): 'technical_conversation' | 'agent_automation' {
-    const lowerMatch = match.toLowerCase();
-
-    // Automation work
-    if (
-      lowerMatch.includes('script') ||
-      lowerMatch.includes('automate') ||
-      lowerMatch.includes('workflow') ||
-      lowerMatch.includes('pipeline')
-    ) {
-      return 'agent_automation';
-    }
-
-    // Default to conversation
-    return 'technical_conversation';
   }
 
   /**

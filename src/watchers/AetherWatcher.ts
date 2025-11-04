@@ -14,8 +14,7 @@
  */
 
 import chalk from 'chalk';
-import { JSONToAICFWatcher } from 'aicf-core';
-import { AICFFileWatcher } from 'lill-core';
+import { ConversationWatcher } from 'aicf-core';
 import { PrincipleWatcher } from 'lill-meta';
 import { join } from 'path';
 import type { Result } from '../types/index.js';
@@ -37,8 +36,7 @@ export interface AetherWatcherConfig {
 export interface WatcherStatus {
   isRunning: boolean;
   watchers: {
-    jsonToAicf: boolean;
-    aicfFile: boolean;
+    conversation: boolean;
     principle: boolean;
   };
   uptime: number; // seconds
@@ -56,8 +54,7 @@ export class AetherWatcher {
   private readonly pollInterval: number;
 
   // Sub-watchers
-  private jsonToAICFWatcher: JSONToAICFWatcher;
-  private aicfFileWatcher: AICFFileWatcher;
+  private conversationWatcher: ConversationWatcher;
   private principleWatcher: PrincipleWatcher | null = null;
 
   // State
@@ -72,25 +69,10 @@ export class AetherWatcher {
     this.pollInterval = config.pollInterval || 5000; // 5 seconds default
 
     // Initialize sub-watchers
-    this.jsonToAICFWatcher = new JSONToAICFWatcher(this.cwd, {
+    this.conversationWatcher = new ConversationWatcher(this.cwd, {
       rawDir: join(this.cwd, '.aicf', 'raw'),
-      aicfDir: join(this.cwd, '.aicf'),
       pollInterval: this.pollInterval,
       verbose: this.verbose,
-    });
-
-    this.aicfFileWatcher = new AICFFileWatcher(this.cwd, {
-      aicfDir: join(this.cwd, '.aicf'),
-      stateDir: join(this.cwd, '.lill', 'state'),
-      pollInterval: this.pollInterval,
-      verbose: this.verbose,
-      enableStorage: true,
-      onNewEntry: async (file: string, lineNumber: number, content: string) => {
-        if (this.verbose) {
-          const preview = content.substring(0, 80).replace(/\n/g, ' ');
-          console.log(chalk.dim(`[AICF] ${file}:${lineNumber} - ${preview}`));
-        }
-      },
     });
 
     // Only initialize PrincipleWatcher and EnhancedConversationExtractor if enabled and API key is available
@@ -130,8 +112,7 @@ export class AetherWatcher {
 
       // Start all watchers in parallel
       const results = await Promise.allSettled([
-        this.startJSONToAICFWatcher(),
-        this.startAICFFileWatcher(),
+        this.startConversationWatcher(),
         this.startPrincipleWatcher(),
       ]);
 
@@ -175,8 +156,7 @@ export class AetherWatcher {
 
       // Stop all watchers in parallel
       const results = await Promise.allSettled([
-        this.stopJSONToAICFWatcher(),
-        this.stopAICFFileWatcher(),
+        this.stopConversationWatcher(),
         this.stopPrincipleWatcher(),
       ]);
 
@@ -209,8 +189,7 @@ export class AetherWatcher {
     return {
       isRunning: this.isRunning,
       watchers: {
-        jsonToAicf: this.isRunning,
-        aicfFile: this.isRunning,
+        conversation: this.isRunning,
         principle: this.principleWatcher !== null && this.isRunning,
       },
       uptime,
@@ -226,10 +205,7 @@ export class AetherWatcher {
 
     console.log(chalk.cyan('📊 AETHER Watcher Status:\n'));
     console.log(
-      `  ${status.watchers.jsonToAicf ? chalk.green('✓') : chalk.red('✗')} JSONToAICF Watcher (format conversion)`
-    );
-    console.log(
-      `  ${status.watchers.aicfFile ? chalk.green('✓') : chalk.red('✗')} AICF File Watcher (indexing & extraction)`
+      `  ${status.watchers.conversation ? chalk.green('✓') : chalk.red('✗')} Conversation Watcher (JSON → QuadIndex)`
     );
     console.log(
       `  ${status.watchers.principle ? chalk.green('✓') : chalk.yellow('○')} Principle Watcher (validation & improvement)${!status.watchers.principle ? chalk.dim(' - disabled') : ''}`
@@ -238,48 +214,28 @@ export class AetherWatcher {
   }
 
   /**
-   * Start JSONToAICF watcher
+   * Start Conversation watcher
    */
-  private async startJSONToAICFWatcher(): Promise<void> {
-    const result = await this.jsonToAICFWatcher.start();
+  private async startConversationWatcher(): Promise<void> {
+    const result = await this.conversationWatcher.start();
     if (!result.ok) {
       throw result.error;
     }
     if (this.verbose) {
-      console.log(chalk.green('✅ JSONToAICF Watcher started'));
+      console.log(chalk.green('✅ Conversation Watcher started'));
     }
   }
 
   /**
-   * Stop JSONToAICF watcher
+   * Stop Conversation watcher
    */
-  private async stopJSONToAICFWatcher(): Promise<void> {
-    const result = await this.jsonToAICFWatcher.stop();
+  private async stopConversationWatcher(): Promise<void> {
+    const result = await this.conversationWatcher.stop();
     if (!result.ok) {
       throw result.error;
     }
     if (this.verbose) {
-      console.log(chalk.dim('  ✓ JSONToAICF Watcher stopped'));
-    }
-  }
-
-  /**
-   * Start AICF File watcher
-   */
-  private async startAICFFileWatcher(): Promise<void> {
-    await this.aicfFileWatcher.start();
-    if (this.verbose) {
-      console.log(chalk.green('✅ AICF File Watcher started'));
-    }
-  }
-
-  /**
-   * Stop AICF File watcher
-   */
-  private async stopAICFFileWatcher(): Promise<void> {
-    await this.aicfFileWatcher.stop();
-    if (this.verbose) {
-      console.log(chalk.dim('  ✓ AICF File Watcher stopped'));
+      console.log(chalk.dim('  ✓ Conversation Watcher stopped'));
     }
   }
 

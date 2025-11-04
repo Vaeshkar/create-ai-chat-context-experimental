@@ -14,6 +14,7 @@
 
 import chalk from 'chalk';
 import { AICFWriter } from 'aicf-core';
+import { appendFileSync } from 'fs';
 
 export type LogLevel = 'debug' | 'info' | 'success' | 'warning' | 'error';
 
@@ -29,6 +30,7 @@ export interface WatcherLoggerOptions {
   logLevel?: LogLevel;
   maxEntries?: number;
   aicfDir?: string;
+  logFile?: string;
 }
 
 /**
@@ -48,12 +50,14 @@ export class WatcherLogger {
     error: 4,
   };
   private aicfWriter: AICFWriter;
+  private logFile?: string;
 
   constructor(options: WatcherLoggerOptions = {}) {
     this.verbose = options.verbose || false;
     this.logLevel = options.logLevel || 'info';
     this.maxEntries = options.maxEntries || 1000;
     this.aicfWriter = new AICFWriter(options.aicfDir || '.aicf');
+    this.logFile = options.logFile;
   }
 
   /**
@@ -118,6 +122,34 @@ export class WatcherLogger {
     // Print to console if verbose
     if (this.verbose) {
       this.printEntry(entry);
+    }
+
+    // Write to log file if specified
+    if (this.logFile) {
+      this.writeToFile(entry);
+    }
+  }
+
+  /**
+   * Write log entry to file
+   */
+  private writeToFile(entry: LogEntry): void {
+    if (!this.logFile) return;
+
+    try {
+      const timestamp = entry.timestamp.toISOString();
+      const levelStr = entry.level.toUpperCase().padEnd(7);
+      let logLine = `[${timestamp}] [${levelStr}] ${entry.message}`;
+
+      if (entry.context && Object.keys(entry.context).length > 0) {
+        logLine += ` ${JSON.stringify(entry.context)}`;
+      }
+
+      logLine += '\n';
+
+      appendFileSync(this.logFile, logLine, 'utf-8');
+    } catch {
+      // Silently ignore file write errors
     }
   }
 

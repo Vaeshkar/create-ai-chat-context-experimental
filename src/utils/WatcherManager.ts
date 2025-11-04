@@ -218,17 +218,13 @@ export class WatcherManager {
 
   /**
    * Setup signal handlers for graceful shutdown
+   *
+   * NOTE: Signal handlers are now managed by WatcherCommand to ensure
+   * proper shutdown order (take final snapshot, then cleanup).
+   * This method is kept for backwards compatibility but does nothing.
    */
   private setupSignalHandlers(): void {
-    const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'];
-
-    for (const signal of signals) {
-      process.on(signal, async () => {
-        await this.logEvent('info', `Received ${signal}, shutting down gracefully...`);
-        this.cleanup();
-        process.exit(0);
-      });
-    }
+    // Signal handlers removed - WatcherCommand handles shutdown
   }
 
   /**

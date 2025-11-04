@@ -208,11 +208,11 @@ export class InitCommand {
    * Check if project is not already initialized
    */
   private checkNotInitialized(): Result<void> {
-    const aicfDir = join(this.cwd, '.aicf');
-    const permissionsFile = join(this.cwd, '.aicf', '.permissions.aicf');
+    const lillDir = join(this.cwd, '.lill');
+    const permissionsFile = join(this.cwd, '.lill', '.permissions.aicf');
 
-    // If .aicf and .permissions.aicf exist, it's already initialized
-    if (existsSync(aicfDir) && existsSync(permissionsFile)) {
+    // If .lill and .permissions.aicf exist, it's already initialized
+    if (existsSync(lillDir) && existsSync(permissionsFile)) {
       return Err(new Error('AETHER already initialized. Use --force to reinitialize.'));
     }
 
@@ -243,7 +243,7 @@ export class InitCommand {
     console.log();
 
     console.log(chalk.bold('✅ Your data stays local:'));
-    console.log(chalk.gray('  • Stored in .aicf/user-profile.aicf'));
+    console.log(chalk.gray('  • Stored in .lill/ directory'));
     console.log(chalk.gray('  • Never uploaded or shared'));
     console.log(chalk.gray('  • You control it: aether profile show/edit/clear'));
     console.log();
@@ -267,7 +267,7 @@ export class InitCommand {
     console.log();
     console.log(chalk.dim('What we do:'));
     console.log(chalk.dim('  ✓ Read conversation data from LevelDB/SQLite databases'));
-    console.log(chalk.dim('  ✓ Extract and consolidate into .aicf/ format'));
+    console.log(chalk.dim('  ✓ Extract and consolidate into .lill/ directory'));
     console.log(chalk.dim('  ✓ Store principles, decisions, and insights locally'));
     console.log();
     console.log(chalk.dim("What we DON'T do:"));
@@ -491,32 +491,22 @@ export class InitCommand {
     const filesCreated: string[] = [];
 
     // Create main directories
-    const aicfDir = join(this.cwd, '.aicf');
+    const lillDir = join(this.cwd, '.lill');
     const aiDir = join(this.cwd, '.ai');
     const cacheLlmDir = join(this.cwd, '.cache', 'llm');
 
-    mkdirSync(aicfDir, { recursive: true });
+    mkdirSync(lillDir, { recursive: true });
     mkdirSync(aiDir, { recursive: true });
     mkdirSync(cacheLlmDir, { recursive: true });
 
-    filesCreated.push(aicfDir, aiDir, cacheLlmDir);
+    filesCreated.push(lillDir, aiDir, cacheLlmDir);
 
-    // Create AICF subdirectories
-    const rawDir = join(aicfDir, 'raw');
-    const recentDir = join(aicfDir, 'recent');
-    const sessionsDir = join(aicfDir, 'sessions');
-    const mediumDir = join(aicfDir, 'medium');
-    const oldDir = join(aicfDir, 'old');
-    const archiveDir = join(aicfDir, 'archive');
+    // Create LILL subdirectories (only what we actually use)
+    const rawDir = join(lillDir, 'raw');
 
     mkdirSync(rawDir, { recursive: true });
-    mkdirSync(recentDir, { recursive: true });
-    mkdirSync(sessionsDir, { recursive: true });
-    mkdirSync(mediumDir, { recursive: true });
-    mkdirSync(oldDir, { recursive: true });
-    mkdirSync(archiveDir, { recursive: true });
 
-    filesCreated.push(rawDir, recentDir, sessionsDir, mediumDir, oldDir, archiveDir);
+    filesCreated.push(rawDir);
 
     return filesCreated;
   }
@@ -535,31 +525,19 @@ export class InitCommand {
       chatgpt: selectedPlatforms.includes('chatgpt'),
     };
 
-    // Create .permissions.aicf
-    const aicfDir = join(this.cwd, '.aicf');
-    const permissionsFile = join(aicfDir, '.permissions.aicf');
+    // Create .permissions.aicf in .lill/
+    const lillDir = join(this.cwd, '.lill');
+    const permissionsFile = join(lillDir, '.permissions.aicf');
     const permissionsContent = this.generatePermissionsFile();
     writeFileSync(permissionsFile, permissionsContent, 'utf-8');
 
-    // Create .watcher-config.json
-    const configFile = join(aicfDir, '.watcher-config.json');
+    // Create .watcher-config.json in .lill/
+    const configFile = join(lillDir, '.watcher-config.json');
     const configContent = this.generateWatcherConfig();
     writeFileSync(configFile, configContent, 'utf-8');
 
-    // Create empty principles, decisions, insights files
-    const principlesFile = join(aicfDir, 'principles.aicf');
-    const decisionsFile = join(aicfDir, 'decisions.aicf');
-    const insightsFile = join(aicfDir, 'insights.aicf');
-
-    if (!existsSync(principlesFile)) {
-      writeFileSync(principlesFile, '@PRINCIPLES|version=3.1|format=aicf\n', 'utf-8');
-    }
-    if (!existsSync(decisionsFile)) {
-      writeFileSync(decisionsFile, '@DECISIONS|version=3.1|format=aicf\n', 'utf-8');
-    }
-    if (!existsSync(insightsFile)) {
-      writeFileSync(insightsFile, '@INSIGHTS|version=3.1|format=aicf\n', 'utf-8');
-    }
+    // Note: We no longer create principles.aicf, decisions.aicf, insights.aicf
+    // These are now stored in QuadIndex (.lill/snapshots/)
   }
 
   /**
@@ -659,12 +637,12 @@ export class InitCommand {
       console.log();
 
       // Create missing directories
-      const aicfDir = join(this.cwd, '.aicf');
+      const lillDir = join(this.cwd, '.lill');
       const aiDir = join(this.cwd, '.ai');
       const cacheLlmDir = join(this.cwd, '.cache', 'llm');
 
       spinner.start('Creating directory structure...');
-      mkdirSync(aicfDir, { recursive: true });
+      mkdirSync(lillDir, { recursive: true });
       mkdirSync(aiDir, { recursive: true });
       mkdirSync(cacheLlmDir, { recursive: true });
       spinner.succeed('Directory structure ready');
@@ -838,25 +816,17 @@ export class InitCommand {
 
       spinner.start('Setting up manual mode...');
 
-      // Create .ai and .aicf directories
+      // Create .ai and .lill directories
       const aiDir = join(this.cwd, '.ai');
-      const aicfDir = join(this.cwd, '.aicf');
+      const lillDir = join(this.cwd, '.lill');
 
       mkdirSync(aiDir, { recursive: true });
-      mkdirSync(aicfDir, { recursive: true });
+      mkdirSync(lillDir, { recursive: true });
 
-      // Create Phase 6-8 directory structure
-      const recentDir = join(aicfDir, 'recent');
-      const sessionsDir = join(aicfDir, 'sessions');
-      const mediumDir = join(aicfDir, 'medium');
-      const oldDir = join(aicfDir, 'old');
-      const archiveDir = join(aicfDir, 'archive');
+      // Create LILL subdirectories (only what we actually use)
+      const rawDir = join(lillDir, 'raw');
 
-      mkdirSync(recentDir, { recursive: true });
-      mkdirSync(sessionsDir, { recursive: true });
-      mkdirSync(mediumDir, { recursive: true });
-      mkdirSync(oldDir, { recursive: true });
-      mkdirSync(archiveDir, { recursive: true });
+      mkdirSync(rawDir, { recursive: true });
 
       // Copy template files
       this.copyTemplateFiles();
@@ -882,7 +852,7 @@ export class InitCommand {
 
       return Ok({
         projectPath: this.cwd,
-        filesCreated: [aiDir, aicfDir, recentDir, sessionsDir, mediumDir, oldDir, archiveDir],
+        filesCreated: [aiDir, lillDir, rawDir],
         message: 'Manual mode initialized. Use the prompt above to trigger LLM updates.',
         platforms: [llmAnswers.llm],
         watcherStarted: false,
@@ -907,7 +877,7 @@ export class InitCommand {
       console.log(chalk.dim('To set up automatic mode, we need your permission to:'));
       console.log(chalk.dim('  • Read conversations from your LLM library folders'));
       console.log(chalk.dim('  • Extract and consolidate them into memory files'));
-      console.log(chalk.dim('  • Store them locally in .aicf/ and .ai/ directories'));
+      console.log(chalk.dim('  • Store them locally in .lill/ and .ai/ directories'));
       console.log();
 
       // Ask which platforms they use
@@ -950,35 +920,18 @@ export class InitCommand {
       spinner.text = 'Creating directory structure...';
       const cacheLlmDir = join(this.cwd, '.cache', 'llm');
       const aiDir = join(this.cwd, '.ai');
-      const aicfDir = join(this.cwd, '.aicf');
+      const lillDir = join(this.cwd, '.lill');
 
       mkdirSync(cacheLlmDir, { recursive: true });
       mkdirSync(aiDir, { recursive: true });
-      mkdirSync(aicfDir, { recursive: true });
+      mkdirSync(lillDir, { recursive: true });
 
-      // Create Phase 6-8 directory structure
-      const recentDir = join(aicfDir, 'recent');
-      const sessionsDir = join(aicfDir, 'sessions');
-      const mediumDir = join(aicfDir, 'medium');
-      const oldDir = join(aicfDir, 'old');
-      const archiveDir = join(aicfDir, 'archive');
+      // Create LILL subdirectories (only what we actually use)
+      const rawDir = join(lillDir, 'raw');
 
-      mkdirSync(recentDir, { recursive: true });
-      mkdirSync(sessionsDir, { recursive: true });
-      mkdirSync(mediumDir, { recursive: true });
-      mkdirSync(oldDir, { recursive: true });
-      mkdirSync(archiveDir, { recursive: true });
+      mkdirSync(rawDir, { recursive: true });
 
-      filesCreated.push(
-        cacheLlmDir,
-        aiDir,
-        aicfDir,
-        recentDir,
-        sessionsDir,
-        mediumDir,
-        oldDir,
-        archiveDir
-      );
+      filesCreated.push(cacheLlmDir, aiDir, lillDir, rawDir);
 
       // Store selected platforms
       this.selectedPlatforms = {
@@ -992,14 +945,14 @@ export class InitCommand {
 
       // Step 2: Create .permissions.aicf
       spinner.text = 'Creating permission tracking file...';
-      const permissionsFile = join(aicfDir, '.permissions.aicf');
+      const permissionsFile = join(lillDir, '.permissions.aicf');
       const permissionsContent = this.generatePermissionsFile();
       writeFileSync(permissionsFile, permissionsContent, 'utf-8');
       filesCreated.push(permissionsFile);
 
       // Step 3: Create .watcher-config.json
       spinner.text = 'Creating watcher configuration...';
-      const configFile = join(aicfDir, '.watcher-config.json');
+      const configFile = join(lillDir, '.watcher-config.json');
       const configContent = this.generateWatcherConfig();
       writeFileSync(configFile, configContent, 'utf-8');
       filesCreated.push(configFile);
@@ -1088,7 +1041,7 @@ Your task is to help me consolidate our conversation into structured memory file
 ## What to do:
 
 1. **Read the existing memory files** (if they exist):
-   - \`.aicf/\` - Machine-readable AICF format files
+   - \`.lill/\` - Machine-readable data (QuadIndex snapshots)
    - \`.ai/\` - Human-readable markdown documentation
 
 2. **Extract from our conversation**:
@@ -1099,13 +1052,12 @@ Your task is to help me consolidate our conversation into structured memory file
    - Important context for future sessions
 
 3. **Update the memory files**:
-   - Create/update \`.aicf/index.aicf\` with structured data
+   - Data is automatically stored in \`.lill/\` (QuadIndex)
    - Create/update \`.ai/conversation-log.md\` with detailed notes
    - Create/update \`.ai/technical-decisions.md\` if we made technical choices
    - Create/update \`.ai/next-steps.md\` with planned work
 
 4. **Format guidelines**:
-   - AICF files use pipe-delimited format: \`@SECTION|key=value|key=value\`
    - Markdown files use standard markdown with clear sections
    - Be concise but comprehensive
    - Preserve all important context
@@ -1232,7 +1184,7 @@ ${platformStatuses}
    * Smart merge: Only copies missing files or updates if template is newer
    *
    * New structure:
-   * - templates/augment/ - Augment-specific templates (includes .augment/, .ai/, .aicf/)
+   * - templates/augment/ - Augment-specific templates (includes .augment/, .ai/, .lill/)
    * - templates/cursor/ - Cursor-specific templates (future)
    * - templates/warp/ - Warp-specific templates (future)
    * - templates/shared/ - Shared templates across all platforms
@@ -1417,27 +1369,27 @@ ${platformStatuses}
   }
 
   /**
-   * Copy .aicf/ directory
+   * Copy .lill/ directory
    */
   private copyAicfDirectory(platformTemplateDir: string, platformName: string): void {
-    const aicfTemplateDir = join(platformTemplateDir, '.aicf');
+    const lillTemplateDir = join(platformTemplateDir, '.lill');
 
-    if (!existsSync(aicfTemplateDir)) {
+    if (!existsSync(lillTemplateDir)) {
       return;
     }
 
-    const aicfDir = join(this.cwd, '.aicf');
-    mkdirSync(aicfDir, { recursive: true });
+    const lillDir = join(this.cwd, '.lill');
+    mkdirSync(lillDir, { recursive: true });
 
-    const aicfFiles = readdirSync(aicfTemplateDir);
-    for (const file of aicfFiles) {
-      const srcFile = join(aicfTemplateDir, file);
-      const destFile = join(aicfDir, file);
+    const lillFiles = readdirSync(lillTemplateDir);
+    for (const file of lillFiles) {
+      const srcFile = join(lillTemplateDir, file);
+      const destFile = join(lillDir, file);
 
       if (!existsSync(destFile)) {
         copyFileSync(srcFile, destFile);
         if (this.verbose) {
-          console.log(`📝 Copied .aicf/${file} from ${platformName}`);
+          console.log(`📝 Copied .lill/${file} from ${platformName}`);
         }
       }
     }

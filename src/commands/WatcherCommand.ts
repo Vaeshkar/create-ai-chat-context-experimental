@@ -13,6 +13,7 @@
  */
 
 import { join } from 'path';
+import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'fs';
 import chalk from 'chalk';
 import { WatcherManager } from '../utils/WatcherManager.js';
 import { WatcherLogger } from '../utils/WatcherLogger.js';
@@ -25,17 +26,22 @@ import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js';
 import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
 import { DaemonManager } from '../utils/DaemonManager.js';
 import { HealthCheck } from '../utils/HealthCheck.js';
-import { JSONToAICFWatcher } from 'aicf-core';
-import { AICFFileWatcher, QuadIndex, SnapshotManager } from 'lill-core';
+import {
+  ConversationWatcher,
+  type ExtractedRelationship,
+  type ExtractedHypothetical,
+  type ExtractedRejected,
+} from 'aicf-core';
+import { QuadIndex, SnapshotManager } from 'lill-core';
 import { PrincipleWatcher } from 'lill-meta';
+import { ConversationOrchestrator } from '../orchestrators/ConversationOrchestrator.js';
+import type { Message } from '../types/conversation.js';
 
 interface WatcherCommandOptions {
   interval?: string;
   dir?: string;
   output?: string;
   verbose?: boolean;
-  daemon?: boolean;
-  foreground?: boolean;
   augment?: boolean;
   warp?: boolean;
   claudeDesktop?: boolean;
@@ -52,8 +58,6 @@ export class WatcherCommand {
   private interval: number;
   private watchDir: string;
   private verbose: boolean;
-  private _daemon: boolean;
-  private _foreground: boolean;
   private manager: WatcherManager;
   private logger: WatcherLogger;
   private consolidationService: MultiClaudeConsolidationService;
@@ -63,8 +67,7 @@ export class WatcherCommand {
   private cacheConsolidationAgent: CacheConsolidationAgent;
   private sessionConsolidationAgent: SessionConsolidationAgent;
   private memoryDropoffAgent: MemoryDropoffAgent;
-  private jsonToAICFWatcher: JSONToAICFWatcher;
-  private aicfFileWatcher: AICFFileWatcher;
+  private conversationWatcher: ConversationWatcher;
   private principleWatcher: PrincipleWatcher;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
@@ -72,22 +75,35 @@ export class WatcherCommand {
   private isRunning: boolean = false;
   private enabledPlatforms: PlatformName[] = [];
   private cwd: string;
+  private hasIndexedData: boolean = false; // Track if we've indexed any data
+  private snapshotTimerStarted: boolean = false; // Track if periodic snapshot timer has started
 
   constructor(options: WatcherCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.interval = parseInt(options.interval || '300000', 10);
     this.watchDir = options.dir || join(this.cwd, './checkpoints');
     this.verbose = options.verbose || false;
-    this._daemon = options.daemon || false;
-    this._foreground = options.foreground !== false; // Default to foreground
+
+    // Create timestamped log file in .lill/logs/
+    const logsDir = join(this.cwd, '.lill', 'logs');
+    if (!existsSync(logsDir)) {
+      mkdirSync(logsDir, { recursive: true });
+    }
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const logFile = join(logsDir, `watcher-${timestamp}.log`);
+
+    // Clean up old log files (keep last 10) - do this early before creating new log
+    this.cleanupOldLogsSync(logsDir);
+
     this.manager = new WatcherManager({
       pidFile: join(this.cwd, '.watcher.pid'),
-      logFile: join(this.cwd, '.watcher.log'),
+      logFile,
       verbose: this.verbose,
     });
     this.logger = new WatcherLogger({
       verbose: this.verbose,
       logLevel: this.verbose ? 'debug' : 'info',
+      logFile, // Pass log file to logger so it writes to file
     });
     this.configManager = new WatcherConfigManager();
     this.consolidationService = new MultiClaudeConsolidationService({
@@ -100,15 +116,161 @@ export class WatcherCommand {
     this.cacheConsolidationAgent = new CacheConsolidationAgent(this.cwd);
     this.sessionConsolidationAgent = new SessionConsolidationAgent(this.cwd);
     this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd);
-    this.jsonToAICFWatcher = new JSONToAICFWatcher(this.cwd, {
+
+    // Initialize QuadIndex and SnapshotManager FIRST (before ConversationWatcher)
+    this.quadIndex = new QuadIndex();
+    this.snapshotManager = new SnapshotManager({
+      snapshotDir: join(this.cwd, '.lill', 'snapshots'),
       verbose: this.verbose,
     });
-    this.aicfFileWatcher = new AICFFileWatcher(this.cwd, {
+
+    // Now create ConversationWatcher with QuadIndex callback
+    this.conversationWatcher = new ConversationWatcher(this.cwd, {
+      rawDir: join(this.cwd, '.lill', 'raw'), // CRITICAL: Use .lill/raw/ not .aicf/raw/
       verbose: this.verbose,
-      onNewEntry: async (file: string, lineNumber: number, content: string) => {
+      onConversationProcessed: (conversationId: string, stats) => {
         if (this.verbose) {
-          const preview = content.substring(0, 80).replace(/\n/g, ' ');
-          this.logger.debug(`[AICF] ${file}:${lineNumber} - ${preview}`);
+          this.logger.debug(`Processed conversation: ${conversationId}`, { stats });
+        }
+      },
+      onPrincipleExtracted: async (principle) => {
+        // Convert ExtractedPrinciple to full Principle format for QuadIndex
+        const fullPrinciple = {
+          id: principle.id,
+          name: principle.text, // Full text (no truncation)
+          intent: principle.text,
+          preconditions: [],
+          postconditions: [],
+          examples: [],
+          counterexamples: [],
+          applicable_to_models: ['all'],
+          confidence: principle.confidence,
+          status: 'proposed' as const, // Use 'proposed' not 'pending'
+          sources: [principle.source],
+          created_at: new Date(principle.timestamp),
+          updated_at: new Date(principle.timestamp),
+          context: principle.conversationId,
+        };
+
+        // Index principle to QuadIndex
+        const result = this.quadIndex.addPrinciple(fullPrinciple);
+
+        if (!result.success) {
+          this.logger.error(`Failed to index principle: ${principle.id}`, {
+            error: result.error,
+          });
+          return;
+        }
+
+        // Implicit validation: Auto-validate principles with high usage
+        // If usage_count >= 5 and confidence >= 0.8, auto-validate
+        if (fullPrinciple.usage_count && fullPrinciple.usage_count >= 5) {
+          if (fullPrinciple.confidence >= 0.8 && fullPrinciple.status !== 'validated') {
+            const validatedPrinciple = {
+              ...fullPrinciple,
+              status: 'validated' as const,
+              confidence: Math.min(1.0, fullPrinciple.confidence + 0.05), // +5% bonus
+              updated_at: new Date(),
+            };
+
+            // Remove old principle and add validated one
+            const removeResult = this.quadIndex.removePrinciple(principle.id);
+            if (removeResult.success) {
+              const addResult = this.quadIndex.addPrinciple(validatedPrinciple);
+              if (addResult.success && this.verbose) {
+                this.logger.info(
+                  `Auto-validated principle ${principle.id} (usage: ${fullPrinciple.usage_count}, confidence: ${(validatedPrinciple.confidence * 100).toFixed(0)}%)`
+                );
+              }
+            }
+          }
+        }
+
+        // Mark that we've indexed data
+        if (!this.hasIndexedData) {
+          this.hasIndexedData = true;
+          // Start snapshot timer now that we have data
+          await this.startSnapshotTimerIfNeeded();
+        }
+
+        if (this.verbose) {
+          this.logger.debug(`Indexed principle: ${principle.id}`, {
+            text: principle.text.substring(0, 100),
+          });
+        }
+      },
+      onRelationshipExtracted: async (relationship: ExtractedRelationship) => {
+        // Index relationship to QuadIndex GraphStore
+        const result = this.quadIndex.addRelationship(
+          relationship.from,
+          relationship.to,
+          relationship.type,
+          relationship.reason,
+          relationship.evidence,
+          relationship.strength
+        );
+
+        if (!result.success) {
+          this.logger.error(`Failed to index relationship: ${relationship.id}`, {
+            error: result.error,
+          });
+          return;
+        }
+
+        if (this.verbose) {
+          this.logger.debug(`Indexed relationship: ${relationship.from} → ${relationship.to}`, {
+            type: relationship.type,
+          });
+        }
+      },
+      onHypotheticalExtracted: async (hypothetical: ExtractedHypothetical) => {
+        // Index hypothetical to QuadIndex ReasoningStore
+        const result = this.quadIndex.addHypothetical({
+          id: hypothetical.id,
+          question: hypothetical.scenario,
+          alternatives: [
+            {
+              option: hypothetical.expectedOutcome,
+              status: 'deferred' as const,
+              reason: hypothetical.reasoning,
+            },
+          ],
+          status: 'considered',
+          evidence: hypothetical.conversationId,
+          created_at: new Date(hypothetical.timestamp),
+          updated_at: new Date(hypothetical.timestamp),
+        });
+
+        if (!result.success) {
+          this.logger.error(`Failed to index hypothetical: ${hypothetical.id}`, {
+            error: result.error,
+          });
+          return;
+        }
+
+        if (this.verbose) {
+          this.logger.debug(`Indexed hypothetical: ${hypothetical.scenario.substring(0, 50)}...`);
+        }
+      },
+      onRejectedExtracted: async (rejected: ExtractedRejected) => {
+        // Index rejected alternative to QuadIndex ReasoningStore
+        const result = this.quadIndex.addRejected({
+          id: rejected.id,
+          option: rejected.alternative,
+          reason: rejected.reason,
+          evidence: rejected.conversationId,
+          created_at: new Date(rejected.timestamp),
+        });
+
+        if (!result.success) {
+          this.logger.error(`Failed to index rejected alternative: ${rejected.id}`, {
+            error: result.error,
+          });
+          return;
+        }
+
+        if (this.verbose) {
+          this.logger.debug(`Indexed rejected: ${rejected.alternative.substring(0, 50)}...`);
         }
       },
     });
@@ -116,13 +278,6 @@ export class WatcherCommand {
       verbose: this.verbose,
       enableLearning: true,
       apiKey: process.env['ANTHROPIC_API_KEY'],
-    });
-
-    // Initialize QuadIndex and SnapshotManager
-    this.quadIndex = new QuadIndex();
-    this.snapshotManager = new SnapshotManager({
-      snapshotDir: join(this.cwd, '.lill', 'snapshots'),
-      verbose: this.verbose,
     });
 
     // Initialize HealthCheck (Task 4c)
@@ -235,9 +390,6 @@ export class WatcherCommand {
     console.log(chalk.gray(`   Watch Directory: ${this.watchDir}`));
     console.log(chalk.gray(`   Check Interval: ${this.interval}ms`));
     console.log(chalk.gray(`   Verbose: ${this.verbose ? 'enabled' : 'disabled'}`));
-    console.log(
-      chalk.gray(`   Mode: ${this._daemon ? 'daemon' : this._foreground ? 'foreground' : 'auto'}`)
-    );
     console.log(chalk.gray(`   PID File: ${this.manager.getPidFilePath()}`));
     console.log(chalk.gray(`   Log File: ${this.manager.getLogFilePath()}`));
 
@@ -268,37 +420,43 @@ export class WatcherCommand {
 
     // Handle graceful shutdown (Task 4b)
     process.on('SIGINT', async () => {
+      // ✅ Take final snapshot before stopping
+      if (this.snapshotManager && this.quadIndex) {
+        this.logger.info('Taking final snapshot before shutdown...');
+        await this.snapshotManager.takeSnapshot(this.quadIndex, 'rolling');
+        this.logger.info('Final snapshot saved');
+      }
       await this.stop();
     });
     process.on('SIGTERM', async () => {
+      // ✅ Take final snapshot before stopping
+      if (this.snapshotManager && this.quadIndex) {
+        this.logger.info('Taking final snapshot before shutdown...');
+        await this.snapshotManager.takeSnapshot(this.quadIndex, 'rolling');
+        this.logger.info('Final snapshot saved');
+      }
       await this.stop();
     });
     process.on('SIGHUP', async () => {
+      // ✅ Take final snapshot before stopping
+      if (this.snapshotManager && this.quadIndex) {
+        this.logger.info('Taking final snapshot before shutdown...');
+        await this.snapshotManager.takeSnapshot(this.quadIndex, 'rolling');
+        this.logger.info('Final snapshot saved');
+      }
       await this.stop();
     });
 
-    // Start JSON-to-AICF watcher (Phase 2)
-    this.jsonToAICFWatcher.start().then((result) => {
+    // Start Conversation watcher (simplified: replaces JSON + AICF watchers)
+    this.conversationWatcher.start().then((result) => {
       if (result.ok) {
         if (this.verbose) {
-          console.log(chalk.green('✅ JSON-to-AICF watcher started'));
+          console.log(chalk.green('✅ Conversation watcher started'));
         }
       } else {
-        console.error(chalk.red('❌ Failed to start JSON-to-AICF watcher:'), result.error.message);
+        console.error(chalk.red('❌ Failed to start conversation watcher:'), result.error.message);
       }
     });
-
-    // Start AICF file watcher (Phase 3)
-    this.aicfFileWatcher
-      .start()
-      .then(() => {
-        if (this.verbose) {
-          console.log(chalk.green('✅ AICF file watcher started'));
-        }
-      })
-      .catch((error: Error) => {
-        console.error(chalk.red('❌ Failed to start AICF file watcher:'), error.message);
-      });
 
     // Start Principle watcher (Phase 5)
     this.principleWatcher
@@ -342,16 +500,11 @@ export class WatcherCommand {
     // Save QuadIndex snapshot before shutdown
     await this.saveQuadIndexSnapshot();
 
-    // Stop JSON-to-AICF watcher
-    this.jsonToAICFWatcher.stop().then((result) => {
+    // Stop Conversation watcher
+    this.conversationWatcher.stop().then((result) => {
       if (!result.ok) {
-        console.error(chalk.red('❌ Failed to stop JSON-to-AICF watcher:'), result.error.message);
+        console.error(chalk.red('❌ Failed to stop conversation watcher:'), result.error.message);
       }
-    });
-
-    // Stop AICF file watcher
-    this.aicfFileWatcher.stop().catch((error: Error) => {
-      console.error(chalk.red('❌ Failed to stop AICF file watcher:'), error.message);
     });
 
     // Stop Principle watcher
@@ -390,6 +543,9 @@ export class WatcherCommand {
     console.log(
       chalk.gray(`   Uptime: ${status.uptime ? Math.round(status.uptime / 1000) : 0}s\n`)
     );
+
+    // Note: Terminal window will close automatically via the shell wrapper
+    // in watch-terminal command (sleep 2; exit)
 
     process.exit(0);
   }
@@ -470,7 +626,7 @@ export class WatcherCommand {
   }
 
   /**
-   * Consolidate cache chunks into .aicf and .ai files
+   * Consolidate cache chunks into .lill and .ai files
    */
   private consolidateCacheChunks(): void {
     this.cacheConsolidationAgent.consolidate().then((result) => {
@@ -551,6 +707,65 @@ export class WatcherCommand {
   }
 
   /**
+   * Clean up old log files (keep last 10) - sync version for constructor
+   */
+  private cleanupOldLogsSync(logsDir: string): void {
+    try {
+      if (!existsSync(logsDir)) {
+        return;
+      }
+
+      const files = readdirSync(logsDir)
+        .filter((f: string) => f.startsWith('watcher-') && f.endsWith('.log'))
+        .map((f: string) => ({
+          name: f,
+          path: join(logsDir, f),
+          mtime: statSync(join(logsDir, f)).mtime.getTime(),
+        }))
+        .sort(
+          (
+            a: { name: string; path: string; mtime: number },
+            b: { name: string; path: string; mtime: number }
+          ) => b.mtime - a.mtime
+        ); // Sort by newest first
+
+      // Keep last 10, delete the rest
+      if (files.length > 10) {
+        const toDelete = files.slice(10);
+        toDelete.forEach((file: { name: string; path: string; mtime: number }) => {
+          unlinkSync(file.path);
+        });
+      }
+    } catch {
+      // Ignore errors in log cleanup
+    }
+  }
+
+  /**
+   * Start snapshot timer if we have data and haven't started it yet
+   */
+  private async startSnapshotTimerIfNeeded(): Promise<void> {
+    if (this.hasIndexedData && !this.snapshotTimerStarted) {
+      this.snapshotTimerStarted = true;
+
+      // Start the periodic snapshot timer (does NOT take immediate snapshot)
+      await this.snapshotManager.start(this.quadIndex);
+
+      // Take immediate snapshot of the data we just indexed
+      const snapshotResult = await this.snapshotManager.takeSnapshot(this.quadIndex, 'rolling');
+
+      if (this.verbose) {
+        if (snapshotResult.success) {
+          this.logger.info('Started continuous snapshot system (5-minute intervals)');
+          this.logger.info(`Took initial snapshot: ${snapshotResult.data}`);
+        } else {
+          this.logger.error('Failed to take initial snapshot', { error: snapshotResult.error });
+        }
+      }
+    }
+  }
+
+  /**
    * Load QuadIndex from latest snapshot (Task 4a)
    */
   private async loadQuadIndexFromSnapshot(): Promise<void> {
@@ -565,16 +780,21 @@ export class WatcherCommand {
           console.log(chalk.gray(`   Relationships: ${stats.data.graph.edges}`));
           console.log(chalk.gray(`   Hypotheticals: ${stats.data.reasoning.hypotheticals}`));
         }
+
+        // If we loaded data from snapshot, mark as having indexed data
+        if (stats.data.metadata.total > 0) {
+          this.hasIndexedData = true;
+        }
       } else {
         if (this.verbose) {
           console.log(chalk.yellow('⚠️  No snapshot found, starting with empty QuadIndex'));
         }
       }
 
-      // Start continuous snapshots (every 5 mins)
-      await this.snapshotManager.start(this.quadIndex);
-      if (this.verbose) {
-        console.log(chalk.green('✅ Started continuous snapshot system'));
+      // DON'T start continuous snapshots yet - wait until we have data
+      // The timer will be started after first data is indexed (see startSnapshotTimerIfNeeded)
+      if (this.verbose && !this.hasIndexedData) {
+        console.log(chalk.gray('⏳ Snapshot timer will start after first data is indexed'));
       }
 
       // Update health check stats
@@ -598,7 +818,7 @@ export class WatcherCommand {
       );
       const { AugmentLevelDBReader } = await import('../readers/AugmentLevelDBReader.js');
 
-      const rawDir = join(this.cwd, '.aicf', 'raw');
+      const rawDir = join(this.cwd, '.lill', 'raw');
       const lastTimestamp = getLastTimestamp(rawDir);
 
       if (!lastTimestamp) {
@@ -643,9 +863,9 @@ export class WatcherCommand {
 
       for (const conversation of missedConversations) {
         try {
-          // Write directly to .aicf/raw/ directory
+          // Write directly to .lill/raw/ directory
           const { writeFileSync, mkdirSync, existsSync } = await import('fs');
-          const rawDir = join(this.cwd, '.aicf', 'raw');
+          const rawDir = join(this.cwd, '.lill', 'raw');
 
           // Ensure directory exists
           if (!existsSync(rawDir)) {
@@ -653,9 +873,72 @@ export class WatcherCommand {
           }
 
           // Parse the raw data to extract messages
-          const messages = JSON.parse(conversation.rawData);
+          const messages: Message[] = JSON.parse(conversation.rawData);
 
-          // Format as conversation JSON (same format as AICE exports)
+          // Extract key exchanges (user → assistant pairs) with FULL content
+          const keyExchanges: Array<{
+            timestamp: string;
+            user: string;
+            assistant_action: string;
+            outcome: string;
+          }> = [];
+
+          for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
+            if (msg && msg.role === 'user') {
+              const nextMsg = messages[i + 1];
+              if (nextMsg && nextMsg.role === 'assistant') {
+                keyExchanges.push({
+                  timestamp: msg.timestamp,
+                  user: msg.content, // ✅ FULL user input, NO truncation
+                  assistant_action: nextMsg.content, // ✅ FULL assistant response, NO truncation
+                  outcome: nextMsg.content, // ✅ FULL outcome, NO truncation
+                });
+                i++; // Skip the assistant message
+              }
+            }
+          }
+
+          // ✅ NEW: Run extractors to get decisions and insights
+          const orchestrator = new ConversationOrchestrator();
+
+          // Run orchestrator to extract decisions, technical work, etc.
+          const analysisResult = orchestrator.analyze(
+            {
+              id: conversation.conversationId,
+              messages,
+              timestamp: conversation.timestamp,
+              source: 'augment',
+            },
+            conversation.rawData
+          );
+
+          // Extract decisions and insights from analysis
+          const decisions = analysisResult.ok
+            ? analysisResult.value.decisions.map((d, index) => ({
+                id: `D${index + 1}`,
+                timestamp: d.timestamp,
+                decision: d.decision,
+                reasoning: d.context,
+                impact: d.impact,
+                status: 'EXTRACTED',
+                files_affected: [],
+              }))
+            : [];
+
+          const insights = analysisResult.ok
+            ? analysisResult.value.technicalWork.map((w, index) => ({
+                id: `I${index + 1}`,
+                category: w.type.toUpperCase(),
+                priority: 'MEDIUM',
+                confidence: 0.7,
+                insight: w.work,
+                memory_type: 'procedural',
+                evidence: `Extracted from ${w.source}`,
+              }))
+            : [];
+
+          // Format as conversation JSON (same format as 2025-10-31_conversation.json)
           const conversationData = {
             metadata: {
               conversationId: conversation.conversationId,
@@ -672,14 +955,15 @@ export class WatcherCommand {
               messages: messages.length,
               tokens_estimated: messages.length * 100, // Rough estimate
             },
-            decisions: [],
-            key_exchanges: messages.map(
-              (msg: { role: string; content: string; timestamp: string }) => ({
-                outcome: msg.content.substring(0, 200), // First 200 chars
-                assistant_action: msg.role === 'assistant' ? msg.content.substring(0, 200) : '',
-                timestamp: msg.timestamp,
-              })
-            ),
+            conversation: {
+              topic: 'Conversation',
+              summary: `${messages.length} messages exchanged`,
+              participants: ['user_dennis', 'assistant_augment'],
+              flow: [],
+            },
+            key_exchanges: keyExchanges,
+            decisions, // ✅ Now populated by DecisionExtractor
+            insights, // ✅ Now populated by TechnicalWorkExtractor
           };
 
           // Write to file

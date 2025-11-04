@@ -29,6 +29,16 @@ export interface AugmentConversation {
   lastModified: string;
 }
 
+export interface AugmentMessage {
+  timestamp: string;
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AugmentConversationWithMessages extends AugmentConversation {
+  messages: AugmentMessage[];
+}
+
 /**
  * Read Augment LevelDB files from VSCode workspace storage
  */
@@ -152,6 +162,52 @@ export class AugmentLevelDBReader {
         error instanceof Error
           ? error
           : new Error(`Failed to read Augment conversations: ${String(error)}`)
+      );
+    }
+  }
+
+  /**
+   * Read a single conversation by ID
+   *
+   * @param conversationId - The conversation ID to read
+   * @returns The conversation with messages, or error if not found
+   */
+  async readConversation(conversationId: string): Promise<Result<AugmentConversationWithMessages>> {
+    try {
+      // Read all conversations (we need to search through all workspaces)
+      const allConversationsResult = await this.readAllConversations();
+
+      if (!allConversationsResult.ok) {
+        return Err(allConversationsResult.error);
+      }
+
+      // Find the conversation by ID
+      const conversation = allConversationsResult.value.find(
+        (c) => c.conversationId === conversationId
+      );
+
+      if (!conversation) {
+        return Err(new Error(`Conversation not found: ${conversationId}`));
+      }
+
+      // Parse messages from rawData (JSON format)
+      let messages: AugmentMessage[] = [];
+      try {
+        const parsed = JSON.parse(conversation.rawData);
+        if (Array.isArray(parsed)) {
+          messages = parsed;
+        }
+      } catch (error) {
+        return Err(new Error(`Failed to parse conversation messages: ${String(error)}`));
+      }
+
+      return Ok({
+        ...conversation,
+        messages,
+      });
+    } catch (error) {
+      return Err(
+        error instanceof Error ? error : new Error(`Failed to read conversation: ${String(error)}`)
       );
     }
   }

@@ -30,6 +30,10 @@ import { ProfileCommand } from './commands/ProfileCommand.js';
 import { MemoryCommand } from './commands/MemoryCommand.js';
 import { SnapshotCommand } from './commands/SnapshotCommand.js';
 import { RecoverCommand } from './commands/RecoverCommand.js';
+import { HealthCommand } from './commands/HealthCommand.js';
+import { QuadIndexQueryCommand } from './commands/QuadIndexQueryCommand.js';
+import { QuadIndexStatsCommand } from './commands/QuadIndexStatsCommand.js';
+import { ValidateCommand } from './commands/ValidateCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -161,10 +165,10 @@ program
     }
   });
 
-// Watcher command
+// Watcher command (internal - used by watch-terminal)
 program
   .command('watch')
-  .description('Start watcher for automatic conversation capture and consolidation')
+  .description('Start watcher (internal command - use watch-terminal instead)')
   .option(
     '-i, --interval <ms>',
     'Check interval in milliseconds (default: 300000 / 5 minutes)',
@@ -176,8 +180,6 @@ program
     process.cwd()
   )
   .option('-v, --verbose', 'Enable verbose output')
-  .option('--daemon', 'Run in background (daemon mode)')
-  .option('--foreground', 'Run in foreground with minimal feedback (default)')
   .option('--augment', 'Enable Augment platform')
   .option('--warp', 'Enable Warp platform')
   .option('--claude-desktop', 'Enable Claude Desktop platform')
@@ -190,8 +192,6 @@ program
         interval: options.interval,
         dir: options.dir,
         verbose: options.verbose,
-        daemon: options.daemon,
-        foreground: options.foreground,
         augment: options.augment,
         warp: options.warp,
         claudeDesktop: options.claudeDesktop,
@@ -219,15 +219,47 @@ program
       const projectRoot = process.cwd();
 
       // Build the command to run in the new terminal
+      // Create a wrapper script that closes the window after watcher exits
       const verboseFlag = options.verbose ? '--verbose' : '';
-      const command = `cd '${projectRoot}' && clear && echo '🚀 Starting AETHER Watcher...' && echo '' && npx tsx packages/aice/src/cli.ts watch --foreground ${verboseFlag}`;
+      const watcherCommand = `npx tsx packages/aice/src/cli.ts watch ${verboseFlag}`;
 
-      // AppleScript to open new Terminal window
+      // Create a self-closing wrapper script
+      // Use $PPID to get the Terminal tab/window process and close it
+      const wrapperScript = `
+cd '${projectRoot}'
+clear
+echo '🚀 Starting AETHER Watcher...'
+echo ''
+
+# Run the watcher
+${watcherCommand}
+WATCHER_EXIT=$?
+
+# Show closing message
+echo ''
+echo 'Watcher stopped. Closing window in 2 seconds...'
+sleep 2
+
+# Close this Terminal tab by killing the parent shell
+# This works reliably regardless of window title
+kill -9 $PPID
+
+exit $WATCHER_EXIT
+`.trim();
+
+      // Write wrapper script to temp file
+      const { writeFileSync, chmodSync } = await import('fs');
+      const { tmpdir } = await import('os');
+      const { join } = await import('path');
+      const tmpScript = join(tmpdir(), `aether-watcher-${Date.now()}.sh`);
+      writeFileSync(tmpScript, wrapperScript, 'utf-8');
+      chmodSync(tmpScript, 0o755);
+
+      // AppleScript to open new Terminal window (without stealing focus)
       const appleScript = `
 tell application "Terminal"
-    activate
-    set newTab to do script "${command}"
-    set custom title of newTab to "AETHER Watcher"
+    set newWindow to do script "${tmpScript}"
+    set custom title of newWindow to "AETHER Watcher"
 end tell
 `;
 
@@ -537,6 +569,173 @@ program
         console.error(chalk.red('❌ Error:'), result.error.message);
         process.exit(1);
       }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Health command (Task 2: Health Metrics Dashboard)
+program
+  .command('health')
+  .description('Show QuadIndex health metrics and system status')
+  .option('-v, --verbose', 'Show detailed metrics and analysis')
+  .option('-s, --save', 'Save metrics to file')
+  .action(async (options) => {
+    try {
+      const cmd = new HealthCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        save: options.save,
+      });
+
+      const result = await cmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error?.message);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// QuadIndex query command
+program
+  .command('quad-query <text>')
+  .description('Query QuadIndex (4 stores: Vector, Metadata, Graph, Reasoning)')
+  .option(
+    '-s, --store <type>',
+    'Store to query: vector, metadata, graph, or reasoning (default: vector)'
+  )
+  .option('-k, --limit <number>', 'Number of results to return (default: 5)', '5')
+  .option('-c, --min-confidence <number>', 'Minimum confidence threshold (0-1)', '0')
+  .option('--status <status>', 'Filter by status (pending|validated|active|deprecated)')
+  .option('-r, --include-relationships', 'Include relationships (graph store)')
+  .option('-i, --max-iterations <number>', 'Max reasoning iterations (reasoning store)', '3')
+  .option('-m, --models <models>', 'Filter by models (comma-separated)')
+  .option('-o, --offset <number>', 'Results offset for pagination', '0')
+  .option('-j, --json', 'Output as JSON (for AI consumption)')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (text, options) => {
+    try {
+      const cmd = new QuadIndexQueryCommand({ cwd: process.cwd() });
+      await cmd.execute(text, {
+        store: options.store as 'vector' | 'metadata' | 'graph' | 'reasoning',
+        limit: parseInt(options.limit, 10),
+        minConfidence: parseFloat(options.minConfidence),
+        status: options.status,
+        includeRelationships: options.includeRelationships,
+        maxIterations: parseInt(options.maxIterations, 10),
+        models: options.models ? options.models.split(',') : undefined,
+        offset: parseInt(options.offset, 10),
+        json: options.json,
+        verbose: options.verbose,
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// QuadIndex stats command
+program
+  .command('quad-stats')
+  .description('Show QuadIndex statistics (all 4 stores)')
+  .option('-j, --json', 'Output as JSON (for AI consumption)')
+  .option('-v, --verbose', 'Show detailed statistics')
+  .action(async (options) => {
+    try {
+      const cmd = new QuadIndexStatsCommand({ cwd: process.cwd() });
+      await cmd.execute({
+        json: options.json,
+        verbose: options.verbose,
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Reprocess conversations command
+program
+  .command('reprocess')
+  .description('Reprocess conversations from LevelDB with fixed extractors (no truncation)')
+  .option('-v, --verbose', 'Enable verbose output')
+  .option('--dry-run', 'Show what would be done without making changes')
+  .action(async (options) => {
+    try {
+      const { reprocessConversations } = await import('./scripts/reprocess-conversations.js');
+      await reprocessConversations({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        dryRun: options.dryRun,
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('build-index')
+  .description('Build QuadIndex from all existing conversations in .lill/raw/')
+  .option('-v, --verbose', 'Enable verbose output')
+  .option('--force', 'Force rebuild even if snapshot exists')
+  .action(async (options) => {
+    try {
+      const { BuildIndexCommand } = await import('./commands/BuildIndexCommand.js');
+      const command = new BuildIndexCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        force: options.force,
+      });
+      await command.execute();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Validate principle command
+program
+  .command('validate <principle-id>')
+  .description('Validate a principle and increase its confidence')
+  .option('-c, --confidence <score>', 'Set specific confidence score (0.0-1.0)', parseFloat)
+  .option('-r, --reason <text>', 'Reason for validation')
+  .option('-v, --verbose', 'Enable verbose output')
+  .action(async (principleId: string, options) => {
+    try {
+      const cmd = new ValidateCommand({ cwd: process.cwd(), verbose: options.verbose });
+      await cmd.execute(principleId, {
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        confidence: options.confidence,
+        reason: options.reason,
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Validate multiple principles command
+program
+  .command('validate-batch <principle-ids...>')
+  .description('Validate multiple principles at once')
+  .option('-c, --confidence <score>', 'Set specific confidence score (0.0-1.0)', parseFloat)
+  .option('-r, --reason <text>', 'Reason for validation')
+  .option('-v, --verbose', 'Enable verbose output')
+  .action(async (principleIds: string[], options) => {
+    try {
+      const cmd = new ValidateCommand({ cwd: process.cwd(), verbose: options.verbose });
+      await cmd.executeBatch(principleIds, {
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        confidence: options.confidence,
+        reason: options.reason,
+      });
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

@@ -152,7 +152,7 @@ export class MemoryFileWriter {
   }
 
   /**
-   * Write clean JSON to .aicf/raw/ directory
+   * Write clean JSON to .lill/raw/ directory (FIXED - NO TRUNCATION)
    * This is the new primary method - outputs structured JSON for AICF-Core watcher to process
    *
    * @param conversationId - Conversation ID
@@ -169,19 +169,25 @@ export class MemoryFileWriter {
       // Ensure raw directory exists
       await fs.mkdir(this.rawDir, { recursive: true });
 
-      // Create clean JSON structure
+      // Create clean JSON structure with FULL content (no truncation)
       const date = new Date().toISOString().split('T')[0];
       const jsonData = {
         metadata: {
           conversationId,
           date,
-          platform: conversation.source || 'augment',
+          platform: conversation.source || 'augment-leveldb',
           user: 'dennis_van_leeuwen',
           status: 'completed',
           timestamp_start: conversation.timestamp,
-          timestamp_end: new Date().toISOString(),
+          timestamp_end:
+            conversation.messages[conversation.messages.length - 1]?.timestamp ||
+            new Date().toISOString(),
           duration_minutes: Math.floor(
-            (new Date().getTime() - new Date(conversation.timestamp).getTime()) / 60000
+            (new Date(
+              conversation.messages[conversation.messages.length - 1]?.timestamp || new Date()
+            ).getTime() -
+              new Date(conversation.timestamp).getTime()) /
+              60000
           ),
           messages: conversation.messages.length,
           tokens_estimated: conversation.messages.reduce(
@@ -189,57 +195,76 @@ export class MemoryFileWriter {
             0
           ),
         },
+
+        // Conversation summary
         conversation: {
           topic: this.extractTopic(analysis),
           summary: this.extractSummary(analysis),
           participants: ['user_dennis', 'assistant_augment'],
           flow: analysis.flow.sequence,
         },
-        key_exchanges: conversation.messages.map((msg, idx) => ({
+
+        // ✅ FULL messages with complete content (no truncation)
+        messages: conversation.messages.map((msg, idx) => ({
           index: idx,
           timestamp: msg.timestamp,
           role: msg.role,
-          content: msg.content.substring(0, 500), // First 500 chars for key exchanges
-          full_content_length: msg.content.length,
+          content: msg.content, // ✅ FULL content, NO truncation
+          content_length: msg.content.length,
+
+          // Extract structured data from content
+          code_blocks: this.extractCodeBlocks(msg.content),
+          diagrams: this.extractDiagrams(msg.content),
+          file_references: this.extractFileReferences(msg.content),
+          commands: this.extractCommands(msg.content),
         })),
+
+        // ✅ Structured exchanges (user request → assistant response pairs)
+        exchanges: this.extractExchanges(conversation.messages),
+
         decisions: analysis.decisions.map((d) => ({
           timestamp: d.timestamp,
           decision: d.decision,
-          context: d.context,
+          context: d.context, // ✅ Full context, no truncation
           impact: d.impact,
         })),
+
         insights: analysis.technicalWork.map((w) => ({
           timestamp: w.timestamp,
-          insight: w.work,
+          insight: w.work, // ✅ Full insight, no truncation
           type: w.type,
           source: w.source,
         })),
+
         technical_work: analysis.technicalWork.map((w) => ({
           timestamp: w.timestamp,
-          work: w.work,
+          work: w.work, // ✅ Full work description, no truncation
           type: w.type,
         })),
+
         state: {
           current_task: analysis.workingState.currentTask,
           blockers: analysis.workingState.blockers,
           next_action: analysis.workingState.nextAction,
           last_update: analysis.workingState.lastUpdate,
         },
+
         user_intents: analysis.userIntents.map((i) => ({
           timestamp: i.timestamp,
           intent: i.intent,
           confidence: i.confidence,
           inferred_from: i.inferredFrom,
         })),
+
         ai_actions: analysis.aiActions.map((a) => ({
           timestamp: a.timestamp,
           type: a.type,
-          details: a.details,
+          details: a.details, // ✅ Full details, no truncation
           source: a.source,
         })),
       };
 
-      // Write to .aicf/raw/{date}_{conversationId}.json
+      // Write to .lill/raw/{date}_{conversationId}.json (changed from .aicf to .lill)
       const filename = `${date}_${conversationId}.json`;
       const filepath = join(this.rawDir, filename);
       await fs.writeFile(filepath, JSON.stringify(jsonData, null, 2), 'utf-8');
@@ -354,5 +379,196 @@ export class MemoryFileWriter {
     // Markdown files are no longer written
     // All conversation data is stored in AICF format only
     // This method is kept for backward compatibility but does nothing
+  }
+
+  // ============================================================================
+  // Content Extraction Methods (NEW - Extract structured data from messages)
+  // ============================================================================
+
+  /**
+   * Extract code blocks from message content
+   */
+  private extractCodeBlocks(content: string): Array<{ language: string; code: string }> {
+    const codeBlocks: Array<{ language: string; code: string }> = [];
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    let match;
+
+    while ((match = codeBlockRegex.exec(content)) !== null) {
+      codeBlocks.push({
+        language: match[1] || 'text',
+        code: match[2]?.trim() || '',
+      });
+    }
+
+    return codeBlocks;
+  }
+
+  /**
+   * Extract diagrams (Mermaid, ASCII art, etc.) from message content
+   */
+  private extractDiagrams(content: string): Array<{ type: string; diagram: string }> {
+    const diagrams: Array<{ type: string; diagram: string }> = [];
+
+    // Mermaid diagrams
+    const mermaidRegex = /```mermaid\n([\s\S]*?)```/g;
+    let match;
+
+    while ((match = mermaidRegex.exec(content)) !== null) {
+      if (match[1]) {
+        diagrams.push({
+          type: 'mermaid',
+          diagram: match[1].trim(),
+        });
+      }
+    }
+
+    // ASCII art diagrams (detect by box-drawing characters)
+    const asciiRegex = /```(?:text|ascii)?\n([\s\S]*?[┌┐└┘│─├┤┬┴┼╔╗╚╝║═╠╣╦╩╬]+[\s\S]*?)```/g;
+    while ((match = asciiRegex.exec(content)) !== null) {
+      if (match[1]) {
+        diagrams.push({
+          type: 'ascii',
+          diagram: match[1].trim(),
+        });
+      }
+    }
+
+    return diagrams;
+  }
+
+  /**
+   * Extract file references from message content
+   */
+  private extractFileReferences(content: string): string[] {
+    const files = new Set<string>();
+
+    // Match file paths (e.g., packages/aice/src/file.ts)
+    const filePathRegex = /(?:^|\s)([a-zA-Z0-9_\-./]+\.[a-zA-Z0-9]+)(?:\s|$|:|,)/g;
+    let match;
+
+    while ((match = filePathRegex.exec(content)) !== null) {
+      const file = match[1];
+      // Filter out common false positives
+      if (file && !file.includes('http') && !file.includes('www.') && file.includes('/')) {
+        files.add(file);
+      }
+    }
+
+    return Array.from(files);
+  }
+
+  /**
+   * Extract shell commands from message content
+   */
+  private extractCommands(content: string): string[] {
+    const commands: string[] = [];
+
+    // Match bash/shell code blocks
+    const bashRegex = /```(?:bash|sh|shell)\n([\s\S]*?)```/g;
+    let match;
+
+    while ((match = bashRegex.exec(content)) !== null) {
+      if (match[1]) {
+        const lines = match[1].trim().split('\n');
+        for (const line of lines) {
+          const trimmed = line.trim();
+          // Skip comments and empty lines
+          if (trimmed && !trimmed.startsWith('#')) {
+            commands.push(trimmed);
+          }
+        }
+      }
+    }
+
+    return commands;
+  }
+
+  /**
+   * Extract structured exchanges (user request → assistant response pairs)
+   */
+  private extractExchanges(messages: Conversation['messages']): Array<{
+    user_input: string;
+    assistant_output: string;
+    outcome: string;
+    actions: string[];
+    timestamp: string;
+  }> {
+    const exchanges: Array<{
+      user_input: string;
+      assistant_output: string;
+      outcome: string;
+      actions: string[];
+      timestamp: string;
+    }> = [];
+
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+      if (!msg) continue;
+
+      // Find user → assistant pairs
+      if (msg.role === 'user') {
+        const nextMsg = messages[i + 1];
+        if (nextMsg && nextMsg.role === 'assistant') {
+          exchanges.push({
+            user_input: msg.content, // ✅ Full user input
+            assistant_output: nextMsg.content, // ✅ Full assistant response
+            outcome: this.extractOutcome(nextMsg.content),
+            actions: this.extractActions(nextMsg.content),
+            timestamp: msg.timestamp,
+          });
+          i++; // Skip the assistant message since we've processed it
+        }
+      }
+    }
+
+    return exchanges;
+  }
+
+  /**
+   * Extract outcome from assistant response (what was accomplished)
+   */
+  private extractOutcome(content: string): string {
+    // Look for outcome indicators
+    const outcomePatterns = [
+      /(?:✅|✓)\s*([^\n]+)/i,
+      /(?:completed|done|finished|fixed|implemented):\s*([^\n]+)/i,
+      /(?:result|outcome):\s*([^\n]+)/i,
+    ];
+
+    for (const pattern of outcomePatterns) {
+      const match = content.match(pattern);
+      if (match && match[1]) {
+        return match[1].trim();
+      }
+    }
+
+    // Fallback: first sentence
+    const firstSentence = content.split(/[.!?]\s/)[0];
+    return firstSentence ? firstSentence.substring(0, 200) : 'No outcome extracted';
+  }
+
+  /**
+   * Extract actions from assistant response (what the assistant did)
+   */
+  private extractActions(content: string): string[] {
+    const actions: string[] = [];
+
+    // Look for action indicators
+    const actionPatterns = [
+      /(?:I|I'll|I've|Let me)\s+(created|updated|fixed|implemented|added|removed|modified|built|tested|deployed|configured)\s+([^\n]+)/gi,
+      /(?:Created|Updated|Fixed|Implemented|Added|Removed|Modified|Built|Tested|Deployed|Configured)\s+([^\n]+)/gi,
+    ];
+
+    for (const pattern of actionPatterns) {
+      let match;
+      while ((match = pattern.exec(content)) !== null) {
+        const action = match[0].trim();
+        if (action.length > 10 && action.length < 200) {
+          actions.push(action);
+        }
+      }
+    }
+
+    return actions;
   }
 }

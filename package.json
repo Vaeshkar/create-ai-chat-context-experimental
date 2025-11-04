@@ -1,7 +1,7 @@
 {
   "name": "create-ai-chat-context-experimental",
   "version": "3.2.4",
-  "description": "Phase 2: TypeScript rewrite - AI Chat Context & Memory System with conversation extraction and AICF format support (powered by aicf-core v2.1.0).",
+  "description": "AETHER - Distributed AI Mind with automatic memory consolidation. Features QuadIndex (4-store RAG), LILL-MQ (meta quantizer), deep thinking loop, and real-time conversation capture from Augment.",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.js",

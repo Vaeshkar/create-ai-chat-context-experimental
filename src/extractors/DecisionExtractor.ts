@@ -88,7 +88,7 @@ export class DecisionExtractor {
         decisions.push({
           timestamp: new Date().toISOString(),
           decision,
-          context: this.extractContext(fullConv, match.index),
+          context: this.extractContext(fullConv), // Full context, no truncation
           impact: this.assessImpact(decision),
         });
       }
@@ -104,11 +104,12 @@ export class DecisionExtractor {
 
   /**
    * Check if a decision is valid (not garbage)
+   * NO LENGTH LIMIT - we want full context
    * @param decision - Decision text
    * @returns true if valid, false if garbage
    */
   private isValidDecision(decision: string): boolean {
-    if (!decision || decision.length < 10 || decision.length > 500) {
+    if (!decision || decision.length < 10) {
       return false;
     }
 
@@ -217,14 +218,13 @@ export class DecisionExtractor {
     messages.forEach((msg) => {
       const lowerContent = msg.content.toLowerCase();
       if (decisionKeywords.some((keyword) => lowerContent.includes(keyword))) {
-        // FIX #4: Extract only the decision sentence, not the full message content
-        // This prevents massive session files with entire messages as "decisions"
+        // Extract decision sentence (summary) but keep FULL context
         const decisionText = this.extractDecisionSentence(msg.content);
 
         decisions.push({
           timestamp: msg.timestamp,
           decision: decisionText,
-          context: msg.content.substring(0, 100),
+          context: msg.content, // ✅ FULL context, NO truncation
           impact: this.assessImpact(decisionText),
         });
       }
@@ -250,26 +250,25 @@ export class DecisionExtractor {
     for (const sentence of sentences) {
       const lowerSentence = sentence.toLowerCase();
       if (decisionKeywords.some((keyword) => lowerSentence.includes(keyword))) {
-        // Return the sentence, truncated to 200 chars max
-        return sentence.length > 200 ? sentence.substring(0, 197) + '...' : sentence;
+        // Return FULL sentence, NO truncation
+        return sentence;
       }
     }
 
-    // Fallback: return first sentence, truncated
+    // Fallback: return first sentence, NO truncation
     const firstSentence = sentences[0] || content;
-    return firstSentence.length > 200 ? firstSentence.substring(0, 197) + '...' : firstSentence;
+    return firstSentence;
   }
 
   /**
    * Extract context around decision
+   * NO TRUNCATION - returns full surrounding context
    * @param text - Full text
-   * @param index - Index of decision
-   * @returns Context string
+   * @returns Context string (full text)
    */
-  private extractContext(text: string, index: number): string {
-    const start = Math.max(0, index - 50);
-    const end = Math.min(text.length, index + 150);
-    return text.substring(start, end).trim();
+  private extractContext(text: string): string {
+    // Return full text as context - let LILL-Meta decide what's relevant
+    return text.trim();
   }
 
   /**
