@@ -6,14 +6,15 @@
     "outDir": "./dist/cjs",
     "verbatimModuleSyntax": false
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/utils/DaemonController.ts",
+    "src/commands/StartCommand.ts",
+    "src/commands/StopCommand.ts",
+    "src/commands/StatusCommand.ts"
   ]
 }
-

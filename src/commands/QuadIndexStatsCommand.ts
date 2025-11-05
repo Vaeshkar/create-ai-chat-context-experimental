@@ -43,6 +43,21 @@ export interface HealthData {
   };
 }
 
+export interface QuadIndexStats {
+  vector: { size: number; vectorDimension: number };
+  metadata: { total: number; byStatus: Record<string, number>; models: string[] };
+  graph: { nodes: number; edges: number; types: string[] };
+  reasoning: { hypotheticals: number; rejected: number; validated: number; deferred: number };
+}
+
+export interface LockStats {
+  readers: number;
+  writers: number;
+  writeRequests: number;
+  readQueueLength: number;
+  writeQueueLength: number;
+}
+
 export class QuadIndexStatsCommand {
   private readonly cwd: string;
   private quadIndex: QuadIndex;
@@ -111,9 +126,9 @@ export class QuadIndexStatsCommand {
 
       // Step 5: Output results
       if (options.json) {
-        this.outputJson(statsResult.data!, health, lockStats);
+        this.outputJson(statsResult.data as any, health, lockStats);
       } else {
-        this.outputHuman(statsResult.data!, health, lockStats, options);
+        this.outputHuman(statsResult.data as any, health, lockStats, options);
       }
     } catch (error) {
       if (options.json) {
@@ -160,23 +175,9 @@ export class QuadIndexStatsCommand {
   }
 
   private outputHuman(
-    stats: {
-      data: {
-        vector: { total: number; dimensions: number };
-        metadata: { total: number };
-        graph: { nodes: number; edges: number };
-        reasoning: { hypotheticals: number; rejected: number };
-      };
-      byStatus: Record<string, number>;
-      models: string[];
-    },
+    stats: QuadIndexStats,
     health: HealthData | null,
-    lockStats: {
-      readers: number;
-      writers: number;
-      readQueueLength: number;
-      writeQueueLength: number;
-    },
+    lockStats: LockStats,
     options: QuadIndexStatsOptions
   ): void {
     const watcherAlive = this.isWatcherAlive(health);
@@ -259,25 +260,7 @@ export class QuadIndexStatsCommand {
     }
   }
 
-  private outputJson(
-    stats: {
-      data: {
-        vector: { total: number; dimensions: number };
-        metadata: { total: number };
-        graph: { nodes: number; edges: number };
-        reasoning: { hypotheticals: number; rejected: number };
-      };
-      byStatus: Record<string, number>;
-      models: string[];
-    },
-    health: HealthData | null,
-    lockStats: {
-      readers: number;
-      writers: number;
-      readQueueLength: number;
-      writeQueueLength: number;
-    }
-  ): void {
+  private outputJson(stats: QuadIndexStats, health: HealthData | null, lockStats: LockStats): void {
     const watcherAlive = this.isWatcherAlive(health);
 
     const output = {

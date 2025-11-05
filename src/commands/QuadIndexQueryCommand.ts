@@ -4,15 +4,9 @@
  */
 
 import chalk from 'chalk';
-import {
-  QuadIndex,
-  SnapshotManager,
-  type QuadQuery,
-  type QuadRetrievalResult,
-  type Principle,
-  type PrincipleStatus,
-} from 'lill-core';
+import { QuadIndex, SnapshotManager, type Principle, type PrincipleStatus } from 'lill-core';
 import { join } from 'node:path';
+import type { QuadQuery, QuadRetrievalResult } from '../types/quad-index.js';
 
 export interface QuadIndexQueryOptions {
   cwd?: string;
@@ -104,7 +98,8 @@ export class QuadIndexQueryCommand {
   }
 
   private buildQuery(text: string, options: QuadIndexQueryOptions): QuadQuery {
-    const query: any = {
+    // QuadQuery extends PrincipleQuery, so we can set all properties directly
+    const query: QuadQuery = {
       text,
       limit: options.limit || 5,
       offset: options.offset || 0,
@@ -163,7 +158,9 @@ export class QuadIndexQueryCommand {
 
     for (let i = 0; i < data.principles.length; i++) {
       const principle = data.principles[i];
-      const score = data.scores.get(principle.id) || 0;
+      if (!principle) continue; // Skip if undefined (shouldn't happen but satisfies TypeScript)
+
+      const score = data.scores[i] || 0;
 
       console.log(chalk.bold(`${i + 1}. ${principle.id}: ${principle.name}`));
       console.log(chalk.gray(`   Intent: ${principle.intent}`));
@@ -193,16 +190,23 @@ export class QuadIndexQueryCommand {
     // Show reasoning if included
     if (data.reasoning) {
       console.log(chalk.blue('🧠 Reasoning:\n'));
-      if (data.reasoning.hypotheticals && data.reasoning.hypotheticals.length > 0) {
-        console.log(chalk.gray('   Hypotheticals:'));
-        for (const hyp of data.reasoning.hypotheticals) {
-          console.log(chalk.gray(`   - ${hyp.scenario}`));
+      console.log(chalk.gray(`   Query: ${data.reasoning.query}`));
+      console.log(chalk.gray(`   Conclusion: ${data.reasoning.conclusion}`));
+      console.log(chalk.gray(`   Confidence: ${(data.reasoning.confidence * 100).toFixed(0)}%`));
+      console.log(chalk.gray(`   Iterations: ${data.reasoning.iterations}`));
+
+      if (data.reasoning.alternatives && data.reasoning.alternatives.length > 0) {
+        console.log(chalk.gray('   Alternatives Considered:'));
+        for (const alt of data.reasoning.alternatives) {
+          const confidence =
+            alt.confidence !== undefined ? (alt.confidence * 100).toFixed(0) : 'N/A';
+          console.log(chalk.gray(`   - ${alt.option}: ${alt.reason} (confidence: ${confidence}%)`));
         }
       }
-      if (data.reasoning.rejected && data.reasoning.rejected.length > 0) {
-        console.log(chalk.gray('   Rejected Alternatives:'));
-        for (const rej of data.reasoning.rejected) {
-          console.log(chalk.gray(`   - ${rej.alternative}: ${rej.reason}`));
+      if (data.reasoning.lessons && data.reasoning.lessons.length > 0) {
+        console.log(chalk.gray('   Lessons Applied:'));
+        for (const lesson of data.reasoning.lessons) {
+          console.log(chalk.gray(`   - ${lesson.lesson}`));
         }
       }
       console.log();
@@ -212,7 +216,7 @@ export class QuadIndexQueryCommand {
   private outputJson(data: QuadRetrievalResult, options: QuadIndexQueryOptions): void {
     const output = {
       success: true,
-      results: data.principles.map((p: Principle) => ({
+      results: data.principles.map((p: Principle, i: number) => ({
         id: p.id,
         name: p.name,
         intent: p.intent,
@@ -220,7 +224,7 @@ export class QuadIndexQueryCommand {
         status: p.status,
         source: p.sources?.[0] || 'unknown',
         timestamp: p.created_at instanceof Date ? p.created_at.getTime() : Date.now(),
-        score: data.scores.get(p.id) || 0,
+        score: data.scores[i] || 0,
         metadata: {
           type: 'principle',
           model: p.applicable_to_models?.[0] || 'unknown',

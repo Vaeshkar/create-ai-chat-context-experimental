@@ -301,7 +301,7 @@ export class FinishCommand {
   ): Promise<Result<void>> {
     try {
       const conversationLogPath = join(this.cwd, '.ai', 'conversation-log.md');
-      const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      const date = new Date().toISOString().split('T')[0]!; // YYYY-MM-DD format
 
       // Build accomplishments from session details and git analysis
       const accomplishments = [

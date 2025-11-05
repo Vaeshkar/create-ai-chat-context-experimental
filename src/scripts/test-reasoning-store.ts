@@ -17,7 +17,7 @@ async function main() {
   // Load QuadIndex from snapshot
   console.log('📚 Loading QuadIndex from snapshot...');
   const quadIndex = new QuadIndex();
-  const snapshotManager = new SnapshotManager(snapshotDir);
+  const snapshotManager = new SnapshotManager({ snapshotDir, verbose: false });
   await snapshotManager.restore(quadIndex, 'rolling');
 
   // Get stats
@@ -68,13 +68,14 @@ async function main() {
   console.log('🧠 Testing Deep Thinking:');
   console.log('   Query: "Should we use TypeScript strict mode?"\n');
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = quadIndex.search({
     text: 'TypeScript strict mode',
     includeReasoning: true,
     reasoningIterations: 3,
     reasoningConfidenceThreshold: 0.9,
     limit: 5,
-  });
+  } as any);
 
   if (!result.success) {
     console.error(`❌ Query failed: ${result.error}`);

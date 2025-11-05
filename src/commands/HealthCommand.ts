@@ -19,6 +19,34 @@ export interface HealthCommandResult {
   error?: Error;
 }
 
+export interface QuadIndexHealthData {
+  stores: {
+    vector: { size: number; avgQueryTime: number };
+    metadata: { size: number; avgQueryTime: number };
+    graph: { nodes: number; edges: number; avgDepth: number };
+    reasoning: { hypotheticals: number; rejected: number };
+  };
+  quality: {
+    avgConfidence: number;
+    contradictions: number;
+    orphanedPrinciples: number;
+    stalePrinciples: number;
+    duplicates: number;
+  };
+  usage: {
+    totalQueries: number;
+    queriesPerHour: number;
+    topQueries: string[];
+    cacheHitRate: number;
+  };
+  cache: {
+    size: number;
+    maxSize: number;
+    hitRate: number;
+    evictions: number;
+  };
+}
+
 export class HealthCommand {
   private options: HealthCommandOptions;
 
@@ -102,11 +130,7 @@ export class HealthCommand {
   /**
    * Assess overall health status
    */
-  private assessOverallHealth(health: {
-    watcher?: { isAlive: boolean; uptime: number };
-    quadIndex?: { principles: number; relationships: number };
-    memory?: { heapUsedMB: number; heapTotalMB: number };
-  }): {
+  private assessOverallHealth(health: QuadIndexHealthData): {
     score: number;
     status: string;
     criticalIssues: string[];

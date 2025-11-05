@@ -7,7 +7,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
-import { loadConfig } from './Config';
+import { loadConfig } from './Config.js';
 
 export interface FileInfo {
   path: string;

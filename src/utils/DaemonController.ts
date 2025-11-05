@@ -13,14 +13,9 @@
 
 import { spawn } from 'child_process';
 import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
-
-// ESM __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 export interface DaemonStatus {
   watcher: {
@@ -113,24 +108,32 @@ export class DaemonController {
       this.deletePidFile(this.watcherPidFile);
 
       // Build command
-      // Check if we're in development mode (using tsx) or production mode (compiled js)
-      // __dirname points to either src/utils (dev) or dist/utils (prod)
-      const cliTsPath = join(__dirname, '..', 'cli.ts');
-      const cliJsPath = join(__dirname, '..', 'cli.js');
+      // Try to find CLI in common locations
+      const devCliPath = join(this.cwd, 'packages', 'aice', 'src', 'cli.ts');
+      const prodCliPath = join(this.cwd, 'packages', 'aice', 'dist', 'esm', 'cli.js');
+      const installedCliPath = join(this.cwd, 'node_modules', '.bin', 'aether');
 
       let command: string;
       let commandArgs: string[];
 
-      if (existsSync(cliTsPath)) {
-        // Development mode: use tsx
+      if (existsSync(devCliPath)) {
+        // Development mode: use tsx with full path
         command = 'npx';
-        commandArgs = ['tsx', cliTsPath, 'watch', '--dir', options.cwd];
-      } else if (existsSync(cliJsPath)) {
-        // Production mode: use node
+        commandArgs = ['tsx', devCliPath, 'watch', '--dir', options.cwd];
+      } else if (existsSync(prodCliPath)) {
+        // Production mode: use node with full path
         command = 'node';
-        commandArgs = [cliJsPath, 'watch', '--dir', options.cwd];
+        commandArgs = [prodCliPath, 'watch', '--dir', options.cwd];
+      } else if (existsSync(installedCliPath)) {
+        // Installed mode: use aether command
+        command = installedCliPath;
+        commandArgs = ['watch', '--dir', options.cwd];
       } else {
-        return Err(new Error(`CLI not found at ${cliTsPath} or ${cliJsPath}`));
+        return Err(
+          new Error(
+            `CLI not found. Tried:\n  ${devCliPath}\n  ${prodCliPath}\n  ${installedCliPath}`
+          )
+        );
       }
 
       if (options.verbose) {

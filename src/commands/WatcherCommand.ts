@@ -32,7 +32,7 @@ import {
   type ExtractedHypothetical,
   type ExtractedRejected,
 } from 'aicf-core';
-import { QuadIndex, SnapshotManager } from 'lill-core';
+import { QuadIndex, SnapshotManager, type Principle } from 'lill-core';
 import { PrincipleWatcher } from 'lill-meta';
 import { ConversationOrchestrator } from '../orchestrators/ConversationOrchestrator.js';
 import type { Message } from '../types/conversation.js';
@@ -135,7 +135,7 @@ export class WatcherCommand {
       },
       onPrincipleExtracted: async (principle) => {
         // Convert ExtractedPrinciple to full Principle format for QuadIndex
-        const fullPrinciple = {
+        const fullPrinciple: Principle = {
           id: principle.id,
           name: principle.text, // Full text (no truncation)
           intent: principle.text,
@@ -145,7 +145,7 @@ export class WatcherCommand {
           counterexamples: [],
           applicable_to_models: ['all'],
           confidence: principle.confidence,
-          status: 'proposed' as const, // Use 'proposed' not 'pending'
+          status: 'pending', // Use 'pending' for new principles
           sources: [principle.source],
           created_at: new Date(principle.timestamp),
           updated_at: new Date(principle.timestamp),
@@ -164,8 +164,13 @@ export class WatcherCommand {
 
         // Implicit validation: Auto-validate principles with high usage
         // If usage_count >= 5 and confidence >= 0.8, auto-validate
-        if (fullPrinciple.usage_count && fullPrinciple.usage_count >= 5) {
-          if (fullPrinciple.confidence >= 0.8 && fullPrinciple.status !== 'validated') {
+        const usageCount = (fullPrinciple as any).usage_count;
+        if (usageCount && usageCount >= 5) {
+          if (
+            fullPrinciple.confidence >= 0.8 &&
+            fullPrinciple.status !== 'validated' &&
+            fullPrinciple.status !== 'active'
+          ) {
             const validatedPrinciple = {
               ...fullPrinciple,
               status: 'validated' as const,
@@ -179,7 +184,7 @@ export class WatcherCommand {
               const addResult = this.quadIndex.addPrinciple(validatedPrinciple);
               if (addResult.success && this.verbose) {
                 this.logger.info(
-                  `Auto-validated principle ${principle.id} (usage: ${fullPrinciple.usage_count}, confidence: ${(validatedPrinciple.confidence * 100).toFixed(0)}%)`
+                  `Auto-validated principle ${principle.id} (usage: ${usageCount}, confidence: ${(validatedPrinciple.confidence * 100).toFixed(0)}%)`
                 );
               }
             }

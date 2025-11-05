@@ -22,7 +22,7 @@ export class ValidateCommand {
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
 
-  constructor(options: ValidateCommandOptions) {
+  constructor(_options: ValidateCommandOptions) {
     this.quadIndex = new QuadIndex();
     this.snapshotManager = new SnapshotManager();
   }
@@ -30,7 +30,7 @@ export class ValidateCommand {
   async execute(principleId: string, options: ValidateCommandOptions): Promise<void> {
     try {
       // Step 1: Load QuadIndex from snapshot
-      if (this.verbose) {
+      if (options.verbose) {
         console.log(chalk.blue('📚 Loading QuadIndex from snapshot...'));
       }
 
@@ -40,7 +40,7 @@ export class ValidateCommand {
         process.exit(1);
       }
 
-      if (this.verbose) {
+      if (options.verbose) {
         const stats = this.quadIndex.getStats();
         console.log(chalk.gray(`   Loaded ${stats.data.metadata.total} principles`));
         console.log();
@@ -55,7 +55,7 @@ export class ValidateCommand {
 
       const currentPrinciple = principle.data;
 
-      if (this.verbose) {
+      if (options.verbose) {
         console.log(chalk.blue(`🔍 Found principle: ${currentPrinciple.name}`));
         console.log(chalk.gray(`   Current status: ${currentPrinciple.status}`));
         console.log(
@@ -92,7 +92,7 @@ export class ValidateCommand {
       }
 
       // Step 4: Save snapshot
-      if (this.verbose) {
+      if (options.verbose) {
         console.log(chalk.blue('💾 Saving snapshot...'));
       }
 
@@ -130,7 +130,7 @@ export class ValidateCommand {
   async executeBatch(principleIds: string[], options: ValidateCommandOptions): Promise<void> {
     try {
       // Step 1: Load QuadIndex from snapshot
-      if (this.verbose) {
+      if (options.verbose) {
         console.log(chalk.blue('📚 Loading QuadIndex from snapshot...'));
       }
 
@@ -140,7 +140,7 @@ export class ValidateCommand {
         process.exit(1);
       }
 
-      if (this.verbose) {
+      if (options.verbose) {
         const stats = this.quadIndex.getStats();
         console.log(chalk.gray(`   Loaded ${stats.data.metadata.total} principles`));
         console.log();
@@ -197,7 +197,7 @@ export class ValidateCommand {
 
       // Step 3: Save snapshot
       if (validated > 0) {
-        if (this.verbose) {
+        if (options.verbose) {
           console.log();
           console.log(chalk.blue('💾 Saving snapshot...'));
         }
