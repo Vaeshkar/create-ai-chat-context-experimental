@@ -23,6 +23,7 @@ import { MigrateCommand } from './commands/MigrateCommand.js';
 import { MigrateOldAICFCommand } from './commands/MigrateOldAICFCommand.js';
 import { ImportClaudeCommand } from './commands/ImportClaudeCommand.js';
 import { PermissionsCommand } from './commands/PermissionsCommand.js';
+import { StartCommand } from './commands/StartCommand.js';
 import { StopCommand } from './commands/StopCommand.js';
 import { StatusCommand } from './commands/StatusCommand.js';
 import { QueryCommand } from './commands/QueryCommand.js';
@@ -286,10 +287,37 @@ end tell
     }
   });
 
-// Stop command
+// Start command (unified watcher + guardian)
+program
+  .command('start')
+  .description('Start AETHER services (watcher + guardian)')
+  .option('-v, --verbose', 'Show detailed output')
+  .option('--watcher-only', 'Start only the watcher')
+  .option('--guardian-only', 'Start only the guardian')
+  .action(async (options) => {
+    try {
+      const startCmd = new StartCommand({
+        verbose: options.verbose,
+        watcherOnly: options.watcherOnly,
+        guardianOnly: options.guardianOnly,
+      });
+
+      const result = await startCmd.execute();
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Stop command (unified watcher + guardian)
 program
   .command('stop')
-  .description('Stop the background watcher daemon')
+  .description('Stop AETHER services (watcher + guardian)')
   .option('-v, --verbose', 'Show detailed output')
   .action(async (options) => {
     try {
@@ -309,10 +337,47 @@ program
     }
   });
 
-// Status command
+// Restart command (unified watcher + guardian)
+program
+  .command('restart')
+  .description('Restart AETHER services (watcher + guardian)')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      // Stop first
+      const stopCmd = new StopCommand({
+        verbose: options.verbose,
+      });
+
+      const stopResult = await stopCmd.execute();
+      if (!stopResult.ok && !stopResult.error.message.includes('not running')) {
+        console.error(chalk.red('❌ Error stopping:'), stopResult.error.message);
+        process.exit(1);
+      }
+
+      // Wait a moment
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Start again
+      const startCmd = new StartCommand({
+        verbose: options.verbose,
+      });
+
+      const startResult = await startCmd.execute();
+      if (!startResult.ok) {
+        console.error(chalk.red('❌ Error starting:'), startResult.error.message);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Status command (unified watcher + guardian)
 program
   .command('status')
-  .description('Show watcher daemon status')
+  .description('Show AETHER services status (watcher + guardian)')
   .option('-v, --verbose', 'Show detailed output')
   .action(async (options) => {
     try {

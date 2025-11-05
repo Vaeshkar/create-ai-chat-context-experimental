@@ -5,14 +5,15 @@
  */
 
 /**
- * Stop Command - Stop the background watcher daemon
+ * Stop Command - Stop AETHER daemons (Watcher + Guardian)
+ * Phase 6: November 2025
  */
 
 import chalk from 'chalk';
 import ora from 'ora';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
-import { DaemonManager } from '../utils/DaemonManager.js';
+import { DaemonController } from '../utils/DaemonController.js';
 
 export interface StopCommandOptions {
   cwd?: string;
@@ -21,60 +22,93 @@ export interface StopCommandOptions {
 
 export interface StopResult {
   message: string;
-  pid?: number;
+  watcherStopped: boolean;
+  guardianStopped: boolean;
 }
 
 export class StopCommand {
   private cwd: string;
+  private verbose: boolean;
 
   constructor(options: StopCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
+    this.verbose = options.verbose || false;
   }
 
   async execute(): Promise<Result<StopResult>> {
     try {
       const spinner = ora();
-      const daemonManager = new DaemonManager(this.cwd);
+      const controller = new DaemonController(this.cwd);
 
-      // Check if daemon is running
-      const statusResult = daemonManager.getStatus();
-      if (!statusResult.ok) {
-        return Err(statusResult.error);
-      }
+      // Check current status
+      const status = controller.getStatus();
 
-      const status = statusResult.value;
-
-      if (!status.running) {
-        spinner.info('No watcher daemon running');
+      if (!status.watcher.running && !status.guardian.running) {
+        spinner.info('No AETHER services running');
         console.log();
-        console.log(chalk.dim('To start the watcher, run:'));
-        console.log(chalk.cyan('  aether watch'));
+        console.log(chalk.dim('To start AETHER, run:'));
+        console.log(chalk.cyan('  aether start'));
         console.log();
         return Ok({
-          message: 'No daemon running',
+          message: 'No services running',
+          watcherStopped: false,
+          guardianStopped: false,
         });
       }
 
-      spinner.start(`Stopping watcher daemon (PID: ${status.pid})...`);
+      // Show banner
+      console.log(chalk.bold.cyan('\n🛑 Stopping AETHER...\n'));
 
-      // Stop the daemon
-      const stopResult = daemonManager.stopDaemon();
+      spinner.start('Stopping background services...');
+
+      // Stop both daemons
+      const stopResult = await controller.stop();
+
+      let watcherStopped = false;
+      let guardianStopped = false;
+
       if (!stopResult.ok) {
-        spinner.fail('Failed to stop daemon');
-        return Err(stopResult.error);
+        // Partial failure - some services stopped, some didn't
+        spinner.warn('Some services failed to stop');
+        console.log();
+        console.log(chalk.yellow(`⚠️  ${stopResult.error.message}`));
+        console.log();
+
+        // Check which ones actually stopped
+        const newStatus = controller.getStatus();
+        watcherStopped = !newStatus.watcher.running;
+        guardianStopped = !newStatus.guardian.running;
+      } else {
+        spinner.succeed('Background services stopped');
+        watcherStopped = true;
+        guardianStopped = true;
       }
 
-      spinner.succeed(`Watcher daemon stopped (PID: ${status.pid})`);
+      // Show what was stopped
       console.log();
-      console.log(chalk.green('✅ Watcher Stopped'));
+      if (watcherStopped) {
+        console.log(chalk.green('✅ Watcher stopped'));
+        if (status.watcher.pid) {
+          console.log(chalk.dim(`   PID: ${status.watcher.pid}`));
+        }
+      }
+
+      if (guardianStopped) {
+        console.log(chalk.green('✅ Guardian stopped'));
+        if (status.guardian.pid) {
+          console.log(chalk.dim(`   PID: ${status.guardian.pid}`));
+        }
+      }
+
       console.log();
-      console.log(chalk.dim('To restart the watcher, run:'));
-      console.log(chalk.cyan('  aether watch'));
+      console.log(chalk.dim('To restart AETHER, run:'));
+      console.log(chalk.cyan('  aether start'));
       console.log();
 
       return Ok({
-        message: 'Daemon stopped successfully',
-        pid: status.pid,
+        message: 'AETHER stopped successfully',
+        watcherStopped,
+        guardianStopped,
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));

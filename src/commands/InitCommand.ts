@@ -30,11 +30,7 @@ import { Ok, Err } from '../types/result.js';
 import { getTemplatesDir } from '../utils/PackageRoot.js';
 import { PlatformDetector, type PlatformDetectionSummary } from '../utils/PlatformDetector.js';
 import { ApiKeyScanner } from '../utils/ApiKeyScanner.js';
-import { AetherWatcher } from '../watchers/AetherWatcher.js';
-import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
-import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
-import { DaemonManager } from '../utils/DaemonManager.js';
-import { spawn } from 'child_process';
+import { DaemonController } from '../utils/DaemonController.js';
 import { showBanner } from '../utils/AetherBanner.js';
 
 export interface InitCommandOptions {
@@ -50,6 +46,7 @@ export interface InitResult {
   message: string;
   platforms: string[];
   watcherStarted: boolean;
+  guardianStarted: boolean;
 }
 
 export interface PlatformSelection {
@@ -81,7 +78,6 @@ export class InitCommand {
     copilot: false,
     chatgpt: false,
   };
-  private aetherWatcher: AetherWatcher | null = null;
 
   constructor(options: InitCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
@@ -182,24 +178,37 @@ export class InitCommand {
         console.log(chalk.cyan('\n📦 Initial import will be performed when watcher starts...'));
       }
 
-      // Step 13: Ask to start AETHER watcher
-      const shouldStart = await this.askStartWatcher();
+      // Step 13: Ask to start AETHER services (Watcher + Guardian)
+      const shouldStart = await this.askStartServices();
       let watcherStarted = false;
+      let guardianStarted = false;
 
-      if (shouldStart) {
-        spinner.start('Starting AETHER watcher...');
-        const startResult = await this.startAetherWatcher();
+      if (shouldStart.watcher || shouldStart.guardian) {
+        spinner.start('Starting AETHER services...');
+        const startResult = await this.startAetherServices(
+          shouldStart.watcher,
+          shouldStart.guardian
+        );
+
         if (startResult.ok) {
-          spinner.succeed('AETHER watcher started');
-          watcherStarted = true;
+          watcherStarted = startResult.value.watcherStarted;
+          guardianStarted = startResult.value.guardianStarted;
+
+          if (watcherStarted && guardianStarted) {
+            spinner.succeed('AETHER services started (Watcher + Guardian)');
+          } else if (watcherStarted) {
+            spinner.succeed('AETHER Watcher started');
+          } else if (guardianStarted) {
+            spinner.succeed('AETHER Guardian started');
+          }
         } else {
-          spinner.fail('Failed to start AETHER watcher');
+          spinner.fail('Failed to start AETHER services');
           console.log(chalk.yellow(`\n⚠️  ${startResult.error.message}`));
         }
       }
 
       // Step 14: Show success summary
-      this.showSuccessSummary(selectedPlatforms, watcherStarted);
+      this.showSuccessSummary(selectedPlatforms, watcherStarted, guardianStarted);
 
       return Ok({
         mode: 'automatic',
@@ -208,6 +217,7 @@ export class InitCommand {
         message: 'AETHER initialized successfully',
         platforms: selectedPlatforms,
         watcherStarted,
+        guardianStarted,
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
@@ -557,46 +567,121 @@ export class InitCommand {
   }
 
   /**
-   * Ask if user wants to start AETHER watcher
+   * Show explanation of what the Watcher does
    */
-  private async askStartWatcher(): Promise<boolean> {
+  private showWatcherExplanation(): void {
     console.log();
-    const answers = await inquirer.prompt([
+    console.log(chalk.bold.cyan('📡 AETHER Watcher'));
+    console.log();
+    console.log(chalk.dim('The Watcher automatically captures your AI conversations from:'));
+    console.log(chalk.dim('  • Augment (LevelDB format)'));
+    console.log(chalk.dim('  • Claude Desktop (SQLite format)'));
+    console.log(chalk.dim('  • Claude CLI (JSON format)'));
+    console.log(chalk.dim('  • And more...'));
+    console.log();
+    console.log(chalk.dim('It extracts principles, relationships, and insights using Claude,'));
+    console.log(chalk.dim('then stores them in QuadIndex for fast semantic search.'));
+    console.log();
+    console.log(chalk.dim('Runs in background. No terminal windows needed.'));
+    console.log();
+  }
+
+  /**
+   * Show explanation of what the Guardian does
+   */
+  private showGuardianExplanation(): void {
+    console.log();
+    console.log(chalk.bold.cyan('🛡️ AETHER Guardian'));
+    console.log();
+    console.log(chalk.dim('The Guardian protects your files from accidental modification:'));
+    console.log(chalk.dim('  • Watches .ai/ folder (manual edits only)'));
+    console.log(chalk.dim('  • Watches .augment/project-overview.md (auto-generated)'));
+    console.log(chalk.dim('  • Automatically rolls back violations using git'));
+    console.log(chalk.dim('  • Creates .aether-STOP.md feedback for the AI'));
+    console.log();
+    console.log(chalk.dim('Escalates on repeated violations: Warning → Severe → Lockdown'));
+    console.log();
+    console.log(chalk.dim('Runs in background. No terminal windows needed.'));
+    console.log();
+  }
+
+  /**
+   * Ask if user wants to start AETHER services
+   */
+  private async askStartServices(): Promise<{ watcher: boolean; guardian: boolean }> {
+    // Show Watcher explanation
+    this.showWatcherExplanation();
+
+    const watcherAnswer = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'start',
-        message: 'Start AETHER watcher now?',
+        message: 'Start AETHER Watcher now?',
         default: true,
       },
     ]);
 
-    return answers.start;
+    // Show Guardian explanation
+    this.showGuardianExplanation();
+
+    const guardianAnswer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'start',
+        message: 'Start AETHER Guardian now?',
+        default: true,
+      },
+    ]);
+
+    return {
+      watcher: watcherAnswer.start,
+      guardian: guardianAnswer.start,
+    };
   }
 
   /**
-   * Start AETHER watcher
+   * Start AETHER services (Watcher + Guardian) using DaemonController
    */
-  private async startAetherWatcher(): Promise<Result<void>> {
+  private async startAetherServices(
+    startWatcher: boolean,
+    startGuardian: boolean
+  ): Promise<Result<{ watcherStarted: boolean; guardianStarted: boolean }>> {
     try {
-      // Check if API key is available
-      const apiKey = process.env['ANTHROPIC_API_KEY'];
-      const enablePrincipleWatcher = !!apiKey;
+      const controller = new DaemonController(this.cwd);
 
-      // Create AetherWatcher instance
-      this.aetherWatcher = new AetherWatcher({
-        cwd: this.cwd,
-        verbose: this.verbose,
-        enablePrincipleWatcher,
-        pollInterval: 300000, // 5 minutes
-      });
+      // Check if already running
+      const status = controller.getStatus();
 
-      // Start the watcher
-      const result = await this.aetherWatcher.start();
-      if (!result.ok) {
-        return result;
+      if (startWatcher && status.watcher.running) {
+        if (this.verbose) {
+          console.log(chalk.yellow(`\n⚠️  Watcher already running (PID: ${status.watcher.pid})`));
+        }
+        startWatcher = false; // Don't try to start again
       }
 
-      return Ok(undefined);
+      if (startGuardian && status.guardian.running) {
+        if (this.verbose) {
+          console.log(chalk.yellow(`\n⚠️  Guardian already running (PID: ${status.guardian.pid})`));
+        }
+        startGuardian = false; // Don't try to start again
+      }
+
+      // Start services
+      const startResult = await controller.start({
+        cwd: this.cwd,
+        verbose: this.verbose,
+        watcherOnly: startWatcher && !startGuardian,
+        guardianOnly: startGuardian && !startWatcher,
+      });
+
+      if (!startResult.ok) {
+        return Err(startResult.error);
+      }
+
+      return Ok({
+        watcherStarted: !!startResult.value.watcherPid || status.watcher.running,
+        guardianStarted: !!startResult.value.guardianPid || status.guardian.running,
+      });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
     }
@@ -605,26 +690,36 @@ export class InitCommand {
   /**
    * Show success summary
    */
-  private showSuccessSummary(platforms: string[], watcherStarted: boolean): void {
+  private showSuccessSummary(
+    platforms: string[],
+    watcherStarted: boolean,
+    guardianStarted: boolean
+  ): void {
     console.log();
     console.log(chalk.green('✅ AETHER initialized successfully!'));
     console.log();
 
-    if (watcherStarted) {
+    if (watcherStarted || guardianStarted) {
       console.log(chalk.cyan("🌌 What's running:"));
-      console.log(chalk.dim('  • AETHER watcher daemon'));
-      console.log(chalk.dim(`  • Monitoring: ${platforms.join(', ')}`));
-      console.log(chalk.dim('  • Capturing conversations every 5 minutes'));
+      if (watcherStarted) {
+        console.log(chalk.dim('  • AETHER Watcher (capturing conversations)'));
+        console.log(chalk.dim(`    Monitoring: ${platforms.join(', ')}`));
+      }
+      if (guardianStarted) {
+        console.log(chalk.dim('  • AETHER Guardian (protecting files)'));
+        console.log(chalk.dim('    Watching: .ai/, .augment/project-overview.md'));
+      }
       console.log();
     }
 
     console.log(chalk.cyan('🎯 Next steps:'));
-    if (watcherStarted) {
+    if (watcherStarted || guardianStarted) {
       console.log(chalk.dim('  • Check status: aether status'));
-      console.log(chalk.dim('  • View logs: aether logs'));
-      console.log(chalk.dim('  • Stop watcher: aether stop'));
+      console.log(chalk.dim('  • Query memory: aether quad-query "<question>"'));
+      console.log(chalk.dim('  • Stop services: aether stop'));
+      console.log(chalk.dim('  • Restart services: aether restart'));
     } else {
-      console.log(chalk.dim('  • Start watcher: aether watch'));
+      console.log(chalk.dim('  • Start services: aether start'));
       console.log(chalk.dim('  • Check status: aether status'));
     }
     console.log();
@@ -873,6 +968,7 @@ export class InitCommand {
         message: 'Manual mode initialized. Use the prompt above to trigger LLM updates.',
         platforms: [llmAnswers.llm],
         watcherStarted: false,
+        guardianStarted: false,
       });
     } catch (error) {
       spinner.fail('Failed to initialize manual mode');
@@ -1033,6 +1129,7 @@ export class InitCommand {
         message: 'Automatic mode initialized. Watcher is running in background.',
         platforms: platformAnswers.platforms,
         watcherStarted: true,
+        guardianStarted: false, // Legacy method doesn't start guardian
       });
     } catch (error) {
       spinner.fail('Failed to initialize automatic mode');
@@ -1555,38 +1652,28 @@ ${platformStatuses}
   }
 
   /**
-   * Start watcher daemon in background
+   * Start watcher daemon in background (legacy method, now uses DaemonController)
+   * @deprecated Use startAetherServices() instead
    */
   private async startWatcherDaemon(): Promise<boolean> {
     try {
-      // Check if daemon is already running BEFORE spawning a new one
-      const daemonManager = new DaemonManager(this.cwd);
-      const statusResult = daemonManager.getStatus();
+      const controller = new DaemonController(this.cwd);
+      const status = controller.getStatus();
 
-      if (statusResult.ok && statusResult.value.running) {
-        // Daemon already running - don't spawn another one!
+      if (status.watcher.running) {
         if (this.verbose) {
-          console.log(
-            chalk.yellow('⚠️  Watcher daemon already running (PID: ' + statusResult.value.pid + ')')
-          );
+          console.log(chalk.yellow(`⚠️  Watcher already running (PID: ${status.watcher.pid})`));
         }
         return true;
       }
 
-      // Spawn aether watch as a detached background process
-      const child = spawn('aether', ['watch'], {
-        detached: true,
-        stdio: 'ignore',
+      const startResult = await controller.start({
         cwd: this.cwd,
+        verbose: this.verbose,
+        watcherOnly: true,
       });
 
-      // Detach the child process so it continues running after parent exits
-      child.unref();
-
-      // Wait a bit to see if it starts successfully
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      return true;
+      return startResult.ok;
     } catch (error) {
       if (this.verbose) {
         console.error(chalk.red('Failed to start watcher:'), error);
