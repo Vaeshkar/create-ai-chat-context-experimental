@@ -159,6 +159,11 @@ export class MemoryFileWriter {
    * Write clean JSON to .lill/raw/ directory (FIXED - NO TRUNCATION)
    * This is the new primary method - outputs structured JSON for AICF-Core watcher to process
    *
+   * Layer 2: Code Guards - Manual validation using PathValidator:
+   * - Pre-validation: Checks if path is allowed for writing (line 185-195)
+   * - Audit logging: Logs violations to .lill/.audit.log
+   * - Blocks write if validation fails
+   *
    * @param conversationId - Conversation ID
    * @param analysis - Analysis result to write
    * @param conversation - Full conversation object with messages and metadata

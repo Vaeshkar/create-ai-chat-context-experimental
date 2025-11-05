@@ -13,6 +13,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, chmodSync } from 'fs';
 import { dirname } from 'path';
+import { ValidateWriteSync } from './decorators.js';
 
 export interface FileIOOptions {
   atomic?: boolean;
@@ -38,7 +39,13 @@ export class FileIOManager {
 
   /**
    * Write content to file with atomic writes and backup support
+   *
+   * Layer 3: Validation Hooks - @ValidateWriteSync decorator provides:
+   * - Pre-validation: Checks if path is allowed for writing
+   * - Post-validation: Verifies file format is valid
+   * - Rollback: Deletes file if post-validation fails
    */
+  @ValidateWriteSync
   writeFile(filePath: string, content: string, options: FileIOOptions = {}): WriteResult {
     const opts = { ...this.defaultOptions, ...options };
 
