@@ -109,6 +109,9 @@ export class DaemonController {
         return Err(new Error(`Watcher already running (PID: ${existingPid})`));
       }
 
+      // Clear stale PID file before starting
+      this.deletePidFile(this.watcherPidFile);
+
       // Build command
       // Check if we're in development mode (using tsx) or production mode (compiled js)
       // __dirname points to either src/utils (dev) or dist/utils (prod)
@@ -184,6 +187,9 @@ export class DaemonController {
         return Err(new Error(`Guardian already running (PID: ${existingPid})`));
       }
 
+      // Clear stale PID file before starting
+      this.deletePidFile(this.guardianPidFile);
+
       // Check if aether-guardian package exists
       const guardianTsPath = join(this.cwd, 'packages', 'aether-guardian', 'src', 'cli.ts');
       const guardianJsPath = join(this.cwd, 'packages', 'aether-guardian', 'dist', 'cli.js');
@@ -225,16 +231,16 @@ export class DaemonController {
       // Unref so parent can exit
       child.unref();
 
-      // Save PID
-      this.writePidFile(this.guardianPidFile, child.pid!);
-
-      // Wait a moment to ensure it started
-      await this.sleep(1000);
+      // Wait a moment to ensure it started (and passed its own PID check)
+      await this.sleep(2000);
 
       // Verify it's still running
       if (!this.isProcessRunning(child.pid!)) {
         return Err(new Error('Guardian failed to start'));
       }
+
+      // Save PID (after Guardian has started and passed its own checks)
+      this.writePidFile(this.guardianPidFile, child.pid!);
 
       return Ok(child.pid!);
     } catch (error) {
