@@ -126,9 +126,9 @@ export class QuadIndexStatsCommand {
 
       // Step 5: Output results
       if (options.json) {
-        this.outputJson(statsResult.data as any, health, lockStats);
+        this.outputJson(statsResult.data, health, lockStats);
       } else {
-        this.outputHuman(statsResult.data as any, health, lockStats, options);
+        this.outputHuman(statsResult.data, health, lockStats, options);
       }
     } catch (error) {
       if (options.json) {

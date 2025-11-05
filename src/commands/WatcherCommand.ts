@@ -164,7 +164,7 @@ export class WatcherCommand {
 
         // Implicit validation: Auto-validate principles with high usage
         // If usage_count >= 5 and confidence >= 0.8, auto-validate
-        const usageCount = (fullPrinciple as any).usage_count;
+        const usageCount = fullPrinciple.usage_count;
         if (usageCount && usageCount >= 5) {
           if (
             fullPrinciple.confidence >= 0.8 &&
