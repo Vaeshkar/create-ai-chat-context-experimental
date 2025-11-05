@@ -25,6 +25,7 @@ Complete reference for all `create-ai-chat-context` commands.
     - [context](#context)
     - [convert](#convert)
     - [install-hooks](#install-hooks)
+    - [platform-config](#platform-config)
     - [checkpoint](#checkpoint)
     - [memory-decay](#memory-decay)
     - [finish](#finish)
@@ -88,6 +89,7 @@ npx aic monitor                           # Check token usage & recommendations
 # Maintenance
 npx aic export --format md                # Export knowledge base
 npx aic install-hooks                     # Install Git hooks
+npx aic platform-config                   # Generate platform-specific configs
 npx aic check                             # Quick health check
 ```
 
@@ -1092,6 +1094,79 @@ Recent changes:
 
 ---
 
+### platform-config
+
+Generate platform-specific configuration files for different AI assistants.
+
+**Syntax:**
+
+```bash
+npx aic platform-config [options]
+```
+
+**Options:**
+
+- `-p, --platforms <platforms...>` - Platforms to configure (augment, cursor, claude, warp, all)
+- `-f, --force` - Overwrite existing configuration files
+- `-v, --verbose` - Show detailed output
+
+**Examples:**
+
+```bash
+# Interactive platform selection
+npx aic platform-config
+
+# Generate Cursor configuration
+npx aic platform-config --platforms cursor
+
+# Generate all platform configurations
+npx aic platform-config --platforms all
+
+# Force overwrite existing configs
+npx aic platform-config --platforms all --force
+```
+
+**What it does:**
+
+1. **Creates platform-specific config files** - Tailored for each AI platform
+2. **Ensures consistent rule loading** - All platforms get the same core rules
+3. **Provides setup instructions** - Shows next steps for each platform
+
+**Generated files:**
+
+- **Augment:** `.augment/rules/always-load-context.md` (auto-loaded)
+- **Cursor:** `.cursorrules` (restart Cursor to load)
+- **Claude:** `claude-project-instructions.md` (copy to Claude Project)
+- **Warp:** `.ai-instructions` (auto-loaded by Warp AI)
+
+**Example Output:**
+
+```
+🚀 Generating Platform-Specific Configuration Files
+
+✔ Generated cursor configuration
+✔ Generated augment configuration
+
+🎉 Platform Configurations Generated Successfully!
+
+📋 Files created:
+   ✅ cursor: .cursorrules
+   ✅ augment: .augment/rules/always-load-context.md
+
+💡 Next steps:
+   • cursor: Restart Cursor to load new rules
+   • augment: File auto-loaded by Augment
+```
+
+**When to use:**
+
+- Setting up AI assistants for the first time
+- Want consistent behavior across different AI platforms
+- Need to ensure all AIs follow project rules
+- Onboarding new team members with different AI preferences
+
+---
+
 **🚀 v1.0.3 BREAKTHROUGH!** Real-time memory preservation - Every AI response triggers automatic checkpointing with zero API costs.
 
 > **Architecture Evolution:** v1.0.2 used 20k token batches, v1.0.3 processes every response in real-time. No more lost conversations!
@@ -1449,8 +1524,8 @@ npx aic check
 # During work: Search for context
 npx aic search "authentication"
 
-# After AI chat: Ask AI to update files
-# "Can you update the .ai files with what we accomplished?"
+# End of AI session: Finish properly
+npx aic finish  # Updates conversation log & commits changes
 
 # End of day: Check token usage
 npx aic stats
@@ -1482,12 +1557,12 @@ npx aic init
 # Configure
 npx aic config set preferredModel "Claude Sonnet 4.5"
 
-# Set up AI integration
-npx aic cursor          # If using Cursor
-npx aic copilot         # If using GitHub Copilot
-npx aic claude-project  # If using Claude Projects
+# Set up AI platform configurations
+npx aic platform-config  # Interactive platform selection
+# OR specific platforms:
+# npx aic platform-config --platforms cursor,claude,augment
 
-# Install Git hooks
+# Install Git hooks for session reminders
 npx aic install-hooks
 
 # Verify setup

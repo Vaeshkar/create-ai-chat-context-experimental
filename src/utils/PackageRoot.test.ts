@@ -63,9 +63,11 @@ describe('PackageRoot', () => {
       expect(templatesDir.length).toBeGreaterThan(0);
     });
 
-    it('should return a path ending with dist/templates', () => {
+    it('should return a path ending with dist/templates or templates', () => {
       const templatesDir = getTemplatesDir();
-      expect(templatesDir.endsWith('dist/templates')).toBe(true);
+      const endsWithDistTemplates = templatesDir.endsWith('dist/templates');
+      const endsWithTemplates = templatesDir.endsWith('templates');
+      expect(endsWithDistTemplates || endsWithTemplates).toBe(true);
     });
 
     it('should return a path relative to package root', () => {

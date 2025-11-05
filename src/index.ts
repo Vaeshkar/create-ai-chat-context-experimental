@@ -134,6 +134,10 @@ export { FileIOManager } from './utils/FileIOManager.js';
 export { FileValidator } from './utils/FileValidator.js';
 export * from './utils/FileSystemUtils.js';
 
+// Path validation and audit logging (Layer 2: Code Guards)
+export { PathValidator } from './utils/PathValidator.js';
+export { AuditLogger } from './utils/AuditLogger.js';
+
 // Logging utilities
 export * from './utils/Logger.js';
 export { WatcherLogger } from './utils/WatcherLogger.js';

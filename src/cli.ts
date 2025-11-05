@@ -35,6 +35,9 @@ import { QuadIndexQueryCommand } from './commands/QuadIndexQueryCommand.js';
 import { QuadIndexStatsCommand } from './commands/QuadIndexStatsCommand.js';
 import { ValidateCommand } from './commands/ValidateCommand.js';
 import { AuditCommand } from './commands/AuditCommand.js';
+import { FinishCommand } from './commands/FinishCommand.js';
+import { InstallHooksCommand } from './commands/InstallHooksCommand.js';
+import { PlatformConfigCommand } from './commands/PlatformConfigCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -774,6 +777,111 @@ program
         report: options.report,
         json: options.json,
       });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Finish command
+program
+  .command('finish')
+  .description('Complete AI session and prepare handoff')
+  .option('-t, --topic <topic>', 'Session topic')
+  .option('-w, --what <what>', 'What was accomplished')
+  .option('-y, --why <why>', 'Why this work was done')
+  .option('-o, --outcome <outcome>', 'Session outcome')
+  .option('--aicf', 'Migrate to AICF 3.0 format')
+  .option('--no-commit', 'Skip git commit')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const finishCmd = new FinishCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+      });
+
+      const result = await finishCmd.execute({
+        topic: options.topic,
+        what: options.what,
+        why: options.why,
+        outcome: options.outcome,
+        aicf: options.aicf,
+        noCommit: options.noCommit,
+        verbose: options.verbose,
+      });
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
+
+      // Show handoff text at the end
+      console.log(chalk.green('💡 Copy the handoff text above for your next AI chat!'));
+      console.log();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Install hooks command
+program
+  .command('install-hooks')
+  .description('Install git hooks for session end reminders')
+  .option('-f, --force', 'Overwrite existing hooks')
+  .option('--no-backup', 'Skip creating backups of existing hooks')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const installHooksCmd = new InstallHooksCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+      });
+
+      const result = await installHooksCmd.execute({
+        force: options.force,
+        backup: options.backup,
+        verbose: options.verbose,
+      });
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Platform config command
+program
+  .command('platform-config')
+  .description('Generate platform-specific configuration files')
+  .option(
+    '-p, --platforms <platforms...>',
+    'Platforms to configure (augment, cursor, claude, warp, all)'
+  )
+  .option('-f, --force', 'Overwrite existing configuration files')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const platformConfigCmd = new PlatformConfigCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+      });
+
+      const result = await platformConfigCmd.execute({
+        platforms: options.platforms,
+        force: options.force,
+        verbose: options.verbose,
+      });
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

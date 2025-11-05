@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# Pre-commit hook for AETHER projects
+# Phase 4: User Experience - Session End Reminders
+#
+# This hook gently reminds users to update .ai/conversation-log.md
+# if they haven't updated it today and are committing changes.
+#
+# Based on LLM-ENFORCE-RULES-DESIGN.md - Approach A: Git Hook (Gentle Reminder)
+
+# Colors for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Check if .ai/conversation-log.md exists
+CONVERSATION_LOG=".ai/conversation-log.md"
+
+if [ ! -f "$CONVERSATION_LOG" ]; then
+    echo -e "${YELLOW}⚠️  No conversation log found at $CONVERSATION_LOG${NC}"
+    echo -e "${CYAN}💡 Consider running: aether init${NC}"
+    echo ""
+    echo -e "${YELLOW}❓ Continue commit anyway? (y/N)${NC}"
+    read -r response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        echo -e "${RED}❌ Commit cancelled${NC}"
+        exit 1
+    fi
+    exit 0
+fi
+
+# Get last modification date of conversation log
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    LAST_UPDATE=$(stat -f %Sm -t %Y-%m-%d "$CONVERSATION_LOG" 2>/dev/null)
+else
+    # Linux
+    LAST_UPDATE=$(stat -c %y "$CONVERSATION_LOG" 2>/dev/null | cut -d' ' -f1)
+fi
+
+# Get today's date
+TODAY=$(date +%Y-%m-%d)
+
+# Check if conversation log was updated today
+if [ "$LAST_UPDATE" != "$TODAY" ]; then
+    echo ""
+    echo -e "${YELLOW}⚠️  Conversation log not updated today${NC}"
+    echo -e "${CYAN}   Last updated: $LAST_UPDATE${NC}"
+    echo -e "${CYAN}   Today: $TODAY${NC}"
+    echo ""
+    echo -e "${CYAN}💡 Consider updating your session notes:${NC}"
+    echo -e "${CYAN}   aether finish${NC}"
+    echo -e "${CYAN}   # or manually update $CONVERSATION_LOG${NC}"
+    echo ""
+    echo -e "${YELLOW}❓ Continue commit without updating conversation log? (y/N)${NC}"
+    read -r response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        echo ""
+        echo -e "${GREEN}✅ Good choice! Update your session notes first.${NC}"
+        echo -e "${CYAN}💡 Run: aether finish${NC}"
+        echo ""
+        exit 1
+    fi
+    echo ""
+    echo -e "${YELLOW}⚠️  Proceeding without conversation log update...${NC}"
+    echo ""
+fi
+
+# If we get here, either the log was updated today or user chose to proceed
+echo -e "${GREEN}✅ Pre-commit checks passed${NC}"
+exit 0

@@ -1,0 +1,96 @@
+# Cursor AI Rules for AETHER Project
+
+## 🧠 Context Loading (CRITICAL)
+
+Before providing assistance, you MUST:
+
+1. **Read .ai-instructions** - Universal entry point for all AI assistants
+2. **Query .ai/rules/ directory** - Read all rule files for project-specific guidelines
+3. **Check .ai/conversation-log.md** - Understand recent work and decisions
+4. **Review .lill/snapshots/** - Check for recent principles and insights (if available)
+
+## 📋 Project Overview
+
+This is the **AETHER** project - a Distributed AI Memory System with automatic learning capabilities.
+
+**Current Phase:** Phase 6 - Complete Pipeline ✅
+**Architecture:** Monorepo with submodules (aice, aicf-core, lill-core, lill-meta)
+
+## 🚫 Critical Rules
+
+### **NEVER modify these files automatically:**
+- `.ai/code-style.md`
+- `.ai/design-system.md` 
+- `.ai/npm-publishing-checklist.md`
+- `.ai/Testing-philosophy.md`
+- `.ai/conversation-log.md`
+
+**Why:** These are manual documentation files, not auto-generated logs.
+
+### **ALWAYS write to these locations:**
+- `.lill/raw/` - For conversation data and extracted principles
+- `.lill/snapshots/` - For QuadIndex snapshots (automatic)
+- `.cache/llm/` - For platform-specific cache data
+
+## 🔧 Development Guidelines
+
+### **Package Management**
+- Use package managers (npm, pnpm) instead of manually editing package.json
+- Respect submodule structure - commit to submodules first, then update parent
+
+### **Code Style**
+- TypeScript strict mode enabled
+- Use Result<T> type for error handling (no throwing errors)
+- Follow established patterns in existing commands
+
+### **Testing**
+- Write tests for new functionality
+- Run tests before committing: `npm test`
+- Use the existing test patterns and utilities
+
+## 🏁 Session Management
+
+### **At End of Session:**
+1. Run `aether finish` to update conversation log
+2. Or manually update `.ai/conversation-log.md` with session summary
+3. Commit changes with meaningful commit messages
+
+### **Before Major Changes:**
+1. Check if watcher is running: `aether status`
+2. Start watcher if needed: `aether watch`
+3. Review recent principles: `aether query "recent insights"`
+
+## 🎯 Success Criteria
+
+You're following the rules correctly when:
+- ✅ You read project context before responding
+- ✅ You never modify protected `.ai/` files automatically
+- ✅ You use proper package managers for dependencies
+- ✅ You write tests for new functionality
+- ✅ You update session notes at the end
+
+## 💡 Quick Commands
+
+```bash
+# Initialize project
+aether init
+
+# Start memory watcher
+aether watch
+
+# Finish session properly
+aether finish
+
+# Install git hooks for reminders
+aether install-hooks
+
+# Check system status
+aether status
+
+# Query principles
+aether query "your question here"
+```
+
+---
+
+**Remember: This is an experimental AI memory system. Every conversation contributes to the collective intelligence!** 🚀

@@ -7,11 +7,11 @@
 /**
  * GuardRails - Centralized rule enforcement
  * Phase 3 (Week 3) - Prevention
- * 
+ *
  * Layer 2: Code Guards (TypeScript)
  * Purpose: Deterministic enforcement at code level
  * Reliability: 95%
- * 
+ *
  * This class provides centralized rule enforcement for all file operations.
  * It works alongside PathValidator but provides a higher-level API for
  * operation-level validation (read, write, delete).
@@ -68,22 +68,17 @@ export class GuardRails {
     // For write operations, use PathValidator
     if (operation === 'write') {
       const result = PathValidator.validateWrite(path, content);
-      
+
       // Log to audit
       if (GuardRails.auditLogger) {
         if (result.ok) {
           await GuardRails.auditLogger.logCompliance('all-rules', path, operation);
         } else {
           const rule = PathValidator.getBlockingRule(path) || 'unknown';
-          await GuardRails.auditLogger.logViolation(
-            rule,
-            path,
-            operation,
-            result.error.message
-          );
+          await GuardRails.auditLogger.logViolation(rule, path, operation, result.error.message);
         }
       }
-      
+
       return result;
     }
 
@@ -104,12 +99,7 @@ export class GuardRails {
 
         // Log violation
         if (GuardRails.auditLogger) {
-          await GuardRails.auditLogger.logViolation(
-            rule.name,
-            path,
-            operation,
-            errorMessage
-          );
+          await GuardRails.auditLogger.logViolation(rule.name, path, operation, errorMessage);
         }
 
         return Err(new Error(errorMessage));
@@ -183,4 +173,3 @@ export class GuardRails {
     return result.ok;
   }
 }
-

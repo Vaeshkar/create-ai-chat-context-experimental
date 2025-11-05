@@ -4,10 +4,10 @@
  * See LICENSE file for details.
  */
 
-import fs from 'fs-extra';
-import path from 'path';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import chalk from 'chalk';
-import readline from 'readline';
+import * as readline from 'readline';
 
 /**
  * Get the next chat number from conversation log

@@ -164,8 +164,8 @@ describe('PathValidator', () => {
   describe('getProtectedPaths', () => {
     it('should return array of protected paths', () => {
       const paths = PathValidator.getProtectedPaths();
-      expect(paths).toContain('.ai/');
-      expect(paths).toContain('.ai/code-style.md');
+      expect(paths).toContain('.ai/**/*'); // Glob pattern for all .ai/ files
+      expect(paths).toContain('.augment/project-overview.md');
       expect(paths.length).toBeGreaterThan(0);
     });
   });

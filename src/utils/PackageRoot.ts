@@ -126,13 +126,22 @@ export function getPackageRoot(): string {
 /**
  * Get the templates directory
  *
- * Templates are at: dist/templates/ relative to package root
+ * Templates are at: dist/templates/ (built) or templates/ (source) relative to package root
  *
  * @returns Absolute path to templates directory
  */
 export function getTemplatesDir(): string {
   const packageRoot = getPackageRoot();
-  return join(packageRoot, 'dist', 'templates');
+
+  // Try dist/templates first (built version)
+  const distTemplatesDir = join(packageRoot, 'dist', 'templates');
+  if (existsSync(distTemplatesDir)) {
+    return distTemplatesDir;
+  }
+
+  // Fall back to templates (source version)
+  const sourceTemplatesDir = join(packageRoot, 'templates');
+  return sourceTemplatesDir;
 }
 
 /**

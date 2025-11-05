@@ -36,25 +36,96 @@ interface ValidationRule {
  * 1. protected-ai-files: Never write to .ai/ directory
  * 2. lill-format-only: Only AICF/JSON formats in .lill/
  * 3. no-root-clutter: Don't write data files to project root
+ *
+ * Supports glob patterns:
+ * - * matches any characters except /
+ * - ** matches any characters including /
+ * - ? matches exactly one character except /
+ *
+ * Examples:
+ * - .ai/**\/* matches .ai/file.md and .ai/dir/file.md
+ * - .ai/*.md matches .ai/file.md but not .ai/dir/file.md
  */
 export class PathValidator {
   /**
    * Protected paths that should never be written to automatically
+   * Supports glob patterns
    */
   private static readonly PROTECTED_PATHS = [
-    '.ai/',
-    '.ai/code-style.md',
-    '.ai/design-system.md',
-    '.ai/npm-publishing-checklist.md',
-    '.ai/Testing-philosophy.md',
-    '.ai/conversation-log.md',
-    '.ai/project-security.md',
+    '.ai/*', // All files directly in .ai/ directory
+    '.ai/**/*', // All files in .ai/ subdirectories (recursive)
+    '.augment/project-overview.md', // Auto-generated, don't manually edit
   ];
+
+  /**
+   * Compiled regex patterns for protected paths (cached)
+   */
+  private static protectedPatterns: RegExp[] | null = null;
 
   /**
    * Allowed file extensions in .lill/ directory
    */
   private static readonly LILL_ALLOWED_EXTENSIONS = ['.aicf', '.json', '.log', '.pid'];
+
+  /**
+   * Convert glob pattern to regex
+   * Supports: *, **, ?
+   *
+   * Algorithm:
+   * 1. Replace glob wildcards with unique placeholders (before escaping)
+   * 2. Escape special regex characters
+   * 3. Convert placeholders to regex patterns
+   * 4. Anchor the pattern
+   *
+   * @param pattern - Glob pattern (e.g., ".ai/**\/*")
+   * @returns RegExp that matches the pattern
+   */
+  private static globToRegex(pattern: string): RegExp {
+    // First, handle glob wildcards (before escaping)
+    // Use unique placeholders that won't conflict with escaped chars
+    let regex = pattern
+      .replace(/\*\*\//g, '§GLOBSTAR_SLASH§') // **/ matches zero or more directories
+      .replace(/\*\*/g, '§GLOBSTAR§') // ** matches anything
+      .replace(/\*/g, '§STAR§') // * matches anything except /
+      .replace(/\?/g, '§QUESTION§'); // ? matches single char except /
+
+    // Now escape special regex characters
+    regex = regex
+      .replace(/\./g, '\\.') // Escape dots
+      .replace(/\+/g, '\\+') // Escape plus
+      .replace(/\^/g, '\\^') // Escape caret
+      .replace(/\$/g, '\\$') // Escape dollar
+      .replace(/\(/g, '\\(') // Escape parens
+      .replace(/\)/g, '\\)')
+      .replace(/\[/g, '\\[') // Escape brackets
+      .replace(/\]/g, '\\]')
+      .replace(/\{/g, '\\{') // Escape braces
+      .replace(/\}/g, '\\}')
+      .replace(/\|/g, '\\|'); // Escape pipe
+
+    // Convert placeholders to regex patterns
+    regex = regex
+      .replace(/§GLOBSTAR_SLASH§/g, '(?:.*/)?') // **/ matches zero or more directories (optional)
+      .replace(/§GLOBSTAR§/g, '.*') // ** matches anything including /
+      .replace(/§STAR§/g, '[^/]*') // * matches anything except /
+      .replace(/§QUESTION§/g, '[^/]'); // ? matches single char except /
+
+    // Match pattern anywhere in the path (not anchored to start)
+    // This allows matching .ai/test.md in paths like /tmp/.test-decorators/.ai/test.md
+    return new RegExp(`(^|/)${regex}$`);
+  }
+
+  /**
+   * Get compiled regex patterns for protected paths (lazy initialization)
+   */
+  private static getProtectedPatterns(): RegExp[] {
+    if (!PathValidator.protectedPatterns) {
+      PathValidator.protectedPatterns = PathValidator.PROTECTED_PATHS.map((p) =>
+        PathValidator.globToRegex(p)
+      );
+    }
+    return PathValidator.protectedPatterns;
+  }
 
   /**
    * Validation rules
@@ -64,11 +135,9 @@ export class PathValidator {
       name: 'protected-ai-files',
       check: (path: string) => {
         const normalizedPath = normalize(path);
-        return !PathValidator.PROTECTED_PATHS.some(
-          (protectedPath) =>
-            normalizedPath.includes(normalize(protectedPath)) ||
-            normalizedPath.startsWith(normalize(protectedPath))
-        );
+        const patterns = PathValidator.getProtectedPatterns();
+        // Check if path matches any protected pattern (using glob matching)
+        return !patterns.some((pattern) => pattern.test(normalizedPath));
       },
       error: 'Cannot write to protected .ai/ directory',
       ruleDoc: '.augment/rules/protected-ai-files.md',
@@ -160,17 +229,14 @@ export class PathValidator {
   }
 
   /**
-   * Check if a path is protected
+   * Check if a path is protected (using glob pattern matching)
    * @param path - File path to check
    * @returns true if path is protected
    */
   static isProtected(path: string): boolean {
     const normalizedPath = normalize(path);
-    return PathValidator.PROTECTED_PATHS.some(
-      (protectedPath) =>
-        normalizedPath.includes(normalize(protectedPath)) ||
-        normalizedPath.startsWith(normalize(protectedPath))
-    );
+    const patterns = PathValidator.getProtectedPatterns();
+    return patterns.some((pattern) => pattern.test(normalizedPath));
   }
 
   /**
@@ -201,5 +267,23 @@ export class PathValidator {
    */
   static getLillAllowedExtensions(): string[] {
     return [...PathValidator.LILL_ALLOWED_EXTENSIONS];
+  }
+
+  /**
+   * Get the violated rule message for a path (Guardian compatibility)
+   * @param filePath - File path to check
+   * @returns Human-readable rule violation message
+   */
+  static getViolatedRule(filePath: string): string {
+    if (filePath.includes('.ai/')) {
+      return 'Protected .ai/ folder - manual edits only';
+    }
+    if (filePath.includes('.augment/project-overview.md')) {
+      return 'Auto-generated file - do not manually edit';
+    }
+    if (filePath.includes('.aether-health.json')) {
+      return 'System health file - automated updates only';
+    }
+    return 'Protected file';
   }
 }

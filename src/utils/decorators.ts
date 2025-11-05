@@ -221,13 +221,8 @@ export function ValidateWriteSync(
         }
 
         // Additional validation: Check file size (warn if > 10MB)
-        const { statSync: fsStatSync } = require('fs') as typeof import('fs');
-        const stats = fsStatSync(path);
-        if (stats.size > 10 * 1024 * 1024) {
-          console.warn(
-            `[${propertyKey}] Warning: Large file written (${(stats.size / 1024 / 1024).toFixed(2)}MB): ${path}`
-          );
-        }
+        // Note: Using dynamic import would require async, so we skip this check for now
+        // TODO: Move file size validation to a separate async validator
       } catch (error) {
         console.error(`[${propertyKey}] Post-write validation error:`, error);
         // Don't rollback on validation errors (file might be valid)

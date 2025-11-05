@@ -1,0 +1,95 @@
+# Warp AI Instructions for AETHER Project
+
+## 🧠 Context Loading Protocol
+
+**CRITICAL: Read these files before every response:**
+
+1. `.ai-instructions` - Universal AI entry point
+2. `.ai/conversation-log.md` - Recent work and decisions
+3. `.ai/rules/` - All project-specific rules
+4. `.lill/snapshots/` - Latest principles (if available)
+
+## 📋 Project Overview
+
+**AETHER** - Distributed AI Memory System with automatic learning
+
+**Current Status:**
+- Phase 6: Complete Pipeline ✅
+- Architecture: Monorepo with submodules
+- Memory System: LILL-MQ (QuadIndex) with 4 stores
+
+## 🚫 Critical Rules
+
+### **Protected Files (Never Auto-Modify):**
+- `.ai/code-style.md`
+- `.ai/design-system.md`
+- `.ai/npm-publishing-checklist.md`
+- `.ai/Testing-philosophy.md`
+- `.ai/conversation-log.md`
+
+### **Auto-Generated Data Locations:**
+- `.lill/raw/` - Conversation data
+- `.lill/snapshots/` - QuadIndex snapshots
+- `.cache/llm/` - Platform cache
+
+## 🔧 Development Guidelines
+
+### **Code Standards:**
+- TypeScript strict mode
+- Result<T> error handling (no throwing)
+- Package managers only (no manual package.json edits)
+- Test-driven development
+
+### **Submodule Workflow:**
+1. Make changes in submodule directory
+2. Commit to submodule first
+3. Update parent repo reference
+4. Commit parent repo
+
+## 🏁 Session End Requirements
+
+**Before ending conversation:**
+
+1. **Update session notes:**
+   ```bash
+   aether finish
+   ```
+
+2. **Ensure memory system is active:**
+   ```bash
+   aether status
+   aether watch  # if needed
+   ```
+
+3. **Commit with meaningful messages**
+
+## 💡 Quick Reference
+
+```bash
+# Setup
+aether init              # Initialize project
+aether install-hooks     # Install git reminders
+
+# Memory System
+aether watch            # Start continuous learning
+aether query "text"     # Search principles
+aether status           # Check health
+
+# Development
+npm test               # Run tests
+npm run build          # Build packages
+aether finish          # End session properly
+```
+
+## 🎯 Success Criteria
+
+You're following protocols when:
+- ✅ Read project context before responding
+- ✅ Never modify protected `.ai/` files
+- ✅ Use proper package management
+- ✅ Write tests for new code
+- ✅ Update session notes at end
+
+---
+
+**This is an experimental AI memory system. Every interaction contributes to collective intelligence!** 🚀

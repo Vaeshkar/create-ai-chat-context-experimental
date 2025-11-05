@@ -15,3 +15,5 @@ export * from './TimestampUtils.js';
 export * from './FileSystemUtils.js';
 export * from './ErrorUtils.js';
 export * from './ValidationUtils.js';
+export * from './PathValidator.js';
+export * from './AuditLogger.js';
