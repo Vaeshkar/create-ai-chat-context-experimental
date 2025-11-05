@@ -180,7 +180,7 @@ describe('CacheConsolidationAgent', () => {
         '.test-tmp',
         `cache-consolidation-test-dir-${Date.now()}`
       );
-      const aicfDir = join(newTestDir, '.aicf');
+      const aicfDir = join(newTestDir, '.lill');
 
       // Verify directory doesn't exist before we do anything
       expect(existsSync(newTestDir)).toBe(false);

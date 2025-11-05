@@ -69,6 +69,9 @@ describe('Phase 4 Integration Tests', () => {
         llm: 'augment',
       });
 
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
+
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
     });
@@ -82,7 +85,7 @@ describe('Phase 4 Integration Tests', () => {
         expect(result.ok).toBe(true);
         expect(result.value.mode).toBe('manual');
         expect(existsSync(join(testDir, '.ai'))).toBe(true);
-        expect(existsSync(join(testDir, '.aicf'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill'))).toBe(true);
       } finally {
         cleanupTestDir(testDir);
       }
@@ -96,7 +99,7 @@ describe('Phase 4 Integration Tests', () => {
 
         // Verify directory structure
         expect(existsSync(join(testDir, '.ai'))).toBe(true);
-        expect(existsSync(join(testDir, '.aicf'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill'))).toBe(true);
 
         // Manual mode doesn't create .gitignore (that's handled by create-ai-chat-context)
         // But automatic mode should
@@ -110,7 +113,25 @@ describe('Phase 4 Integration Tests', () => {
     beforeEach(() => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
+        shouldImport: false,
+        shouldStart: false,
       });
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
+
+      // Mock platform detection
+      vi.spyOn(InitCommand.prototype as any, 'showDetectionResults').mockImplementation(() => {});
+      vi.spyOn(InitCommand.prototype as any, 'askPlatformSelection').mockResolvedValue(['augment']);
+
+      // Mock API key handling
+      vi.spyOn(InitCommand.prototype as any, 'handleApiKey').mockResolvedValue({ ok: true });
+
+      // Mock initial import
+      vi.spyOn(InitCommand.prototype as any, 'askInitialImport').mockResolvedValue(false);
+
+      // Mock watcher start
+      vi.spyOn(InitCommand.prototype as any, 'askStartWatcher').mockResolvedValue(false);
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
@@ -138,10 +159,10 @@ describe('Phase 4 Integration Tests', () => {
 
         // Verify all files exist
         expect(existsSync(join(testDir, '.ai'))).toBe(true);
-        expect(existsSync(join(testDir, '.aicf'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill'))).toBe(true);
         expect(existsSync(join(testDir, '.cache', 'llm'))).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', '.permissions.aicf'))).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', '.watcher-config.json'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill', '.permissions.aicf'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill', '.watcher-config.json'))).toBe(true);
         expect(existsSync(join(testDir, '.gitignore'))).toBe(true);
       } finally {
         cleanupTestDir(testDir);
@@ -245,7 +266,7 @@ describe('Phase 4 Integration Tests', () => {
         expect(loadResult.ok).toBe(true);
 
         // Verify permissions file has audit entries
-        const permFile = readFileSync(join(testDir, '.aicf', '.permissions.aicf'), 'utf-8');
+        const permFile = readFileSync(join(testDir, '.lill', '.permissions.aicf'), 'utf-8');
         expect(permFile).toContain('@AUDIT');
       } finally {
         cleanupTestDir(testDir);

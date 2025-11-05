@@ -20,7 +20,7 @@ describe('PermissionManager', () => {
 
   beforeEach(() => {
     testDir = join(process.cwd(), '.test-permissions');
-    mkdirSync(join(testDir, '.aicf'), { recursive: true });
+    mkdirSync(join(testDir, '.lill'), { recursive: true });
     manager = new PermissionManager(testDir);
   });
 
@@ -39,7 +39,7 @@ describe('PermissionManager', () => {
 
     it('should load permissions from file', async () => {
       // Create a permissions file
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 @PLATFORM|name=warp|status=inactive|consent=pending|timestamp=2025-10-22T10:00:00Z
@@ -56,7 +56,7 @@ describe('PermissionManager', () => {
 
   describe('getPermission', () => {
     beforeEach(async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 @PLATFORM|name=warp|status=inactive|consent=pending|timestamp=2025-10-22T10:00:00Z
@@ -88,7 +88,7 @@ describe('PermissionManager', () => {
 
   describe('isEnabled', () => {
     beforeEach(async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 @PLATFORM|name=warp|status=inactive|consent=pending|timestamp=2025-10-22T10:00:00Z
@@ -112,7 +112,7 @@ describe('PermissionManager', () => {
 
   describe('grantPermission', () => {
     beforeEach(async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 `;
@@ -142,7 +142,7 @@ describe('PermissionManager', () => {
     it('should save permissions to file', async () => {
       await manager.grantPermission('warp', 'explicit');
 
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = readFileSync(permissionsFile, 'utf-8');
       expect(content).toContain('warp');
       expect(content).toContain('active');
@@ -159,7 +159,7 @@ describe('PermissionManager', () => {
 
   describe('revokePermission', () => {
     beforeEach(async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 `;
@@ -180,7 +180,7 @@ describe('PermissionManager', () => {
     it('should save revoked status to file', async () => {
       await manager.revokePermission('augment');
 
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = readFileSync(permissionsFile, 'utf-8');
       expect(content).toContain('revoked');
     });
@@ -193,7 +193,7 @@ describe('PermissionManager', () => {
 
   describe('logAudit', () => {
     beforeEach(async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 `;
@@ -216,7 +216,7 @@ describe('PermissionManager', () => {
       await manager.logAudit('test_event', 'test_user', 'test_action', 'augment', 'test details');
       await manager.logAudit('another_event', 'another_user', 'another_action');
 
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = readFileSync(permissionsFile, 'utf-8');
       expect(content).toContain('@AUDIT');
       expect(content).toContain('test_event');
@@ -226,7 +226,7 @@ describe('PermissionManager', () => {
 
   describe('AICF format parsing', () => {
     it('should parse platform with revokedAt', async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=revoked|consent=explicit|timestamp=2025-10-22T10:00:00Z|revokedAt=2025-10-22T11:00:00Z
 `;
@@ -239,7 +239,7 @@ describe('PermissionManager', () => {
     });
 
     it('should parse audit entries with all fields', async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @AUDIT|event=permission_granted|timestamp=2025-10-22T10:00:00Z|user=system|action=granted_explicit_consent|platform=augment|details=test_details
 `;
@@ -256,7 +256,7 @@ describe('PermissionManager', () => {
 
   describe('integration', () => {
     it('should handle full workflow: grant, check, revoke', async () => {
-      const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+      const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
       const content = `@PERMISSIONS|version=1.0|format=aicf
 @PLATFORM|name=augment|status=active|consent=implicit|timestamp=2025-10-22T10:00:00Z
 `;

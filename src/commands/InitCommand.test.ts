@@ -71,6 +71,9 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
     it('should initialize in manual mode', async () => {
@@ -161,6 +164,9 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
     it('should create .ai directory', async () => {
@@ -183,7 +189,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill'))).toBe(true);
       } finally {
         cleanupTestDir(testDir);
       }
@@ -212,6 +218,9 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
     it('should create .cache/llm directory', async () => {
@@ -247,7 +256,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill'))).toBe(true);
       } finally {
         cleanupTestDir(testDir);
       }
@@ -260,7 +269,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+        const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
         expect(existsSync(permissionsFile)).toBe(true);
 
         const content = readFileSync(permissionsFile, 'utf-8');
@@ -278,7 +287,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const configFile = join(testDir, '.aicf', '.watcher-config.json');
+        const configFile = join(testDir, '.lill', '.watcher-config.json');
         expect(existsSync(configFile)).toBe(true);
 
         const content = readFileSync(configFile, 'utf-8');
@@ -357,7 +366,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const configFile = join(testDir, '.aicf', '.watcher-config.json');
+        const configFile = join(testDir, '.lill', '.watcher-config.json');
         const content = readFileSync(configFile, 'utf-8');
         const config = JSON.parse(content);
         expect(config.platforms.augment.enabled).toBe(true);
@@ -373,7 +382,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const configFile = join(testDir, '.aicf', '.watcher-config.json');
+        const configFile = join(testDir, '.lill', '.watcher-config.json');
         const content = readFileSync(configFile, 'utf-8');
         const config = JSON.parse(content);
         expect(config.platforms.warp.enabled).toBe(false);
@@ -391,7 +400,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const configFile = join(testDir, '.aicf', '.watcher-config.json');
+        const configFile = join(testDir, '.lill', '.watcher-config.json');
         const content = readFileSync(configFile, 'utf-8');
         const config = JSON.parse(content);
         expect(config.platforms.augment.cachePath).toBe('.cache/llm/augment');
@@ -412,6 +421,9 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
     it('should have correct AICF format', async () => {
@@ -424,7 +436,7 @@ describe('InitCommand', () => {
           console.error('Init failed:', result.error.message);
         }
         expect(result.ok).toBe(true);
-        const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+        const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
         const content = readFileSync(permissionsFile, 'utf-8');
 
         expect(content).toContain('@PERMISSIONS|version=1.0|format=aicf');
@@ -445,7 +457,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+        const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
         const content = readFileSync(permissionsFile, 'utf-8');
 
         expect(content).toContain('name=augment|status=active');
@@ -461,7 +473,7 @@ describe('InitCommand', () => {
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        const permissionsFile = join(testDir, '.aicf', '.permissions.aicf');
+        const permissionsFile = join(testDir, '.lill', '.permissions.aicf');
         const content = readFileSync(permissionsFile, 'utf-8');
 
         expect(content).toContain('name=warp|status=inactive');
@@ -481,6 +493,9 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
     it('should handle invalid cwd gracefully', async () => {
@@ -499,6 +514,9 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
     it('should copy all template files to .ai directory', async () => {
@@ -580,7 +598,7 @@ describe('InitCommand', () => {
     });
   });
 
-  describe('Phase 6-8 directory structure', () => {
+  describe('Phase 6 directory structure', () => {
     beforeEach(() => {
       vi.mocked(inquirer.prompt).mockResolvedValue({
         platforms: ['augment'],
@@ -588,68 +606,19 @@ describe('InitCommand', () => {
 
       // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
       vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+
+      // Mock askPermission to always return true
+      vi.spyOn(InitCommand.prototype as any, 'askPermission').mockResolvedValue(true);
     });
 
-    it('should create recent directory', async () => {
+    it('should create raw directory (Phase 6)', async () => {
       const testDir = createTestDir();
       try {
         const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
         const result = await cmd.execute();
 
         expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', 'recent'))).toBe(true);
-      } finally {
-        cleanupTestDir(testDir);
-      }
-    });
-
-    it('should create sessions directory', async () => {
-      const testDir = createTestDir();
-      try {
-        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
-        const result = await cmd.execute();
-
-        expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', 'sessions'))).toBe(true);
-      } finally {
-        cleanupTestDir(testDir);
-      }
-    });
-
-    it('should create medium directory', async () => {
-      const testDir = createTestDir();
-      try {
-        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
-        const result = await cmd.execute();
-
-        expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', 'medium'))).toBe(true);
-      } finally {
-        cleanupTestDir(testDir);
-      }
-    });
-
-    it('should create old directory', async () => {
-      const testDir = createTestDir();
-      try {
-        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
-        const result = await cmd.execute();
-
-        expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', 'old'))).toBe(true);
-      } finally {
-        cleanupTestDir(testDir);
-      }
-    });
-
-    it('should create archive directory', async () => {
-      const testDir = createTestDir();
-      try {
-        const cmd = new InitCommand({ cwd: testDir, mode: 'automatic' });
-        const result = await cmd.execute();
-
-        expect(result.ok).toBe(true);
-        expect(existsSync(join(testDir, '.aicf', 'archive'))).toBe(true);
+        expect(existsSync(join(testDir, '.lill', 'raw'))).toBe(true);
       } finally {
         cleanupTestDir(testDir);
       }

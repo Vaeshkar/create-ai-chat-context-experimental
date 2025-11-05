@@ -20,7 +20,7 @@ describe('WatcherConfigManager', () => {
 
   beforeEach(() => {
     testDir = join(process.cwd(), '.test-watcher-config');
-    mkdirSync(join(testDir, '.aicf'), { recursive: true });
+    mkdirSync(join(testDir, '.lill'), { recursive: true });
     manager = new WatcherConfigManager(testDir);
   });
 
@@ -38,7 +38,7 @@ describe('WatcherConfigManager', () => {
     });
 
     it('should load config from file', async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -66,7 +66,7 @@ describe('WatcherConfigManager', () => {
 
   describe('getPlatformConfig', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -102,7 +102,7 @@ describe('WatcherConfigManager', () => {
 
   describe('isPlatformEnabled', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -137,7 +137,7 @@ describe('WatcherConfigManager', () => {
 
   describe('enablePlatform', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -166,7 +166,7 @@ describe('WatcherConfigManager', () => {
     it('should save to file', async () => {
       await manager.enablePlatform('warp');
 
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const content = readFileSync(configFile, 'utf-8');
       const config = JSON.parse(content);
       expect(config.platforms.warp.enabled).toBe(true);
@@ -176,7 +176,7 @@ describe('WatcherConfigManager', () => {
       const beforeUpdate = new Date();
       await manager.enablePlatform('warp');
 
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const content = readFileSync(configFile, 'utf-8');
       const config = JSON.parse(content);
       expect(config.updated).toBeDefined();
@@ -186,7 +186,7 @@ describe('WatcherConfigManager', () => {
 
   describe('disablePlatform', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -215,7 +215,7 @@ describe('WatcherConfigManager', () => {
     it('should save to file', async () => {
       await manager.disablePlatform('warp');
 
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const content = readFileSync(configFile, 'utf-8');
       const config = JSON.parse(content);
       expect(config.platforms.warp.enabled).toBe(false);
@@ -224,7 +224,7 @@ describe('WatcherConfigManager', () => {
 
   describe('updatePlatformLastChecked', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -254,7 +254,7 @@ describe('WatcherConfigManager', () => {
     it('should save to file', async () => {
       await manager.updatePlatformLastChecked('augment');
 
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const content = readFileSync(configFile, 'utf-8');
       const config = JSON.parse(content);
       expect(config.platforms.augment.lastChecked).toBeDefined();
@@ -263,7 +263,7 @@ describe('WatcherConfigManager', () => {
 
   describe('updatePlatformDataCount', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -293,7 +293,7 @@ describe('WatcherConfigManager', () => {
     it('should save to file', async () => {
       await manager.updatePlatformDataCount('augment', 42);
 
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const content = readFileSync(configFile, 'utf-8');
       const config = JSON.parse(content);
       expect(config.platforms.augment.dataCount).toBe(42);
@@ -302,7 +302,7 @@ describe('WatcherConfigManager', () => {
 
   describe('getWatcherSettings', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -332,7 +332,7 @@ describe('WatcherConfigManager', () => {
 
   describe('updateWatcherSettings', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -363,7 +363,7 @@ describe('WatcherConfigManager', () => {
     it('should save to file', async () => {
       await manager.updateWatcherSettings({ interval: 10000 });
 
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const content = readFileSync(configFile, 'utf-8');
       const config = JSON.parse(content);
       expect(config.watcher.interval).toBe(10000);
@@ -372,7 +372,7 @@ describe('WatcherConfigManager', () => {
 
   describe('getEnabledPlatforms', () => {
     beforeEach(async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {
@@ -404,7 +404,7 @@ describe('WatcherConfigManager', () => {
 
   describe('integration', () => {
     it('should handle full workflow: load, enable, update, disable', async () => {
-      const configFile = join(testDir, '.aicf', '.watcher-config.json');
+      const configFile = join(testDir, '.lill', '.watcher-config.json');
       const config = {
         version: '1.0',
         platforms: {

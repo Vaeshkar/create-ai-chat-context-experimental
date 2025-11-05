@@ -69,8 +69,8 @@ describe('AetherWatcher', () => {
 
       const status = watcher.getStatus();
       expect(status.isRunning).toBe(true);
-      expect(status.watchers.jsonToAicf).toBe(true);
-      expect(status.watchers.aicfFile).toBe(true);
+      expect(status.watchers.conversation).toBe(true);
+      // principle watcher may be disabled if no API key
     });
 
     it('should not start if already running', async () => {

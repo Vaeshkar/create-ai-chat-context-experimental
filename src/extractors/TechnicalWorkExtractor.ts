@@ -80,12 +80,15 @@ export class TechnicalWorkExtractor {
       'pipeline',
     ];
 
-    // Split by assistant responses (look for common patterns)
-    const assistantResponses = summary.aiResponses.split(/\n\n+/);
+    // Use fullConversation if available, otherwise fall back to aiResponses
+    const textToAnalyze = summary.fullConversation || summary.aiResponses;
+
+    // Split by paragraphs (look for common patterns)
+    const paragraphs = textToAnalyze.split(/\n\n+/);
 
     let workIndex = 1;
-    for (const response of assistantResponses) {
-      const trimmed = response.trim();
+    for (const paragraph of paragraphs) {
+      const trimmed = paragraph.trim();
 
       // Skip empty or very short responses
       if (trimmed.length < 20) continue;

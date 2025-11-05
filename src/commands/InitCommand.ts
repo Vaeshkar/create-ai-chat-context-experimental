@@ -41,6 +41,7 @@ export interface InitCommandOptions {
   cwd?: string;
   force?: boolean;
   verbose?: boolean;
+  mode?: 'manual' | 'automatic';
 }
 
 export interface InitResult {
@@ -71,6 +72,7 @@ export class InitCommand {
   private cwd: string;
   private force: boolean;
   private verbose: boolean;
+  private mode?: 'manual' | 'automatic';
   private selectedPlatforms: PlatformSelection = {
     augment: false,
     warp: false,
@@ -85,6 +87,7 @@ export class InitCommand {
     this.cwd = options.cwd || process.cwd();
     this.force = options.force || false;
     this.verbose = options.verbose || false;
+    this.mode = options.mode;
   }
 
   /**
@@ -107,6 +110,11 @@ export class InitCommand {
 
       // Step 2.5: Show privacy information
       this.showPrivacyInfo();
+
+      // Step 2.6: If mode is set to manual, run manual mode
+      if (this.mode === 'manual') {
+        return this.initManualMode(spinner);
+      }
 
       // Step 3: Ask permission to access LLM libraries
       const hasPermission = await this.askPermission();
@@ -155,7 +163,8 @@ export class InitCommand {
 
       // Step 9: Create configuration files
       spinner.start('Creating configuration files...');
-      this.createConfigFiles(selectedPlatforms);
+      const configFiles = this.createConfigFiles(selectedPlatforms);
+      filesCreated.push(...configFiles);
       spinner.succeed('Configuration files created');
 
       // Step 10: Update .gitignore
@@ -193,6 +202,7 @@ export class InitCommand {
       this.showSuccessSummary(selectedPlatforms, watcherStarted);
 
       return Ok({
+        mode: 'automatic',
         projectPath: this.cwd,
         filesCreated,
         message: 'AETHER initialized successfully',
@@ -514,7 +524,9 @@ export class InitCommand {
   /**
    * Create configuration files
    */
-  private createConfigFiles(selectedPlatforms: string[]): void {
+  private createConfigFiles(selectedPlatforms: string[]): string[] {
+    const filesCreated: string[] = [];
+
     // Update selectedPlatforms object
     this.selectedPlatforms = {
       augment: selectedPlatforms.includes('augment'),
@@ -530,14 +542,18 @@ export class InitCommand {
     const permissionsFile = join(lillDir, '.permissions.aicf');
     const permissionsContent = this.generatePermissionsFile();
     writeFileSync(permissionsFile, permissionsContent, 'utf-8');
+    filesCreated.push(permissionsFile);
 
     // Create .watcher-config.json in .lill/
     const configFile = join(lillDir, '.watcher-config.json');
     const configContent = this.generateWatcherConfig();
     writeFileSync(configFile, configContent, 'utf-8');
+    filesCreated.push(configFile);
 
     // Note: We no longer create principles.aicf, decisions.aicf, insights.aicf
     // These are now stored in QuadIndex (.lill/snapshots/)
+
+    return filesCreated;
   }
 
   /**
@@ -851,6 +867,7 @@ export class InitCommand {
       console.log();
 
       return Ok({
+        mode: 'manual',
         projectPath: this.cwd,
         filesCreated: [aiDir, lillDir, rawDir],
         message: 'Manual mode initialized. Use the prompt above to trigger LLM updates.',
