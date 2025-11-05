@@ -130,11 +130,14 @@ describe('Phase 4 Integration Tests', () => {
       // Mock initial import
       vi.spyOn(InitCommand.prototype as any, 'askInitialImport').mockResolvedValue(false);
 
-      // Mock watcher start
-      vi.spyOn(InitCommand.prototype as any, 'askStartWatcher').mockResolvedValue(false);
+      // Mock services start (unified watcher + guardian)
+      vi.spyOn(InitCommand.prototype as any, 'askStartServices').mockResolvedValue(false);
 
-      // CRITICAL: Mock startWatcherDaemon to prevent starting real watchers
-      vi.spyOn(InitCommand.prototype as any, 'startWatcherDaemon').mockResolvedValue(true);
+      // CRITICAL: Mock startAetherServices to prevent starting real services
+      vi.spyOn(InitCommand.prototype as any, 'startAetherServices').mockResolvedValue({
+        watcherStarted: true,
+        guardianStarted: true,
+      });
     });
 
     it('should initialize project in automatic mode', async () => {
