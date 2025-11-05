@@ -32,6 +32,8 @@ import { PlatformDetector, type PlatformDetectionSummary } from '../utils/Platfo
 import { ApiKeyScanner } from '../utils/ApiKeyScanner.js';
 import { DaemonController } from '../utils/DaemonController.js';
 import { showBanner } from '../utils/AetherBanner.js';
+import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
+import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
 
 export interface InitCommandOptions {
   cwd?: string;

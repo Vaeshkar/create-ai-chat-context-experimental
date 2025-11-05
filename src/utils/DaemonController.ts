@@ -13,9 +13,14 @@
 
 import { spawn } from 'child_process';
 import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
+
+// ESM __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export interface DaemonStatus {
   watcher: {
@@ -105,14 +110,31 @@ export class DaemonController {
       }
 
       // Build command
-      const cliPath = join(__dirname, '..', 'cli.js');
-      const args = ['watch', '--dir', options.cwd];
-      if (options.verbose) {
-        args.push('--verbose');
+      // Check if we're in development mode (using tsx) or production mode (compiled js)
+      // __dirname points to either src/utils (dev) or dist/utils (prod)
+      const cliTsPath = join(__dirname, '..', 'cli.ts');
+      const cliJsPath = join(__dirname, '..', 'cli.js');
+
+      let command: string;
+      let commandArgs: string[];
+
+      if (existsSync(cliTsPath)) {
+        // Development mode: use tsx
+        command = 'npx';
+        commandArgs = ['tsx', cliTsPath, 'watch', '--dir', options.cwd];
+      } else if (existsSync(cliJsPath)) {
+        // Production mode: use node
+        command = 'node';
+        commandArgs = [cliJsPath, 'watch', '--dir', options.cwd];
+      } else {
+        return Err(new Error(`CLI not found at ${cliTsPath} or ${cliJsPath}`));
       }
 
-      // Spawn detached process
-      const child = spawn('node', [cliPath, ...args], {
+      if (options.verbose) {
+        commandArgs.push('--verbose');
+      }
+
+      const child = spawn(command, commandArgs, {
         detached: true,
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: options.cwd,
@@ -163,15 +185,25 @@ export class DaemonController {
       }
 
       // Check if aether-guardian package exists
-      const guardianPath = join(this.cwd, 'packages', 'aether-guardian', 'dist', 'cli.js');
-      if (!existsSync(guardianPath)) {
-        return Err(
-          new Error('Guardian package not found. Run: npm run build in packages/aether-guardian')
-        );
+      const guardianTsPath = join(this.cwd, 'packages', 'aether-guardian', 'src', 'cli.ts');
+      const guardianJsPath = join(this.cwd, 'packages', 'aether-guardian', 'dist', 'cli.js');
+
+      let command: string;
+      let commandArgs: string[];
+
+      if (existsSync(guardianTsPath)) {
+        // Development mode: use tsx
+        command = 'npx';
+        commandArgs = ['tsx', guardianTsPath, 'start'];
+      } else if (existsSync(guardianJsPath)) {
+        // Production mode: use node
+        command = 'node';
+        commandArgs = [guardianJsPath, 'start'];
+      } else {
+        return Err(new Error(`Guardian not found at ${guardianTsPath} or ${guardianJsPath}`));
       }
 
-      // Spawn detached process
-      const child = spawn('node', [guardianPath, 'start'], {
+      const child = spawn(command, commandArgs, {
         detached: true,
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: options.cwd,
