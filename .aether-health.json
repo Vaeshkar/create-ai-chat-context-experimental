@@ -1,8 +1,8 @@
 {
   "isAlive": false,
-  "lastHeartbeat": 1762358023021,
-  "pid": 94842,
-  "uptime": 54,
+  "lastHeartbeat": 1762378906309,
+  "pid": 91098,
+  "uptime": 53,
   "stats": {
     "principles": 0,
     "relationships": 0,
@@ -10,13 +10,13 @@
     "rejected": 0
   },
   "memory": {
-    "heapUsed": 35258288,
-    "heapTotal": 58490880,
-    "external": 4948399,
-    "rss": 112803840,
-    "heapUsedMB": 33.62,
-    "heapTotalMB": 55.78,
-    "rssMB": 107.58
+    "heapUsed": 36005712,
+    "heapTotal": 59965440,
+    "external": 4744261,
+    "rss": 113999872,
+    "heapUsedMB": 34.34,
+    "heapTotalMB": 57.19,
+    "rssMB": 108.72
   },
   "lock": {
     "readers": 0,

@@ -3,16 +3,9 @@
  * Re-export and extend types from lill-core for proper type resolution
  */
 
-import type {
-  PrincipleQuery,
-  RetrievalResult,
-  Principle,
-} from 'lill-core';
+import type { PrincipleQuery, RetrievalResult, Principle } from 'lill-core';
 
-import type {
-  RelationshipType,
-  ReasoningResult,
-} from 'lill-core';
+import type { RelationshipType, ReasoningResult } from 'lill-core';
 
 /**
  * Extended query options for QuadIndex
@@ -100,4 +93,3 @@ export interface QuadRetrievalResult extends RetrievalResult {
   // Routing information (if using smartQuery)
   routing?: RoutingDecision;
 }
-
