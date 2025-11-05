@@ -34,6 +34,7 @@ import { HealthCommand } from './commands/HealthCommand.js';
 import { QuadIndexQueryCommand } from './commands/QuadIndexQueryCommand.js';
 import { QuadIndexStatsCommand } from './commands/QuadIndexStatsCommand.js';
 import { ValidateCommand } from './commands/ValidateCommand.js';
+import { AuditCommand } from './commands/AuditCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -735,6 +736,39 @@ program
         verbose: options.verbose,
         confidence: options.confidence,
         reason: options.reason,
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Audit command
+program
+  .command('audit')
+  .description('Check rule compliance and violations')
+  .option('-s, --since <date>', 'Show violations since date (ISO format)')
+  .option('-v, --verbose', 'Show detailed information including stack traces')
+  .option('--clear', 'Clear audit log')
+  .option('--show-path', 'Show audit log file path')
+  .action(async (options) => {
+    try {
+      const cmd = new AuditCommand({ cwd: process.cwd() });
+
+      if (options.clear) {
+        await cmd.clear();
+        return;
+      }
+
+      if (options.showPath) {
+        cmd.showLogPath();
+        return;
+      }
+
+      await cmd.run({
+        cwd: process.cwd(),
+        since: options.since,
+        verbose: options.verbose,
       });
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));

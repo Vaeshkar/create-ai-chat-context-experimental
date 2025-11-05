@@ -82,6 +82,7 @@
     "commander": "^12.1.0",
     "create-ai-chat-context-experimental": "^3.2.0",
     "fs-extra": "^11.3.2",
+    "glob": "^11.0.3",
     "inquirer": "^12.10.0",
     "lill-core": "file:../lill-core",
     "lill-meta": "file:../lill-meta",

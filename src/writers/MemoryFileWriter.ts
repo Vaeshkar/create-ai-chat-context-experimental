@@ -23,6 +23,8 @@ import type { AnalysisResult, Result, Conversation } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { join } from 'path';
 import { promises as fs } from 'fs';
+import { PathValidator } from '../utils/PathValidator.js';
+import { AuditLogger } from '../utils/AuditLogger.js';
 
 /**
  * Writer for memory files (.aicf and .ai formats)
@@ -33,12 +35,14 @@ export class MemoryFileWriter {
   private bridge: AICEToAICFBridge;
   private cwd: string;
   private rawDir: string;
+  private auditLogger: AuditLogger;
 
   constructor(cwd: string = process.cwd()) {
     this.cwd = cwd;
     const lillDir = join(cwd, '.lill'); // Phase 6: Use .lill/ not .aicf/
     this.rawDir = join(lillDir, 'raw');
     this.bridge = new AICEToAICFBridge(lillDir); // Phase 6: Use .lill/ not .aicf/
+    this.auditLogger = new AuditLogger(cwd);
   }
 
   /**
@@ -166,11 +170,27 @@ export class MemoryFileWriter {
     conversation: Conversation
   ): Promise<Result<void>> {
     try {
+      // Create clean JSON structure with FULL content (no truncation)
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `${date}_${conversationId}.json`;
+      const filepath = join(this.rawDir, filename);
+
+      // 🛡️ VALIDATE WRITE OPERATION (Layer 2: Code Guards)
+      const validation = PathValidator.validateWrite(filepath);
+      if (!validation.ok) {
+        // Log violation to audit log
+        await this.auditLogger.logViolation(
+          PathValidator.getBlockingRule(filepath) || 'unknown',
+          filepath,
+          'write',
+          validation.error.message
+        );
+        return validation; // Block the write
+      }
+
       // Ensure raw directory exists
       await fs.mkdir(this.rawDir, { recursive: true });
 
-      // Create clean JSON structure with FULL content (no truncation)
-      const date = new Date().toISOString().split('T')[0];
       const jsonData = {
         metadata: {
           conversationId,
@@ -265,9 +285,10 @@ export class MemoryFileWriter {
       };
 
       // Write to .lill/raw/{date}_{conversationId}.json (changed from .aicf to .lill)
-      const filename = `${date}_${conversationId}.json`;
-      const filepath = join(this.rawDir, filename);
       await fs.writeFile(filepath, JSON.stringify(jsonData, null, 2), 'utf-8');
+
+      // ✅ Log successful compliance
+      await this.auditLogger.logCompliance('lill-format-only', filepath, 'write');
 
       return Ok(undefined);
     } catch (error) {
