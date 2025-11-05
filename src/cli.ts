@@ -749,6 +749,8 @@ program
   .description('Check rule compliance and violations')
   .option('-s, --since <date>', 'Show violations since date (ISO format)')
   .option('-v, --verbose', 'Show detailed information including stack traces')
+  .option('-r, --report', 'Show detailed compliance report')
+  .option('-j, --json', 'Output as JSON (for CI integration)')
   .option('--clear', 'Clear audit log')
   .option('--show-path', 'Show audit log file path')
   .action(async (options) => {
@@ -769,6 +771,8 @@ program
         cwd: process.cwd(),
         since: options.since,
         verbose: options.verbose,
+        report: options.report,
+        json: options.json,
       });
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));

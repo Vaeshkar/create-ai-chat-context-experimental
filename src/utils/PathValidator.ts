@@ -15,7 +15,8 @@
  * - Provides clear error messages with rule references
  */
 
-import { Result, Ok, Err } from '../types/index.js';
+import type { Result } from '../types/index.js';
+import { Ok, Err } from '../types/index.js';
 import { normalize, relative } from 'path';
 
 /**
