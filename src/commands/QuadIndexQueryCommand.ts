@@ -4,7 +4,14 @@
  */
 
 import chalk from 'chalk';
-import { QuadIndex, SnapshotManager, type QuadQuery } from 'lill-core';
+import {
+  QuadIndex,
+  SnapshotManager,
+  type QuadQuery,
+  type QuadRetrievalResult,
+  type Principle,
+  type PrincipleStatus,
+} from 'lill-core';
 import { join } from 'node:path';
 
 export interface QuadIndexQueryOptions {
@@ -97,7 +104,7 @@ export class QuadIndexQueryCommand {
   }
 
   private buildQuery(text: string, options: QuadIndexQueryOptions): QuadQuery {
-    const query: QuadQuery = {
+    const query: any = {
       text,
       limit: options.limit || 5,
       offset: options.offset || 0,
@@ -109,7 +116,7 @@ export class QuadIndexQueryCommand {
     }
 
     if (options.status) {
-      query.status = options.status;
+      query.status = options.status as PrincipleStatus;
     }
 
     if (options.models && options.models.length > 0) {
@@ -143,13 +150,10 @@ export class QuadIndexQueryCommand {
         }
     }
 
-    return query;
+    return query as QuadQuery;
   }
 
-  private outputHuman(
-    data: { principles: Principle[]; total: number; scores: Map<string, number> },
-    options: QuadIndexQueryOptions
-  ): void {
+  private outputHuman(data: QuadRetrievalResult, options: QuadIndexQueryOptions): void {
     if (data.principles.length === 0) {
       console.log(chalk.yellow('❌ No results found'));
       return;
@@ -159,7 +163,7 @@ export class QuadIndexQueryCommand {
 
     for (let i = 0; i < data.principles.length; i++) {
       const principle = data.principles[i];
-      const score = data.scores[i] || 0;
+      const score = data.scores.get(principle.id) || 0;
 
       console.log(chalk.bold(`${i + 1}. ${principle.id}: ${principle.name}`));
       console.log(chalk.gray(`   Intent: ${principle.intent}`));
@@ -205,13 +209,10 @@ export class QuadIndexQueryCommand {
     }
   }
 
-  private outputJson(
-    data: { principles: Principle[]; total: number; scores: Map<string, number> },
-    options: QuadIndexQueryOptions
-  ): void {
+  private outputJson(data: QuadRetrievalResult, options: QuadIndexQueryOptions): void {
     const output = {
       success: true,
-      results: data.principles.map((p: Principle, i: number) => ({
+      results: data.principles.map((p: Principle) => ({
         id: p.id,
         name: p.name,
         intent: p.intent,
@@ -219,7 +220,7 @@ export class QuadIndexQueryCommand {
         status: p.status,
         source: p.sources?.[0] || 'unknown',
         timestamp: p.created_at instanceof Date ? p.created_at.getTime() : Date.now(),
-        score: data.scores[i] || 0,
+        score: data.scores.get(p.id) || 0,
         metadata: {
           type: 'principle',
           model: p.applicable_to_models?.[0] || 'unknown',

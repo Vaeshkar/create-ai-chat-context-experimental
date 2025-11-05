@@ -70,7 +70,7 @@ export class AuditLogger {
     await this.writeEntry(entry);
 
     // Also log to console in development
-    if (process.env.NODE_ENV === 'development' || process.env.DEBUG) {
+    if (process.env['NODE_ENV'] === 'development' || process.env['DEBUG']) {
       console.error(`🚨 RULE VIOLATION: [${rule}] ${path}`);
       if (message) {
         console.error(`   ${message}`);
@@ -125,7 +125,7 @@ export class AuditLogger {
     await this.writeEntry(entry);
 
     // Also log to console in development
-    if (process.env.NODE_ENV === 'development' || process.env.DEBUG) {
+    if (process.env['NODE_ENV'] === 'development' || process.env['DEBUG']) {
       console.warn(`⚠️  RULE WARNING: [${rule}] ${path}`);
       console.warn(`   ${message}`);
     }

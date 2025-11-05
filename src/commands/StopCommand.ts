@@ -28,11 +28,9 @@ export interface StopResult {
 
 export class StopCommand {
   private cwd: string;
-  private verbose: boolean;
 
   constructor(options: StopCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
-    this.verbose = options.verbose || false;
   }
 
   async execute(): Promise<Result<StopResult>> {

@@ -50,7 +50,7 @@ import type { Result } from '../types/index.js';
  * @returns Modified property descriptor
  */
 export function ValidateWrite(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   target: any,
   propertyKey: string,
   descriptor: PropertyDescriptor
@@ -157,7 +157,7 @@ export function ValidateWrite(
  * @returns Modified property descriptor
  */
 export function ValidateWriteSync(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   target: any,
   propertyKey: string,
   descriptor: PropertyDescriptor
@@ -260,7 +260,7 @@ export function ValidateWriteSync(
  * @returns Modified property descriptor
  */
 export function ValidateRead(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   target: any,
   propertyKey: string,
   descriptor: PropertyDescriptor
@@ -316,7 +316,7 @@ export function ValidateRead(
  * @returns Modified property descriptor
  */
 export function ValidateDelete(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   target: any,
   propertyKey: string,
   descriptor: PropertyDescriptor

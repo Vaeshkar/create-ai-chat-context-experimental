@@ -28,11 +28,9 @@ export interface StatusResult {
 
 export class StatusCommand {
   private cwd: string;
-  private verbose: boolean;
 
   constructor(options: StatusCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
-    this.verbose = options.verbose || false;
   }
 
   async execute(): Promise<Result<StatusResult>> {

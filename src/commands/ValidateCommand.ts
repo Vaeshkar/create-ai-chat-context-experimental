@@ -19,14 +19,10 @@ export interface ValidateCommandOptions {
 }
 
 export class ValidateCommand {
-  private cwd: string;
-  private verbose: boolean;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
 
   constructor(options: ValidateCommandOptions) {
-    this.cwd = options.cwd;
-    this.verbose = options.verbose || false;
     this.quadIndex = new QuadIndex();
     this.snapshotManager = new SnapshotManager();
   }

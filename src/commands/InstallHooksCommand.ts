@@ -37,11 +37,9 @@ export interface InstallHooksResult {
 
 export class InstallHooksCommand {
   private cwd: string;
-  private verbose: boolean;
 
   constructor(options: InstallHooksCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
-    this.verbose = options.verbose || false;
   }
 
   async execute(options: InstallHooksCommandOptions = {}): Promise<Result<InstallHooksResult>> {
