@@ -154,77 +154,9 @@ export class WatcherCommand {
           this.logger.debug(`Processed conversation: ${conversationId}`, { stats });
         }
       },
-      onPrincipleExtracted: async (principle) => {
-        // Convert ExtractedPrinciple to full Principle format for QuadIndex
-        const fullPrinciple: Principle = {
-          id: principle.id,
-          name: principle.text, // Full text (no truncation)
-          intent: principle.text,
-          preconditions: [],
-          postconditions: [],
-          examples: [],
-          counterexamples: [],
-          applicable_to_models: ['all'],
-          confidence: principle.confidence,
-          status: 'pending', // Use 'pending' for new principles
-          sources: [principle.source],
-          created_at: new Date(principle.timestamp),
-          updated_at: new Date(principle.timestamp),
-          context: principle.conversationId,
-        };
-
-        // Index principle to QuadIndex
-        const result = this.quadIndex.addPrinciple(fullPrinciple);
-
-        if (!result.success) {
-          this.logger.error(`Failed to index principle: ${principle.id}`, {
-            error: result.error,
-          });
-          return;
-        }
-
-        // Implicit validation: Auto-validate principles with high usage
-        // If usage_count >= 5 and confidence >= 0.8, auto-validate
-        const usageCount = fullPrinciple.usage_count;
-        if (usageCount && usageCount >= 5) {
-          if (
-            fullPrinciple.confidence >= 0.8 &&
-            fullPrinciple.status !== 'validated' &&
-            fullPrinciple.status !== 'active'
-          ) {
-            const validatedPrinciple = {
-              ...fullPrinciple,
-              status: 'validated' as const,
-              confidence: Math.min(1.0, fullPrinciple.confidence + 0.05), // +5% bonus
-              updated_at: new Date(),
-            };
-
-            // Remove old principle and add validated one
-            const removeResult = this.quadIndex.removePrinciple(principle.id);
-            if (removeResult.success) {
-              const addResult = this.quadIndex.addPrinciple(validatedPrinciple);
-              if (addResult.success && this.verbose) {
-                this.logger.info(
-                  `Auto-validated principle ${principle.id} (usage: ${usageCount}, confidence: ${(validatedPrinciple.confidence * 100).toFixed(0)}%)`
-                );
-              }
-            }
-          }
-        }
-
-        // Mark that we've indexed data
-        if (!this.hasIndexedData) {
-          this.hasIndexedData = true;
-          // Start snapshot timer now that we have data
-          await this.startSnapshotTimerIfNeeded();
-        }
-
-        if (this.verbose) {
-          this.logger.debug(`Indexed principle: ${principle.id}`, {
-            text: principle.text.substring(0, 100),
-          });
-        }
-      },
+      // ❌ REMOVED: Don't extract principles from ConversationWatcher
+      // Let PrincipleWatcher handle principle extraction (pattern-based, high-quality)
+      // ConversationWatcher only handles relationships, hypotheticals, and rejected alternatives
       onRelationshipExtracted: async (relationship: ExtractedRelationship) => {
         // Resolve concept names to principle IDs
         const resolved = await this.conceptResolver.resolveRelationship(
@@ -334,6 +266,13 @@ export class WatcherCommand {
         // Write extracted principle to QuadIndex
         const result = this.quadIndex.addPrinciple(principle);
         if (result.success) {
+          // Mark that we've indexed data
+          if (!this.hasIndexedData) {
+            this.hasIndexedData = true;
+            // Start snapshot timer now that we have data
+            await this.startSnapshotTimerIfNeeded();
+          }
+
           if (this.verbose) {
             this.logger.debug(`Indexed principle: ${principle.name.substring(0, 50)}...`);
           }
