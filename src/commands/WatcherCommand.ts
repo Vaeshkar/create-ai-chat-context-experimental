@@ -48,7 +48,6 @@ import {
   type ExtractedRejected,
 } from 'aicf-core';
 import { QuadIndex, SnapshotManager, ConceptResolver, type Principle } from 'lill-core';
-import { PrincipleWatcher } from 'lill-meta';
 import { ConversationOrchestrator } from '../orchestrators/ConversationOrchestrator.js';
 import type { Message } from '../types/conversation.js';
 
@@ -83,7 +82,6 @@ export class WatcherCommand {
   private sessionConsolidationAgent: SessionConsolidationAgent;
   // private memoryDropoffAgent: MemoryDropoffAgent; // Phase 7 - Disabled
   private conversationWatcher: ConversationWatcher;
-  private principleWatcher: PrincipleWatcher;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
   private conceptResolver: ConceptResolver;
@@ -154,9 +152,48 @@ export class WatcherCommand {
           this.logger.debug(`Processed conversation: ${conversationId}`, { stats });
         }
       },
-      // ❌ REMOVED: Don't extract principles from ConversationWatcher
-      // Let PrincipleWatcher handle principle extraction (pattern-based, high-quality)
-      // ConversationWatcher only handles relationships, hypotheticals, and rejected alternatives
+      onPrincipleExtracted: async (principle) => {
+        // Convert ExtractedPrinciple to full Principle format for QuadIndex
+        const fullPrinciple: Principle = {
+          id: principle.id,
+          name: principle.text, // Full text (no truncation)
+          intent: principle.text,
+          preconditions: [],
+          postconditions: [],
+          examples: [],
+          counterexamples: [],
+          applicable_to_models: ['all'],
+          confidence: principle.confidence,
+          status: 'pending', // Use 'pending' for new principles
+          sources: [principle.source],
+          created_at: new Date(principle.timestamp),
+          updated_at: new Date(principle.timestamp),
+          context: principle.conversationId,
+        };
+
+        // Index principle to QuadIndex
+        const result = this.quadIndex.addPrinciple(fullPrinciple);
+
+        if (!result.success) {
+          this.logger.error(`Failed to index principle: ${principle.id}`, {
+            error: result.error,
+          });
+          return;
+        }
+
+        // Mark that we've indexed data
+        if (!this.hasIndexedData) {
+          this.hasIndexedData = true;
+          // Start snapshot timer now that we have data
+          await this.startSnapshotTimerIfNeeded();
+        }
+
+        if (this.verbose) {
+          this.logger.debug(`Indexed principle: ${principle.id}`, {
+            text: principle.text.substring(0, 100),
+          });
+        }
+      },
       onRelationshipExtracted: async (relationship: ExtractedRelationship) => {
         // Resolve concept names to principle IDs
         const resolved = await this.conceptResolver.resolveRelationship(
@@ -253,36 +290,6 @@ export class WatcherCommand {
 
         if (this.verbose) {
           this.logger.debug(`Indexed rejected: ${rejected.alternative.substring(0, 50)}...`);
-        }
-      },
-    });
-    // Initialize new PrincipleWatcher (rule-based, no API key needed)
-    this.principleWatcher = new PrincipleWatcher(this.cwd, {
-      rawDir: join(this.cwd, '.lill', 'raw'),
-      pollInterval: 60000, // 1 minute
-      verbose: this.verbose,
-      quadIndex: this.quadIndex, // Pass QuadIndex for deduplication (Option E: Hybrid)
-      onPrincipleExtracted: async (principle: Principle) => {
-        // Write extracted principle to QuadIndex
-        const result = this.quadIndex.addPrinciple(principle);
-        if (result.success) {
-          // Mark that we've indexed data
-          if (!this.hasIndexedData) {
-            this.hasIndexedData = true;
-            // Start snapshot timer now that we have data
-            await this.startSnapshotTimerIfNeeded();
-          }
-
-          if (this.verbose) {
-            this.logger.debug(`Indexed principle: ${principle.name.substring(0, 50)}...`);
-          }
-        } else {
-          this.logger.error(`Failed to index principle: ${principle.id}`, result.error);
-        }
-      },
-      onPrinciplePromoted: (principleId, fromStatus, toStatus) => {
-        if (this.verbose) {
-          this.logger.debug(`Promoted principle ${principleId}: ${fromStatus} → ${toStatus}`);
         }
       },
     });
@@ -465,18 +472,6 @@ export class WatcherCommand {
       }
     });
 
-    // Start Principle watcher (Phase 5)
-    this.principleWatcher
-      .start()
-      .then(() => {
-        if (this.verbose) {
-          console.log(chalk.green('✅ Principle watcher started'));
-        }
-      })
-      .catch((error: Error) => {
-        console.error(chalk.red('❌ Failed to start Principle watcher:'), error.message);
-      });
-
     // Start watching
     this.watch();
   }
@@ -512,11 +507,6 @@ export class WatcherCommand {
       if (!result.ok) {
         console.error(chalk.red('❌ Failed to stop conversation watcher:'), result.error.message);
       }
-    });
-
-    // Stop Principle watcher
-    this.principleWatcher.stop().catch((error: Error) => {
-      console.error(chalk.red('❌ Failed to stop Principle watcher:'), error.message);
     });
 
     // Stop SnapshotManager

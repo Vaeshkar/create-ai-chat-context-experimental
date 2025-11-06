@@ -28,11 +28,11 @@ import {
 } from 'lill-core';
 import {
   ConversationWatcher,
+  type ExtractedPrinciple,
   type ExtractedRelationship,
   type ExtractedHypothetical,
   type ExtractedRejected,
 } from 'aicf-core';
-import { PrincipleWatcher } from 'lill-meta';
 
 interface BuildIndexCommandOptions {
   cwd?: string;
@@ -111,9 +111,30 @@ export class BuildIndexCommand {
     const watcher = new ConversationWatcher(this.cwd, {
       rawDir,
       verbose: this.verbose,
-      // ❌ REMOVED: Don't extract principles from ConversationWatcher
-      // Let PrincipleWatcher handle principle extraction (pattern-based, high-quality)
-      // ConversationWatcher only handles relationships, hypotheticals, and rejected alternatives
+      onPrincipleExtracted: async (principle: ExtractedPrinciple) => {
+        // Convert ExtractedPrinciple to full Principle format
+        const fullPrinciple: Principle = {
+          id: principle.id,
+          name: principle.text, // Full text (no truncation)
+          intent: principle.text,
+          preconditions: [],
+          postconditions: [],
+          examples: [],
+          counterexamples: [],
+          applicable_to_models: ['all'],
+          confidence: principle.confidence,
+          status: 'proposed' as const,
+          sources: [principle.source],
+          created_at: new Date(principle.timestamp),
+          updated_at: new Date(principle.timestamp),
+          context: principle.conversationId,
+        };
+
+        const result = this.quadIndex.addPrinciple(fullPrinciple);
+        if (result.success) {
+          this.totalPrinciples++;
+        }
+      },
       onRelationshipExtracted: async (relationship: ExtractedRelationship) => {
         // Resolve concept names to principle IDs
         const resolved = await this.conceptResolver.resolveRelationship(
@@ -213,46 +234,6 @@ export class BuildIndexCommand {
 
     // Stop immediately (we only want to process existing files once)
     await watcher.stop();
-
-    // Now run PrincipleWatcher to extract HIGH-QUALITY principles using pattern matching
-    console.log(chalk.cyan('\n🧠 Extracting principles using PrincipleWatcher...\n'));
-
-    const principleWatcher = new PrincipleWatcher(this.cwd, {
-      rawDir,
-      pollInterval: 0, // No polling, just process once
-      verbose: this.verbose,
-      quadIndex: this.quadIndex, // Pass QuadIndex for deduplication
-      onPrincipleExtracted: async (principle: Principle) => {
-        const result = this.quadIndex.addPrinciple(principle);
-        if (result.success) {
-          this.totalPrinciples++;
-          if (this.verbose) {
-            console.log(
-              chalk.gray(`   Extracted principle: ${principle.name.substring(0, 60)}...`)
-            );
-          }
-        }
-      },
-      onPrinciplePromoted: (principleId, fromStatus, toStatus) => {
-        if (this.verbose) {
-          console.log(chalk.gray(`   Promoted ${principleId}: ${fromStatus} → ${toStatus}`));
-        }
-      },
-    });
-
-    // Process all conversations with PrincipleWatcher
-    try {
-      await principleWatcher.start();
-      // Stop immediately (we only want to process existing files once)
-      await principleWatcher.stop();
-    } catch (error) {
-      console.log(
-        chalk.red(
-          `\n❌ Failed to run PrincipleWatcher: ${error instanceof Error ? error.message : String(error)}\n`
-        )
-      );
-      return;
-    }
 
     console.log(chalk.cyan('\n💾 Creating base snapshot...\n'));
 
