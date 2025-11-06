@@ -161,13 +161,15 @@ export class QuadIndexQueryCommand {
       if (!principle) continue; // Skip if undefined (shouldn't happen but satisfies TypeScript)
 
       const score = data.scores[i] || 0;
+      // Use score (effective confidence with decay) instead of base confidence
+      const effectiveConfidence = score;
 
       console.log(chalk.bold(`${i + 1}. ${principle.id}: ${principle.name}`));
       console.log(chalk.gray(`   Intent: ${principle.intent}`));
       console.log(chalk.gray(`   Status: ${principle.status}`));
       console.log(
         chalk.gray(
-          `   Confidence: ${(principle.confidence * 100).toFixed(0)}% | Score: ${(score * 100).toFixed(0)}%`
+          `   Confidence: ${(effectiveConfidence * 100).toFixed(0)}% | Score: ${(score * 100).toFixed(0)}%`
         )
       );
 

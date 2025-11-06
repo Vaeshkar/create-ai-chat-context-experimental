@@ -12,6 +12,7 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
+    "src/scripts/**/*",
     "src/utils/DaemonController.ts",
     "src/commands/StartCommand.ts",
     "src/commands/StopCommand.ts",

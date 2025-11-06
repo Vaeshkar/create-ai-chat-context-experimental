@@ -12,8 +12,23 @@
  * Background watcher for automatic checkpoint processing and multi-Claude consolidation
  */
 
+// Load environment variables from .env.local and .env (in that order)
+// .env.local takes precedence over .env
+import { config as dotenvConfig } from 'dotenv';
 import { join } from 'path';
 import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'fs';
+
+// Load .env first (lower priority)
+const envPath = join(process.cwd(), '.env');
+if (existsSync(envPath)) {
+  dotenvConfig({ path: envPath });
+}
+
+// Load .env.local second (higher priority, overrides .env)
+const envLocalPath = join(process.cwd(), '.env.local');
+if (existsSync(envLocalPath)) {
+  dotenvConfig({ path: envLocalPath, override: true });
+}
 import chalk from 'chalk';
 import { WatcherManager } from '../utils/WatcherManager.js';
 import { WatcherLogger } from '../utils/WatcherLogger.js';
@@ -32,7 +47,7 @@ import {
   type ExtractedHypothetical,
   type ExtractedRejected,
 } from 'aicf-core';
-import { QuadIndex, SnapshotManager, type Principle } from 'lill-core';
+import { QuadIndex, SnapshotManager, ConceptResolver, type Principle } from 'lill-core';
 import { PrincipleWatcher } from 'lill-meta';
 import { ConversationOrchestrator } from '../orchestrators/ConversationOrchestrator.js';
 import type { Message } from '../types/conversation.js';
@@ -71,6 +86,7 @@ export class WatcherCommand {
   private principleWatcher: PrincipleWatcher;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
+  private conceptResolver: ConceptResolver;
   private healthCheck: HealthCheck;
   private isRunning: boolean = false;
   private enabledPlatforms: PlatformName[] = [];
@@ -122,6 +138,11 @@ export class WatcherCommand {
     this.snapshotManager = new SnapshotManager({
       snapshotDir: join(this.cwd, '.lill', 'snapshots'),
       verbose: this.verbose,
+    });
+
+    // Initialize ConceptResolver for mapping concept names to principle IDs
+    this.conceptResolver = new ConceptResolver(this.quadIndex, {
+      minConfidence: 0.5, // Require at least 50% confidence for concept resolution
     });
 
     // Now create ConversationWatcher with QuadIndex callback
@@ -205,14 +226,34 @@ export class WatcherCommand {
         }
       },
       onRelationshipExtracted: async (relationship: ExtractedRelationship) => {
-        // Index relationship to QuadIndex GraphStore
-        const result = this.quadIndex.addRelationship(
+        // Resolve concept names to principle IDs
+        const resolved = await this.conceptResolver.resolveRelationship(
           relationship.from,
-          relationship.to,
+          relationship.to
+        );
+
+        if (!resolved) {
+          // Cannot resolve one or both concepts - skip this relationship
+          if (this.verbose) {
+            this.logger.debug(
+              `Skipped relationship (concepts not resolved): ${relationship.from} → ${relationship.to}`,
+              {
+                type: relationship.type,
+                reason: 'One or both concepts could not be mapped to principle IDs',
+              }
+            );
+          }
+          return;
+        }
+
+        // Index relationship to QuadIndex GraphStore using resolved principle IDs
+        const result = this.quadIndex.addRelationship(
+          resolved.from, // Principle ID
+          resolved.to, // Principle ID
           relationship.type,
           relationship.reason,
           relationship.evidence,
-          relationship.strength
+          relationship.strength * resolved.confidence // Adjust strength by resolution confidence
         );
 
         if (!result.success) {
@@ -223,9 +264,13 @@ export class WatcherCommand {
         }
 
         if (this.verbose) {
-          this.logger.debug(`Indexed relationship: ${relationship.from} → ${relationship.to}`, {
-            type: relationship.type,
-          });
+          this.logger.debug(
+            `Indexed relationship: ${resolved.from} → ${resolved.to} (resolved from: ${relationship.from} → ${relationship.to})`,
+            {
+              type: relationship.type,
+              confidence: resolved.confidence,
+            }
+          );
         }
       },
       onHypotheticalExtracted: async (hypothetical: ExtractedHypothetical) => {
@@ -279,10 +324,28 @@ export class WatcherCommand {
         }
       },
     });
+    // Initialize new PrincipleWatcher (rule-based, no API key needed)
     this.principleWatcher = new PrincipleWatcher(this.cwd, {
+      rawDir: join(this.cwd, '.lill', 'raw'),
+      pollInterval: 60000, // 1 minute
       verbose: this.verbose,
-      enableLearning: true,
-      apiKey: process.env['ANTHROPIC_API_KEY'],
+      quadIndex: this.quadIndex, // Pass QuadIndex for deduplication (Option E: Hybrid)
+      onPrincipleExtracted: async (principle: Principle) => {
+        // Write extracted principle to QuadIndex
+        const result = this.quadIndex.addPrinciple(principle);
+        if (result.success) {
+          if (this.verbose) {
+            this.logger.debug(`Indexed principle: ${principle.name.substring(0, 50)}...`);
+          }
+        } else {
+          this.logger.error(`Failed to index principle: ${principle.id}`, result.error);
+        }
+      },
+      onPrinciplePromoted: (principleId, fromStatus, toStatus) => {
+        if (this.verbose) {
+          this.logger.debug(`Promoted principle ${principleId}: ${fromStatus} → ${toStatus}`);
+        }
+      },
     });
 
     // Initialize HealthCheck (Task 4c)

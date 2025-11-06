@@ -18,7 +18,13 @@ import { join } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
-import { QuadIndex, SnapshotManager, type Hypothetical, type RejectedAlternative } from 'lill-core';
+import {
+  QuadIndex,
+  SnapshotManager,
+  ConceptResolver,
+  type Hypothetical,
+  type RejectedAlternative,
+} from 'lill-core';
 import {
   ConversationWatcher,
   type ExtractedPrinciple,
@@ -46,6 +52,7 @@ export class BuildIndexCommand {
   private force: boolean;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
+  private conceptResolver: ConceptResolver;
   private totalPrinciples = 0;
   private totalRelationships = 0;
   private totalHypotheticals = 0;
@@ -60,6 +67,9 @@ export class BuildIndexCommand {
     this.snapshotManager = new SnapshotManager({
       snapshotDir: join(this.cwd, '.lill', 'snapshots'),
       verbose: this.verbose,
+    });
+    this.conceptResolver = new ConceptResolver(this.quadIndex, {
+      minConfidence: 0.5,
     });
   }
 
@@ -124,16 +134,43 @@ export class BuildIndexCommand {
         }
       },
       onRelationshipExtracted: async (relationship: ExtractedRelationship) => {
-        const result = this.quadIndex.addRelationship(
+        // Resolve concept names to principle IDs
+        const resolved = await this.conceptResolver.resolveRelationship(
           relationship.from,
-          relationship.to,
+          relationship.to
+        );
+
+        if (!resolved) {
+          // Cannot resolve one or both concepts - skip this relationship
+          if (this.verbose) {
+            console.log(
+              chalk.gray(
+                `   Skipped relationship (concepts not resolved): ${relationship.from} → ${relationship.to}`
+              )
+            );
+          }
+          return;
+        }
+
+        // Index relationship using resolved principle IDs
+        const result = this.quadIndex.addRelationship(
+          resolved.from, // Principle ID
+          resolved.to, // Principle ID
           relationship.type,
           relationship.reason,
           relationship.evidence,
-          relationship.strength
+          relationship.strength * resolved.confidence // Adjust strength by resolution confidence
         );
+
         if (result.success) {
           this.totalRelationships++;
+          if (this.verbose) {
+            console.log(
+              chalk.gray(
+                `   Indexed relationship: ${resolved.from} → ${resolved.to} (from: ${relationship.from} → ${relationship.to})`
+              )
+            );
+          }
         }
       },
       onHypotheticalExtracted: async (hypothetical: ExtractedHypothetical) => {

@@ -13,6 +13,24 @@
  * Main CLI interface for automatic conversation capture and memory consolidation
  */
 
+// Load environment variables from .env.local and .env (in that order)
+// .env.local takes precedence over .env
+import { config as dotenvConfig } from 'dotenv';
+import { existsSync } from 'fs';
+import { join as pathJoin } from 'path';
+
+// Load .env first (lower priority)
+const envPath = pathJoin(process.cwd(), '.env');
+if (existsSync(envPath)) {
+  dotenvConfig({ path: envPath });
+}
+
+// Load .env.local second (higher priority, overrides .env)
+const envLocalPath = pathJoin(process.cwd(), '.env.local');
+if (existsSync(envLocalPath)) {
+  dotenvConfig({ path: envLocalPath, override: true });
+}
+
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
@@ -39,6 +57,7 @@ import { AuditCommand } from './commands/AuditCommand.js';
 import { FinishCommand } from './commands/FinishCommand.js';
 import { InstallHooksCommand } from './commands/InstallHooksCommand.js';
 import { PlatformConfigCommand } from './commands/PlatformConfigCommand.js';
+import { DeduplicateCommand } from './commands/DeduplicateCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -947,6 +966,25 @@ program
         console.error(chalk.red('❌ Error:'), result.error.message);
         process.exit(1);
       }
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Deduplicate command
+program
+  .command('deduplicate')
+  .description('Clean up duplicate principles in QuadIndex')
+  .option('--dry-run', 'Show what would be removed without making changes')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const cmd = new DeduplicateCommand({
+        dryRun: options.dryRun,
+        verbose: options.verbose,
+      });
+      await cmd.execute();
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

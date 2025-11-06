@@ -80,12 +80,9 @@ export class AetherWatcher {
       const apiKey = process.env['ANTHROPIC_API_KEY'];
       if (apiKey) {
         this.principleWatcher = new PrincipleWatcher(this.cwd, {
-          aicfDir: join(this.cwd, '.aicf'),
-          stateDir: join(this.cwd, '.lill', 'state'),
+          rawDir: join(this.cwd, '.lill', 'raw'),
           pollInterval: 60000, // 1 minute for principle validation
           verbose: this.verbose,
-          enableLearning: true,
-          apiKey,
         });
       } else if (this.verbose) {
         console.log(chalk.yellow('⚠️  PrincipleWatcher disabled: ANTHROPIC_API_KEY not found'));
