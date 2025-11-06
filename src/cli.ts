@@ -786,6 +786,28 @@ program
     }
   });
 
+program
+  .command('build-index-from-memories')
+  .description('Build QuadIndex from Augment-Memories files (distilled insights)')
+  .option('-v, --verbose', 'Enable verbose output')
+  .option('--force', 'Force rebuild even if snapshot exists')
+  .action(async (options) => {
+    try {
+      const { BuildIndexFromMemoriesCommand } = await import(
+        './commands/BuildIndexFromMemoriesCommand.js'
+      );
+      const command = new BuildIndexFromMemoriesCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        force: options.force,
+      });
+      await command.execute();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
 // Validate principle command
 program
   .command('validate <principle-id>')
