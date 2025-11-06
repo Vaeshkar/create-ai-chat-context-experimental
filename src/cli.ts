@@ -808,6 +808,31 @@ program
     }
   });
 
+// Build index from conversations command
+program
+  .command('build-index-from-conversations')
+  .description('Index conversations from raw JSON files to QuadIndex')
+  .option('-v, --verbose', 'Enable verbose output')
+  .option('--force', 'Force rebuild even if snapshot exists')
+  .option('--no-link', 'Skip linking conversations to principles')
+  .action(async (options) => {
+    try {
+      const { BuildIndexFromConversationsCommand } = await import(
+        './commands/BuildIndexFromConversationsCommand.js'
+      );
+      const command = new BuildIndexFromConversationsCommand({
+        cwd: process.cwd(),
+        verbose: options.verbose,
+        force: options.force,
+        linkToPrinciples: options.link !== false,
+      });
+      await command.execute();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
 // Validate principle command
 program
   .command('validate <principle-id>')
