@@ -229,15 +229,16 @@ export class MemoryDropoffAgent {
       const content = readFileSync(session.filePath, 'utf-8');
 
       // Compress based on target folder
-      let compressed: string;
+      // @deprecated - No longer used since AICF format removed
+      let _compressed: string;
       if (session.targetFolder === 'medium') {
-        compressed = this.compressToSummary(content, session);
+        _compressed = this.compressToSummary(content, session);
       } else if (session.targetFolder === 'old') {
-        compressed = this.compressToKeyPoints(content, session);
+        _compressed = this.compressToKeyPoints(content, session);
       } else if (session.targetFolder === 'archive') {
-        compressed = this.compressToSingleLine(content, session);
+        _compressed = this.compressToSingleLine(content, session);
       } else {
-        compressed = content; // No compression for sessions
+        _compressed = content; // No compression for sessions
       }
 
       // @deprecated - AICFWriter removed with AICF format

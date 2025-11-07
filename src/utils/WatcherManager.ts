@@ -14,13 +14,10 @@
 
 import { writeFileSync, readFileSync, existsSync, unlinkSync } from 'fs';
 import chalk from 'chalk';
-// @deprecated - AICFWriter removed with AICF format
-// import { AICFWriter } from 'aicf-core';
 
 export interface WatcherManagerOptions {
   pidFile?: string;
   logFile?: string;
-  aicfLogFile?: string;
   daemonMode?: boolean;
   verbose?: boolean;
 }
@@ -36,26 +33,22 @@ export interface WatcherStatus {
 
 /**
  * Watcher Manager for daemon mode and process lifecycle management
- * Integrates with aicf-core for AICF format logging
+ * Uses standard file logging (AICF format removed)
  */
 export class WatcherManager {
   private pidFile: string;
   private logFile: string;
-  private aicfLogFile: string;
   private verbose: boolean;
   private pid: number;
   private startTime: Date | null = null;
   private processedCount: number = 0;
   private errorCount: number = 0;
-  private aicfWriter: AICFWriter;
 
   constructor(options: WatcherManagerOptions = {}) {
     this.pidFile = options.pidFile || '.watcher.pid';
     this.logFile = options.logFile || '.watcher.log';
-    this.aicfLogFile = options.aicfLogFile || '.lill/.watcher-events.aicf'; // Phase 6: Use .lill/ not .aicf/
     this.verbose = options.verbose || false;
     this.pid = process.pid;
-    this.aicfWriter = new AICFWriter('.lill'); // Phase 6: Use .lill/ not .aicf/
   }
 
   /**
@@ -159,7 +152,7 @@ export class WatcherManager {
   }
 
   /**
-   * Log event to file (both plain text and AICF)
+   * Log event to file (plain text only)
    */
   private async logEvent(
     level: 'info' | 'success' | 'error' | 'warning',
@@ -177,9 +170,6 @@ export class WatcherManager {
         writeFileSync(this.logFile, logEntry, 'utf-8');
       }
 
-      // Also write to AICF log file using aicf-core
-      await this.logEventAsAICF(level, message, timestamp);
-
       if (this.verbose) {
         const colorMap = {
           info: chalk.blue,
@@ -192,28 +182,6 @@ export class WatcherManager {
       }
     } catch (error) {
       console.error(chalk.red('Failed to write log:'), error);
-    }
-  }
-
-  /**
-   * Log event to AICF file using aicf-core
-   */
-  private async logEventAsAICF(level: string, message: string, timestamp: string): Promise<void> {
-    try {
-      // Determine event type from message
-      let eventType = 'watcher_event';
-      if (message.includes('checkpoint')) eventType = 'checkpoint_processed';
-      if (message.includes('error')) eventType = 'error_occurred';
-      if (message.includes('Received')) eventType = 'signal_received';
-
-      // Use aicf-core's AICFWriter to append event
-      const aicfEntry = `@WATCHER_EVENT|timestamp=${timestamp}|level=${level}|event=${eventType}|message=${message}`;
-      await this.aicfWriter.appendLine('.watcher-events.aicf', aicfEntry);
-    } catch (error) {
-      // Silently fail for AICF logging to not disrupt main logging
-      if (this.verbose) {
-        console.error(chalk.yellow('Warning: Failed to write AICF log:'), error);
-      }
     }
   }
 
@@ -278,13 +246,6 @@ export class WatcherManager {
    */
   getLogFilePath(): string {
     return this.logFile;
-  }
-
-  /**
-   * Get AICF log file path
-   */
-  getAICFLogFilePath(): string {
-    return this.aicfLogFile;
   }
 
   /**

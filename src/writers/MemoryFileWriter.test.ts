@@ -74,15 +74,19 @@ describe('MemoryFileWriter', () => {
     });
   });
 
-  describe('writeAICF (v3.1 format)', () => {
-    it('should write AICF v3.1 format to files', async () => {
+  describe('writeAICF (v3.1 format) - DEPRECATED', () => {
+    it.skip('should write AICF v3.1 format to files (DEPRECATED: AICF removed)', async () => {
+      // DEPRECATED: writeAICF() now returns error - AICF format removed
+      // New pipeline: writeJSON() → .lill/raw/ → ConversationWatcher → QuadIndex
       const analysis = createTestAnalysis();
       const result = await writer.writeAICF('conv-123', analysis);
 
-      expect(result.ok).toBe(true);
+      expect(result.ok).toBe(false);
+      expect(result.error).toContain('AICF format deprecated');
     });
 
-    it('should handle empty analysis', async () => {
+    it.skip('should handle empty analysis (DEPRECATED: AICF removed)', async () => {
+      // DEPRECATED: writeAICF() now returns error - AICF format removed
       const analysis: AnalysisResult = {
         userIntents: [],
         aiActions: [],
@@ -98,7 +102,8 @@ describe('MemoryFileWriter', () => {
       };
 
       const result = await writer.writeAICF('conv-123', analysis);
-      expect(result.ok).toBe(true);
+      expect(result.ok).toBe(false);
+      expect(result.error).toContain('AICF format deprecated');
     });
   });
 

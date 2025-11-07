@@ -14,8 +14,6 @@
  */
 
 import chalk from 'chalk';
-// @deprecated - AICFWriter removed with AICF format
-// import { AICFWriter } from 'aicf-core';
 import { appendFileSync } from 'fs';
 
 export type LogLevel = 'debug' | 'info' | 'success' | 'warning' | 'error';
@@ -31,13 +29,12 @@ export interface WatcherLoggerOptions {
   verbose?: boolean;
   logLevel?: LogLevel;
   maxEntries?: number;
-  aicfDir?: string;
   logFile?: string;
 }
 
 /**
  * Structured logger for watcher operations
- * Integrates with aicf-core for AICF format output
+ * Uses standard console and file logging (AICF format removed)
  */
 export class WatcherLogger {
   private verbose: boolean;
@@ -51,14 +48,12 @@ export class WatcherLogger {
     warning: 3,
     error: 4,
   };
-  private aicfWriter: AICFWriter;
   private logFile?: string;
 
   constructor(options: WatcherLoggerOptions = {}) {
     this.verbose = options.verbose || false;
     this.logLevel = options.logLevel || 'info';
     this.maxEntries = options.maxEntries || 1000;
-    this.aicfWriter = new AICFWriter(options.aicfDir || '.lill'); // Phase 6: Use .lill/ not .aicf/
     this.logFile = options.logFile;
   }
 

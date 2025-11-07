@@ -346,31 +346,12 @@ export class MemoryFileWriter {
    * @returns Result<void>
    */
   async writeAICF(
-    conversationId: string,
-    analysis: AnalysisResult,
+    _conversationId: string,
+    _analysis: AnalysisResult,
     _cwd: string = this.cwd,
     _timestamp?: string
   ): Promise<Result<void>> {
-    try {
-      // Use bridge to transform and write AICF v3.1 format
-      const result = await this.bridge.transform(analysis, {
-        conversationId,
-        sessionId: conversationId,
-        appName: 'augment',
-        userId: 'default',
-        source: 'augment',
-      });
-
-      if (!result.ok) {
-        return Err(result.error);
-      }
-
-      return Ok(undefined);
-    } catch (error) {
-      return Err(
-        error instanceof Error ? error : new Error(`Failed to write AICF file: ${String(error)}`)
-      );
-    }
+    return Err(new Error('AICF format deprecated - use writeJSON() instead'));
   }
 
   /**

@@ -4,7 +4,13 @@
  */
 
 import chalk from 'chalk';
-import { QuadIndex, SnapshotManager, type Principle, type PrincipleStatus } from 'lill-core';
+import {
+  QuadIndex,
+  SnapshotManager,
+  type Principle,
+  type PrincipleStatus,
+  ConversationToQuadIndexer,
+} from 'lill-core';
 import { join } from 'node:path';
 import type { QuadQuery, QuadRetrievalResult } from '../types/quad-index.js';
 
@@ -15,6 +21,8 @@ export interface QuadIndexQueryOptions {
   minConfidence?: number;
   status?: string;
   includeRelationships?: boolean;
+  includeConversations?: boolean; // NEW: Show full conversation content
+  maxConversationMessages?: number; // NEW: Limit messages per conversation
   maxIterations?: number;
   models?: string[];
   offset?: number;
@@ -26,12 +34,17 @@ export class QuadIndexQueryCommand {
   private readonly cwd: string;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
+  private conversationIndexer: ConversationToQuadIndexer;
 
   constructor(options?: { cwd?: string }) {
     this.cwd = options?.cwd ?? process.cwd();
     this.quadIndex = new QuadIndex();
     this.snapshotManager = new SnapshotManager({
       snapshotDir: join(this.cwd, '.lill', 'snapshots'),
+      verbose: false,
+    });
+    this.conversationIndexer = new ConversationToQuadIndexer({
+      rawDir: join(this.cwd, '.lill', 'raw'),
       verbose: false,
     });
   }
@@ -211,6 +224,101 @@ export class QuadIndexQueryCommand {
           console.log(chalk.gray(`   - ${lesson.lesson}`));
         }
       }
+      console.log();
+    }
+
+    // Show conversations if included
+    if (options.includeConversations) {
+      this.showConversations(data.principles, options);
+    }
+  }
+
+  private showConversations(principles: Principle[], options: QuadIndexQueryOptions): void {
+    // Get unique conversation IDs from relationships
+    const conversationIds = new Set<string>();
+
+    for (const principle of principles) {
+      const conversations = this.conversationIndexer.getConversationsForPrinciple(
+        principle.id,
+        this.quadIndex
+      );
+
+      for (const conv of conversations) {
+        // Extract conversation ID from node ID (format: "conversation:id")
+        const convId = conv.id.replace('conversation:', '');
+        conversationIds.add(convId);
+      }
+    }
+
+    if (conversationIds.size === 0) {
+      console.log(chalk.yellow('💬 No conversations found for these principles\n'));
+      return;
+    }
+
+    console.log(chalk.blue(`💬 Conversations (${conversationIds.size}):\n`));
+
+    const maxMessages = options.maxConversationMessages || 5;
+
+    for (const convId of conversationIds) {
+      // Get conversation node for metadata
+      const convNode = this.conversationIndexer.getConversationNode(convId, this.quadIndex);
+
+      if (!convNode) {
+        continue;
+      }
+
+      // Get conversation content (excerpt)
+      const conversation = this.conversationIndexer.getConversationExcerpt(convId, maxMessages);
+
+      if (!conversation || !conversation.messages || conversation.messages.length === 0) {
+        console.log(chalk.yellow(`   ⚠️  Conversation content not available`));
+        console.log();
+        continue;
+      }
+
+      // Display conversation metadata
+      console.log(chalk.bold(`📅 ${convNode.data.date} - ${convNode.data.topic}`));
+      console.log(chalk.gray(`   ID: ${convId}`));
+      console.log(chalk.gray(`   Platform: ${convNode.data.platform}`));
+      console.log(chalk.gray(`   Participants: ${convNode.data.participants.join(', ')}`));
+      console.log(
+        chalk.gray(
+          `   Messages: ${convNode.data.messages} | Tokens: ${convNode.data.tokens} | Duration: ${convNode.data.duration_minutes}min`
+        )
+      );
+      console.log(chalk.gray(`   Summary: ${convNode.data.summary}`));
+      console.log();
+
+      // Display message excerpt
+      console.log(chalk.gray(`   First ${maxMessages} messages:`));
+      for (const msg of conversation.messages) {
+        const roleColor = msg.role === 'user' ? chalk.cyan : chalk.green;
+        const roleLabel = msg.role === 'user' ? '👤 User' : '🤖 Assistant';
+        const timestamp = new Date(msg.timestamp).toLocaleTimeString();
+
+        console.log(roleColor(`   ${roleLabel} [${timestamp}]:`));
+
+        // Truncate long messages
+        const maxLength = 200;
+        const content =
+          msg.content.length > maxLength
+            ? msg.content.substring(0, maxLength) + '...'
+            : msg.content;
+
+        console.log(chalk.gray(`      ${content.replace(/\n/g, '\n      ')}`));
+        console.log();
+      }
+
+      if (convNode.data.messages > maxMessages) {
+        console.log(
+          chalk.gray(
+            `   ... ${convNode.data.messages - maxMessages} more messages (use --max-conversation-messages to see more)`
+          )
+        );
+        console.log();
+      }
+
+      console.log(chalk.gray('   ' + '─'.repeat(80)));
       console.log();
     }
   }

@@ -701,13 +701,30 @@ program
   .option('-c, --min-confidence <number>', 'Minimum confidence threshold (0-1)', '0')
   .option('--status <status>', 'Filter by status (pending|validated|active|deprecated)')
   .option('-r, --include-relationships', 'Include relationships (graph store)')
+  .option('--include-conversations', 'Include full conversation content (Phase 3)')
+  .option('--max-conversation-messages <number>', 'Max messages per conversation (default: 5)', '5')
   .option('-i, --max-iterations <number>', 'Max reasoning iterations (reasoning store)', '3')
   .option('-m, --models <models>', 'Filter by models (comma-separated)')
   .option('-o, --offset <number>', 'Results offset for pagination', '0')
   .option('-j, --json', 'Output as JSON (for AI consumption)')
   .option('-v, --verbose', 'Show detailed output')
+  .option('-q, --quadindex', 'Query all 4 stores (Vector, Metadata, Graph, Reasoning)')
+  .option('-l, --lill', 'Full LILL context (4 stores + relationships + conversations + reasoning)')
   .action(async (text, options) => {
     try {
+      // Phase 4c: Handle shortcut flags
+      if (options.lill) {
+        // Full LILL context: all 4 stores + relationships + conversations + reasoning
+        options.includeRelationships = true;
+        options.includeConversations = true;
+        options.maxConversationMessages = options.maxConversationMessages || '5';
+        options.maxIterations = options.maxIterations || '3';
+        options.limit = options.limit || '10';
+      } else if (options.quadindex) {
+        // Query all 4 stores (but no extra context)
+        options.limit = options.limit || '10';
+      }
+
       const cmd = new QuadIndexQueryCommand({ cwd: process.cwd() });
       await cmd.execute(text, {
         store: options.store as 'vector' | 'metadata' | 'graph' | 'reasoning',
@@ -715,6 +732,8 @@ program
         minConfidence: parseFloat(options.minConfidence),
         status: options.status,
         includeRelationships: options.includeRelationships,
+        includeConversations: options.includeConversations,
+        maxConversationMessages: parseInt(options.maxConversationMessages, 10),
         maxIterations: parseInt(options.maxIterations, 10),
         models: options.models ? options.models.split(',') : undefined,
         offset: parseInt(options.offset, 10),
@@ -740,6 +759,50 @@ program
         json: options.json,
         verbose: options.verbose,
       });
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Build reasoning index command (Phase 4a)
+program
+  .command('build-reasoning-index')
+  .description('Build reasoning index from conversations (Phase 4a)')
+  .option('-f, --force', 'Force rebuild even if data exists')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const { BuildReasoningIndexCommand } = await import(
+        './commands/BuildReasoningIndexCommand.js'
+      );
+      const cmd = new BuildReasoningIndexCommand({
+        cwd: process.cwd(),
+        force: options.force,
+        verbose: options.verbose,
+      });
+      await cmd.execute();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// Visualize graph command (Phase 4d)
+program
+  .command('visualize-graph')
+  .description('Generate interactive D3.js visualization of QuadIndex (Phase 4d)')
+  .option('-o, --output <file>', 'Output HTML file', 'quadindex-graph.html')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(async (options) => {
+    try {
+      const { VisualizeGraphCommand } = await import('./commands/VisualizeGraphCommand.js');
+      const cmd = new VisualizeGraphCommand({
+        cwd: process.cwd(),
+        output: options.output,
+        verbose: options.verbose,
+      });
+      await cmd.execute();
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);

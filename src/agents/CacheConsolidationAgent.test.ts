@@ -173,7 +173,11 @@ describe('CacheConsolidationAgent', () => {
       }
     });
 
-    it('should create output directory if it does not exist', async () => {
+    it.skip('should create output directory if it does not exist (DEPRECATED: .aicf removed)', async () => {
+      // DEPRECATED: CacheConsolidationAgent no longer creates .aicf directory
+      // New pipeline: JSON → .lill/raw/ → ConversationWatcher → QuadIndex
+      // The test expects .aicf directory to be created, but we now use .lill/raw/
+
       // Create a new test directory without initializing the agent first
       const newTestDir = join(
         process.cwd(),
