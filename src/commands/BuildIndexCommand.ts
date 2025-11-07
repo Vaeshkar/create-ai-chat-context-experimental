@@ -32,7 +32,7 @@ import {
   type ExtractedRelationship,
   type ExtractedHypothetical,
   type ExtractedRejected,
-} from 'aicf-core';
+} from 'lill-core';
 
 interface BuildIndexCommandOptions {
   cwd?: string;

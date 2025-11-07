@@ -6,14 +6,16 @@
 
 /**
  * Watcher Logger
- * Phase 3.3: Watcher Integration - October 2025
+ *
+ * @deprecated AICF format removed - this logger is no longer used
+ * New pipeline uses standard console logging
  *
  * Structured logging for watcher operations
- * Integrated with aicf-core for AICF format output
  */
 
 import chalk from 'chalk';
-import { AICFWriter } from 'aicf-core';
+// @deprecated - AICFWriter removed with AICF format
+// import { AICFWriter } from 'aicf-core';
 import { appendFileSync } from 'fs';
 
 export type LogLevel = 'debug' | 'info' | 'success' | 'warning' | 'error';

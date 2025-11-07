@@ -14,7 +14,7 @@
  */
 
 import chalk from 'chalk';
-import { ConversationWatcher } from 'aicf-core';
+import { ConversationWatcher } from 'lill-core';
 import { PrincipleWatcher } from 'lill-meta';
 import { join } from 'path';
 import type { Result } from '../types/index.js';

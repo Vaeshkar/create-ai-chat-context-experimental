@@ -6,7 +6,9 @@
 
 /**
  * Memory Dropoff Agent - Phase 7 (Updated for Phase 6.5 Session Files)
- * Phase 8: Enhanced with aicf-core integration - October 2025
+ *
+ * @deprecated AICF format removed - this agent is no longer used
+ * New pipeline: JSON → ConversationWatcher → QuadIndex → Snapshots
  *
  * Manages SESSION file lifecycle by age:
  * - 0-2 days (sessions/): FULL session data (template format)
@@ -24,14 +26,15 @@
  * .aicf/archive/{date}-session.aicf (single line per conversation)
  *
  * Note: Works with session files from SessionConsolidationAgent (Phase 6.5)
- * Now uses aicf-core for enterprise-grade file operations
  */
 
 import { readdirSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { Ok, Err } from '../types/result.js';
 import type { Result } from '../types/result.js';
-import { AICFWriter } from 'aicf-core';
+
+// @deprecated - AICFWriter removed with AICF format
+// import { AICFWriter } from 'aicf-core';
 
 export interface DropoffStats {
   sessionFiles: number;
@@ -61,7 +64,8 @@ export class MemoryDropoffAgent {
   private mediumDir: string;
   private oldDir: string;
   private archiveDir: string;
-  private aicfWriter: AICFWriter;
+  // @deprecated - AICFWriter removed with AICF format
+  // private aicfWriter: AICFWriter;
 
   constructor(cwd: string = process.cwd()) {
     this.aicfDir = join(cwd, '.aicf');
@@ -69,7 +73,8 @@ export class MemoryDropoffAgent {
     this.mediumDir = join(this.aicfDir, 'medium');
     this.oldDir = join(this.aicfDir, 'old');
     this.archiveDir = join(this.aicfDir, 'archive');
-    this.aicfWriter = new AICFWriter(this.aicfDir);
+    // @deprecated - AICFWriter removed with AICF format
+    // this.aicfWriter = new AICFWriter(this.aicfDir);
   }
 
   /**
@@ -235,17 +240,21 @@ export class MemoryDropoffAgent {
         compressed = content; // No compression for sessions
       }
 
+      // @deprecated - AICFWriter removed with AICF format
       // Build relative file path for aicf-core
-      const targetFolderName = session.targetFolder;
-      const fileName = `${targetFolderName}/${session.fileName}`;
+      // const targetFolderName = session.targetFolder;
+      // const fileName = `${targetFolderName}/${session.fileName}`;
 
       // Use aicf-core's appendLine for enterprise-grade writes
       // This gives us: thread-safe locking, validation, PII redaction, error recovery
-      const writeResult = await this.aicfWriter.appendLine(fileName, compressed);
+      // const writeResult = await this.aicfWriter.appendLine(fileName, compressed);
 
-      if (!writeResult.ok) {
-        return Err(new Error(`Failed to write compressed file: ${writeResult.error.message}`));
-      }
+      // if (!writeResult.ok) {
+      //   return Err(new Error(`Failed to write compressed file: ${writeResult.error.message}`));
+      // }
+
+      // TODO: Implement new dropoff strategy using QuadIndex snapshots
+      return Err(new Error('MemoryDropoffAgent is deprecated - AICF format removed'));
 
       // Delete original file (only if write was successful)
       const fs = await import('fs/promises');

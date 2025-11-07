@@ -14,7 +14,8 @@
 
 import { writeFileSync, readFileSync, existsSync, unlinkSync } from 'fs';
 import chalk from 'chalk';
-import { AICFWriter } from 'aicf-core';
+// @deprecated - AICFWriter removed with AICF format
+// import { AICFWriter } from 'aicf-core';
 
 export interface WatcherManagerOptions {
   pidFile?: string;
