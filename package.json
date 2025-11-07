@@ -75,7 +75,6 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "aicf-core": "file:../aicf-core",
     "better-sqlite3": "^12.4.1",
     "chalk": "^5.3.0",
     "classic-level": "^3.0.0",

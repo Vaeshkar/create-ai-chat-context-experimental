@@ -37,8 +37,8 @@ import { WatcherConfigManager, type PlatformName } from '../core/WatcherConfigMa
 import { AugmentCacheWriter } from '../writers/AugmentCacheWriter.js';
 import { ClaudeCacheWriter } from '../writers/ClaudeCacheWriter.js';
 import { CacheConsolidationAgent } from '../agents/CacheConsolidationAgent.js';
-// import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js'; // Phase 7 - Disabled (not using session files yet)
-import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js';
+// import { MemoryDropoffAgent } from '../agents/MemoryDropoffAgent.js'; // Phase 7 - Disabled (using QuadIndex snapshots now)
+// import { SessionConsolidationAgent } from '../agents/SessionConsolidationAgent.js'; // Phase 6.5 - Disabled (using .lill/raw/ + QuadIndex now)
 import { DaemonManager } from '../utils/DaemonManager.js';
 import { HealthCheck } from '../utils/HealthCheck.js';
 import {
@@ -46,9 +46,10 @@ import {
   type ExtractedRelationship,
   type ExtractedHypothetical,
   type ExtractedRejected,
-} from 'aicf-core';
+} from 'lill-core';
 import { QuadIndex, SnapshotManager, ConceptResolver, type Principle } from 'lill-core';
 import { ConversationOrchestrator } from '../orchestrators/ConversationOrchestrator.js';
+import { ReasoningExtractor } from '../extractors/ReasoningExtractor.js';
 import type { Message } from '../types/conversation.js';
 
 interface WatcherCommandOptions {
@@ -79,8 +80,8 @@ export class WatcherCommand {
   private augmentCacheWriter: AugmentCacheWriter;
   private claudeCacheWriter: ClaudeCacheWriter;
   private cacheConsolidationAgent: CacheConsolidationAgent;
-  private sessionConsolidationAgent: SessionConsolidationAgent;
-  // private memoryDropoffAgent: MemoryDropoffAgent; // Phase 7 - Disabled
+  // private sessionConsolidationAgent: SessionConsolidationAgent; // Phase 6.5 - Disabled (using .lill/raw/ + QuadIndex now)
+  // private memoryDropoffAgent: MemoryDropoffAgent; // Phase 7 - Disabled (using QuadIndex snapshots now)
   private conversationWatcher: ConversationWatcher;
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
@@ -128,8 +129,8 @@ export class WatcherCommand {
     this.augmentCacheWriter = new AugmentCacheWriter(this.cwd);
     this.claudeCacheWriter = new ClaudeCacheWriter(this.cwd);
     this.cacheConsolidationAgent = new CacheConsolidationAgent(this.cwd);
-    this.sessionConsolidationAgent = new SessionConsolidationAgent(this.cwd);
-    // this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd); // Phase 7 - Disabled
+    // this.sessionConsolidationAgent = new SessionConsolidationAgent(this.cwd); // Phase 6.5 - Disabled (using .lill/raw/ + QuadIndex now)
+    // this.memoryDropoffAgent = new MemoryDropoffAgent(this.cwd); // Phase 7 - Disabled (using QuadIndex snapshots now)
 
     // Initialize QuadIndex and SnapshotManager FIRST (before ConversationWatcher)
     this.quadIndex = new QuadIndex();
@@ -579,11 +580,11 @@ export class WatcherCommand {
     // 2. Consolidate cache chunks into individual conversation files
     this.consolidateCacheChunks();
 
-    // 3. Consolidate individual files into session files (Phase 6.5)
-    this.consolidateSessionFiles();
+    // 3. Consolidate individual files into session files (Phase 6.5) - DISABLED (using .lill/raw/ + QuadIndex now)
+    // this.consolidateSessionFiles();
 
-    // 4. Run memory dropoff (Phase 7) - compress sessions by age
-    // this.runMemoryDropoff(); // Phase 7 - Disabled (not using session files yet)
+    // 4. Run memory dropoff (Phase 7) - compress sessions by age - DISABLED (using QuadIndex snapshots now)
+    // this.runMemoryDropoff();
   }
 
   /**
@@ -646,7 +647,10 @@ export class WatcherCommand {
   /**
    * Consolidate individual conversation files into session files (Phase 6.5)
    * Groups conversations by date and creates clean, AI-readable session files
+   *
+   * DISABLED: Using .lill/raw/ + QuadIndex now instead of .aicf/sessions/
    */
+  /*
   private consolidateSessionFiles(): void {
     this.sessionConsolidationAgent.consolidate().then((result) => {
       if (result.ok) {
@@ -675,6 +679,7 @@ export class WatcherCommand {
       }
     });
   }
+  */
 
   /**
    * Run memory dropoff agent (Phase 7)
@@ -937,7 +942,50 @@ export class WatcherCommand {
               }))
             : [];
 
-          // Format as conversation JSON (same format as 2025-10-31_conversation.json)
+          // ✅ Phase 4b: Extract reasoning (hypotheticals + rejected alternatives)
+          const reasoningExtractor = new ReasoningExtractor();
+          const timestamp = conversation.timestamp || new Date().toISOString();
+          const conversationId = conversation.conversationId || 'unknown';
+          const reasoningResult = reasoningExtractor.extract({
+            metadata: {
+              conversationId: conversationId as string,
+              date: new Date(timestamp).toISOString().split('T')[0] as string,
+              platform: 'augment-leveldb' as string,
+            },
+            messages,
+          });
+
+          // Index hypotheticals to QuadIndex
+          for (const hypothetical of reasoningResult.hypotheticals) {
+            const result = this.quadIndex.addHypothetical(hypothetical);
+            if (!result.success && this.verbose) {
+              this.logger.debug(`Failed to index hypothetical: ${hypothetical.id}`, {
+                error: result.error,
+              });
+            }
+          }
+
+          // Index rejected alternatives to QuadIndex
+          for (const rejected of reasoningResult.rejectedAlternatives) {
+            const result = this.quadIndex.addRejected(rejected);
+            if (!result.success && this.verbose) {
+              this.logger.debug(`Failed to index rejected alternative: ${rejected.id}`, {
+                error: result.error,
+              });
+            }
+          }
+
+          if (
+            this.verbose &&
+            (reasoningResult.hypotheticals.length > 0 ||
+              reasoningResult.rejectedAlternatives.length > 0)
+          ) {
+            this.logger.debug(
+              `Extracted reasoning: ${reasoningResult.hypotheticals.length} hypotheticals, ${reasoningResult.rejectedAlternatives.length} rejected`
+            );
+          }
+
+          // Format as conversation JSON (NEW format with messages field)
           const conversationData = {
             metadata: {
               conversationId: conversation.conversationId,
@@ -960,6 +1008,7 @@ export class WatcherCommand {
               participants: ['user_dennis', 'assistant_augment'],
               flow: [],
             },
+            messages, // ✅ NEW: Include full messages array for Phase 3
             key_exchanges: keyExchanges,
             decisions, // ✅ Now populated by DecisionExtractor
             insights, // ✅ Now populated by TechnicalWorkExtractor

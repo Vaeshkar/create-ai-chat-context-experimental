@@ -6,19 +6,15 @@
 
 /**
  * Memory File Writer
- * Writes analysis results to .aicf and .ai memory files
- * Phase 2.4: Integration - October 2025
- * Phase 8: Enhanced with aicf-core v2.1.0 integration - October 2025
- * Phase 1 (AETHER Consolidation): Enhanced with AICF v3.1 bridge - October 2025
+ * Writes analysis results to JSON files in .lill/raw/
  *
- * NOW USES aicf-core v2.2.0 AICEToAICFBridge:
- * - AICF v3.1 format with semantic tags
- * - Proper memory categorization (episodic, semantic, procedural)
- * - Multi-file architecture (sessions, conversations, decisions, memories)
- * - Enterprise-grade file operations
+ * AETHER Consolidation (November 2025):
+ * - Removed AICF format dependency
+ * - Writes JSON directly to .lill/raw/
+ * - ConversationWatcher indexes JSON to QuadIndex
+ * - Simplified architecture: JSON → QuadIndex → Snapshots
  */
 
-import { AICEToAICFBridge } from 'aicf-core';
 import type { AnalysisResult, Result, Conversation } from '../types/index.js';
 import { Ok, Err } from '../types/index.js';
 import { join } from 'path';
@@ -27,21 +23,19 @@ import { PathValidator } from '../utils/PathValidator.js';
 import { AuditLogger } from '../utils/AuditLogger.js';
 
 /**
- * Writer for memory files (.aicf and .ai formats)
- * Uses aicf-core v2.2.0 bridge for AICF v3.1 format
- * Keeps markdown generation local (not in aicf-core)
+ * Writer for memory files (JSON format)
+ * AICF format removed - now writes JSON directly to .lill/raw/
+ * Part of AETHER consolidation (November 2025)
  */
 export class MemoryFileWriter {
-  private bridge: AICEToAICFBridge;
   private cwd: string;
   private rawDir: string;
   private auditLogger: AuditLogger;
 
   constructor(cwd: string = process.cwd()) {
     this.cwd = cwd;
-    const lillDir = join(cwd, '.lill'); // Phase 6: Use .lill/ not .aicf/
+    const lillDir = join(cwd, '.lill');
     this.rawDir = join(lillDir, 'raw');
-    this.bridge = new AICEToAICFBridge(lillDir); // Phase 6: Use .lill/ not .aicf/
     this.auditLogger = new AuditLogger(cwd);
   }
 
@@ -91,7 +85,7 @@ export class MemoryFileWriter {
   }
 
   // ============================================================================
-  // Markdown Generation (Local - Not in aicf-core)
+  // Markdown Generation (Local)
   // ============================================================================
 
   /**
@@ -157,10 +151,10 @@ export class MemoryFileWriter {
 
   /**
    * Write clean JSON to .lill/raw/ directory (FIXED - NO TRUNCATION)
-   * This is the new primary method - outputs structured JSON for AICF-Core watcher to process
+   * This is the primary method - outputs structured JSON for ConversationWatcher to process
    *
    * Layer 2: Code Guards - Manual validation using PathValidator:
-   * - Pre-validation: Checks if path is allowed for writing (line 185-195)
+   * - Pre-validation: Checks if path is allowed for writing
    * - Audit logging: Logs violations to .lill/.audit.log
    * - Blocks write if validation fails
    *
@@ -335,9 +329,9 @@ export class MemoryFileWriter {
 
   /**
    * Write AICF v3.1 format to multiple semantic files
-   * Uses aicf-core v2.2.0 bridge to transform AnalysisResult into proper AICF v3.1 format
    *
-   * @deprecated Use writeJSON() instead - new pipeline uses JSON → AICF-Core watcher → AICF v3.1
+   * @deprecated AICF format removed - use writeJSON() instead
+   * New pipeline: JSON → ConversationWatcher → QuadIndex → Snapshots
    *
    * Writes to multiple files:
    * - sessions.aicf - Session metadata and metrics

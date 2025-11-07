@@ -19,7 +19,7 @@ import { existsSync, readdirSync } from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
 import { QuadIndex, SnapshotManager, type Principle } from 'lill-core';
-import { AugmentMemoriesParser, type AugmentMemoriesResult } from 'aicf-core';
+import { AugmentMemoriesParser, type AugmentMemoriesResult } from 'lill-core';
 
 interface BuildIndexFromMemoriesCommandOptions {
   cwd?: string;
