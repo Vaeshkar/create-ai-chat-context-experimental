@@ -710,6 +710,10 @@ program
   .option('-v, --verbose', 'Show detailed output')
   .option('-q, --quadindex', 'Query all 4 stores (Vector, Metadata, Graph, Reasoning)')
   .option('-l, --lill', 'Full LILL context (4 stores + relationships + conversations + reasoning)')
+  .option('--no-relevance-scoring', 'Disable new relevance scoring (use legacy confidence-only)')
+  .option('--conversation-id <id>', 'Current conversation ID (for context boosting)')
+  .option('--min-relevance-score <number>', 'Minimum final score threshold (0-1)', '0')
+  .option('--show-scoring-breakdown', 'Show detailed scoring breakdown (Phase 1, 2, 3)')
   .action(async (text, options) => {
     try {
       // Phase 4c: Handle shortcut flags
@@ -739,6 +743,11 @@ program
         offset: parseInt(options.offset, 10),
         json: options.json,
         verbose: options.verbose,
+        // NEW: Relevance scoring options (Phase 1, 2, 3)
+        useRelevanceScoring: options.relevanceScoring !== false, // Default: true
+        currentConversationId: options.conversationId,
+        minRelevanceScore: parseFloat(options.minRelevanceScore || '0'),
+        showScoringBreakdown: options.showScoringBreakdown,
       });
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));

@@ -85,7 +85,7 @@ export class ValidateCommand {
       }
 
       // Add updated principle
-      const addResult = this.quadIndex.addPrinciple(updatedPrinciple);
+      const addResult = await this.quadIndex.addPrincipleAsync(updatedPrinciple);
       if (!addResult.success) {
         console.error(chalk.red('❌ Failed to add updated principle:'), addResult.error);
         process.exit(1);
@@ -180,7 +180,7 @@ export class ValidateCommand {
         }
 
         // Add updated principle
-        const addResult = this.quadIndex.addPrinciple(updatedPrinciple);
+        const addResult = await this.quadIndex.addPrincipleAsync(updatedPrinciple);
         if (!addResult.success) {
           console.error(chalk.red(`❌ Failed to add updated ${principleId}:`), addResult.error);
           failed++;

@@ -13,6 +13,8 @@ import {
 } from 'lill-core';
 import { join } from 'node:path';
 import type { QuadQuery, QuadRetrievalResult } from '../types/quad-index.js';
+// Import relevance scoring utilities for breakdown display
+import { calculateScoringBreakdown } from '../../../lill-core/src/utils/relevance-scoring.js';
 
 export interface QuadIndexQueryOptions {
   cwd?: string;
@@ -28,6 +30,11 @@ export interface QuadIndexQueryOptions {
   offset?: number;
   verbose?: boolean;
   json?: boolean; // Output as JSON for AI consumption
+  // NEW: Relevance scoring options (Phase 1, 2, 3)
+  useRelevanceScoring?: boolean; // Default: true
+  currentConversationId?: string; // For context boosting
+  minRelevanceScore?: number; // Minimum final score threshold (0-1)
+  showScoringBreakdown?: boolean; // Show detailed scoring breakdown
 }
 
 export class QuadIndexQueryCommand {
@@ -35,6 +42,7 @@ export class QuadIndexQueryCommand {
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
   private conversationIndexer: ConversationToQuadIndexer;
+  private lastQuery?: QuadQuery; // Store last query for scoring breakdown
 
   constructor(options?: { cwd?: string }) {
     this.cwd = options?.cwd ?? process.cwd();
@@ -73,6 +81,7 @@ export class QuadIndexQueryCommand {
 
       // Step 2: Build query
       const query = this.buildQuery(queryText, options);
+      this.lastQuery = query; // Store for scoring breakdown
 
       // Step 3: Execute query
       if (!options.json && options.verbose) {
@@ -131,6 +140,19 @@ export class QuadIndexQueryCommand {
       query.models = options.models;
     }
 
+    // Add relevance scoring options (NEW - Phase 1, 2, 3)
+    if (options.useRelevanceScoring !== undefined) {
+      query.useRelevanceScoring = options.useRelevanceScoring;
+    }
+
+    if (options.currentConversationId) {
+      query.currentConversationId = options.currentConversationId;
+    }
+
+    if (options.minRelevanceScore !== undefined) {
+      query.minRelevanceScore = options.minRelevanceScore;
+    }
+
     // Add store-specific options
     switch (options.store) {
       case 'vector':
@@ -174,17 +196,50 @@ export class QuadIndexQueryCommand {
       if (!principle) continue; // Skip if undefined (shouldn't happen but satisfies TypeScript)
 
       const score = data.scores[i] || 0;
-      // Use score (effective confidence with decay) instead of base confidence
-      const effectiveConfidence = score;
 
       console.log(chalk.bold(`${i + 1}. ${principle.id}: ${principle.name}`));
       console.log(chalk.gray(`   Intent: ${principle.intent}`));
       console.log(chalk.gray(`   Status: ${principle.status}`));
       console.log(
         chalk.gray(
-          `   Confidence: ${(effectiveConfidence * 100).toFixed(0)}% | Score: ${(score * 100).toFixed(0)}%`
+          `   Confidence: ${(principle.confidence * 100).toFixed(0)}% | Score: ${(score * 100).toFixed(0)}%`
         )
       );
+
+      // Show scoring breakdown if requested (NEW - Phase 1, 2, 3)
+      if (options.showScoringBreakdown && this.lastQuery?.text) {
+        const breakdown = calculateScoringBreakdown(principle, score, {
+          currentConversationId: this.lastQuery.currentConversationId,
+          applyTimeDecay: this.lastQuery.applyConfidenceDecay !== false,
+          applyContextBoost: this.lastQuery.applyContextBoost !== false,
+          applyRecencyBoost: this.lastQuery.applyRecencyBoost !== false,
+        });
+
+        console.log(chalk.cyan('   📊 Scoring Breakdown:'));
+        console.log(
+          chalk.gray(`      Semantic Relevance: ${(breakdown.semanticRelevance * 100).toFixed(1)}%`)
+        );
+        console.log(
+          chalk.gray(`      Base Confidence: ${(breakdown.confidence * 100).toFixed(1)}%`)
+        );
+        console.log(chalk.gray(`      Base Score: ${(breakdown.baseScore * 100).toFixed(1)}%`));
+        console.log(
+          chalk.gray(
+            `      Time Decay: ${(breakdown.decayFactor * 100).toFixed(1)}% (${breakdown.decayStatus})`
+          )
+        );
+        console.log(
+          chalk.gray(
+            `      Context Boost: ${(breakdown.contextBoost * 100).toFixed(1)}% (${breakdown.contextReason})`
+          )
+        );
+        console.log(
+          chalk.gray(
+            `      Recency Boost: ${(breakdown.recencyBoost * 100).toFixed(1)}% (${breakdown.recencyReason})`
+          )
+        );
+        console.log(chalk.gray(`      Final Score: ${(breakdown.finalScore * 100).toFixed(1)}%`));
+      }
 
       if (options.verbose && principle.sources && principle.sources.length > 0) {
         console.log(chalk.gray(`   Source: ${principle.sources[0]}`));

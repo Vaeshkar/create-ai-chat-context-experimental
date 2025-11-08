@@ -31,6 +31,13 @@ export interface QuadQuery extends PrincipleQuery {
 
   // Query explain options
   explain?: boolean;
+
+  // NEW: Relevance scoring options (Phase 1, 2, 3)
+  useRelevanceScoring?: boolean; // Default: true
+  currentConversationId?: string; // For context boosting
+  applyContextBoost?: boolean; // Default: true
+  applyRecencyBoost?: boolean; // Default: true
+  minRelevanceScore?: number; // Minimum final score threshold (0-1)
 }
 
 /**

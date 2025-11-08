@@ -17,3 +17,4 @@ export * from './ErrorUtils.js';
 export * from './ValidationUtils.js';
 export * from './PathValidator.js';
 export * from './AuditLogger.js';
+export * from './GitCryptManager.js';

@@ -28,7 +28,7 @@
  * Note: Works with session files from SessionConsolidationAgent (Phase 6.5)
  */
 
-import { readdirSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import { readdirSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { Ok, Err } from '../types/result.js';
 import type { Result } from '../types/result.js';
@@ -226,7 +226,7 @@ export class MemoryDropoffAgent {
 
       // Read original content (still using readFileSync for now)
       // TODO: Consider using aicf-core's reader for consistency
-      const _content = readFileSync(session.filePath, 'utf-8');
+      // const _content = readFileSync(session.filePath, 'utf-8');
 
       // Compress based on target folder
       // @deprecated - No longer used since AICF format removed

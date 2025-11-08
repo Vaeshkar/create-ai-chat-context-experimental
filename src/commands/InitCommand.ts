@@ -34,6 +34,7 @@ import { DaemonController } from '../utils/DaemonController.js';
 import { showBanner } from '../utils/AetherBanner.js';
 import { ClaudeCliWatcher } from '../watchers/ClaudeCliWatcher.js';
 import { ClaudeDesktopWatcher } from '../watchers/ClaudeDesktopWatcher.js';
+import { GitCryptManager } from '../utils/GitCryptManager.js';
 
 export interface InitCommandOptions {
   cwd?: string;
@@ -178,6 +179,21 @@ export class InitCommand {
       // Step 12: Initial import (if requested)
       if (shouldImport) {
         console.log(chalk.cyan('\n📦 Initial import will be performed when watcher starts...'));
+      }
+
+      // Step 12.5: Ask about encryption
+      const shouldEncrypt = await this.askEncryption();
+      if (shouldEncrypt) {
+        const encryptResult = await this.setupEncryption(spinner);
+        if (!encryptResult.ok) {
+          console.log(chalk.yellow('\n⚠️  Encryption setup failed, continuing without encryption'));
+          console.log(chalk.dim(`   Error: ${encryptResult.error.message}`));
+        }
+      } else {
+        console.log();
+        console.log(chalk.dim('ℹ️  .lill/ will stay local only (not backed up to GitHub)'));
+        console.log(chalk.dim('   You can enable encryption later with: aether encrypt'));
+        console.log();
       }
 
       // Step 13: Ask to start AETHER services (Watcher + Guardian)
@@ -639,6 +655,75 @@ export class InitCommand {
       watcher: watcherAnswer.start,
       guardian: guardianAnswer.start,
     };
+  }
+
+  /**
+   * Ask if user wants to encrypt .lill/ directory
+   */
+  private async askEncryption(): Promise<boolean> {
+    console.log();
+    console.log(chalk.cyan('🔐 Memory Encryption'));
+    console.log();
+    console.log('AETHER can encrypt your .lill/ directory before committing to GitHub.');
+    console.log();
+    console.log(chalk.dim('Benefits:'));
+    console.log(chalk.dim('  ✓ Conversations stay private (encrypted with AES-256)'));
+    console.log(chalk.dim('  ✓ Backup to GitHub (disaster recovery)'));
+    console.log(chalk.dim('  ✓ Version history (see how AI understanding evolved)'));
+    console.log(chalk.dim('  ✓ Team sharing (share encryption key with team)'));
+    console.log();
+    console.log(chalk.dim('Requirements:'));
+    console.log(chalk.dim('  • git-crypt (will be installed automatically)'));
+    console.log(chalk.dim('  • Encryption key management (stored in ~/.aether-keys/)'));
+    console.log();
+    console.log(chalk.yellow('⚠️  Without encryption, .lill/ stays local only (no backup)'));
+    console.log();
+
+    const answer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'encrypt',
+        message: 'Encrypt .lill/ directory and backup to GitHub?',
+        default: true,
+      },
+    ]);
+
+    return answer.encrypt;
+  }
+
+  /**
+   * Setup encryption using git-crypt
+   */
+  private async setupEncryption(spinner: Ora): Promise<Result<void>> {
+    try {
+      const gitCrypt = new GitCryptManager(this.cwd);
+
+      spinner.start('Setting up encryption...');
+
+      const result = await gitCrypt.setup();
+
+      if (!result.ok) {
+        spinner.fail('Failed to setup encryption');
+        return Err(result.error);
+      }
+
+      spinner.succeed('Encryption setup complete');
+
+      console.log();
+      console.log(chalk.green('✓ Encryption configured successfully!'));
+      console.log();
+      console.log(chalk.cyan('📝 Next steps:'));
+      console.log(chalk.dim('  1. Encryption key saved to: ' + result.value.keyPath));
+      console.log(chalk.dim('  2. Add key to password manager'));
+      console.log(chalk.dim('  3. Commit changes: git add .gitattributes .gitignore .lill/'));
+      console.log(chalk.dim('  4. Push to GitHub: git push'));
+      console.log();
+
+      return Ok(undefined);
+    } catch (error) {
+      spinner.fail('Encryption setup failed');
+      return Err(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**

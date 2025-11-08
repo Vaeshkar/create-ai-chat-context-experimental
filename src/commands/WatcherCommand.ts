@@ -173,7 +173,7 @@ export class WatcherCommand {
         };
 
         // Index principle to QuadIndex
-        const result = this.quadIndex.addPrinciple(fullPrinciple);
+        const result = await this.quadIndex.addPrincipleAsync(fullPrinciple);
 
         if (!result.success) {
           this.logger.error(`Failed to index principle: ${principle.id}`, {

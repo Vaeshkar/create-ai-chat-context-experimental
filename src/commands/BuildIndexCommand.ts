@@ -130,7 +130,7 @@ export class BuildIndexCommand {
           context: principle.conversationId,
         };
 
-        const result = this.quadIndex.addPrinciple(fullPrinciple);
+        const result = await this.quadIndex.addPrincipleAsync(fullPrinciple);
         if (result.success) {
           this.totalPrinciples++;
         }
