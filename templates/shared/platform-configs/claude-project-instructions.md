@@ -5,7 +5,7 @@
 **CRITICAL: Before every response, you MUST:**
 
 1. **Read .ai-instructions** - Universal AI assistant entry point
-2. **Check .ai/conversation-log.md** - Recent work and decisions  
+2. **Check .ai/conversation-log.md** - Recent work and decisions
 3. **Review .ai/rules/** - All project-specific rules and guidelines
 4. **Query recent principles** - Check .lill/snapshots/ for latest insights
 
@@ -16,14 +16,16 @@
 **Architecture:** Monorepo with git submodules
 
 **Key Packages:**
-- `packages/aice/` - AI Conversation Extractor
-- `packages/aicf-core/` - AI Context Format
-- `packages/lill-core/` - Learning & Intelligence Layer
-- `packages/lill-meta/` - Meta-learning engine
+
+- `packages/aether/` - AETHER CLI (main package with watcher, QuadIndex, commands)
+- `packages/aicf-core/` - AI Context Format (legacy, being phased out)
+- `packages/lill-core/` - Learning & Intelligence Layer (QuadIndex, storage)
+- `packages/lill-meta/` - Meta-learning engine (principle extraction)
 
 ## 🚫 Protected Files (NEVER Auto-Modify)
 
 These files are manual documentation only:
+
 - `.ai/code-style.md`
 - `.ai/design-system.md`
 - `.ai/npm-publishing-checklist.md`
@@ -31,22 +33,26 @@ These files are manual documentation only:
 - `.ai/conversation-log.md`
 
 **Auto-generated data goes to:**
+
 - `.lill/raw/` - Conversation exports and principles
 - `.cache/llm/` - Platform-specific cache data
 
 ## 🔧 Development Standards
 
 ### **TypeScript & Code Quality**
+
 - Strict mode enabled - no `any` types
 - Use Result<T> pattern for error handling
 - No throwing errors - return Result<T, Error>
 - Follow existing command patterns
 
 ### **Package Management**
+
 - Use npm/pnpm commands, not manual package.json edits
 - Respect submodule workflow: commit to submodule first, then parent
 
 ### **Testing Philosophy**
+
 - Write tests for new functionality
 - Use existing test utilities and patterns
 - Run `npm test` before committing
@@ -56,9 +62,11 @@ These files are manual documentation only:
 **CRITICAL: Before ending our conversation:**
 
 1. **Update conversation log:**
+
    ```bash
    aether finish
    ```
+
    OR manually update `.ai/conversation-log.md`
 
 2. **Commit changes with meaningful messages**
@@ -72,6 +80,7 @@ These files are manual documentation only:
 ## 🎯 Quality Checklist
 
 Before completing any task:
+
 - [ ] Read project context and rules
 - [ ] Used proper error handling (Result<T>)
 - [ ] Wrote/updated tests if applicable
@@ -90,7 +99,7 @@ aether watch          # Start continuous learning
 aether status         # Check system health
 aether query "text"   # Search principles
 
-# Session management  
+# Session management
 aether finish         # End session properly
 aether install-hooks  # Git reminders
 
@@ -102,8 +111,9 @@ npm run build        # Build packages
 ## 🧠 Memory System Integration
 
 This project uses **LILL-MQ (QuadIndex)** for intelligent memory:
+
 - **VectorStore** - Semantic search
-- **MetadataStore** - Exact filters  
+- **MetadataStore** - Exact filters
 - **GraphStore** - Relationships
 - **ReasoningStore** - Alternatives and lessons
 

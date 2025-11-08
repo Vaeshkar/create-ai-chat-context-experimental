@@ -345,17 +345,19 @@ export class ReasoningExtractor {
    * Extract hypotheticals from decision objects
    */
   private extractFromDecision(
-    decision: RawConversation['decisions'][number],
+    decision: NonNullable<RawConversation['decisions']>[number],
     conversationId: string
   ): Hypothetical[] {
     const hypotheticals: Hypothetical[] = [];
 
     if (decision.alternatives_considered && Array.isArray(decision.alternatives_considered)) {
-      const alternatives: Alternative[] = decision.alternatives_considered.map((alt: string) => ({
-        option: alt,
-        status: 'deferred' as AlternativeStatus,
-        reason: 'Listed as alternative',
-      }));
+      const alternatives: Alternative[] = (decision.alternatives_considered as string[]).map(
+        (alt: string) => ({
+          option: alt,
+          status: 'deferred' as AlternativeStatus,
+          reason: 'Listed as alternative',
+        })
+      );
 
       hypotheticals.push({
         id: this.generateId(decision.decision, conversationId),

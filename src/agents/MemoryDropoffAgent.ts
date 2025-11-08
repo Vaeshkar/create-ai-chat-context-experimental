@@ -226,19 +226,19 @@ export class MemoryDropoffAgent {
 
       // Read original content (still using readFileSync for now)
       // TODO: Consider using aicf-core's reader for consistency
-      const content = readFileSync(session.filePath, 'utf-8');
+      const _content = readFileSync(session.filePath, 'utf-8');
 
       // Compress based on target folder
       // @deprecated - No longer used since AICF format removed
-      let _compressed: string;
+      // Compression logic disabled but kept for reference
       if (session.targetFolder === 'medium') {
-        _compressed = this.compressToSummary(content, session);
+        // _compressed = this.compressToSummary(content, session);
       } else if (session.targetFolder === 'old') {
-        _compressed = this.compressToKeyPoints(content, session);
+        // _compressed = this.compressToKeyPoints(content, session);
       } else if (session.targetFolder === 'archive') {
-        _compressed = this.compressToSingleLine(content, session);
+        // _compressed = this.compressToSingleLine(content, session);
       } else {
-        _compressed = content; // No compression for sessions
+        // _compressed = content; // No compression for sessions
       }
 
       // @deprecated - AICFWriter removed with AICF format
@@ -273,7 +273,9 @@ export class MemoryDropoffAgent {
    * Compress to SUMMARY format (2-7 days)
    * Keep: Only conversations with explicit decisions or actions
    * Remove: Conversations with "No explicit decisions" and "No explicit actions"
+   * @deprecated - AICF format removed
    */
+  // @ts-expect-error - Unused method (deprecated with AICF format)
   private compressToSummary(content: string, session: SessionAge): string {
     const lines = content.split('\n');
     const compressed: string[] = [];
@@ -326,7 +328,9 @@ export class MemoryDropoffAgent {
   /**
    * Compress to KEY POINTS format (7-14 days)
    * Keep: Only DECISIONS and ACTIONS columns, remove TITLE and SUMMARY
+   * @deprecated - AICF format removed
    */
+  // @ts-expect-error - Unused method (deprecated with AICF format)
   private compressToKeyPoints(content: string, session: SessionAge): string {
     const lines = content.split('\n');
     const compressed: string[] = [];
@@ -383,7 +387,9 @@ export class MemoryDropoffAgent {
   /**
    * Compress to SINGLE LINE format (14+ days)
    * Keep: Only one line per conversation with timestamp and summary
+   * @deprecated - AICF format removed
    */
+  // @ts-expect-error - Unused method (deprecated with AICF format)
   private compressToSingleLine(content: string, session: SessionAge): string {
     const lines = content.split('\n');
     const compressed: string[] = [];

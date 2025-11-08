@@ -120,7 +120,9 @@ export class VisualizeGraphCommand {
     const hypotheticals = (hypotheticalsResult.success ? hypotheticalsResult.data : []) || [];
 
     console.log('📊 Data Summary:');
-    console.log(`   Conversations: ${nodes.filter((n) => n.type === 'conversation').length}`);
+    console.log(
+      `   Conversations: ${nodes.filter((n: { type: string }) => n.type === 'conversation').length}`
+    );
     console.log(`   Principles: ${principles.length}`);
     console.log(`   Hypotheticals: ${hypotheticals.length}`);
     console.log(`   Relationships: ${edges.length}\n`);

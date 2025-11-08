@@ -299,44 +299,51 @@ export class WatcherLogger {
       );
       const errorEntries = entriesToWrite.filter((e) => e.level === 'error');
 
+      // @deprecated - AICF format removed, keeping for reference
       // Write checkpoint events
-      for (const entry of checkEntries) {
-        await this.aicfWriter.appendLine(
-          '.watcher-events.aicf',
-          `@WATCHER_CHECK|timestamp=${entry.timestamp.toISOString()}|event=checkpoint_check|status=${entry.level === 'error' ? 'error' : 'success'}|message=${entry.message}`
-        );
-      }
+      // for (const entry of checkEntries) {
+      //   await this.aicfWriter.appendLine(
+      //     '.watcher-events.aicf',
+      //     `@WATCHER_CHECK|timestamp=${entry.timestamp.toISOString()}|event=checkpoint_check|status=${entry.level === 'error' ? 'error' : 'success'}|message=${entry.message}`
+      //   );
+      // }
 
       // Write parse events
-      for (const entry of parseEntries) {
-        await this.aicfWriter.appendLine(
-          '.watcher-events.aicf',
-          `@WATCHER_PARSE|timestamp=${entry.timestamp.toISOString()}|event=conversation_parse|status=${entry.level === 'error' ? 'error' : 'success'}|message=${entry.message}`
-        );
-      }
+      // for (const entry of parseEntries) {
+      //   await this.aicfWriter.appendLine(
+      //     '.watcher-events.aicf',
+      //     `@WATCHER_PARSE|timestamp=${entry.timestamp.toISOString()}|event=conversation_parse|status=${entry.level === 'error' ? 'error' : 'success'}|message=${entry.message}`
+      //   );
+      // }
 
       // Write file write events
-      for (const entry of writeEntries) {
-        await this.aicfWriter.appendLine(
-          '.watcher-events.aicf',
-          `@WATCHER_WRITE|timestamp=${entry.timestamp.toISOString()}|event=files_written|status=${entry.level === 'error' ? 'error' : 'success'}|message=${entry.message}`
-        );
-      }
+      // for (const entry of writeEntries) {
+      //   await this.aicfWriter.appendLine(
+      //     '.watcher-events.aicf',
+      //     `@WATCHER_WRITE|timestamp=${entry.timestamp.toISOString()}|event=files_written|status=${entry.level === 'error' ? 'error' : 'success'}|message=${entry.message}`
+      //   );
+      // }
 
       // Write error events
-      for (const entry of errorEntries) {
-        await this.aicfWriter.appendLine(
-          '.watcher-events.aicf',
-          `@WATCHER_ERROR|timestamp=${entry.timestamp.toISOString()}|event=watcher_error|status=error|message=${entry.message}`
-        );
-      }
+      // for (const entry of errorEntries) {
+      //   await this.aicfWriter.appendLine(
+      //     '.watcher-events.aicf',
+      //     `@WATCHER_ERROR|timestamp=${entry.timestamp.toISOString()}|event=watcher_error|status=error|message=${entry.message}`
+      //   );
+      // }
 
       // Write summary
-      const stats = this.getStats();
-      await this.aicfWriter.appendLine(
-        '.watcher-events.aicf',
-        `@WATCHER_SUMMARY|timestamp=${new Date().toISOString()}|event=cycle_summary|total_entries=${entriesToWrite.length}|info=${stats.info}|success=${stats.success}|warning=${stats.warning}|error=${stats.error}|debug=${stats.debug}`
-      );
+      // const stats = this.getStats();
+      // await this.aicfWriter.appendLine(
+      //   '.watcher-events.aicf',
+      //   `@WATCHER_SUMMARY|timestamp=${new Date().toISOString()}|event=cycle_summary|total_entries=${entriesToWrite.length}|info=${stats.info}|success=${stats.success}|warning=${stats.warning}|error=${stats.error}|debug=${stats.debug}`
+      // );
+
+      // Suppress unused variable warnings
+      void checkEntries;
+      void parseEntries;
+      void writeEntries;
+      void errorEntries;
 
       return { ok: true };
     } catch (error) {

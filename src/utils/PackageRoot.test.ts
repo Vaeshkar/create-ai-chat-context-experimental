@@ -38,7 +38,7 @@ describe('PackageRoot', () => {
       const packageRoot = getPackageRoot();
       const packageJsonPath = join(packageRoot, 'package.json');
       const packageJson = require(packageJsonPath);
-      expect(packageJson.name).toBe('create-ai-chat-context-experimental');
+      expect(packageJson.name).toBe('aether');
     });
 
     it('should return consistent results on multiple calls', () => {

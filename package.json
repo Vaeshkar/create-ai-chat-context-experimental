@@ -1,5 +1,5 @@
 {
-  "name": "create-ai-chat-context-experimental",
+  "name": "aether",
   "version": "3.2.4",
   "description": "AETHER - Distributed AI Mind with automatic memory consolidation. Features QuadIndex (4-store RAG), LILL-MQ (meta quantizer), deep thinking loop, and real-time conversation capture from Augment.",
   "type": "module",
@@ -65,12 +65,13 @@
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vaeshkar/create-ai-chat-context-experimental.git"
+    "url": "git+https://github.com/Vaeshkar/aether.git",
+    "directory": "packages/aether"
   },
   "bugs": {
-    "url": "https://github.com/Vaeshkar/create-ai-chat-context-experimental/issues"
+    "url": "https://github.com/Vaeshkar/aether/issues"
   },
-  "homepage": "https://github.com/Vaeshkar/create-ai-chat-context-experimental#readme",
+  "homepage": "https://github.com/Vaeshkar/aether#readme",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -79,7 +80,6 @@
     "chalk": "^5.3.0",
     "classic-level": "^3.0.0",
     "commander": "^12.1.0",
-    "create-ai-chat-context-experimental": "^3.2.0",
     "fs-extra": "^11.3.2",
     "glob": "^11.0.3",
     "inquirer": "^12.10.0",
