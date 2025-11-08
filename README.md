@@ -2,7 +2,7 @@
 
 **Automatic memory consolidation for AI conversations from Augment (more platforms coming soon).**
 
-## 🔐 Privacy First
+## 🔐 Privacy & Security First
 
 **This tool reads your private LLM conversations locally on your machine. It does NOT send data anywhere. It does NOT upload to cloud. It does NOT share with third parties.**
 
@@ -11,8 +11,9 @@
 - ✅ You can revoke access anytime
 - ✅ You can delete all data anytime
 - ✅ Complete audit trail of all access
+- ✅ **Optional encryption** - Encrypt `.lill/` for GitHub backup (AES-256)
 
-**[Read our Privacy Policy →](PRIVACY.md) | [Read our Security Policy →](SECURITY.md)**
+**[Read our Privacy Policy →](PRIVACY.md) | [Read our Security Policy →](SECURITY.md) | [Read Encryption Guide →](docs/ENCRYPTION.md)**
 
 ## 🎯 What Is This?
 
@@ -27,6 +28,7 @@ A system that automatically captures AI conversations from Augment and consolida
 - **AICF Format** - AI-optimized pipe-delimited format powered by [aicf-core v2.1.1](https://www.npmjs.com/package/aicf-core)
 - **Proper Escaping** - Handles multi-line content and special characters correctly
 - **Git Integration** - Automatic commits for version control
+- **🔐 Encrypted Backup** - Optional AES-256 encryption for `.lill/` directory (GitHub backup with privacy)
 - **Type-Safe** - Pure TypeScript with 100% type coverage
 
 ## 🚀 Quick Start
@@ -43,11 +45,53 @@ pnpm add create-ai-chat-context-experimental@latest
 
 ```bash
 # Initialize with automatic capture (Augment)
+# You'll be asked if you want to encrypt .lill/ for GitHub backup
 npx aether init --automatic
 
 # Initialize with manual mode (you update memory files manually)
 npx aether init --manual
 ```
+
+### 🔐 Encrypted Backup to GitHub
+
+During initialization or migration, AETHER will ask if you want to encrypt your `.lill/` directory:
+
+```
+🔐 Memory Encryption
+
+AETHER can encrypt your .lill/ directory before committing to GitHub.
+
+Benefits:
+  ✓ Conversations stay private (encrypted with AES-256)
+  ✓ Backup to GitHub (disaster recovery)
+  ✓ Version history (see how AI understanding evolved)
+  ✓ Team sharing (share encryption key with team)
+
+Requirements:
+  • git-crypt (will be installed automatically)
+  • Encryption key management (stored in ~/.aether-keys/)
+
+⚠️  Without encryption, .lill/ stays local only (no backup)
+
+? Enable encryption for .lill/ directory? (Y/n)
+```
+
+**If you enable encryption:**
+
+- ✅ git-crypt is installed automatically (via Homebrew on macOS)
+- ✅ Encryption key is saved to `~/.aether-keys/<project-name>-git-crypt-key`
+- ✅ `.lill/` is encrypted transparently on `git push`
+- ✅ Files are decrypted automatically when you `git clone` (after unlocking with key)
+
+**⚠️ IMPORTANT: Save your encryption key in 3 places:**
+
+1. Password manager (1Password, Bitwarden, LastPass)
+2. Printed paper (in a safe or safety deposit box)
+3. USB drive (encrypted, stored separately from computer)
+
+**If you lose the key, your data is GONE FOREVER.**
+
+**See [docs/ENCRYPTION.md](docs/ENCRYPTION.md) for complete documentation.**
 
 ### Use It
 
@@ -85,6 +129,7 @@ npx aether migrate
 
 - **[PRIVACY.md](PRIVACY.md)** - Privacy policy & data handling ⭐ **READ THIS FIRST**
 - **[SECURITY.md](SECURITY.md)** - Security architecture & audit logging
+- **[docs/ENCRYPTION.md](docs/ENCRYPTION.md)** - Encrypted backup guide (AES-256 encryption for GitHub)
 - **[CLI-COMMANDS.md](CLI-COMMANDS.md)** - Complete command reference
 
 ### Additional Documentation
