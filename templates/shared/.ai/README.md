@@ -24,7 +24,8 @@
 
 ### **3. Conversation Memory**
 
-- `.aicf/sessions/` - Recent conversation history (AICF format - AI-optimized)
+- `.lill/snapshots/` - QuadIndex snapshots (4-store RAG system)
+- `.lill/raw/` - Raw conversation JSON files (recent conversations)
 
 ---
 
@@ -116,7 +117,7 @@ Read .ai/rules/ folder first
 1. **Project context** - What this project does, how it's structured
 2. **Code standards** - How to write code that fits the project
 3. **Rules** - How to behave (load context, clean up, don't auto-modify)
-4. **Memory** - Recent conversation history in `.aicf/sessions/`
+4. **Memory** - QuadIndex snapshots in `.lill/snapshots/` (query with `aether quad-query`)
 
 **Result:** AI assistants can pick up where the last session left off, maintaining continuity across sessions and platforms.
 
@@ -131,7 +132,7 @@ Read .ai/rules/ folder first
 - [ ] Read `.ai/rules/protected-ai-files.md`
 - [ ] Read `.augment/project-overview.md`
 - [ ] Read `.ai/code-style.md`
-- [ ] Read most recent files in `.aicf/sessions/`
+- [ ] Query QuadIndex with `aether quad-query "recent decisions and context"`
 - [ ] Confirm you understand the project context
 
 **If you cannot complete this checklist, STOP and ask the user for help.**

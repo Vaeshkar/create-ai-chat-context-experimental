@@ -1,7 +1,7 @@
 # Design System - create-ai-chat-context
 
-**Last Updated:** 2025-10-03  
-**Status:** ✅ Current  
+**Last Updated:** 2025-10-03
+**Status:** ✅ Current
 **Project:** create-ai-chat-context NPM package
 
 ---
@@ -32,11 +32,12 @@ create-ai-chat-context/
 │   ├── next-steps.md      # Roadmap
 │   ├── design-system.md   # This file
 │   └── code-style.md      # Coding standards
-├── .aicf/                  # AI-optimized memory
+├── .lill/                  # AETHER memory system
 │   ├── README.md          # Instructions for AI
-│   ├── conversation-memory.aicf # Recent conversations
-│   ├── technical-context.aicf # Architecture and decisions
-│   └── work-state.aicf    # Current work status
+│   ├── raw/               # Raw conversation JSON files
+│   ├── snapshots/         # QuadIndex snapshots
+│   ├── storage/           # LevelDB storage
+│   └── logs/              # Watcher logs
 ├── src/                    # Source code (if applicable)
 ├── scripts/                # Utility scripts
 ├── templates/              # File templates for init command
@@ -50,25 +51,28 @@ create-ai-chat-context/
 
 ### Documentation Files
 
-**Format:** kebab-case with `.md` extension  
+**Format:** kebab-case with `.md` extension
 **Examples:**
+
 - `architecture.md`
 - `conversation-log.md`
 - `technical-decisions.md`
 - `known-issues.md`
 
-### AICF Files
+### Memory Files
 
-**Format:** kebab-case with `.aicf` extension  
+**Format:** JSON files in `.lill/raw/` directory
 **Examples:**
-- `conversation-memory.aicf`
-- `technical-context.aicf`
-- `work-state.aicf`
+
+- `.lill/raw/2025-11-08T10-00-00_conversation-123.json`
+- `.lill/snapshots/rolling.json`
+- `.lill/snapshots/daily-2025-11-08.json`
 
 ### Source Code Files
 
-**Format:** kebab-case for utilities, PascalCase for classes  
+**Format:** kebab-case for utilities, PascalCase for classes
 **Examples:**
+
 - `checkpoint-agent-sdk.js`
 - `checkpoint-agent-openai.js`
 - `test-run-agent.js`
@@ -84,8 +88,8 @@ All `.ai/` markdown files should follow this structure:
 ```markdown
 # Title
 
-**Last Updated:** [Date]  
-**Status:** ✅ Current / ⚠️ Outdated / 🚧 In Progress  
+**Last Updated:** [Date]
+**Status:** ✅ Current / ⚠️ Outdated / 🚧 In Progress
 
 ---
 
@@ -102,36 +106,26 @@ Content...
 **Footer notes if needed**
 ```
 
-### AICF Structure
+### Memory Structure
 
-All `.aicf/` files must follow the 6-section format:
+All memory is stored in `.lill/` directory using QuadIndex (4-store RAG system):
 
 ```
-@CONVERSATION:identifier
-timestamp_start=ISO8601
-timestamp_end=ISO8601
-messages=count
-tokens=count
+.lill/
+├── raw/                    # Raw JSON conversation files
+│   └── 2025-11-08T10-00-00_conversation-123.json
+├── snapshots/              # QuadIndex snapshots
+│   ├── rolling.json        # Latest snapshot (updated every 5 mins)
+│   ├── daily-2025-11-08.json
+│   └── weekly-2025-W45.json
+├── storage/                # LevelDB storage (internal)
+└── logs/                   # Watcher logs
 
-@FLOW
-event1|event2|event3
-
-@DETAILS:tag
-key=value|key=value
-
-@INSIGHTS
-insight|explanation|PRIORITY
-
-@DECISIONS
-decision|reasoning|IMPACT:LEVEL
-
-@STATE
-working_on=[description]
-current_phase=[phase]
-next_action=[action]
-blockers=[blockers or none]
-progress=[percentage]
-timeline=[timeline]
+QuadIndex 4-Store System:
+- VectorStore: Semantic search using embeddings
+- MetadataStore: Exact filters (status, confidence, dates)
+- GraphStore: Relationships (enables, depends_on, conflicts_with)
+- ReasoningStore: Alternatives, hypotheticals, rejected patterns
 ```
 
 ---
@@ -146,29 +140,34 @@ npx create-ai-chat-context <command> [options]
 
 ### Commands
 
-- `init` - Initialize .ai/ and .aicf/ folders in current project
-- `update` - Update AI memory files
-- `validate` - Validate AICF format
+- `init` - Initialize .ai/ and .lill/ folders in current project
+- `start` - Start watcher daemon (captures conversations automatically)
+- `stop` - Stop watcher daemon
+- `quad-query` - Query QuadIndex for principles and insights
 - `help` - Show help information
 
 ### Output Patterns
 
 **Success messages:**
+
 ```
 ✅ Success message
 ```
 
 **Error messages:**
+
 ```
 ❌ Error message
 ```
 
 **Info messages:**
+
 ```
 ℹ️  Info message
 ```
 
 **Progress indicators:**
+
 ```
 🔄 Processing...
 ```
@@ -179,8 +178,9 @@ npx create-ai-chat-context <command> [options]
 
 ### Function Naming
 
-**Format:** camelCase for functions, PascalCase for classes  
+**Format:** camelCase for functions, PascalCase for classes
 **Examples:**
+
 - `processCheckpoint()`
 - `validateFormat()`
 - `extractKeyTerms()`
@@ -189,6 +189,7 @@ npx create-ai-chat-context <command> [options]
 ### Module Exports
 
 **CommonJS format:**
+
 ```javascript
 module.exports = {
   processCheckpoint,
@@ -197,6 +198,7 @@ module.exports = {
 ```
 
 **ES6 format (if used):**
+
 ```javascript
 export { processCheckpoint, validateFormat };
 ```
@@ -218,16 +220,17 @@ templates/
 │   ├── technical-decisions.md
 │   ├── known-issues.md
 │   └── next-steps.md
-└── aicf/
-    ├── README.md
-    ├── conversation-memory.aicf
-    ├── technical-context.aicf
-    └── work-state.aicf
+└── .lill/
+    ├── raw/                    # Raw JSON conversation files
+    ├── snapshots/              # QuadIndex snapshots
+    ├── storage/                # LevelDB storage
+    └── logs/                   # Watcher logs
 ```
 
 ### Template Variables
 
 Templates can include placeholders:
+
 - `{{PROJECT_NAME}}` - Project name
 - `{{DATE}}` - Current date
 - `{{USER_NAME}}` - User name (if available)
@@ -239,6 +242,7 @@ Templates can include placeholders:
 ### README Files
 
 Every directory with documentation should have a README that:
+
 1. Explains the purpose of the directory
 2. Lists files and their purposes
 3. Provides usage instructions
@@ -247,6 +251,7 @@ Every directory with documentation should have a README that:
 ### Status Indicators
 
 Use emoji status indicators consistently:
+
 - ✅ Current/Complete
 - ⚠️ Outdated/Warning
 - 🚧 In Progress
@@ -261,12 +266,17 @@ Use emoji status indicators consistently:
 ### Git Ignore Patterns
 
 **DO commit:**
+
 - `.ai/` folder (human documentation)
-- `.aicf/` folder (AI memory)
+- `.lill/snapshots/` folder (QuadIndex snapshots for sharing principles)
 - Template files
 - Source code
 
 **DO NOT commit:**
+
+- `.lill/raw/` (raw conversation JSON files - too large)
+- `.lill/storage/` (LevelDB internal storage)
+- `.lill/logs/` (watcher logs)
 - `node_modules/`
 - `.env` files
 - Test output files
@@ -275,6 +285,7 @@ Use emoji status indicators consistently:
 ### Commit Message Format
 
 Follow conventional commits:
+
 ```
 <type>: <description>
 
@@ -284,6 +295,7 @@ Follow conventional commits:
 ```
 
 **Types:**
+
 - `feat:` New feature
 - `fix:` Bug fix
 - `docs:` Documentation changes
@@ -306,22 +318,20 @@ Follow conventional commits:
   "bin": {
     "create-ai-chat-context": "./cli.js"
   },
-  "files": [
-    "templates/",
-    "src/",
-    "README.md"
-  ]
+  "files": ["templates/", "src/", "README.md"]
 }
 ```
 
 ### Installation Methods
 
 **Via NPX (recommended):**
+
 ```bash
 npx create-ai-chat-context init
 ```
 
 **Via NPM:**
+
 ```bash
 npm install -g create-ai-chat-context
 create-ai-chat-context init
@@ -334,13 +344,14 @@ create-ai-chat-context init
 ### 1. Dual Documentation System
 
 - **`.ai/` folder** = Human-readable markdown for developers
-- **`.aicf/` folder** = AI-optimized structured format for AI assistants
+- **`.lill/` folder** = AI memory system with QuadIndex (4-store RAG)
 
-### 2. Manual Over Automated
+### 2. Automatic Over Manual
 
-- AI writes `.aicf/` files at session end (manual)
-- No automated compression agents
-- Human reviews before committing
+- Watcher captures conversations automatically
+- QuadIndex indexes principles in real-time
+- Snapshots saved every 5 minutes
+- No manual updates needed
 
 ### 3. Simplicity First
 
@@ -367,10 +378,11 @@ create-ai-chat-context init
 
 ### For AI
 
-- Structured, parseable format (`.aicf/` files)
-- Token-efficient representation
-- Fast to read and parse
-- Preserves all important information
+- QuadIndex 4-store RAG system (`.lill/snapshots/`)
+- Semantic search with VectorStore
+- Fast retrieval with MetadataStore
+- Relationship traversal with GraphStore
+- Deep reasoning with ReasoningStore
 
 ### For Developers
 
@@ -401,4 +413,3 @@ create-ai-chat-context init
 ---
 
 **This is a living document** - Update as the project evolves.
-

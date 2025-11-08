@@ -74,10 +74,10 @@ export class MigrateCommand {
       const spinner = ora();
 
       // Check if project has existing memory files
-      const aicfDir = join(this.cwd, '.aicf');
+      const lillDir = join(this.cwd, '.lill');
       const aiDir = join(this.cwd, '.ai');
 
-      if (!existsSync(aicfDir) || !existsSync(aiDir)) {
+      if (!existsSync(lillDir) && !existsSync(aiDir)) {
         return Err(new Error('No existing memory files found. Run: aether init'));
       }
 
@@ -87,29 +87,35 @@ export class MigrateCommand {
       spinner.info('Migrating to automatic mode...');
 
       const filesCreated: string[] = [];
-      const filesPreserved: string[] = [aicfDir, aiDir];
+      const filesPreserved: string[] = [lillDir, aiDir];
+
+      // Create .lill directory if it doesn't exist
+      if (!existsSync(lillDir)) {
+        mkdirSync(lillDir, { recursive: true });
+        filesCreated.push(lillDir);
+      }
 
       // Create .cache/llm directory
       const cacheLlmDir = join(this.cwd, '.cache', 'llm');
       mkdirSync(cacheLlmDir, { recursive: true });
       filesCreated.push(cacheLlmDir);
 
-      // Migrate legacy data from v2.0.1 to Phase 6-8 structure
+      // Migrate legacy data from old .aicf/ to new .lill/ structure
       const movedFiles = this.migrateLegacyData();
       if (movedFiles.length > 0) {
         filesPreserved.push(join(this.cwd, 'legacy_memory'));
       }
 
-      // Create .permissions.aicf if it doesn't exist
-      const permissionsFile = join(aicfDir, '.permissions.aicf');
+      // Create .permissions.aicf in .lill/ if it doesn't exist
+      const permissionsFile = join(lillDir, '.permissions.aicf');
       if (!existsSync(permissionsFile)) {
         const permissionsContent = this.generatePermissionsContent();
         writeFileSync(permissionsFile, permissionsContent);
         filesCreated.push(permissionsFile);
       }
 
-      // Create .watcher-config.json if it doesn't exist
-      const watcherConfigFile = join(this.cwd, '.watcher-config.json');
+      // Create .watcher-config.json in .lill/ if it doesn't exist
+      const watcherConfigFile = join(lillDir, '.watcher-config.json');
       if (!existsSync(watcherConfigFile)) {
         const watcherConfig = this.generateWatcherConfig(cacheLlmDir);
         writeFileSync(watcherConfigFile, JSON.stringify(watcherConfig, null, 2));
@@ -126,7 +132,12 @@ export class MigrateCommand {
         gitignoreContent = readFileSync(gitignorePath, 'utf-8');
       }
 
-      const entriesToAdd = ['.cache/llm/', '.watcher-config.json'];
+      const entriesToAdd = [
+        '.cache/llm/',
+        '.lill/.watcher-config.json',
+        '.lill/raw/',
+        '.lill/logs/',
+      ];
       for (const entry of entriesToAdd) {
         if (!gitignoreContent.includes(entry)) {
           gitignoreContent += `\n${entry}`;
@@ -192,54 +203,64 @@ export class MigrateCommand {
   }
 
   /**
-   * Migrate legacy data from v2.0.1 to Phase 6-8 structure
+   * Migrate legacy data from old .aicf/ to new .lill/ structure
    * Moves old .aicf files to legacy_memory/ folder
-   * Creates new Phase 6-8 directory structure
+   * Creates new .lill/ directory structure
    */
   private migrateLegacyData(): string[] {
-    const aicfDir = join(this.cwd, '.aicf');
+    const oldAicfDir = join(this.cwd, '.aicf');
+    const lillDir = join(this.cwd, '.lill');
     const legacyDir = join(this.cwd, 'legacy_memory');
     const movedFiles: string[] = [];
 
-    // Check if .aicf/ has files directly in it (old structure)
-    const files = readdirSync(aicfDir).filter((f) => {
-      const fullPath = join(aicfDir, f);
-      const stat = statSync(fullPath);
-      // Skip directories and new config files
-      return (
-        !stat.isDirectory() &&
-        f !== '.permissions.aicf' &&
-        f !== '.watcher-config.json' &&
-        f !== 'README.md' &&
-        f !== 'config.json'
-      );
-    });
+    // Check if old .aicf/ directory exists
+    if (existsSync(oldAicfDir)) {
+      // Check if .aicf/ has files directly in it (old structure)
+      const files = readdirSync(oldAicfDir).filter((f) => {
+        const fullPath = join(oldAicfDir, f);
+        const stat = statSync(fullPath);
+        // Skip directories and new config files
+        return (
+          !stat.isDirectory() &&
+          f !== '.permissions.aicf' &&
+          f !== '.watcher-config.json' &&
+          f !== 'README.md' &&
+          f !== 'config.json'
+        );
+      });
 
-    if (files.length > 0) {
-      // Create legacy_memory folder
-      mkdirSync(legacyDir, { recursive: true });
+      if (files.length > 0) {
+        // Create legacy_memory folder
+        mkdirSync(legacyDir, { recursive: true });
 
-      // Move old files
-      for (const file of files) {
-        const srcPath = join(aicfDir, file);
-        const destPath = join(legacyDir, file);
-        renameSync(srcPath, destPath);
-        movedFiles.push(file);
+        // Move old files
+        for (const file of files) {
+          const srcPath = join(oldAicfDir, file);
+          const destPath = join(legacyDir, file);
+          renameSync(srcPath, destPath);
+          movedFiles.push(file);
+        }
+      }
+
+      // Move .permissions.aicf from .aicf/ to .lill/ if it exists
+      const oldPermissionsFile = join(oldAicfDir, '.permissions.aicf');
+      const newPermissionsFile = join(lillDir, '.permissions.aicf');
+      if (existsSync(oldPermissionsFile) && !existsSync(newPermissionsFile)) {
+        mkdirSync(lillDir, { recursive: true });
+        renameSync(oldPermissionsFile, newPermissionsFile);
       }
     }
 
-    // Create new Phase 6-8 structure
-    const recentDir = join(aicfDir, 'recent');
-    const sessionsDir = join(aicfDir, 'sessions');
-    const mediumDir = join(aicfDir, 'medium');
-    const oldDir = join(aicfDir, 'old');
-    const archiveDir = join(aicfDir, 'archive');
+    // Create new .lill/ directory structure
+    const rawDir = join(lillDir, 'raw');
+    const snapshotsDir = join(lillDir, 'snapshots');
+    const storageDir = join(lillDir, 'storage');
+    const logsDir = join(lillDir, 'logs');
 
-    mkdirSync(recentDir, { recursive: true });
-    mkdirSync(sessionsDir, { recursive: true });
-    mkdirSync(mediumDir, { recursive: true });
-    mkdirSync(oldDir, { recursive: true });
-    mkdirSync(archiveDir, { recursive: true });
+    mkdirSync(rawDir, { recursive: true });
+    mkdirSync(snapshotsDir, { recursive: true });
+    mkdirSync(storageDir, { recursive: true });
+    mkdirSync(logsDir, { recursive: true });
 
     return movedFiles;
   }
@@ -494,16 +515,16 @@ export class MigrateCommand {
         }
       }
 
-      // Copy .aicf/ template files (only if they don't exist)
-      const aicfTemplateDir = join(sourceTemplateDir, '.aicf');
-      if (existsSync(aicfTemplateDir)) {
-        const aicfDir = join(this.cwd, '.aicf');
-        mkdirSync(aicfDir, { recursive: true });
+      // Copy .lill/ template files (only if they don't exist)
+      const lillTemplateDir = join(sourceTemplateDir, '.lill');
+      if (existsSync(lillTemplateDir)) {
+        const lillDir = join(this.cwd, '.lill');
+        mkdirSync(lillDir, { recursive: true });
 
-        const aicfFiles = readdirSync(aicfTemplateDir);
-        for (const file of aicfFiles) {
-          const srcFile = join(aicfTemplateDir, file);
-          const destFile = join(aicfDir, file);
+        const lillFiles = readdirSync(lillTemplateDir);
+        for (const file of lillFiles) {
+          const srcFile = join(lillTemplateDir, file);
+          const destFile = join(lillDir, file);
           if (!existsSync(destFile)) {
             copyFileSync(srcFile, destFile);
           }

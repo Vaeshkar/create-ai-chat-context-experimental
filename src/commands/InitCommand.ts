@@ -1146,7 +1146,7 @@ export class InitCommand {
     const projectPath = this.cwd;
     const timestamp = new Date().toISOString();
 
-    return `You are helping me maintain an AI Context Format (AICF) memory system for my project.
+    return `You are helping me maintain an AETHER memory system for my project.
 
 📁 Project Path: ${projectPath}
 🤖 LLM Platform: ${llm}
@@ -1166,9 +1166,10 @@ Your task is to help me consolidate our conversation into structured memory file
    - Problems we solved
    - Next steps and action items
    - Important context for future sessions
+   - Relationships between concepts (enables, depends_on, conflicts_with)
 
 3. **Update the memory files**:
-   - Data is automatically stored in \`.lill/\` (QuadIndex)
+   - Data is automatically stored in \`.lill/\` (QuadIndex - 4-store RAG system)
    - Create/update \`.ai/conversation-log.md\` with detailed notes
    - Create/update \`.ai/technical-decisions.md\` if we made technical choices
    - Create/update \`.ai/next-steps.md\` with planned work
@@ -1177,22 +1178,21 @@ Your task is to help me consolidate our conversation into structured memory file
    - Markdown files use standard markdown with clear sections
    - Be concise but comprehensive
    - Preserve all important context
+   - Include relationships between concepts when relevant
 
 5. **When you're done**:
    - Show me the updated files
    - I'll review and commit them to git
 
-## Example AICF format:
-\`\`\`
-@CONVERSATION:C1-CP1
-timestamp_start=2025-10-23T10:00:00Z
-timestamp_end=2025-10-23T11:00:00Z
-messages=50
-tokens=12345
+## Memory Storage
 
-@DECISIONS
-decision_name|reasoning|impact=HIGH
-\`\`\`
+AETHER uses QuadIndex (4-store RAG system):
+- **VectorStore**: Semantic search for principles
+- **MetadataStore**: Exact filters (status, confidence, dates)
+- **GraphStore**: Relationships between concepts
+- **ReasoningStore**: Alternatives, hypotheticals, rejected patterns
+
+All data is stored in \`.lill/snapshots/\` for fast retrieval.
 
 Ready to help! Just ask me to "update memory files" when you want me to consolidate our conversation.`;
   }

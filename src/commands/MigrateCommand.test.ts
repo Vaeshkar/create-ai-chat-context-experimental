@@ -51,10 +51,10 @@ describe('MigrateCommand', () => {
 
     it('should migrate with selected platforms', async () => {
       // Create existing memory files
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       vi.mocked(inquirer.prompt).mockResolvedValue({
@@ -67,16 +67,16 @@ describe('MigrateCommand', () => {
       expect(isOk(result)).toBe(true);
       if (isOk(result)) {
         expect(result.value.filesCreated.length).toBeGreaterThan(0);
-        expect(result.value.filesPreserved).toContain(aicfDir);
+        expect(result.value.filesPreserved).toContain(lillDir);
         expect(result.value.filesPreserved).toContain(aiDir);
       }
     });
 
     it('should create permissions file with selected platforms', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       vi.mocked(inquirer.prompt).mockResolvedValue({
@@ -86,7 +86,7 @@ describe('MigrateCommand', () => {
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      const permissionsFile = join(aicfDir, '.permissions.aicf');
+      const permissionsFile = join(lillDir, '.permissions.aicf');
       const content = fs.readFileSync(permissionsFile, 'utf-8');
 
       expect(content).toContain('augment|active');
@@ -95,10 +95,10 @@ describe('MigrateCommand', () => {
     });
 
     it('should create watcher config with selected platforms', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       vi.mocked(inquirer.prompt).mockResolvedValue({
@@ -108,7 +108,7 @@ describe('MigrateCommand', () => {
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      const watcherConfigFile = join(testDir, '.watcher-config.json');
+      const watcherConfigFile = join(lillDir, '.watcher-config.json');
       const content = fs.readFileSync(watcherConfigFile, 'utf-8');
       const config = JSON.parse(content);
 
@@ -118,10 +118,10 @@ describe('MigrateCommand', () => {
     });
 
     it('should update gitignore with cache entries', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
@@ -137,15 +137,16 @@ describe('MigrateCommand', () => {
 
   describe('legacy file migration', () => {
     it('should move old .aicf files to legacy_memory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      // Create OLD .aicf/ directory (pre-migration structure)
+      const oldAicfDir = join(testDir, '.aicf');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(oldAicfDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
-      // Create old v2.0.1 files
-      fs.writeFileSync(join(aicfDir, 'conversations.aicf'), 'Old conversation data');
-      fs.writeFileSync(join(aicfDir, 'technical-context.aicf'), 'Old technical context');
+      // Create old v2.0.1 files in OLD .aicf/ directory
+      fs.writeFileSync(join(oldAicfDir, 'conversations.aicf'), 'Old conversation data');
+      fs.writeFileSync(join(oldAicfDir, 'technical-context.aicf'), 'Old technical context');
 
       const command = new MigrateCommand({ cwd: testDir });
       const result = await command.execute();
@@ -160,20 +161,21 @@ describe('MigrateCommand', () => {
       expect(fs.existsSync(join(legacyDir, 'conversations.aicf'))).toBe(true);
       expect(fs.existsSync(join(legacyDir, 'technical-context.aicf'))).toBe(true);
 
-      // Check that old files were removed from .aicf
-      expect(fs.existsSync(join(aicfDir, 'conversations.aicf'))).toBe(false);
-      expect(fs.existsSync(join(aicfDir, 'technical-context.aicf'))).toBe(false);
+      // Check that old files were removed from OLD .aicf/
+      expect(fs.existsSync(join(oldAicfDir, 'conversations.aicf'))).toBe(false);
+      expect(fs.existsSync(join(oldAicfDir, 'technical-context.aicf'))).toBe(false);
     });
 
     it('should preserve content of legacy files', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      // Create OLD .aicf/ directory (pre-migration structure)
+      const oldAicfDir = join(testDir, '.aicf');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(oldAicfDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const testContent = 'Important conversation data that must be preserved';
-      fs.writeFileSync(join(aicfDir, 'conversations.aicf'), testContent);
+      fs.writeFileSync(join(oldAicfDir, 'conversations.aicf'), testContent);
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
@@ -184,10 +186,10 @@ describe('MigrateCommand', () => {
     });
 
     it('should handle missing legacy files gracefully', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       // Don't create any legacy files
@@ -200,76 +202,79 @@ describe('MigrateCommand', () => {
   });
 
   describe('Phase 6-8 directory structure', () => {
-    it('should create recent directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+    it('should create raw directory', async () => {
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      expect(fs.existsSync(join(aicfDir, 'recent'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'raw'))).toBe(true);
     });
 
-    it('should create sessions directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+    it('should create snapshots directory', async () => {
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      expect(fs.existsSync(join(aicfDir, 'sessions'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'snapshots'))).toBe(true);
     });
 
-    it('should create medium directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+    it('should create storage directory', async () => {
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      expect(fs.existsSync(join(aicfDir, 'medium'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'storage'))).toBe(true);
     });
 
-    it('should create old directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+    it('should create logs directory', async () => {
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      expect(fs.existsSync(join(aicfDir, 'old'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'logs'))).toBe(true);
     });
 
-    it('should create archive directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+    it('should create all required subdirectories', async () => {
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
       await command.execute();
 
-      expect(fs.existsSync(join(aicfDir, 'archive'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'raw'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'snapshots'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'storage'))).toBe(true);
+      expect(fs.existsSync(join(lillDir, 'logs'))).toBe(true);
     });
 
     it('should create .cache/llm directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
@@ -281,10 +286,10 @@ describe('MigrateCommand', () => {
 
   describe('template files', () => {
     it('should copy all template files to .ai directory', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir });
@@ -314,10 +319,10 @@ describe('MigrateCommand', () => {
     });
 
     it('should preserve existing .ai files (smart merge)', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       // Create an existing file with custom content
@@ -333,10 +338,10 @@ describe('MigrateCommand', () => {
     });
 
     it('should handle missing templates directory gracefully', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       // This test verifies that migrate doesn't crash if templates are missing
@@ -348,10 +353,10 @@ describe('MigrateCommand', () => {
     });
 
     it('should copy missing template files only', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       // Create only some template files
@@ -394,10 +399,10 @@ describe('MigrateCommand', () => {
 
   describe('verbose mode', () => {
     it('should accept verbose flag', async () => {
-      const aicfDir = join(testDir, '.aicf');
+      const lillDir = join(testDir, '.lill');
       const aiDir = join(testDir, '.ai');
       const fs = await import('fs');
-      fs.mkdirSync(aicfDir, { recursive: true });
+      fs.mkdirSync(lillDir, { recursive: true });
       fs.mkdirSync(aiDir, { recursive: true });
 
       const command = new MigrateCommand({ cwd: testDir, verbose: true });
