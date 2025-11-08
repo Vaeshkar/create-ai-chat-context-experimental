@@ -15,6 +15,12 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Skip check if we're in the AETHER repo itself (not a user project)
+if [ -f "packages/aether/package.json" ]; then
+    # This is the AETHER monorepo, skip conversation-log check
+    exit 0
+fi
+
 # Check if .ai/conversation-log.md exists
 CONVERSATION_LOG=".ai/conversation-log.md"
 
