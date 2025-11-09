@@ -11,6 +11,7 @@ Make Augment, Claude Desktop, Cursor, and other MCP-compatible tools automatical
 **Model Context Protocol (MCP)** is a standard created by Anthropic for AI tools to access external data sources.
 
 **Benefits:**
+
 - ✅ **Automatic context loading** - No manual steps needed
 - ✅ **Works with multiple tools** - Augment, Claude Desktop, Cursor, etc.
 - ✅ **Local execution** - All data stays on your machine
@@ -39,15 +40,20 @@ This captures conversations and builds QuadIndex.
 {
   "mcpServers": {
     "aether": {
-      "command": "npx",
-      "args": ["tsx", "/Users/leeuwen/Programming/aether/packages/aether/src/mcp/server.ts"],
+      "command": "node",
+      "args": [
+        "/Users/YOUR_USERNAME/Programming/aether/packages/aether/dist/esm/aether/src/mcp/server.js"
+      ],
       "env": {
-        "AETHER_PROJECT_DIR": "${workspaceFolder}"
+        "AETHER_PROJECT_DIR": "${workspaceFolder}",
+        "AETHER_VERBOSE": "false"
       }
     }
   }
 }
 ```
+
+**Important:** Replace `/Users/YOUR_USERNAME/Programming/aether` with your actual AETHER installation path!
 
 5. Click "Save"
 6. Restart Augment (if needed)
@@ -57,11 +63,12 @@ This captures conversations and builds QuadIndex.
 Ask questions—Augment automatically queries AETHER!
 
 **Example:**
+
 ```
 You: "How should I handle errors?"
 
 Augment: *queries AETHER MCP*
-Augment: "Based on your project principles (P42), use Result type for error handling. 
+Augment: "Based on your project principles (P42), use Result type for error handling.
           Also log errors with context (P87) and return structured responses (P103)."
 ```
 
@@ -133,6 +140,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"query_prin
 Search for principles using QuadIndex.
 
 **Arguments:**
+
 - `query` (string, required) - Search query text
 - `limit` (number, optional) - Maximum results (default: 10)
 - `status` (string, optional) - Filter by status (validated, proposed, rejected, deprecated)
@@ -143,6 +151,7 @@ Search for principles using QuadIndex.
 - `reasoningIterations` (number, optional) - Reasoning iterations (default: 3)
 
 **Example:**
+
 ```json
 {
   "query": "error handling",
@@ -160,6 +169,7 @@ Get project statistics from QuadIndex.
 **Arguments:** None
 
 **Returns:**
+
 - Total principles
 - Principles by status (validated, proposed, rejected, deprecated)
 - Total relationships
@@ -171,6 +181,7 @@ Get project statistics from QuadIndex.
 Traverse relationship graph from a specific principle.
 
 **Arguments:**
+
 - `principleId` (string, required) - Principle ID to start from
 - `depth` (number, optional) - Maximum depth (default: 2)
 - `relationshipTypes` (array, optional) - Types to follow
@@ -180,6 +191,7 @@ Traverse relationship graph from a specific principle.
 Get recently added or updated principles.
 
 **Arguments:**
+
 - `days` (number, optional) - Days to look back (default: 7)
 - `limit` (number, optional) - Maximum results (default: 10)
 
@@ -198,24 +210,28 @@ Project statistics and metadata from QuadIndex.
 ## 🎯 Example Prompts
 
 **Basic query:**
+
 ```
 You: "What are the project principles?"
 Augment: *calls query_principles*
 ```
 
 **Relationship query:**
+
 ```
 You: "What depends on TypeScript strict mode?"
 Augment: *calls query_principles with includeRelationships: true*
 ```
 
 **Reasoning query:**
+
 ```
 You: "Should we use microservices?"
 Augment: *calls query_principles with includeReasoning: true*
 ```
 
 **Stats query:**
+
 ```
 You: "How many principles do we have?"
 Augment: *calls get_project_stats*
@@ -228,11 +244,13 @@ Augment: *calls get_project_stats*
 ### **MCP server not starting**
 
 **Check:**
+
 1. Watcher is running: `aether watch-terminal`
 2. Snapshots exist: `ls .lill/snapshots/rolling/`
 3. Path is correct in MCP config
 
 **Fix:**
+
 ```bash
 # Restart watcher
 aether watch-terminal
@@ -244,11 +262,13 @@ aether watch-terminal
 ### **Augment not calling MCP server**
 
 **Check:**
+
 1. MCP config is saved in Augment settings
 2. Augment is restarted after config change
 3. Project has `.lill/` directory
 
 **Fix:**
+
 ```bash
 # Verify MCP config
 cat ~/Library/Application\ Support/Augment/mcp_config.json
@@ -260,10 +280,12 @@ cat ~/Library/Application\ Support/Augment/mcp_config.json
 ### **Empty results**
 
 **Check:**
+
 1. Watcher has collected data: `aether quad-stats`
 2. Snapshots are recent: `ls -lh .lill/snapshots/rolling/`
 
 **Fix:**
+
 ```bash
 # Check stats
 aether quad-stats
@@ -278,6 +300,7 @@ aether snapshot take
 ## 🔥 What This Replaces
 
 **Before MCP (manual workflow):**
+
 ```
 You: "How should I handle errors?"
 You: *manually runs* aether quad-query "error handling" -j
@@ -287,6 +310,7 @@ Augment: "Oh, based on your principles, use Result type"
 ```
 
 **After MCP (automatic workflow):**
+
 ```
 You: "How should I handle errors?"
 Augment: *automatically queries AETHER MCP*
@@ -306,4 +330,3 @@ Augment: "Based on your project principles (P42), use Result type..."
 ---
 
 **Questions? Issues? Open an issue on GitHub!** 🦆
-
