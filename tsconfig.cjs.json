@@ -16,6 +16,8 @@
     "src/utils/DaemonController.ts",
     "src/commands/StartCommand.ts",
     "src/commands/StopCommand.ts",
-    "src/commands/StatusCommand.ts"
+    "src/commands/StatusCommand.ts",
+    "src/commands/MCPCommand.ts",
+    "src/mcp/**/*"
   ]
 }

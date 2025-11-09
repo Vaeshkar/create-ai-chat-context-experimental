@@ -58,7 +58,7 @@ import { FinishCommand } from './commands/FinishCommand.js';
 import { InstallHooksCommand } from './commands/InstallHooksCommand.js';
 import { PlatformConfigCommand } from './commands/PlatformConfigCommand.js';
 import { DeduplicateCommand } from './commands/DeduplicateCommand.js';
-import { MCPCommand } from './commands/MCPCommand.js';
+// MCP command is ESM-only (uses import.meta), dynamically imported below
 
 /**
  * Get version dynamically from package.json
@@ -1111,7 +1111,7 @@ program
     }
   });
 
-// MCP command
+// MCP command (ESM-only, dynamically imported)
 program
   .command('mcp')
   .description('Start AETHER MCP server for Model Context Protocol integration')
@@ -1119,6 +1119,8 @@ program
   .option('-v, --verbose', 'Enable verbose logging')
   .action(async (options) => {
     try {
+      // Dynamic import for ESM-only module
+      const { MCPCommand } = await import('./commands/MCPCommand.js');
       const cmd = new MCPCommand();
       const result = await cmd.execute({
         projectDir: options.projectDir,

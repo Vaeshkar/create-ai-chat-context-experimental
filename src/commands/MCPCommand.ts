@@ -4,15 +4,11 @@
  */
 
 import { spawn } from 'node:child_process';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import chalk from 'chalk';
 import type { Result } from '../types/result.js';
 import { Ok, Err } from '../types/result.js';
-
-// Get __dirname (ESM)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { getPackageRoot } from '../utils/PackageRoot.js';
 
 export interface MCPCommandOptions {
   /** Project directory (where .lill/ is located) */
@@ -35,8 +31,9 @@ export class MCPCommand {
       const projectDir = options.projectDir || process.cwd();
       const verbose = options.verbose || false;
 
-      // Path to MCP server
-      const serverPath = join(__dirname, '../mcp/server.js');
+      // Path to MCP server (use getPackageRoot to find it)
+      const packageRoot = getPackageRoot();
+      const serverPath = join(packageRoot, 'dist/esm/aether/src/mcp/server.js');
 
       if (verbose) {
         console.error(chalk.blue('🚀 Starting AETHER MCP Server...'));

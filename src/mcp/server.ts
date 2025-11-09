@@ -308,7 +308,8 @@ export class AetherMCPServer {
 }
 
 // Start server if run directly (ESM only)
-if (typeof import.meta !== 'undefined' && import.meta.url === `file://${process.argv[1]}`) {
+// Note: MCP server only works in ESM mode (uses stdio transport)
+if (import.meta.url === `file://${process.argv[1]}`) {
   const config: MCPServerConfig = {
     projectDir: process.env['AETHER_PROJECT_DIR'] || process.cwd(),
     verbose: process.env['AETHER_VERBOSE'] === 'true',
