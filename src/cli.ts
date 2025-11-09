@@ -58,6 +58,7 @@ import { FinishCommand } from './commands/FinishCommand.js';
 import { InstallHooksCommand } from './commands/InstallHooksCommand.js';
 import { PlatformConfigCommand } from './commands/PlatformConfigCommand.js';
 import { DeduplicateCommand } from './commands/DeduplicateCommand.js';
+import { MCPCommand } from './commands/MCPCommand.js';
 
 /**
  * Get version dynamically from package.json
@@ -1104,6 +1105,30 @@ program
         verbose: options.verbose,
       });
       await cmd.execute();
+    } catch (error) {
+      console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+// MCP command
+program
+  .command('mcp')
+  .description('Start AETHER MCP server for Model Context Protocol integration')
+  .option('-p, --project-dir <path>', 'Project directory (default: cwd)')
+  .option('-v, --verbose', 'Enable verbose logging')
+  .action(async (options) => {
+    try {
+      const cmd = new MCPCommand();
+      const result = await cmd.execute({
+        projectDir: options.projectDir,
+        verbose: options.verbose,
+      });
+
+      if (!result.ok) {
+        console.error(chalk.red('❌ Error:'), result.error.message);
+        process.exit(1);
+      }
     } catch (error) {
       console.error(chalk.red('❌ Error:'), error instanceof Error ? error.message : String(error));
       process.exit(1);
