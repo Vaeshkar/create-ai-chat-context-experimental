@@ -5,8 +5,9 @@
  */
 
 /**
- * Stop Command - Stop AETHER daemons (Watcher + Guardian)
+ * Stop Command - Stop AETHER watcher
  * Phase 6: November 2025
+ * Updated: November 9, 2025 - Guardian archived with MCP integration
  */
 
 import chalk from 'chalk';
@@ -23,7 +24,6 @@ export interface StopCommandOptions {
 export interface StopResult {
   message: string;
   watcherStopped: boolean;
-  guardianStopped: boolean;
 }
 
 export class StopCommand {
@@ -41,45 +41,40 @@ export class StopCommand {
       // Check current status
       const status = controller.getStatus();
 
-      if (!status.watcher.running && !status.guardian.running) {
-        spinner.info('No AETHER services running');
+      if (!status.watcher.running) {
+        spinner.info('Watcher not running');
         console.log();
         console.log(chalk.dim('To start AETHER, run:'));
         console.log(chalk.cyan('  aether start'));
         console.log();
         return Ok({
-          message: 'No services running',
+          message: 'Watcher not running',
           watcherStopped: false,
-          guardianStopped: false,
         });
       }
 
       // Show banner
       console.log(chalk.bold.cyan('\n🛑 Stopping AETHER...\n'));
 
-      spinner.start('Stopping background services...');
+      spinner.start('Stopping watcher...');
 
-      // Stop both daemons
+      // Stop watcher
       const stopResult = await controller.stop();
 
       let watcherStopped = false;
-      let guardianStopped = false;
 
       if (!stopResult.ok) {
-        // Partial failure - some services stopped, some didn't
-        spinner.warn('Some services failed to stop');
+        spinner.warn('Failed to stop watcher');
         console.log();
         console.log(chalk.yellow(`⚠️  ${stopResult.error.message}`));
         console.log();
 
-        // Check which ones actually stopped
+        // Check if it actually stopped
         const newStatus = controller.getStatus();
         watcherStopped = !newStatus.watcher.running;
-        guardianStopped = !newStatus.guardian.running;
       } else {
-        spinner.succeed('Background services stopped');
+        spinner.succeed('Watcher stopped');
         watcherStopped = true;
-        guardianStopped = true;
       }
 
       // Show what was stopped
@@ -91,22 +86,16 @@ export class StopCommand {
         }
       }
 
-      if (guardianStopped) {
-        console.log(chalk.green('✅ Guardian stopped'));
-        if (status.guardian.pid) {
-          console.log(chalk.dim(`   PID: ${status.guardian.pid}`));
-        }
-      }
-
+      console.log();
+      console.log(chalk.dim('💡 Guardian archived (MCP integration handles protection)'));
       console.log();
       console.log(chalk.dim('To restart AETHER, run:'));
       console.log(chalk.cyan('  aether start'));
       console.log();
 
       return Ok({
-        message: 'AETHER stopped successfully',
+        message: 'AETHER watcher stopped successfully',
         watcherStopped,
-        guardianStopped,
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));

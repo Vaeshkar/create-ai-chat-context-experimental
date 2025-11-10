@@ -5,8 +5,9 @@
  */
 
 /**
- * Status Command - Show AETHER daemon status (Watcher + Guardian)
+ * Status Command - Show AETHER daemon status (Watcher only - Guardian archived)
  * Phase 6: November 2025
+ * Updated: November 9, 2025 - Guardian archived with MCP integration
  */
 
 import chalk from 'chalk';
@@ -65,14 +66,9 @@ export class StatusCommand {
       }
       console.log();
 
-      // Guardian status
-      console.log(chalk.bold('Guardian:'), this.getStatusBadge(status.guardian.running));
-      if (status.guardian.running) {
-        console.log(chalk.dim(`  PID: ${status.guardian.pid}`));
-        if (status.guardian.uptime) {
-          console.log(chalk.dim(`  Uptime: ${this.formatUptime(status.guardian.uptime)}`));
-        }
-      }
+      // Guardian status (archived)
+      console.log(chalk.bold('Guardian:'), chalk.dim('archived (MCP integration)'));
+      console.log(chalk.dim('  See: packages/aether-guardian-legacy/ARCHIVED.md'));
       console.log();
 
       // Memory stats (from QuadIndex)
@@ -86,23 +82,20 @@ export class StatusCommand {
       }
 
       // Commands
-      if (!status.watcher.running && !status.guardian.running) {
+      if (!status.watcher.running) {
         console.log(chalk.dim('To start AETHER, run:'));
         console.log(chalk.cyan('  aether start'));
       } else {
         console.log(chalk.dim('Commands:'));
-        console.log(chalk.cyan('  aether stop      ') + chalk.dim('- Stop all services'));
-        console.log(chalk.cyan('  aether restart   ') + chalk.dim('- Restart all services'));
+        console.log(chalk.cyan('  aether stop      ') + chalk.dim('- Stop watcher'));
+        console.log(chalk.cyan('  aether restart   ') + chalk.dim('- Restart watcher'));
         console.log(chalk.cyan('  aether quad-query') + chalk.dim(' - Query memory'));
       }
       console.log();
 
       return Ok({
         status,
-        message:
-          status.watcher.running || status.guardian.running
-            ? 'Services running'
-            : 'Services not running',
+        message: status.watcher.running ? 'Watcher running' : 'Watcher not running',
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));

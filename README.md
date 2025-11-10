@@ -123,6 +123,37 @@ npx aether import-claude conversation.json
 npx aether migrate
 ```
 
+## 🔌 MCP Integration (NEW!)
+
+**Make Augment, Claude Desktop, and other MCP-compatible tools automatically use your project's AETHER memory!**
+
+AETHER now supports **Model Context Protocol (MCP)** - a standard by Anthropic for AI tools to access external data.
+
+### Quick Setup
+
+1. Start watcher: `aether watch-terminal`
+2. Configure Augment MCP settings (see [docs/MCP-INTEGRATION.md](docs/MCP-INTEGRATION.md))
+3. Use Augment normally - it automatically queries AETHER!
+
+### Automatic Mode (User-Controlled)
+
+Set environment variables to control defaults:
+
+```json
+{
+  "env": {
+    "AETHER_INCLUDE_RELATIONSHIPS": "true",
+    "AETHER_INCLUDE_REASONING": "true"
+  }
+}
+```
+
+**Result:** Every query uses all 4 QuadIndex stores (Vector, Metadata, Graph, Reasoning) automatically!
+
+**[Read MCP Integration Guide →](docs/MCP-INTEGRATION.md) | [Read Automatic Mode Guide →](docs/MCP-AUTOMATIC-MODE.md)**
+
+---
+
 ## 📚 Documentation
 
 ### Essential Reading (Start Here)
@@ -130,6 +161,8 @@ npx aether migrate
 - **[PRIVACY.md](PRIVACY.md)** - Privacy policy & data handling ⭐ **READ THIS FIRST**
 - **[SECURITY.md](SECURITY.md)** - Security architecture & audit logging
 - **[docs/ENCRYPTION.md](docs/ENCRYPTION.md)** - Encrypted backup guide (AES-256 encryption for GitHub)
+- **[docs/MCP-INTEGRATION.md](docs/MCP-INTEGRATION.md)** - MCP integration guide (automatic context loading) ⭐ **NEW!**
+- **[docs/MCP-AUTOMATIC-MODE.md](docs/MCP-AUTOMATIC-MODE.md)** - User-controlled automatic mode ⭐ **NEW!**
 - **[CLI-COMMANDS.md](CLI-COMMANDS.md)** - Complete command reference
 
 ### Additional Documentation

@@ -245,7 +245,7 @@ export class WatcherCommand {
       },
       onHypotheticalExtracted: async (hypothetical: ExtractedHypothetical) => {
         // Index hypothetical to QuadIndex ReasoningStore
-        const result = this.quadIndex.addHypothetical({
+        const result = await this.quadIndex.addHypothetical({
           id: hypothetical.id,
           question: hypothetical.scenario,
           alternatives: [
@@ -274,7 +274,7 @@ export class WatcherCommand {
       },
       onRejectedExtracted: async (rejected: ExtractedRejected) => {
         // Index rejected alternative to QuadIndex ReasoningStore
-        const result = this.quadIndex.addRejected({
+        const result = await this.quadIndex.addRejected({
           id: rejected.id,
           option: rejected.alternative,
           reason: rejected.reason,
@@ -788,6 +788,8 @@ export class WatcherCommand {
         // If we loaded data from snapshot, mark as having indexed data
         if (stats.data.metadata.total > 0) {
           this.hasIndexedData = true;
+          // Start snapshot timer since we have data
+          await this.startSnapshotTimerIfNeeded();
         }
       } else {
         if (this.verbose) {
@@ -795,8 +797,7 @@ export class WatcherCommand {
         }
       }
 
-      // DON'T start continuous snapshots yet - wait until we have data
-      // The timer will be started after first data is indexed (see startSnapshotTimerIfNeeded)
+      // Log snapshot timer status
       if (this.verbose && !this.hasIndexedData) {
         console.log(chalk.gray('⏳ Snapshot timer will start after first data is indexed'));
       }
@@ -868,7 +869,7 @@ export class WatcherCommand {
       for (const conversation of missedConversations) {
         try {
           // Write directly to .lill/raw/ directory
-          const { writeFileSync, mkdirSync, existsSync } = await import('fs');
+          const { writeFileSync, mkdirSync, existsSync, readFileSync } = await import('fs');
           const rawDir = join(this.cwd, '.lill', 'raw');
 
           // Ensure directory exists
@@ -957,7 +958,7 @@ export class WatcherCommand {
 
           // Index hypotheticals to QuadIndex
           for (const hypothetical of reasoningResult.hypotheticals) {
-            const result = this.quadIndex.addHypothetical(hypothetical);
+            const result = await this.quadIndex.addHypothetical(hypothetical);
             if (!result.success && this.verbose) {
               this.logger.debug(`Failed to index hypothetical: ${hypothetical.id}`, {
                 error: result.error,
@@ -967,7 +968,7 @@ export class WatcherCommand {
 
           // Index rejected alternatives to QuadIndex
           for (const rejected of reasoningResult.rejectedAlternatives) {
-            const result = this.quadIndex.addRejected(rejected);
+            const result = await this.quadIndex.addRejected(rejected);
             if (!result.success && this.verbose) {
               this.logger.debug(`Failed to index rejected alternative: ${rejected.id}`, {
                 error: result.error,
@@ -1014,9 +1015,37 @@ export class WatcherCommand {
             insights, // ✅ Now populated by TechnicalWorkExtractor
           };
 
-          // Write to file
-          const filename = `${conversationData.metadata.date}_${conversation.conversationId}.json`;
+          // Write to file (FIXED: Use conversationId only, no date prefix)
+          const filename = `${conversation.conversationId}.json`;
           const filepath = join(rawDir, filename);
+
+          // Check if file already exists (using existsSync from import above)
+          if (existsSync(filepath)) {
+            // File exists - check if we have new messages
+            const existingData = JSON.parse(readFileSync(filepath, 'utf-8'));
+            const existingMessageCount = existingData.messages?.length || 0;
+            const newMessageCount = messages.length;
+
+            if (newMessageCount <= existingMessageCount) {
+              // No new messages, skip writing
+              if (this.verbose) {
+                console.log(
+                  chalk.gray(`   ⏭️  Skipped ${conversation.conversationId} (no new messages)`)
+                );
+              }
+              continue;
+            }
+
+            // New messages detected
+            if (this.verbose) {
+              console.log(
+                chalk.cyan(
+                  `   📝 Updating ${conversation.conversationId}: ${existingMessageCount} → ${newMessageCount} messages`
+                )
+              );
+            }
+          }
+
           writeFileSync(filepath, JSON.stringify(conversationData, null, 2), 'utf-8');
 
           const timeDiff = getTimeDifferenceMinutes(lastTimestamp, conversation.lastModified);

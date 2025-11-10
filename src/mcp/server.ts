@@ -16,7 +16,9 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { QuadIndex } from 'lill-core';
 import { SnapshotManager } from 'lill-core';
+import { statSync } from 'fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { MCPServerConfig } from './types.js';
 import { queryPrinciples, getProjectStats, traverseGraph, getRecentPrinciples } from './tools.js';
 
@@ -29,9 +31,14 @@ export class AetherMCPServer {
   private quadIndex: QuadIndex;
   private snapshotManager: SnapshotManager;
   private config: MCPServerConfig;
+  private startupTime: number;
+  private serverPath: string;
+  private lastMtimeCheck = 0;
 
   constructor(config: MCPServerConfig) {
     this.config = config;
+    this.startupTime = Date.now();
+    this.serverPath = fileURLToPath(import.meta.url);
 
     // Initialize server
     this.server = new Server(
@@ -55,6 +62,36 @@ export class AetherMCPServer {
     });
 
     this.setupHandlers();
+  }
+
+  /**
+   * Check for updates and gracefully restart if server file was modified
+   * This enables automatic updates in production without manual MCP server restart
+   */
+  private checkForUpdates(): void {
+    // Only check once per 10 seconds (avoid excessive fs.stat calls)
+    const now = Date.now();
+    if (now - this.lastMtimeCheck < 10000) {
+      return;
+    }
+    this.lastMtimeCheck = now;
+
+    try {
+      const stats = statSync(this.serverPath);
+      const mtime = stats.mtimeMs;
+
+      if (mtime > this.startupTime) {
+        // Server file was modified after startup - restart to load new code
+        console.error('🔄 AETHER update detected, restarting server...');
+        console.error('   (This is automatic - no action needed)');
+
+        // Exit with code 0 so Augment/Claude Desktop will auto-restart
+        process.exit(0);
+      }
+    } catch {
+      // Ignore errors (file might be temporarily unavailable during update)
+      // This is intentional - we don't want to crash the server on transient errors
+    }
   }
 
   /**
@@ -165,58 +202,45 @@ export class AetherMCPServer {
       const { name, arguments: args } = request.params;
 
       try {
+        let result;
+
         switch (name) {
           case 'query_principles': {
-            const result = await queryPrinciples(this.quadIndex, args as any);
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify(result, null, 2),
-                },
-              ],
-            };
+            result = await queryPrinciples(this.quadIndex, args as any);
+            break;
           }
 
           case 'get_project_stats': {
-            const result = await getProjectStats(this.quadIndex, args as any);
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify(result, null, 2),
-                },
-              ],
-            };
+            result = await getProjectStats(this.quadIndex, args as any);
+            break;
           }
 
           case 'traverse_graph': {
-            const result = await traverseGraph(this.quadIndex, args as any);
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify(result, null, 2),
-                },
-              ],
-            };
+            result = await traverseGraph(this.quadIndex, args as any);
+            break;
           }
 
           case 'get_recent_principles': {
-            const result = await getRecentPrinciples(this.quadIndex, args as any);
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify(result, null, 2),
-                },
-              ],
-            };
+            result = await getRecentPrinciples(this.quadIndex, args as any);
+            break;
           }
 
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
+
+        // Check for updates after tool execution completes
+        // This ensures we finish the current query before restarting
+        this.checkForUpdates();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
       } catch (error) {
         return {
           content: [

@@ -746,19 +746,15 @@ export class InitCommand {
         startWatcher = false; // Don't try to start again
       }
 
-      if (startGuardian && status.guardian.running) {
-        if (this.verbose) {
-          console.log(chalk.yellow(`\n⚠️  Guardian already running (PID: ${status.guardian.pid})`));
-        }
-        startGuardian = false; // Don't try to start again
+      // Guardian archived - no longer starting
+      if (startGuardian && this.verbose) {
+        console.log(chalk.dim('\n💡 Guardian archived (MCP integration handles protection)'));
       }
 
-      // Start services
+      // Start watcher only
       const startResult = await controller.start({
         cwd: this.cwd,
         verbose: this.verbose,
-        watcherOnly: startWatcher && !startGuardian,
-        guardianOnly: startGuardian && !startWatcher,
       });
 
       if (!startResult.ok) {
@@ -767,7 +763,7 @@ export class InitCommand {
 
       return Ok({
         watcherStarted: !!startResult.value.watcherPid || status.watcher.running,
-        guardianStarted: !!startResult.value.guardianPid || status.guardian.running,
+        guardianStarted: false, // Guardian archived
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));
@@ -1757,7 +1753,6 @@ ${platformStatuses}
       const startResult = await controller.start({
         cwd: this.cwd,
         verbose: this.verbose,
-        watcherOnly: true,
       });
 
       return startResult.ok;

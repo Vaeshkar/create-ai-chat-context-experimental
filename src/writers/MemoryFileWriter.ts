@@ -169,9 +169,9 @@ export class MemoryFileWriter {
     conversation: Conversation
   ): Promise<Result<void>> {
     try {
-      // Create clean JSON structure with FULL content (no truncation)
-      const date = new Date().toISOString().split('T')[0];
-      const filename = `${date}_${conversationId}.json`;
+      // FIXED: Use conversationId only (no date prefix) to prevent duplicate files
+      // When same conversation is updated on different days, we update the same file
+      const filename = `${conversationId}.json`;
       const filepath = join(this.rawDir, filename);
 
       // 🛡️ VALIDATE WRITE OPERATION (Layer 2: Code Guards)
@@ -189,6 +189,32 @@ export class MemoryFileWriter {
 
       // Ensure raw directory exists
       await fs.mkdir(this.rawDir, { recursive: true });
+
+      // Check if file already exists
+      const fileExists = await fs
+        .access(filepath)
+        .then(() => true)
+        .catch(() => false);
+
+      if (fileExists) {
+        // File exists - check if content has changed
+        const existingContent = await fs.readFile(filepath, 'utf-8');
+        const existingData = JSON.parse(existingContent);
+
+        // Compare message counts to see if conversation has new messages
+        const existingMessageCount = existingData.messages?.length || 0;
+        const newMessageCount = conversation.messages.length;
+
+        if (newMessageCount <= existingMessageCount) {
+          // No new messages, skip writing
+          return Ok(undefined);
+        }
+
+        // New messages detected - will update file below
+      }
+
+      // Extract date from conversation timestamp for metadata
+      const date = new Date(conversation.timestamp).toISOString().split('T')[0];
 
       const jsonData = {
         metadata: {

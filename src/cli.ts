@@ -246,7 +246,7 @@ program
       // Build the command to run in the new terminal
       // Create a wrapper script that closes the window after watcher exits
       const verboseFlag = options.verbose ? '--verbose' : '';
-      const watcherCommand = `npx tsx packages/aice/src/cli.ts watch ${verboseFlag}`;
+      const watcherCommand = `npx tsx packages/aether/src/cli.ts watch ${verboseFlag}`;
 
       // Create a self-closing wrapper script
       // Use $PPID to get the Terminal tab/window process and close it
@@ -307,19 +307,15 @@ end tell
     }
   });
 
-// Start command (unified watcher + guardian)
+// Start command (watcher only - guardian archived)
 program
   .command('start')
-  .description('Start AETHER services (watcher + guardian)')
+  .description('Start AETHER watcher service')
   .option('-v, --verbose', 'Show detailed output')
-  .option('--watcher-only', 'Start only the watcher')
-  .option('--guardian-only', 'Start only the guardian')
   .action(async (options) => {
     try {
       const startCmd = new StartCommand({
         verbose: options.verbose,
-        watcherOnly: options.watcherOnly,
-        guardianOnly: options.guardianOnly,
       });
 
       const result = await startCmd.execute();
@@ -334,10 +330,10 @@ program
     }
   });
 
-// Stop command (unified watcher + guardian)
+// Stop command (watcher only - guardian archived)
 program
   .command('stop')
-  .description('Stop AETHER services (watcher + guardian)')
+  .description('Stop AETHER watcher service')
   .option('-v, --verbose', 'Show detailed output')
   .action(async (options) => {
     try {
@@ -357,10 +353,10 @@ program
     }
   });
 
-// Restart command (unified watcher + guardian)
+// Restart command (watcher only - guardian archived)
 program
   .command('restart')
-  .description('Restart AETHER services (watcher + guardian)')
+  .description('Restart AETHER watcher service')
   .option('-v, --verbose', 'Show detailed output')
   .action(async (options) => {
     try {
@@ -394,10 +390,10 @@ program
     }
   });
 
-// Status command (unified watcher + guardian)
+// Status command (watcher only - guardian archived)
 program
   .command('status')
-  .description('Show AETHER services status (watcher + guardian)')
+  .description('Show AETHER watcher status')
   .option('-v, --verbose', 'Show detailed output')
   .action(async (options) => {
     try {

@@ -46,7 +46,9 @@ This captures conversations and builds QuadIndex.
       ],
       "env": {
         "AETHER_PROJECT_DIR": "${workspaceFolder}",
-        "AETHER_VERBOSE": "false"
+        "AETHER_VERBOSE": "false",
+        "AETHER_INCLUDE_RELATIONSHIPS": "true",
+        "AETHER_INCLUDE_REASONING": "true"
       }
     }
   }
@@ -54,6 +56,13 @@ This captures conversations and builds QuadIndex.
 ```
 
 **Important:** Replace `/Users/YOUR_USERNAME/Programming/aether` with your actual AETHER installation path!
+
+**Environment Variables:**
+
+- `AETHER_PROJECT_DIR` - Project directory (default: current working directory)
+- `AETHER_VERBOSE` - Enable verbose logging (default: `false`)
+- `AETHER_INCLUDE_RELATIONSHIPS` - Always include relationship graph (default: `true`)
+- `AETHER_INCLUDE_REASONING` - Always include reasoning with alternatives (default: `true`)
 
 5. Click "Save"
 6. Restart Augment (if needed)
@@ -106,7 +115,9 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "npx",
       "args": ["tsx", "/Users/leeuwen/Programming/aether/packages/aether/src/mcp/server.ts"],
       "env": {
-        "AETHER_PROJECT_DIR": "/path/to/your/project"
+        "AETHER_PROJECT_DIR": "/path/to/your/project",
+        "AETHER_INCLUDE_RELATIONSHIPS": "true",
+        "AETHER_INCLUDE_REASONING": "true"
       }
     }
   }
@@ -145,10 +156,12 @@ Search for principles using QuadIndex.
 - `limit` (number, optional) - Maximum results (default: 10)
 - `status` (string, optional) - Filter by status (validated, proposed, rejected, deprecated)
 - `minConfidence` (number, optional) - Minimum confidence (0-1)
-- `includeRelationships` (boolean, optional) - Include relationship graph
+- `includeRelationships` (boolean, optional) - Include relationship graph (default: from `AETHER_INCLUDE_RELATIONSHIPS` env var, or `true`)
 - `relationshipDepth` (number, optional) - Traversal depth (default: 2)
-- `includeReasoning` (boolean, optional) - Include reasoning (alternatives, lessons)
+- `includeReasoning` (boolean, optional) - Include reasoning (alternatives, lessons) (default: from `AETHER_INCLUDE_REASONING` env var, or `true`)
 - `reasoningIterations` (number, optional) - Reasoning iterations (default: 3)
+
+**Note:** The defaults for `includeRelationships` and `includeReasoning` are controlled by environment variables. Set `AETHER_INCLUDE_RELATIONSHIPS=false` or `AETHER_INCLUDE_REASONING=false` to disable automatic inclusion.
 
 **Example:**
 

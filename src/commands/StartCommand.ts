@@ -5,10 +5,11 @@
  */
 
 /**
- * Start Command - Start AETHER daemons
+ * Start Command - Start AETHER watcher daemon
  * Phase 6: November 2025
+ * Updated: November 9, 2025 - Guardian archived with MCP integration
  *
- * Starts both Watcher and Guardian as background daemons
+ * Starts Watcher as background daemon (Guardian archived)
  */
 
 import chalk from 'chalk';
@@ -20,30 +21,23 @@ import { DaemonController } from '../utils/DaemonController.js';
 export interface StartCommandOptions {
   cwd?: string;
   verbose?: boolean;
-  watcherOnly?: boolean;
-  guardianOnly?: boolean;
 }
 
 export interface StartResult {
   watcherPid?: number;
-  guardianPid?: number;
   message: string;
 }
 
 /**
- * Start AETHER daemons (Watcher + Guardian)
+ * Start AETHER watcher daemon (Guardian archived)
  */
 export class StartCommand {
   private cwd: string;
   private verbose: boolean;
-  private watcherOnly: boolean;
-  private guardianOnly: boolean;
 
   constructor(options: StartCommandOptions = {}) {
     this.cwd = options.cwd || process.cwd();
     this.verbose = options.verbose || false;
-    this.watcherOnly = options.watcherOnly || false;
-    this.guardianOnly = options.guardianOnly || false;
   }
 
   /**
@@ -57,44 +51,28 @@ export class StartCommand {
       // Check current status
       const status = controller.getStatus();
 
-      // Check if already running
-      if (!this.watcherOnly && !this.guardianOnly) {
-        if (status.watcher.running && status.guardian.running) {
-          return Err(
-            new Error(
-              `AETHER already running\n   Watcher: PID ${status.watcher.pid}\n   Guardian: PID ${status.guardian.pid}`
-            )
-          );
-        }
-      }
-
-      if (this.watcherOnly && status.watcher.running) {
+      // Check if already running (watcher only - guardian archived)
+      if (status.watcher.running) {
         return Err(new Error(`Watcher already running (PID: ${status.watcher.pid})`));
-      }
-
-      if (this.guardianOnly && status.guardian.running) {
-        return Err(new Error(`Guardian already running (PID: ${status.guardian.pid})`));
       }
 
       // Show banner
       console.log(chalk.bold.cyan('\n🌌 Starting AETHER...\n'));
 
-      // Start daemons
-      spinner.start('Starting background services...');
+      // Start watcher
+      spinner.start('Starting watcher...');
 
       const startResult = await controller.start({
         cwd: this.cwd,
         verbose: this.verbose,
-        watcherOnly: this.watcherOnly,
-        guardianOnly: this.guardianOnly,
       });
 
       if (!startResult.ok) {
-        spinner.fail('Failed to start AETHER');
+        spinner.fail('Failed to start watcher');
         return startResult;
       }
 
-      spinner.succeed('Background services started');
+      spinner.succeed('Watcher started');
 
       // Show success message
       console.log();
@@ -105,24 +83,18 @@ export class StartCommand {
         console.log(chalk.dim(`   Health: .aether-health.json`));
       }
 
-      if (startResult.value.guardianPid) {
-        console.log(chalk.green('✅ Guardian started'));
-        console.log(chalk.dim(`   PID: ${startResult.value.guardianPid}`));
-        console.log(chalk.dim(`   Protecting: .ai/ folder`));
-        console.log(chalk.dim(`   Feedback: .aether-STOP.md`));
-      }
-
       console.log();
       console.log(chalk.bold('📊 Status:'));
       console.log(chalk.dim('   Check status: aether status'));
       console.log(chalk.dim('   View logs: tail -f .lill/.aether.log'));
-      console.log(chalk.dim('   Stop services: aether stop'));
+      console.log(chalk.dim('   Stop watcher: aether stop'));
+      console.log();
+      console.log(chalk.dim('💡 Guardian archived (MCP integration handles protection)'));
       console.log();
 
       return Ok({
         watcherPid: startResult.value.watcherPid,
-        guardianPid: startResult.value.guardianPid,
-        message: 'AETHER started successfully',
+        message: 'AETHER watcher started successfully',
       });
     } catch (error) {
       return Err(error instanceof Error ? error : new Error(String(error)));

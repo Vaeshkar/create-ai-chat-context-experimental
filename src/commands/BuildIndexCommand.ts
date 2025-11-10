@@ -194,7 +194,7 @@ export class BuildIndexCommand {
           updated_at: new Date(hypothetical.timestamp),
         };
 
-        const result = this.quadIndex.addHypothetical(fullHypothetical);
+        const result = await this.quadIndex.addHypothetical(fullHypothetical);
         if (result.success) {
           this.totalHypotheticals++;
         }
@@ -210,7 +210,7 @@ export class BuildIndexCommand {
           created_at: new Date(rejected.timestamp),
         };
 
-        const result = this.quadIndex.addRejected(fullRejected);
+        const result = await this.quadIndex.addRejected(fullRejected);
         if (result.success) {
           this.totalRejected++;
         }

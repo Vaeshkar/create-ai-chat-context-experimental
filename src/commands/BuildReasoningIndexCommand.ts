@@ -89,7 +89,7 @@ export class BuildReasoningIndexCommand {
 
         // Add to ReasoningStore
         for (const hypothetical of result.hypotheticals) {
-          const addResult = quadIndex.addHypothetical(hypothetical);
+          const addResult = await quadIndex.addHypothetical(hypothetical);
           if (addResult.success) {
             totalHypotheticals++;
             if (this.verbose) {
@@ -101,7 +101,7 @@ export class BuildReasoningIndexCommand {
         }
 
         for (const rejected of result.rejectedAlternatives) {
-          const addResult = quadIndex.addRejected(rejected);
+          const addResult = await quadIndex.addRejected(rejected);
           if (addResult.success) {
             totalRejected++;
             if (this.verbose) {

@@ -87,15 +87,19 @@ export async function queryPrinciples(
   args: QueryPrinciplesArgs
 ): Promise<QueryPrinciplesResponse> {
   try {
+    // Get defaults from environment variables (user-controlled automatic mode)
+    const defaultIncludeRelationships = process.env['AETHER_INCLUDE_RELATIONSHIPS'] !== 'false'; // Default: true
+    const defaultIncludeReasoning = process.env['AETHER_INCLUDE_REASONING'] !== 'false'; // Default: true
+
     // Build query
     const query: any = {
       text: args.query,
       limit: args.limit || 10,
       status: args.status,
       minConfidence: args.minConfidence,
-      includeRelationships: args.includeRelationships || false,
+      includeRelationships: args.includeRelationships ?? defaultIncludeRelationships,
       relationshipDepth: args.relationshipDepth || 2,
-      includeReasoning: args.includeReasoning || false,
+      includeReasoning: args.includeReasoning ?? defaultIncludeReasoning,
       reasoningIterations: args.reasoningIterations || 3,
     };
 
